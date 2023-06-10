@@ -1,100 +1,20 @@
 package io.github.mortuusars.exposure.camera;
 
-import com.mojang.blaze3d.platform.NativeImage;
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ServerboundTakeImagePacket;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
-public class MapPhotography {
-    public void saveImage(BufferedImage bufferedImage, String id) {
+public class FloydDither {
+    private record NegatableColor(int r, int g, int b) {}
 
-//        MaterialColor[] colors = getColors();
-
-//        CompletableFuture.runAsync(() -> {
-            try {
-                LocalPlayer player = Minecraft.getInstance().player;
-                ClientLevel level = player.clientLevel;
-
-//                bufferedImage = crop(bufferedImage, bufferedImage.getHeight(), bufferedImage.getHeight());
-
-                    int quad = bufferedImage.getHeight() / 2;
-
-                    for (int i = 1; i <= 4; i++) {
-                        BufferedImage quadrant;
-
-                        if (i == 1)
-                            quadrant = bufferedImage.getSubimage(0, 0, quad, quad);
-                        else if (i == 2)
-                            quadrant = bufferedImage.getSubimage(quad, 0, quad, quad);
-                        else if (i == 3)
-                            quadrant = bufferedImage.getSubimage(0, quad, quad, quad);
-                        else
-                            quadrant = bufferedImage.getSubimage(quad, quad, quad, quad);
-
-//                        MapItemSavedData mapData = createMapData(player);
-
-//                        for (int x = 0; x < quadrant.getWidth(); x++) {
-//                            for (int y = 0; y < quadrant.getHeight(); y++) {
-//                                int rgb = quadrant.getRGB(x, y);
-//                                mapData.setColor(x, y, (byte) nearestColor(colors, new Color(rgb)));
-////                                mapData.colors[x * y] = (byte) nearestColor(colors, new Color(rgb));
-//                            }
-//                        }
-
-                        MapItemSavedData mapData = render(quadrant, createMapData(player), false);
-
-//                MapItemSavedData mapData = render(bufferedImage, createMapData(player), true);
-
-                        String id1 = id + "_" + i;
-                        level.setMapData(id1, mapData);
-
-                CompoundTag mapTag = new CompoundTag();
-                mapData.save(mapTag);
-
-                Packets.sendToServer(new ServerboundTakeImagePacket(mapTag, id1));
-                    }
-            }
-            catch (Exception e) {
-                Exposure.LOGGER.error(e.toString());
-            }
-//        });
-    }
-
-    private MapItemSavedData createMapData(Player player) {
-        CompoundTag nbt = new CompoundTag();
-        nbt.putString("dimension", player.getLevel().dimension().location().toString());
-        nbt.putInt("xCenter", (int) player.getX());
-        nbt.putInt("zCenter", (int) player.getZ());
-        nbt.putBoolean("locked", true);
-        nbt.putBoolean("unlimitedTracking", false);
-        nbt.putBoolean("trackingPosition", false);
-        nbt.putByte("scale", (byte) 3);
-        return MapItemSavedData.load(nbt);
-    }
-
-    public static MapItemSavedData render(BufferedImage image, MapItemSavedData state, boolean dither) {
-        Image resizedImage = image.getScaledInstance(128, 128, Image.SCALE_DEFAULT);
-        BufferedImage resized = convertToBufferedImage(resizedImage);
+    public static BufferedImage render(BufferedImage image) {
+        BufferedImage resized = convertToBufferedImage(image);
         int width = resized.getWidth();
         int height = resized.getHeight();
         int[][] pixels = convertPixelArray(resized);
@@ -102,46 +22,27 @@ public class MapPhotography {
         Color imageColor;
         mapColors = Arrays.stream(mapColors).filter(Objects::nonNull).toArray(MaterialColor[]::new);
 
-//        BufferedImage bufferedImage = new BufferedImage(128, 128, BufferedImage.TYPE_INT_BGR);
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 imageColor = new Color(pixels[j][i], true);
-                if (dither) {
                     byte b = (byte) floydDither(mapColors, pixels, i, j, imageColor);
 
-//                    int rgb = MaterialColor.getColorFromPackedId(b);
-//
-//                    int red = (rgb >> 16) & 0xFF;
-//                    int green = (rgb >> 8) & 0xFF;
-//                    int blue = rgb & 0xFF;
-//
-//                    bufferedImage.setRGB(i, j, blue << 16 | green << 8 | red);
+                    int rgb = MaterialColor.getColorFromPackedId(b);
 
-                    state.colors[i + j * width] = b;
-                } else
-                    state.colors[i + j * width] = (byte) nearestColor(mapColors, imageColor);
+                    int red = (rgb >> 16) & 0xFF;
+                    int green = (rgb >> 8) & 0xFF;
+                    int blue = rgb & 0xFF;
 
-
+                    bufferedImage.setRGB(i, j, blue << 16 | green << 8 | red);
             }
         }
 
-//        // Save the dithered image
-//        File outputFile = new File("exposures/photo_" + Minecraft.getInstance().level.getGameTime() + "-dither.png");
-//        try {
-//            outputFile.mkdirs();
-//            ImageIO.write(bufferedImage, "png", outputFile);
-//        } catch (IOException e) {
-//            Exposure.LOGGER.error(e.toString());
-//        }
-
-        return state;
+        return bufferedImage;
     }
 
     private static int floydDither(MaterialColor[] mapColors, int[][] pixels, int x, int y, Color imageColor) {
-        // double[] imageVec = { (double) imageColor.getRed() / 255.0, (double)
-        // imageColor.getGreen() / 255.0,
-        // (double) imageColor.getBlue() / 255.0 };
         int colorIndex = nearestColor(mapColors, imageColor);
         Color palletedColor = mapColorToRGBColor(mapColors, colorIndex);
         NegatableColor error = new NegatableColor(imageColor.getRed() - palletedColor.getRed(),
@@ -171,18 +72,6 @@ public class MapPhotography {
         int pG = Mth.clamp(pixelColor.getGreen() + (int) ((double) error.g * quantConst), 0, 255);
         int pB = Mth.clamp(pixelColor.getBlue() + (int) ((double) error.b * quantConst), 0, 255);
         return new Color(pR, pG, pB, pixelColor.getAlpha()).getRGB();
-    }
-
-    public static class NegatableColor {
-        public final int r;
-        public final int g;
-        public final int b;
-
-        public NegatableColor(int r, int g, int b) {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
     }
 
     private static Color mapColorToRGBColor(MaterialColor[] colors, int color) {
@@ -268,18 +157,5 @@ public class MapPhotography {
         g.drawImage(image, 0, 0, null);
         g.dispose();
         return newImage;
-    }
-
-    public BufferedImage crop(BufferedImage bufferedImage,int targetWidth, int targetHeight) throws IOException {
-        int height = bufferedImage.getHeight();
-        int width = bufferedImage.getWidth();
-
-        // Coordinates of the image's middle
-        int xc = (width - targetWidth) / 2;
-        int yc = (height - targetHeight) / 2;
-
-        // Crop
-        BufferedImage croppedImage = bufferedImage.getSubimage(xc, yc, targetWidth, targetHeight);
-        return croppedImage;
     }
 }

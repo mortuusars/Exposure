@@ -1,12 +1,8 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.camera.ImageCapture;
+import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.camera.PhotoScreen;
-import io.github.mortuusars.exposure.event.ForgeEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Screenshot;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -17,8 +13,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 
 import java.util.Objects;
 
@@ -31,11 +25,6 @@ public class CameraItem extends Item {
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         useCamera(Objects.requireNonNull(context.getPlayer()), context.getHand());
         return InteractionResult.SUCCESS;
-    }
-
-    @Override
-    public InteractionResult useOn(UseOnContext context) {
-        return super.useOn(context);
     }
 
     @Override
@@ -61,24 +50,19 @@ public class CameraItem extends Item {
         level.playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 1f,
                 level.getRandom().nextFloat() * 0.2f + 0.9f);
 
-        boolean useFlash = true;
-
-        if (useFlash) {
-            BlockPos initialFlashPos = player.blockPosition().above();
-
-//            if (level.getBlockState(initialFlashPos))
-
-
-        }
+//        boolean useFlash = true;
+//
+//        if (useFlash) {
+//            BlockPos initialFlashPos = player.blockPosition().above();
+//
+////            if (level.getBlockState(initialFlashPos))
+//
+//
+//        }
 
         if (level.isClientSide) {
-//            Minecraft.getInstance().level.setBlockAndUpdate(player.blockPosition().above(), Blocks.LIGHT.defaultBlockState());
-//            Minecraft.getInstance().level.getLightEngine().onBlockEmissionIncrease(player.blockPosition().above(), 15);
-//            Minecraft.getInstance().level.getLightEngine().runUpdates(Integer.MAX_VALUE, true, true);
-//            Minecraft.getInstance().level.setLightReady(player.blockPosition().getX(), player.blockPosition().getZ());
-//            Minecraft.getInstance().level.pollLightUpdates();
 //            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure:shaders/post/orange_tint.json"));
-            ImageCapture.capture("photo_0");
+            Camera.capture();
         }
     }
 }

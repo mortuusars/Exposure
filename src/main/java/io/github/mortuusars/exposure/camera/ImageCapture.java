@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.awt.image.BufferedImage;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
+//@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class ImageCapture {
     public static boolean shouldCapture;
     public static boolean capturing;

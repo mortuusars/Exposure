@@ -42,7 +42,7 @@ public record ServerboundTakeImagePacket(CompoundTag mapDataTag, String id) {
 //        storeMapData(mapStack, id);
 //        player.drop(mapStack, false);
 
-        player.level.setBlockAndUpdate(player.blockPosition().above(), Blocks.AIR.defaultBlockState());
+//        player.level.setBlockAndUpdate(player.blockPosition().above(), Blocks.AIR.defaultBlockState());
 
         return true;
     }
