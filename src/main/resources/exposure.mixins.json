@@ -1,10 +1,11 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "io.github.Exposure.mixin",
-  "compatibilityLevel": "JAVA_8",
-  "refmap": "Exposure.refmap.json",
+  "package": "io.github.mortuusars.exposure.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "refmap": "exposure.refmap.json",
   "mixins": [
+
   ],
   "client": [
   ],
