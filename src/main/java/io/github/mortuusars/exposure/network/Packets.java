@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.network;
 
 
 import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
-import io.github.mortuusars.exposure.network.packet.ServerboundTakeImagePacket;
+import io.github.mortuusars.exposure.network.packet.ServerboundSaveMapDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -27,10 +27,10 @@ public class Packets {
                 .consumerMainThread(ClientboundApplyShaderPacket::handle)
                 .add();
 
-        CHANNEL.messageBuilder(ServerboundTakeImagePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ServerboundTakeImagePacket::toBuffer)
-                .decoder(ServerboundTakeImagePacket::fromBuffer)
-                .consumerMainThread(ServerboundTakeImagePacket::handle)
+        CHANNEL.messageBuilder(ServerboundSaveMapDataPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ServerboundSaveMapDataPacket::toBuffer)
+                .decoder(ServerboundSaveMapDataPacket::fromBuffer)
+                .consumerMainThread(ServerboundSaveMapDataPacket::handle)
                 .add();
     }
 

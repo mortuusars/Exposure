@@ -6,14 +6,13 @@ import net.minecraft.world.level.material.MaterialColor;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
 
 public class FloydDither {
     private record NegatableColor(int r, int g, int b) {}
 
-    public static BufferedImage render(BufferedImage image) {
+    public static BufferedImage dither(BufferedImage image) {
         BufferedImage resized = convertToBufferedImage(image);
         int width = resized.getWidth();
         int height = resized.getHeight();

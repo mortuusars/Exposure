@@ -4,24 +4,22 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record ServerboundTakeImagePacket(CompoundTag mapDataTag, String id) {
+public record ServerboundSaveMapDataPacket(CompoundTag mapDataTag, String id) {
 
     public void toBuffer(FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeNbt(mapDataTag);
         friendlyByteBuf.writeUtf(id);
     }
 
-    public static ServerboundTakeImagePacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ServerboundTakeImagePacket(buffer.readNbt(), buffer.readUtf());
+    public static ServerboundSaveMapDataPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new ServerboundSaveMapDataPacket(buffer.readNbt(), buffer.readUtf());
     }
 
     @SuppressWarnings("UnusedReturnValue")

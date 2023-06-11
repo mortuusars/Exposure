@@ -1,29 +1,23 @@
 package io.github.mortuusars.exposure.camera;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ServerboundTakeImagePacket;
+import io.github.mortuusars.exposure.network.packet.ServerboundSaveMapDataPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 
 public class MapPhotography {
     public void saveImage(BufferedImage bufferedImage, String id) {
@@ -71,7 +65,7 @@ public class MapPhotography {
                 CompoundTag mapTag = new CompoundTag();
                 mapData.save(mapTag);
 
-                Packets.sendToServer(new ServerboundTakeImagePacket(mapTag, id1));
+                Packets.sendToServer(new ServerboundSaveMapDataPacket(mapTag, id1));
                     }
             }
             catch (Exception e) {
