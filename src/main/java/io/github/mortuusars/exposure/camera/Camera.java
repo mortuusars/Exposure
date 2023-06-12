@@ -10,6 +10,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
@@ -114,6 +115,10 @@ public class Camera {
                 bufferedImage.setRGB(x, y, alpha << 24 | blue << 16 | green << 8 | red);
             }
         }
+
+        //TODO: Blur
+//        bufferedImage = Blur.applyGaussianBlur(bufferedImage, 32);
+//        bufferedImage = bufferedImage.getSubimage(32, 32, 256 - 32, 256 - 32);
 
         bufferedImage = FloydDither.dither(bufferedImage);
 

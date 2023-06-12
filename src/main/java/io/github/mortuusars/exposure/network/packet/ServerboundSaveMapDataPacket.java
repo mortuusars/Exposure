@@ -34,6 +34,8 @@ public record ServerboundSaveMapDataPacket(CompoundTag mapDataTag, String id) {
 
         MapItemSavedData mapData = MapItemSavedData.load(mapDataTag);
 
+        mapData.setDirty();
+
         level.setMapData(id, mapData);
 
 //        ItemStack mapStack = new ItemStack(Items.FILLED_MAP);

@@ -5,9 +5,10 @@
   "compatibilityLevel": "JAVA_16",
   "refmap": "exposure.refmap.json",
   "mixins": [
-
   ],
   "client": [
+    "DrawViewfinderOverlayMixin",
+    "ViewfinderSensitivityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

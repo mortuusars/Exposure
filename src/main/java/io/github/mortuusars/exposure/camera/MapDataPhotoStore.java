@@ -56,6 +56,8 @@ public class MapDataPhotoStore {
                     }
                 }
 
+                mapData.setDirty();
+
                 String mapId = id + "_" + row + column;
 
                 level.setMapData(mapId, mapData);
