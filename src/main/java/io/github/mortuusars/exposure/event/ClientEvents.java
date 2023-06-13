@@ -66,7 +66,7 @@ public class ClientEvents {
 
 //        Exposure.LOGGER.info(lensFocalLength + "mm");
 //        Exposure.LOGGER.info("Sens:" + sensitivity * 2 * 100);
-        Exposure.LOGGER.info(event.getScrollDelta() + "");
+//        Exposure.LOGGER.info(event.getScrollDelta() + "");
     }
 
     @SubscribeEvent
@@ -76,7 +76,7 @@ public class ClientEvents {
             return;
         }
 
-        Viewfinder.currentFov += (float) ((Viewfinder.targetFov - Viewfinder.currentFov) * 0.05f * event.getPartialTick());
+        Viewfinder.currentFov += (float) ((Viewfinder.targetFov - Viewfinder.currentFov) * 0.025f * event.getPartialTick());
 
         event.setFOV(Viewfinder.currentFov);
     }

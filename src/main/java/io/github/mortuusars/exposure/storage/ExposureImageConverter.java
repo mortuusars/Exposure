@@ -14,7 +14,7 @@ public class ExposureImageConverter {
 
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                pixels[x + y * 128] = (byte) nearestColor(colors, new Color(image.getRGB(x, y)));
+                pixels[x + y * image.getWidth()] = (byte) nearestColor(colors, new Color(image.getRGB(x, y)));
             }
         }
 

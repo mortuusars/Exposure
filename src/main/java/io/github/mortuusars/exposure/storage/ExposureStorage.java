@@ -1,11 +1,17 @@
 package io.github.mortuusars.exposure.storage;
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundQueryExposureDataPacket;
 import io.github.mortuusars.exposure.network.packet.ServerboundSaveExposurePacket;
+import net.minecraft.world.level.material.MaterialColor;
 import org.jetbrains.annotations.Nullable;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class ExposureStorage {
@@ -33,7 +39,27 @@ public class ExposureStorage {
     public static Optional<ExposureSavedData> get(String id) {
         ExposureSavedData exposureData = clientCache.get(id);
 
-        if(exposureData == null) {
+        if (exposureData != null) {
+            BufferedImage img = new BufferedImage(exposureData.getWidth(), exposureData.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+
+            for (int y = 0; y < exposureData.getHeight(); y++) {
+                for (int x = 0; x < exposureData.getWidth(); x++) {
+
+                    img.setRGB(x, y, MaterialColor.getColorFromPackedId(exposureData.getPixel(x, y)));
+
+                }
+            }
+
+            File outputFile = new File("exposures/" + id + "asdasdasd.png"); //TODO: world subfolder
+            try {
+                outputFile.mkdirs();
+                ImageIO.write(img, "png", outputFile);
+            } catch (IOException e) {
+                Exposure.LOGGER.error(e.toString());
+            }
+        }
+
+        if(exposureData == null && !queriedExposures.contains(id)) {
             Packets.sendToServer(new ServerboundQueryExposureDataPacket(id));
         }
 
@@ -42,5 +68,25 @@ public class ExposureStorage {
 
     public static void set(String id, ExposureSavedData exposureData) {
         clientCache.put(id, exposureData);
+
+        if (exposureData != null) {
+            BufferedImage img = new BufferedImage(exposureData.getWidth(), exposureData.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            for (int y = 0; y < exposureData.getHeight(); y++) {
+                for (int x = 0; x < exposureData.getWidth(); x++) {
+
+                    img.setRGB(x, y, exposureData.getPixel(x, y));
+
+                }
+            }
+
+            File outputFile = new File("exposures/" + id + "asdasdasd.png"); //TODO: world subfolder
+            try {
+                outputFile.mkdirs();
+                ImageIO.write(img, "png", outputFile);
+            } catch (IOException e) {
+                Exposure.LOGGER.error(e.toString());
+            }
+        }
     }
 }

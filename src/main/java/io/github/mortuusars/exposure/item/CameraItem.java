@@ -49,10 +49,10 @@ public class CameraItem extends Item {
                 else {
                     ItemStack itemInHand = player.getItemInHand(usedHand);
                     String lastShot = itemInHand.getOrCreateTag().getString("lastShot");
-                    ExposureSavedData exposureSavedData = ExposureStorage.get(lastShot).orElse(null);
+//                    ExposureSavedData exposureSavedData = ExposureStorage.get(lastShot).orElse(null);
 
-                    boolean asd = true;
-//                    Minecraft.getInstance().setScreen(new PhotoScreen("photo_0", 4));
+//                    boolean asd = true;
+                    Minecraft.getInstance().setScreen(new PhotoScreen(lastShot));
                 }
             }
         }

@@ -126,9 +126,8 @@ public class Camera {
 //        bufferedImage = Blur.applyGaussianBlur(bufferedImage, 32);
 //        bufferedImage = bufferedImage.getSubimage(32, 32, 256 - 32, 256 - 32);
 
+
         bufferedImage = FloydDither.dither(bufferedImage);
-
-
 
 
         // Save the dithered image

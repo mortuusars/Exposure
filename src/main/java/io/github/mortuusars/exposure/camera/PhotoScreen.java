@@ -4,6 +4,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Vector3f;
+import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.storage.ExposureSavedData;
+import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
@@ -16,30 +19,37 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 import net.minecraftforge.client.model.data.ModelData;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PhotoScreen extends Screen {
 
-    private MapItemSavedData[][] mps;
+    private String id;
+    @Nullable
+    private ExposureSavedData exposureData;
+//    private MapItemSavedData[][] mps;
 
-    public PhotoScreen(String id, int parts) {
+    public PhotoScreen(String id) {
         super(Component.empty());
 
-        if (Minecraft.getInstance().level != null) {
-            int rowsAndColumns = (int) Math.sqrt(parts);
-            mps = new MapItemSavedData[rowsAndColumns][rowsAndColumns];
+        this.id = id;
+        this.exposureData = ExposureStorage.get(id).orElse(null);
 
-            for (int column = 0; column < rowsAndColumns; column++) {
-                for (int row = 0; row < rowsAndColumns; row++) {
-
-                    MapItemSavedData mapData = Minecraft.getInstance().level.getMapData(id + "_" + column + row);
-
-                    if (mapData != null)
-                        mps[column][row] = mapData;
-                    else
-                        mps[column][row] = MapItemSavedData.createFresh(0d, 0d, (byte) 0, false, false, Minecraft.getInstance().level.dimension());
-                }
-            }
-        }
+//        if (Minecraft.getInstance().level != null) {
+//            int rowsAndColumns = (int) Math.sqrt(parts);
+//            mps = new MapItemSavedData[rowsAndColumns][rowsAndColumns];
+//
+//            for (int column = 0; column < rowsAndColumns; column++) {
+//                for (int row = 0; row < rowsAndColumns; row++) {
+//
+//                    MapItemSavedData mapData = Minecraft.getInstance().level.getMapData(id + "_" + column + row);
+//
+//                    if (mapData != null)
+//                        mps[column][row] = mapData;
+//                    else
+//                        mps[column][row] = MapItemSavedData.createFresh(0d, 0d, (byte) 0, false, false, Minecraft.getInstance().level.dimension());
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -47,27 +57,38 @@ public class PhotoScreen extends Screen {
         renderBackground(poseStack);
         super.render(poseStack, pMouseX, pMouseY, pPartialTick);
 
-        MultiBufferSource.BufferSource multibuffersource$buffersource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        fill(poseStack, 0, 0, width, height, 0xAAAAAAAA);
 
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
+        if (exposureData != null) {
 
-        float scale = 2f / mps.length;
-        int startX = (int) (centerX - (mps.length * 128 * scale) / 2);
-        int startY = (int) (centerY - (mps.length * 128 * scale) / 2);
+            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
-        for (int column = 0; column < mps.length; column++) {
-            for (int row = 0; row < mps[0].length; row++) {
-                poseStack.pushPose();
-                poseStack.translate(startX + (column * 128 * scale), startY + (row * 128 * scale), 0);
-                poseStack.scale(scale, scale, scale);
-                Minecraft.getInstance().gameRenderer.getMapRenderer().render(poseStack, multibuffersource$buffersource,
-                        row + column * 4, mps[column][row], true, LightTexture.FULL_BRIGHT);
-                poseStack.popPose();
-            }
+            int centerX = this.width / 2;
+            int centerY = this.height / 2;
+            poseStack.pushPose();
+            poseStack.translate(200, 12, 0);
+            ExposureRenderer.render(poseStack, bufferSource, id, exposureData, LightTexture.FULL_BRIGHT);
+            poseStack.popPose();
+    //        float scale = 2f / mps.length;
+    //        int startX = (int) (centerX - (mps.length * 128 * scale) / 2);
+    //        int startY = (int) (centerY - (mps.length * 128 * scale) / 2);
+    //
+    //        for (int column = 0; column < mps.length; column++) {
+    //            for (int row = 0; row < mps[0].length; row++) {
+    //                poseStack.pushPose();
+    //                poseStack.translate(startX + (column * 128 * scale), startY + (row * 128 * scale), 0);
+    //                poseStack.scale(scale, scale, scale);
+    //                Minecraft.getInstance().gameRenderer.getMapRenderer().render(poseStack, bufferSource,
+    //                        row + column * 4, mps[column][row], true, LightTexture.FULL_BRIGHT);
+    //                poseStack.popPose();
+    //            }
+    //        }
+
+            bufferSource.endBatch();
         }
-
-        multibuffersource$buffersource.endBatch();
+        else {
+            exposureData = ExposureStorage.get(id).orElse(null);
+        }
     }
 
     @Override
