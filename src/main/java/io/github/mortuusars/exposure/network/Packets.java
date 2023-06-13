@@ -1,8 +1,7 @@
 package io.github.mortuusars.exposure.network;
 
 
-import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
-import io.github.mortuusars.exposure.network.packet.ServerboundSaveMapDataPacket;
+import io.github.mortuusars.exposure.network.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -27,10 +26,34 @@ public class Packets {
                 .consumerMainThread(ClientboundApplyShaderPacket::handle)
                 .add();
 
+        CHANNEL.messageBuilder(ClientboundLoadExposureDataPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ClientboundLoadExposureDataPacket::toBuffer)
+                .decoder(ClientboundLoadExposureDataPacket::fromBuffer)
+                .consumerMainThread(ClientboundLoadExposureDataPacket::handle)
+                .add();
+
         CHANNEL.messageBuilder(ServerboundSaveMapDataPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(ServerboundSaveMapDataPacket::toBuffer)
                 .decoder(ServerboundSaveMapDataPacket::fromBuffer)
                 .consumerMainThread(ServerboundSaveMapDataPacket::handle)
+                .add();
+
+        CHANNEL.messageBuilder(ServerboundSaveExposurePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ServerboundSaveExposurePacket::toBuffer)
+                .decoder(ServerboundSaveExposurePacket::fromBuffer)
+                .consumerMainThread(ServerboundSaveExposurePacket::handle)
+                .add();
+
+        CHANNEL.messageBuilder(ServerboundQueryExposureDataPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ServerboundQueryExposureDataPacket::toBuffer)
+                .decoder(ServerboundQueryExposureDataPacket::fromBuffer)
+                .consumerMainThread(ServerboundQueryExposureDataPacket::handle)
+                .add();
+
+        CHANNEL.messageBuilder(ServerboundUpdateCameraPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ServerboundUpdateCameraPacket::toBuffer)
+                .decoder(ServerboundUpdateCameraPacket::fromBuffer)
+                .consumerMainThread(ServerboundUpdateCameraPacket::handle)
                 .add();
     }
 

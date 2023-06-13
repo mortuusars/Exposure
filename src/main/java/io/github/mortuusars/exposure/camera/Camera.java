@@ -2,6 +2,9 @@ package io.github.mortuusars.exposure.camera;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.storage.ExposureImageConverter;
+import io.github.mortuusars.exposure.storage.ExposureSavedData;
+import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.util.Mth;
@@ -10,18 +13,22 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import java.awt.*;
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class Camera {
     private static boolean capturing;
     private static boolean processing;
     private static int captureDelay;
+    private static String exposureId;
 
-    public static void capture() {
+    public static void capture(String id) {
+        exposureId = id;
         capturing = true;
-        captureDelay = 20;
+        captureDelay = 0;
 
         Minecraft.getInstance().options.hideGui = true;
     }
@@ -47,8 +54,7 @@ public class Camera {
 //        Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
         processing = true;
 
-        String id = "photo_0";
-        processAndSaveImageThreaded(screenshot, id);
+        processAndSaveImageThreaded(screenshot, exposureId);
     }
 
     private static void processAndSaveImageThreaded(NativeImage nativeImage, String id) {
@@ -122,18 +128,28 @@ public class Camera {
 
         bufferedImage = FloydDither.dither(bufferedImage);
 
+
+
+
         // Save the dithered image
-//        File outputFile = new File("C:/exposures/photo_" + Minecraft.getInstance().level.getGameTime() + ".png");
-//        try {
-//            outputFile.mkdirs();
-//            ImageIO.write(FloydDither.render(bufferedImage), "png", outputFile);
-//        } catch (IOException e) {
-//            Exposure.LOGGER.error(e.toString());
-//        }
+        File outputFile = new File("exposures/" + id + ".png"); //TODO: world subfolder
+        try {
+            outputFile.mkdirs();
+            ImageIO.write(bufferedImage, "png", outputFile);
+        } catch (IOException e) {
+            Exposure.LOGGER.error(e.toString());
+        }
+
+
+        byte[] bytes = ExposureImageConverter.convert(bufferedImage);
+
+        ExposureSavedData exposureSavedData = new ExposureSavedData(bufferedImage.getWidth(), bufferedImage.getHeight(), bytes);
+        ExposureStorage.save(id, exposureSavedData);
+
 
 //        new MapPhotography().saveImage(bufferedImage, id);
 
-        String[][] parts = new MapDataPhotoStore().saveImage(bufferedImage, "photo_0");
+//        String[][] parts = new MapDataPhotoStore().saveImage(bufferedImage, "photo_0");
 
         processing = false;
 

@@ -3,7 +3,12 @@ package io.github.mortuusars.exposure.item;
 import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.camera.PhotoScreen;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.ServerboundUpdateCameraPacket;
+import io.github.mortuusars.exposure.storage.ExposureSavedData;
+import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -41,12 +46,26 @@ public class CameraItem extends Item {
             if (player.getLevel().isClientSide) {
                 if (Viewfinder.isActive())
                     Viewfinder.setActive(false);
-                else
-                    Minecraft.getInstance().setScreen(new PhotoScreen("photo_0", 4));
+                else {
+                    ItemStack itemInHand = player.getItemInHand(usedHand);
+                    String lastShot = itemInHand.getOrCreateTag().getString("lastShot");
+                    ExposureSavedData exposureSavedData = ExposureStorage.get(lastShot).orElse(null);
+
+                    boolean asd = true;
+//                    Minecraft.getInstance().setScreen(new PhotoScreen("photo_0", 4));
+                }
             }
         }
         else {
-            takeShot(player, usedHand);
+
+
+//            if (player.getLevel().isClientSide) {
+//            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure:shaders/post/orange_tint.json"));
+                if (Viewfinder.isActive())
+                    takeShot(player, usedHand);
+                else
+                    Viewfinder.setActive(true);
+//            }
         }
     }
 
@@ -54,7 +73,19 @@ public class CameraItem extends Item {
         Level level = player.level;
 
         level.playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 1f,
-                level.getRandom().nextFloat() * 0.2f + 0.9f);
+                level.getRandom().nextFloat() * 0.2f + 1.1f);
+
+
+
+        if (player.level.isClientSide) {
+            String id = player.getName().getString() + "_" + level.getGameTime();
+
+            Camera.capture(id);
+
+            ItemStack itemInHand = player.getItemInHand(usedHand);
+            itemInHand.getOrCreateTag().putString("lastShot", id);
+            Packets.sendToServer(new ServerboundUpdateCameraPacket(id, usedHand));
+        }
 
 //        boolean useFlash = true;
 //
@@ -66,13 +97,7 @@ public class CameraItem extends Item {
 //
 //        }
 
-        if (level.isClientSide) {
-//            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure:shaders/post/orange_tint.json"));
-            if (Viewfinder.isActive())
-                Camera.capture();
-            else
-                Viewfinder.setActive(true);
-        }
+
     }
 
     @Override
