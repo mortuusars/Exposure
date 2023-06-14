@@ -48,6 +48,8 @@ public class Viewfinder {
         float openingEndX = openingStartX + finderSize;
         float openingEndY = openingStartY + finderSize;
 
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
         // Left
         GuiComponent.fill(poseStack, 0, (int)openingStartY, (int)openingStartX, (int)openingEndY, color);
         // Right

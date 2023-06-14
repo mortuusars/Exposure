@@ -63,10 +63,13 @@ public class PhotoScreen extends Screen {
 
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
+            float scale = 1f / (exposureData.getHeight() / 256f);
+
             int centerX = this.width / 2;
             int centerY = this.height / 2;
             poseStack.pushPose();
-            poseStack.translate(200, 12, 0);
+            poseStack.scale(scale, scale, scale);
+            poseStack.translate((width - 256) / 2f / scale, (height - 256) / 2f / scale, 0);
             ExposureRenderer.render(poseStack, bufferSource, id, exposureData, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
     //        float scale = 2f / mps.length;

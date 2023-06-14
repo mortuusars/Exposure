@@ -49,14 +49,6 @@ public class ExposureStorage {
 
                 }
             }
-
-            File outputFile = new File("exposures/" + id + "asdasdasd.png"); //TODO: world subfolder
-            try {
-                outputFile.mkdirs();
-                ImageIO.write(img, "png", outputFile);
-            } catch (IOException e) {
-                Exposure.LOGGER.error(e.toString());
-            }
         }
 
         if(exposureData == null && !queriedExposures.contains(id)) {

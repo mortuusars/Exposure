@@ -96,7 +96,7 @@ public class Camera {
         int screenshotXStart = sWidth > sHeight ? (sWidth - sHeight) / 2 : 0;
         int screenshotYStart = sHeight > sWidth ? (sHeight - sWidth) / 2 : 0;
 
-        int size = 256;
+        int size = 192;
 
         BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 
