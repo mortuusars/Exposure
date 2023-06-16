@@ -2,12 +2,20 @@ package io.github.mortuusars.exposure;
 
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.storage.ExposureStorage;
+import io.github.mortuusars.exposure.storage.IExposureStorage;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
+import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -20,10 +28,20 @@ public class Exposure {
 
     public Exposure() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-
         Items.ITEMS.register(modEventBus);
-
         MinecraftForge.EVENT_BUS.register(this);
+    }
+
+    public static IExposureStorage getStorage() {
+        return Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER ?
+                ExposureStorage.SERVER : ExposureStorage.CLIENT;
+    }
+
+    /**
+     * Creates resource location in the mod namespace with the given path.
+     */
+    public static ResourceLocation resource(String path) {
+        return new ResourceLocation(ID, path);
     }
 
     public static class Items {

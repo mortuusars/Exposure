@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import io.github.mortuusars.exposure.camera.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
@@ -10,27 +11,25 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class Viewfinder {
+    private static final ResourceLocation VIEWFINDER_TEXTURE = new ResourceLocation("exposure:textures/misc/viewfinder.png");
+
     public static float currentFov;
     public static float targetFov = focalLengthToFov(18);
 
-    private static float maxFov = focalLengthToFov(15);
+    private static float maxFov = focalLengthToFov(8);
     private static float minFov = focalLengthToFov(200);
-    private static double mouseSensitivityModifier = 1f;
     private static boolean isActive;
 
     public static void setActive(boolean active) {
         isActive = active;
-
-        if (!active) {
-            mouseSensitivityModifier = 1f;
-        }
     }
+
     public static boolean isActive() {
         return isActive;
     }
 
     public static double getMouseSensitivityModifier() {
-        return mouseSensitivityModifier;
+        return isActive ? Mth.clamp(1f - (maxFov - targetFov) / maxFov, 0.1f, 1f) : 1f;
     }
 
     public static void render(PoseStack poseStack, float partialTicks) {
@@ -59,9 +58,11 @@ public class Viewfinder {
         // Bottom
         GuiComponent.fill(poseStack, 0, (int)openingEndY, width, height, color);
 
-        if (!Minecraft.getInstance().options.hideGui) {
-            ResourceLocation VIEWFINDER_TEXTURE = new ResourceLocation("exposure:textures/misc/viewfinder.png");
+        if (Camera.isProcessing()) {
+            GuiComponent.fill(poseStack, (int) openingStartX, (int)openingStartY, (int) openingEndX, (int) openingEndY, color);
+        }
 
+        if (!Minecraft.getInstance().options.hideGui) {
             RenderSystem.enableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.depthMask(false);
@@ -107,7 +108,5 @@ public class Viewfinder {
             change *= 0.25f;
 
         targetFov = Mth.clamp(targetFov += direction == ZoomDirection.IN ? +change : -change, minFov, maxFov);
-
-        mouseSensitivityModifier = Mth.clamp(1f - (maxFov - targetFov) / maxFov, 0.1f, 1f);
     }
 }

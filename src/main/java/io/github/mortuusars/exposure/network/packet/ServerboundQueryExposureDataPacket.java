@@ -1,16 +1,15 @@
 package io.github.mortuusars.exposure.network.packet;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.ExposureSender;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
-import io.github.mortuusars.exposure.storage.ExposureStorage;
-import net.minecraft.nbt.CompoundTag;
+import io.github.mortuusars.exposure.storage.ServersideExposureStorage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import javax.annotation.Nullable;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 public record ServerboundQueryExposureDataPacket(String id) {
@@ -30,13 +29,13 @@ public record ServerboundQueryExposureDataPacket(String id) {
         if (player == null)
             throw new IllegalStateException("Cannot handle QueryExposureDataPacket: Player was null");
 
-        ExposureSavedData exposureSavedData = player.getServer().overworld().getDataStorage()
-                .get(ExposureSavedData::load, ExposureStorage.getSaveNameFromId(id));
+        Optional<ExposureSavedData> exposureSavedData = new ServersideExposureStorage().getOrQuery(id);
 
-        if (exposureSavedData == null)
-            Exposure.LOGGER.error("Cannot get exposure data with an id '" + ExposureStorage.getSaveNameFromId(id) + "'. Result is null.");
-        else
-            Packets.sendToClient(new ClientboundLoadExposureDataPacket(id, exposureSavedData), player);
+        if (exposureSavedData.isEmpty())
+            Exposure.LOGGER.error("Cannot get exposure data with an id '" + id + "'. Result is null.");
+        else {
+            ExposureSender.sendToClient(id, exposureSavedData.get(), player);
+        }
 
         return true;
     }

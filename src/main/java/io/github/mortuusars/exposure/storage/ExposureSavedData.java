@@ -38,6 +38,10 @@ public class ExposureSavedData extends SavedData {
         return height;
     }
 
+    public byte[] getPixels() {
+        return pixels;
+    }
+
     public void setPixel(int x, int y, byte value) {
         Preconditions.checkArgument(x >= 0 && x < width,  "X=" + x + " is out of bounds for Width=" + width);
         Preconditions.checkArgument(y >= 0 && y < height,  "Y=" + x + " is out of bounds for Height=" + height);
@@ -53,6 +57,7 @@ public class ExposureSavedData extends SavedData {
         compoundTag.putInt("width", width);
         compoundTag.putInt("height", height);
         compoundTag.putByteArray("pixels", pixels);
+        Exposure.LOGGER.info("Size: " + pixels.length);
         return compoundTag;
     }
 

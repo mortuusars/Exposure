@@ -5,6 +5,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.storage.ExposureImageConverter;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.util.Mth;
@@ -17,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class Camera {
@@ -24,13 +26,22 @@ public class Camera {
     private static boolean processing;
     private static int captureDelay;
     private static String exposureId;
+    private static boolean hideGuiBeforeCapture;
+    private static CameraType cameraTypeBeforeCapture;
+
+    public static boolean isProcessing() {
+        return processing;
+    }
 
     public static void capture(String id) {
         exposureId = id;
         capturing = true;
         captureDelay = 0;
+        hideGuiBeforeCapture = Minecraft.getInstance().options.hideGui;
+        cameraTypeBeforeCapture = Minecraft.getInstance().options.getCameraType();
 
         Minecraft.getInstance().options.hideGui = true;
+        Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
     }
 
     @SubscribeEvent
@@ -49,9 +60,9 @@ public class Camera {
         NativeImage screenshot = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
         capturing = false;
 
-        Minecraft.getInstance().options.hideGui = false;
+        Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;
+        Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
 
-//        Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
         processing = true;
 
         processAndSaveImageThreaded(screenshot, exposureId);
@@ -96,7 +107,7 @@ public class Camera {
         int screenshotXStart = sWidth > sHeight ? (sWidth - sHeight) / 2 : 0;
         int screenshotYStart = sHeight > sWidth ? (sHeight - sWidth) / 2 : 0;
 
-        int size = 192;
+        int size = 384;
 
         BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 
@@ -131,7 +142,7 @@ public class Camera {
 
 
         // Save the dithered image
-        File outputFile = new File("exposures/" + id + ".png"); //TODO: world subfolder
+        File outputFile = new File("exposures/" + getLevelName() + "/" + id + ".png"); //TODO: world subfolder
         try {
             outputFile.mkdirs();
             ImageIO.write(bufferedImage, "png", outputFile);
@@ -143,7 +154,17 @@ public class Camera {
         byte[] bytes = ExposureImageConverter.convert(bufferedImage);
 
         ExposureSavedData exposureSavedData = new ExposureSavedData(bufferedImage.getWidth(), bufferedImage.getHeight(), bytes);
-        ExposureStorage.save(id, exposureSavedData);
+
+        ExposureStorage.storeClientsideAndSendToServer(id, exposureSavedData);
+
+//        ExposureStorage.CLIENT.put(id, exposureSavedData);
+
+//        new ExposureSender().sendToServer(id, exposureSavedData);
+
+
+
+//        Packets.sendToServer(new ServerboundSaveExposurePacket(id, exposureSavedData));
+//        ExposureStorage.save(id, exposureSavedData);
 
 
 //        new MapPhotography().saveImage(bufferedImage, id);
@@ -173,5 +194,35 @@ public class Camera {
 //        mc.options.gamma().set(0.1d);
 //        Minecraft.getInstance().level.setBlockAndUpdate(Minecraft.getInstance().player.blockPosition().above(), Blocks.AIR.defaultBlockState());
 
+    }
+
+    private static String getLevelName() {
+        try{
+            if (Minecraft.getInstance().getCurrentServer() == null){
+                String gameDirectory = Minecraft.getInstance().gameDirectory.getAbsolutePath();
+                Path savesDir = Path.of(gameDirectory, "/saves");
+
+                File[] dirs = savesDir.toFile().listFiles((dir, name) -> new File(dir, name).isDirectory());
+
+                if (dirs == null || dirs.length == 0)
+                    return "";
+
+                File lastModified = dirs[0];
+
+                for (File dir : dirs) {
+                    if (dir.lastModified() > lastModified.lastModified())
+                        lastModified = dir;
+                }
+
+                return lastModified.getName();
+            }
+            else {
+                return Minecraft.getInstance().getCurrentServer().name;
+            }
+        }
+        catch (Exception e){
+            Exposure.LOGGER.error("Failed to get level name: " + e);
+            return "";
+        }
     }
 }

@@ -3,19 +3,20 @@ package io.github.mortuusars.exposure.event;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
+import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class ClientEvents {
-//    public static float fov = 5f;
-//    public static float Viewfinder.targetFov = 5f;
+
+    @SubscribeEvent
+    public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        ExposureStorage.CLIENT.clear();
+    }
 
     @SubscribeEvent
     public static void renderOverlay(RenderGuiOverlayEvent.Pre event) {

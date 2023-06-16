@@ -1,38 +1,30 @@
 package io.github.mortuusars.exposure.camera;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PhotoScreen extends Screen {
+public class ExposureScreen extends Screen {
 
     private String id;
     @Nullable
     private ExposureSavedData exposureData;
 //    private MapItemSavedData[][] mps;
 
-    public PhotoScreen(String id) {
+    public ExposureScreen(String id) {
         super(Component.empty());
 
         this.id = id;
-        this.exposureData = ExposureStorage.get(id).orElse(null);
+        this.exposureData = ExposureStorage.CLIENT.getOrQuery(id).orElse(null);
 
 //        if (Minecraft.getInstance().level != null) {
 //            int rowsAndColumns = (int) Math.sqrt(parts);
@@ -57,19 +49,29 @@ public class PhotoScreen extends Screen {
         renderBackground(poseStack);
         super.render(poseStack, pMouseX, pMouseY, pPartialTick);
 
-        fill(poseStack, 0, 0, width, height, 0xAAAAAAAA);
+//        fill(poseStack, 0, 0, width, height, 0x90000000);
 
         if (exposureData != null) {
 
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
-            float scale = 1f / (exposureData.getHeight() / 256f);
+            float scale = (height - (height / 6f)) / exposureData.getHeight();
 
-            int centerX = this.width / 2;
-            int centerY = this.height / 2;
+//            float scale = 1f / (exposureData.getHeight() / ((float)height));
+            float x = (width - exposureData.getWidth()) / 2f / scale;
+            float y = (height - exposureData.getHeight()) / 2f / scale;
+
             poseStack.pushPose();
+
+            // Move to center
+            poseStack.translate(width / 2f, height / 2f, 0);
+            // Scale
             poseStack.scale(scale, scale, scale);
-            poseStack.translate((width - 256) / 2f / scale, (height - 256) / 2f / scale, 0);
+            // Set origin point to center (for scale)
+            poseStack.translate(exposureData.getWidth() / -2d, exposureData.getHeight() / -2d, 0);
+//            poseStack.translate(x, y, 0);
+
+            fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
             ExposureRenderer.render(poseStack, bufferSource, id, exposureData, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
     //        float scale = 2f / mps.length;
@@ -90,7 +92,7 @@ public class PhotoScreen extends Screen {
             bufferSource.endBatch();
         }
         else {
-            exposureData = ExposureStorage.get(id).orElse(null);
+            exposureData = ExposureStorage.CLIENT.getOrQuery(id).orElse(null);
         }
     }
 

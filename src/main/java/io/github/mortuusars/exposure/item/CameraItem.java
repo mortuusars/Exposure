@@ -1,14 +1,12 @@
 package io.github.mortuusars.exposure.item;
 
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Camera;
-import io.github.mortuusars.exposure.camera.PhotoScreen;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
+import io.github.mortuusars.exposure.client.GUI;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundUpdateCameraPacket;
-import io.github.mortuusars.exposure.storage.ExposureSavedData;
-import io.github.mortuusars.exposure.storage.ExposureStorage;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
+import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -36,12 +34,15 @@ public class CameraItem extends Item {
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         useCamera(player, usedHand);
         return super.use(level, player, usedHand);
     }
 
     protected void useCamera(Player player, InteractionHand usedHand) {
+
+
+
         if (player.isSecondaryUseActive()) {
             if (player.getLevel().isClientSide) {
                 if (Viewfinder.isActive())
@@ -49,16 +50,12 @@ public class CameraItem extends Item {
                 else {
                     ItemStack itemInHand = player.getItemInHand(usedHand);
                     String lastShot = itemInHand.getOrCreateTag().getString("lastShot");
-//                    ExposureSavedData exposureSavedData = ExposureStorage.get(lastShot).orElse(null);
 
-//                    boolean asd = true;
-                    Minecraft.getInstance().setScreen(new PhotoScreen(lastShot));
+                    GUI.showExposureViewScreen(lastShot);
                 }
             }
         }
         else {
-
-
 //            if (player.getLevel().isClientSide) {
 //            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure:shaders/post/orange_tint.json"));
                 if (Viewfinder.isActive())
@@ -106,7 +103,7 @@ public class CameraItem extends Item {
     }
 
     @Override
-    public UseAnim getUseAnimation(@NotNull ItemStack stack) {
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
         return UseAnim.SPYGLASS;
     }
 }

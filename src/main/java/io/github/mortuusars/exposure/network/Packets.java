@@ -26,24 +26,6 @@ public class Packets {
                 .consumerMainThread(ClientboundApplyShaderPacket::handle)
                 .add();
 
-        CHANNEL.messageBuilder(ClientboundLoadExposureDataPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ClientboundLoadExposureDataPacket::toBuffer)
-                .decoder(ClientboundLoadExposureDataPacket::fromBuffer)
-                .consumerMainThread(ClientboundLoadExposureDataPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(ServerboundSaveMapDataPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ServerboundSaveMapDataPacket::toBuffer)
-                .decoder(ServerboundSaveMapDataPacket::fromBuffer)
-                .consumerMainThread(ServerboundSaveMapDataPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(ServerboundSaveExposurePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ServerboundSaveExposurePacket::toBuffer)
-                .decoder(ServerboundSaveExposurePacket::fromBuffer)
-                .consumerMainThread(ServerboundSaveExposurePacket::handle)
-                .add();
-
         CHANNEL.messageBuilder(ServerboundQueryExposureDataPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(ServerboundQueryExposureDataPacket::toBuffer)
                 .decoder(ServerboundQueryExposureDataPacket::fromBuffer)
@@ -54,6 +36,12 @@ public class Packets {
                 .encoder(ServerboundUpdateCameraPacket::toBuffer)
                 .decoder(ServerboundUpdateCameraPacket::fromBuffer)
                 .consumerMainThread(ServerboundUpdateCameraPacket::handle)
+                .add();
+
+        CHANNEL.messageBuilder(ExposureDataPartPacket.class, id++)
+                .encoder(ExposureDataPartPacket::toBuffer)
+                .decoder(ExposureDataPartPacket::fromBuffer)
+                .consumerMainThread(ExposureDataPartPacket::handle)
                 .add();
     }
 
