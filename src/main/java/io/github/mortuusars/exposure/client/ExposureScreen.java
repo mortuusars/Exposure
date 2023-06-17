@@ -1,47 +1,45 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import net.minecraft.util.StringUtil;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ExposureScreen extends Screen {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-    private String id;
+public class ExposureScreen extends Screen {
     @Nullable
     private ExposureSavedData exposureData;
-//    private MapItemSavedData[][] mps;
 
-    public ExposureScreen(String id) {
+    private List<ExposureFrame> exposureIds = new ArrayList<>();
+    private int currentExposureIndex;
+
+    public ExposureScreen(ItemStack film) {
         super(Component.empty());
 
-        this.id = id;
-        this.exposureData = ExposureStorage.CLIENT.getOrQuery(id).orElse(null);
+        if (film.getItem() instanceof FilmItem filmItem) {
+            List<ExposureFrame> frames = filmItem.getFrames(film);
+            exposureIds = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
+        }
 
-//        if (Minecraft.getInstance().level != null) {
-//            int rowsAndColumns = (int) Math.sqrt(parts);
-//            mps = new MapItemSavedData[rowsAndColumns][rowsAndColumns];
-//
-//            for (int column = 0; column < rowsAndColumns; column++) {
-//                for (int row = 0; row < rowsAndColumns; row++) {
-//
-//                    MapItemSavedData mapData = Minecraft.getInstance().level.getMapData(id + "_" + column + row);
-//
-//                    if (mapData != null)
-//                        mps[column][row] = mapData;
-//                    else
-//                        mps[column][row] = MapItemSavedData.createFresh(0d, 0d, (byte) 0, false, false, Minecraft.getInstance().level.dimension());
-//                }
-//            }
-//        }
+        currentExposureIndex = exposureIds.size() - 1;
+        loadExposure();
     }
 
     @Override
@@ -72,7 +70,7 @@ public class ExposureScreen extends Screen {
 //            poseStack.translate(x, y, 0);
 
             fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-            ExposureRenderer.render(poseStack, bufferSource, id, exposureData, LightTexture.FULL_BRIGHT);
+            ExposureRenderer.render(poseStack, bufferSource, exposureIds.get(currentExposureIndex).id, exposureData, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
     //        float scale = 2f / mps.length;
     //        int startX = (int) (centerX - (mps.length * 128 * scale) / 2);
@@ -92,8 +90,24 @@ public class ExposureScreen extends Screen {
             bufferSource.endBatch();
         }
         else {
-            exposureData = ExposureStorage.CLIENT.getOrQuery(id).orElse(null);
+            loadExposure();
         }
+    }
+
+    @Override
+    public boolean keyPressed(int key, int scanCode, int modifiers) {
+        if (key == InputConstants.KEY_LEFT)
+            currentExposureIndex = (Math.max(0, currentExposureIndex - 1));
+        else if (key == InputConstants.KEY_RIGHT)
+            currentExposureIndex = (Math.min(exposureIds.size() - 1, currentExposureIndex + 1));
+
+        loadExposure();
+
+        return super.keyPressed(key, scanCode, modifiers);
+    }
+
+    private void loadExposure() {
+        exposureData = ExposureStorage.CLIENT.getOrQuery(exposureIds.get(currentExposureIndex).id).orElse(null);
     }
 
     @Override

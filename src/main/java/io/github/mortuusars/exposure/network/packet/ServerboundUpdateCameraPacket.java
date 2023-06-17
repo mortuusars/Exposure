@@ -1,7 +1,9 @@
 package io.github.mortuusars.exposure.network.packet;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
@@ -14,14 +16,15 @@ import net.minecraftforge.network.NetworkEvent;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record ServerboundUpdateCameraPacket(String id, InteractionHand hand) {
+public record ServerboundUpdateCameraPacket(String id, InteractionHand hand, int filmFrameIndex) {
     public void toBuffer(FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeUtf(id);
         friendlyByteBuf.writeEnum(hand);
+        friendlyByteBuf.writeInt(filmFrameIndex);
     }
 
     public static ServerboundUpdateCameraPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ServerboundUpdateCameraPacket(buffer.readUtf(), buffer.readEnum(InteractionHand.class));
+        return new ServerboundUpdateCameraPacket(buffer.readUtf(), buffer.readEnum(InteractionHand.class), buffer.readInt());
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -32,12 +35,21 @@ public record ServerboundUpdateCameraPacket(String id, InteractionHand hand) {
         if (player == null)
             throw new IllegalStateException("Cannot handle UpdateCameraPacket: Player was null.");
 
-        ItemStack itemInHand = player.getItemInHand(hand);
-        if (!(itemInHand.getItem() instanceof CameraItem))
-            throw new IllegalStateException("Cannot handle UpdateCameraPacket: Item in hand is not camera.");
-
-        itemInHand.getOrCreateTag().putString("lastShot", id);
-
+        context.enqueueWork(() -> update(player));
         return true;
+    }
+
+    private void update(ServerPlayer player) {
+        ItemStack camera = player.getItemInHand(hand);
+        if (!(camera.getItem() instanceof CameraItem cameraItem))
+            throw new IllegalStateException("Cannot handle UpdateCameraPacket: Item in hand is not camera: " + camera);
+
+        ItemStack film = cameraItem.getLoadedFilm(camera);
+        if (!(film.getItem() instanceof FilmItem filmItem))
+            throw new IllegalStateException("Cannot handle UpdateCameraPacket: Film in camera is not a FilmItem: " + film);
+
+        film = filmItem.setFrame(film, filmFrameIndex, new ExposureFrame(id));
+        cameraItem.setFilm(camera, film);
+//        player.setItemInHand(hand, camera);
     }
 }

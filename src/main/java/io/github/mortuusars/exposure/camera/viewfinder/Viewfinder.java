@@ -28,9 +28,10 @@ public class Viewfinder {
     }
 
     public static boolean isActive() {
-        if (isActive) {
-            isActive = Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CameraItem
-                    || Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof CameraItem;
+        Minecraft mc = Minecraft.getInstance();
+        if (isActive && mc.player != null) {
+            isActive = mc.player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CameraItem
+                    || mc.player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof CameraItem;
         }
 
         return isActive;

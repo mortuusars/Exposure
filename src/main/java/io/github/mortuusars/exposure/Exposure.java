@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.client.Minecraft;
@@ -48,6 +49,16 @@ public class Exposure {
 
         public static final RegistryObject<Item> CAMERA = ITEMS.register("camera",
                 () -> new CameraItem(new Item.Properties().stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
+        public static final RegistryObject<Item> SMALL_FORMAT_FILM = ITEMS.register("small_format_film",
+                () -> new FilmItem(192, 36, new Item.Properties()
+                        .stacksTo(16)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
+        public static final RegistryObject<Item> LARGE_FORMAT_FILM = ITEMS.register("large_format_film",
+                () -> new FilmItem(384, 8, new Item.Properties()
+                        .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
     }
 }
