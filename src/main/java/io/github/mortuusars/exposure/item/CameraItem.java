@@ -47,8 +47,6 @@ public class CameraItem extends Item {
     }
 
     protected void useCamera(Player player, InteractionHand hand) {
-
-
         if (player.isSecondaryUseActive()) {
             if (tryLoadFilmRoll(player, hand))
                 return;
@@ -58,7 +56,6 @@ public class CameraItem extends Item {
                     Viewfinder.setActive(false);
                 else {
                     ItemStack itemInHand = player.getItemInHand(hand);
-                    String lastShot = itemInHand.getOrCreateTag().getString("lastShot");
 
                     ItemStack film = getLoadedFilm(itemInHand);
                     List<ExposureFrame> frames = ((FilmItem) film.getItem()).getFrames(film).stream()
@@ -71,19 +68,16 @@ public class CameraItem extends Item {
             }
         }
         else {
-//            if (player.getLevel().isClientSide) {
-//            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure:shaders/post/orange_tint.json"));
-                if (Viewfinder.isActive()) {
-                    if (hasLoadedFilm(player.getItemInHand(hand)))
-                        tryTakeShot(player, hand);
-                    else {
-                        player.displayClientMessage(Component.translatable("item.exposure.camera.no_film_loaded")
-                                .withStyle(ChatFormatting.RED), true);
-                    }
+            if (Viewfinder.isActive()) {
+                if (hasLoadedFilm(player.getItemInHand(hand)))
+                    tryTakeShot(player, hand);
+                else {
+                    player.displayClientMessage(Component.translatable("item.exposure.camera.no_film_loaded")
+                            .withStyle(ChatFormatting.RED), true);
                 }
-                else
-                    Viewfinder.setActive(true);
-//            }
+            }
+            else
+                Viewfinder.setActive(true);
         }
     }
 

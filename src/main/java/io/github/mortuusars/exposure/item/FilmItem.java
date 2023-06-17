@@ -31,42 +31,22 @@ public class FilmItem extends Item {
         return frameCount;
     }
 
-    protected ItemStack createEmptyFrames(ItemStack film) {
-        ListTag framesTag = new ListTag();
 
-        for (int frame = 0; frame < getFrameCount(); frame++) {
-            framesTag.add(frame, new CompoundTag());
-        }
-
-        film.getOrCreateTag().put(FRAMES_TAG, framesTag);
-        return film;
-    }
-
-    public ItemStack setFrame(ItemStack filmStack, int slot, ExposureFrame frame) {
-        Preconditions.checkArgument(filmStack.getItem() instanceof FilmItem,  filmStack + " is not a FilmItem!");
+    public ItemStack setFrame(ItemStack film, int slot, ExposureFrame frame) {
+        Preconditions.checkArgument(film.getItem() instanceof FilmItem,  film + " is not a FilmItem!");
         Preconditions.checkArgument(slot >= 0 && slot < getFrameCount(), slot + " is out of range. Frames: " + getFrameCount());
 //        Preconditions.checkArgument(frame.width <= getFrameSize() && frame.height <= getFrameSize(),
 //                 frame + " ExposureFrame size is larger than maximum frame size for this film. Frame size: " + getFrameSize());
 
-
-        CompoundTag tag = filmStack.getOrCreateTag();
-
-        if (!tag.contains(FRAMES_TAG, Tag.TAG_LIST))
-            createEmptyFrames(filmStack);
-
-        ListTag frames = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
+        ListTag frames = getFramesTag(film);
         if (!frames.setTag(slot, frame.save(new CompoundTag())))
             throw new IllegalStateException("ExposureFrame was not saved to film.");
 
-        return filmStack;
+        return film;
     }
 
     public int getEmptyFrame(ItemStack film) {
-        if (!film.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
-            createEmptyFrames(film);
-
-        CompoundTag tag = film.getOrCreateTag();
-        ListTag frames = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
+        ListTag frames = getFramesTag(film);
 
         for (int frame = 0; frame < frames.size(); frame++) {
             if (frames.getCompound(frame).isEmpty())
@@ -79,14 +59,32 @@ public class FilmItem extends Item {
     public List<ExposureFrame> getFrames(ItemStack film) {
         List<ExposureFrame> frames = new ArrayList<>();
 
-        CompoundTag tag = film.getOrCreateTag();
-        if (tag.contains(FRAMES_TAG, Tag.TAG_LIST)) {
-            ListTag list = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
-            for (Tag frameTag : list) {
-                frames.add(new ExposureFrame(((CompoundTag) frameTag)));
-            }
+        for (Tag frameTag : getFramesTag(film)) {
+            frames.add(new ExposureFrame(((CompoundTag) frameTag)));
         }
 
         return frames;
+    }
+
+    protected ListTag getFramesTag(ItemStack film) {
+        Preconditions.checkArgument(film.getItem() instanceof FilmItem, film + " is not a FilmItem.");
+
+        CompoundTag tag = film.getOrCreateTag();
+        if (!tag.contains(FRAMES_TAG, Tag.TAG_LIST))
+            createEmptyFrames(film);
+
+        return film.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND);
+    }
+
+    @SuppressWarnings("UnusedReturnValue")
+    protected ItemStack createEmptyFrames(ItemStack film) {
+        ListTag framesTag = new ListTag();
+
+        for (int frame = 0; frame < getFrameCount(); frame++) {
+            framesTag.add(frame, new CompoundTag());
+        }
+
+        film.getOrCreateTag().put(FRAMES_TAG, framesTag);
+        return film;
     }
 }

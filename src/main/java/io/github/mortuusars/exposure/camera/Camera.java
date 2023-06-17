@@ -231,6 +231,10 @@ public class Camera {
                 int green = (rgba >> 8) & 0xFF;
                 int blue = rgba & 0xFF;
 
+                // Apply the luma conversion formula
+////                int luma = (int) (0.299 * red + 0.587 * green + 0.114 * blue);
+////                int average = Math.min(255, (int)(((red + green + blue) / 3) * 0.5));
+
                 bufferedImage.setRGB(x, y, 0xFF << 24 | blue << 16 | green << 8 | red);
             }
         }
