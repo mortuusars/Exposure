@@ -26,8 +26,13 @@ public class Camera {
     private static boolean processing;
     private static int captureDelay;
     private static String exposureId;
+
     private static boolean hideGuiBeforeCapture;
     private static CameraType cameraTypeBeforeCapture;
+
+    public static boolean isCapturing() {
+        return capturing;
+    }
 
     public static boolean isProcessing() {
         return processing;
@@ -42,6 +47,10 @@ public class Camera {
 
         Minecraft.getInstance().options.hideGui = true;
         Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
+    }
+
+    public static float modifyBrightness(float originalBrightness) {
+        return originalBrightness; // TODO: brighten darks a little to not leave black spots on longer exposures.
     }
 
     @SubscribeEvent
@@ -69,12 +78,10 @@ public class Camera {
     }
 
     private static void processAndSaveImageThreaded(NativeImage nativeImage, String id) {
-        new Thread(() -> processAndSaveImage(nativeImage, id), "ProcessingAndSavingImage").start();
+        new Thread(() -> processAndSaveImage(nativeImage, id), "ProcessingAndSavingExposure").start();
     }
 
     private static void processAndSaveImage(NativeImage screenshotImage, String id) {
-//        BufferedImage bufferedImage = new BufferedImage(screenshotImage.getWidth(), screenshotImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-//
 //        float exposure = 1f;
 //
 //        for (int x = 0; x < screenshotImage.getWidth(); x++) {
@@ -100,42 +107,56 @@ public class Camera {
 //        }
 
 
-        int sWidth = screenshotImage.getWidth();
-        int sHeight = screenshotImage.getHeight();
+//        int sWidth = screenshotImage.getWidth();
+//        int sHeight = screenshotImage.getHeight();
+//
+//        int screenshotMinSize = Math.min(screenshotImage.getWidth(), screenshotImage.getHeight());
+//        int screenshotXStart = sWidth > sHeight ? (sWidth - sHeight) / 2 : 0;
+//        int screenshotYStart = sHeight > sWidth ? (sHeight - sWidth) / 2 : 0;
+//
+//        int size = 384;
+//
+//        BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+//
+//        for (int x = 0; x < bufferedImage.getWidth(); x++) {
+//            float screenshotX = screenshotMinSize * (x / (float)size);
+//            int nx = Mth.clamp((int)screenshotX + screenshotXStart, screenshotXStart, screenshotXStart + screenshotMinSize);
+//
+//            for (int y = 0; y < bufferedImage.getHeight(); y++) {
+//                float screenshotY = screenshotMinSize * (y / (float)size);
+//                int ny = Mth.clamp((int)screenshotY + screenshotYStart, screenshotYStart, screenshotYStart + screenshotMinSize);
+//
+//                int rgba = screenshotImage.getPixelRGBA(nx, ny);
+//                int alpha = (rgba >> 24) & 0xFF;
+//                int red = (rgba >> 16) & 0xFF;
+//                int green = (rgba >> 8) & 0xFF;
+//                int blue = rgba & 0xFF;
+//
+////                red = Mth.clamp(((int) (red * exposure)), 0, 255);
+////                green = Mth.clamp(((int) (green * exposure)), 0, 255);
+////                blue = Mth.clamp(((int) (blue * exposure)), 0, 255);
+//
+//                bufferedImage.setRGB(x, y, alpha << 24 | blue << 16 | green << 8 | red);
+//            }
+//        }
 
-        int screenshotMinSize = Math.min(screenshotImage.getWidth(), screenshotImage.getHeight());
-        int screenshotXStart = sWidth > sHeight ? (sWidth - sHeight) / 2 : 0;
-        int screenshotYStart = sHeight > sWidth ? (sHeight - sWidth) / 2 : 0;
+        int exposureSize = 384;
+        float cropFactor = 16 / 256f; // Crop to visible area in viewfinder.png overlay
+        boolean blur = false;
 
-        int size = 384;
+        BufferedImage bufferedImage;
 
-        BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
-
-        for (int x = 0; x < bufferedImage.getWidth(); x++) {
-            float screenshotX = screenshotMinSize * (x / (float)size);
-            int nx = Mth.clamp((int)screenshotX + screenshotXStart, screenshotXStart, screenshotXStart + screenshotMinSize);
-
-            for (int y = 0; y < bufferedImage.getHeight(); y++) {
-                float screenshotY = screenshotMinSize * (y / (float)size);
-                int ny = Mth.clamp((int)screenshotY + screenshotYStart, screenshotYStart, screenshotYStart + screenshotMinSize);
-
-                int rgba = screenshotImage.getPixelRGBA(nx, ny);
-                int alpha = (rgba >> 24) & 0xFF;
-                int red = (rgba >> 16) & 0xFF;
-                int green = (rgba >> 8) & 0xFF;
-                int blue = rgba & 0xFF;
-
-//                red = Mth.clamp(((int) (red * exposure)), 0, 255);
-//                green = Mth.clamp(((int) (green * exposure)), 0, 255);
-//                blue = Mth.clamp(((int) (blue * exposure)), 0, 255);
-
-                bufferedImage.setRGB(x, y, alpha << 24 | blue << 16 | green << 8 | red);
-            }
+        if (blur) {
+            // TODO: Blur
+            // Try Box blur. Gaussian s too slow
+            int radius = (int) (exposureSize * 0.15);
+            bufferedImage = scaleAndCropToSquare(screenshotImage, exposureSize + radius * 2, cropFactor);
+            bufferedImage = Blur.applyGaussianBlur(bufferedImage, radius);
+            bufferedImage = bufferedImage.getSubimage(radius, radius, exposureSize, exposureSize);
         }
-
-        //TODO: Blur
-//        bufferedImage = Blur.applyGaussianBlur(bufferedImage, 32);
-//        bufferedImage = bufferedImage.getSubimage(32, 32, 256 - 32, 256 - 32);
+        else {
+            bufferedImage = scaleAndCropToSquare(screenshotImage, exposureSize, cropFactor);
+        }
 
 
         bufferedImage = FloydDither.dither(bufferedImage);
@@ -156,20 +177,6 @@ public class Camera {
         ExposureSavedData exposureSavedData = new ExposureSavedData(bufferedImage.getWidth(), bufferedImage.getHeight(), bytes);
 
         ExposureStorage.storeClientsideAndSendToServer(id, exposureSavedData);
-
-//        ExposureStorage.CLIENT.put(id, exposureSavedData);
-
-//        new ExposureSender().sendToServer(id, exposureSavedData);
-
-
-
-//        Packets.sendToServer(new ServerboundSaveExposurePacket(id, exposureSavedData));
-//        ExposureStorage.save(id, exposureSavedData);
-
-
-//        new MapPhotography().saveImage(bufferedImage, id);
-
-//        String[][] parts = new MapDataPhotoStore().saveImage(bufferedImage, "photo_0");
 
         processing = false;
 
@@ -194,6 +201,41 @@ public class Camera {
 //        mc.options.gamma().set(0.1d);
 //        Minecraft.getInstance().level.setBlockAndUpdate(Minecraft.getInstance().player.blockPosition().above(), Blocks.AIR.defaultBlockState());
 
+    }
+
+    private static BufferedImage scaleAndCropToSquare(NativeImage sourceImage, int size, float cropFactor) {
+        int sWidth = sourceImage.getWidth();
+        int sHeight = sourceImage.getHeight();
+
+        int sourceSize = Math.min(sWidth, sHeight);
+        float crop = sourceSize * cropFactor;
+        sourceSize -= crop * 2;
+        int sourceXStart = sWidth > sHeight ? (sWidth - sHeight) / 2 : 0;
+        int sourceYStart = sHeight > sWidth ? (sHeight - sWidth) / 2 : 0;
+
+        sourceXStart += crop;
+        sourceYStart += crop;
+
+        BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
+
+        for (int x = 0; x < size; x++) {
+            float sourceX = sourceSize * (x / (float)size);
+            int sx = Mth.clamp((int)sourceX + sourceXStart, sourceXStart, sourceXStart + sourceSize);
+
+            for (int y = 0; y < size; y++) {
+                float sourceY = sourceSize * (y / (float)size);
+                int sy = Mth.clamp((int)sourceY + sourceYStart, sourceYStart, sourceYStart + sourceSize);
+
+                int rgba = sourceImage.getPixelRGBA(sx, sy);
+                int red = (rgba >> 16) & 0xFF;
+                int green = (rgba >> 8) & 0xFF;
+                int blue = rgba & 0xFF;
+
+                bufferedImage.setRGB(x, y, 0xFF << 24 | blue << 16 | green << 8 | red);
+            }
+        }
+
+        return bufferedImage;
     }
 
     private static String getLevelName() {

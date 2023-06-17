@@ -13,6 +13,6 @@ public class DrawViewfinderOverlayMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getProfiler()Lnet/minecraft/util/profiling/ProfilerFiller;", ordinal = 1))
     private void renderViewfinder(float pPartialTicks, long pNanoTime, boolean pRenderLevel, CallbackInfo ci) {
         if (Viewfinder.isActive())
-            Viewfinder.render(new PoseStack(), pPartialTicks);
+            Viewfinder.renderOverlay(new PoseStack(), pPartialTicks);
     }
 }

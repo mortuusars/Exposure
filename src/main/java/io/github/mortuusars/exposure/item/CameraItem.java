@@ -40,9 +40,6 @@ public class CameraItem extends Item {
     }
 
     protected void useCamera(Player player, InteractionHand usedHand) {
-
-
-
         if (player.isSecondaryUseActive()) {
             if (player.getLevel().isClientSide) {
                 if (Viewfinder.isActive())

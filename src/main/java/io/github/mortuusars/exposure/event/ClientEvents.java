@@ -4,7 +4,6 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
-import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -12,7 +11,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class ClientEvents {
-
     @SubscribeEvent
     public static void loggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         ExposureStorage.CLIENT.clear();
@@ -38,42 +36,15 @@ public class ClientEvents {
         event.setCanceled(true);
 
         Viewfinder.modifyZoom(event.getScrollDelta() < 0d ? ZoomDirection.IN : ZoomDirection.OUT);
-
-//        float step = 10f * ( 1f - Mth.clamp((90 - Viewfinder.currentFov) / 90, 0.3f, 1f));
-//        float inertia = Math.abs((Viewfinder.targetFov - Viewfinder.currentFov)) * 0.8f;
-//
-//        float change = step + inertia;
-//
-//        Viewfinder.targetFov = Mth.clamp(Viewfinder.targetFov += event.getScrollDelta() < 0d ? +change : -change, 10f, 90f);
-
-//        Viewfinder.targetFov = event.getScrollDelta() < 0d ? Math.min(Viewfinder.targetFov + change, 90f) : Math.max(Viewfinder.targetFov - change * mod, 10f);
-
-//        Exposure.LOGGER.info("CHANGE: " + change);
-//        Exposure.LOGGER.info("Desired: " + Viewfinder.targetFov);
-//        Exposure.LOGGER.info("FOV: " + Viewfinder.currentFov);
-
-
-        double sensorWidth = 36.0; // Sensor width in millimeters
-
-        // Formula to calculate the lens focal length based on FOV and sensor width
-        double lensFocalLength = sensorWidth / (2.0 * Math.tan(Math.toRadians(Viewfinder.targetFov / 2.0)));
-
-        float zoomPercent = Mth.map(Viewfinder.targetFov, 10f, 90f, 0f, 1f);
-
-
-//        double sensitivity = 0.2d * (zoomPercent * zoomPercent);
-//        Minecraft.getInstance().options.sensitivity().set(sensitivity);
-
-
-//        Exposure.LOGGER.info(lensFocalLength + "mm");
-//        Exposure.LOGGER.info("Sens:" + sensitivity * 2 * 100);
-//        Exposure.LOGGER.info(event.getScrollDelta() + "");
     }
 
     @SubscribeEvent
     public static void modifyFov(ViewportEvent.ComputeFov event) {
+        //TODO: Restore fov smoothly, but only after exiting viewfinder, to not mess with other mods.
+
         if (!Viewfinder.isActive()) {
-            Viewfinder.currentFov = (float) event.getFOV();
+            if (event.usedConfiguredFov())
+                Viewfinder.currentFov = (float) event.getFOV();
             return;
         }
 

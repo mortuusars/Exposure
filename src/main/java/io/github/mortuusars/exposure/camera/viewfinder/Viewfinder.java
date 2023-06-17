@@ -3,21 +3,24 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.item.CameraItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 
 public class Viewfinder {
     private static final ResourceLocation VIEWFINDER_TEXTURE = new ResourceLocation("exposure:textures/misc/viewfinder.png");
 
-    public static float currentFov;
-    public static float targetFov = focalLengthToFov(18);
-
-    private static float maxFov = focalLengthToFov(8);
+    private static float maxFov = focalLengthToFov(18);
     private static float minFov = focalLengthToFov(200);
+
+    public static float currentFov;
+    public static float targetFov = minFov;
+
     private static boolean isActive;
 
     public static void setActive(boolean active) {
@@ -25,6 +28,11 @@ public class Viewfinder {
     }
 
     public static boolean isActive() {
+        if (isActive) {
+            isActive = Minecraft.getInstance().player.getItemInHand(InteractionHand.MAIN_HAND).getItem() instanceof CameraItem
+                    || Minecraft.getInstance().player.getItemInHand(InteractionHand.OFF_HAND).getItem() instanceof CameraItem;
+        }
+
         return isActive;
     }
 
@@ -32,7 +40,7 @@ public class Viewfinder {
         return isActive ? Mth.clamp(1f - (maxFov - targetFov) / maxFov, 0.1f, 1f) : 1f;
     }
 
-    public static void render(PoseStack poseStack, float partialTicks) {
+    public static void renderOverlay(PoseStack poseStack, float partialTicks) {
         int width = Minecraft.getInstance().getWindow().getGuiScaledWidth();
         int height = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         int color = 0xfa1f1d1b;
@@ -58,10 +66,12 @@ public class Viewfinder {
         // Bottom
         GuiComponent.fill(poseStack, 0, (int)openingEndY, width, height, color);
 
+        // TODO: Shutter
         if (Camera.isProcessing()) {
             GuiComponent.fill(poseStack, (int) openingStartX, (int)openingStartY, (int) openingEndX, (int) openingEndY, color);
         }
 
+        // Texture overlay
         if (!Minecraft.getInstance().options.hideGui) {
             RenderSystem.enableBlend();
             RenderSystem.disableDepthTest();

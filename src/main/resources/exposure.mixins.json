@@ -8,6 +8,9 @@
   ],
   "client": [
     "DrawViewfinderOverlayMixin",
+    "ExposureLightMixin",
+    "KeyboardHandlerMixin",
+    "KeyboardKeysMixin",
     "ViewfinderSensitivityMixin"
   ],
   "injectors": {
