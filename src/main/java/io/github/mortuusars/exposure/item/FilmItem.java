@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -14,13 +15,19 @@ import java.util.List;
 public class FilmItem extends Item {
     private static final String FRAMES_TAG = "Frames";
 
+    private final FilmType filmType;
     private final int frameSize;
     private final int frameCount;
 
-    public FilmItem(int frameSize, int frameCount, Properties properties) {
+    public FilmItem (FilmType filmType, int frameSize, int frameCount, Properties properties) {
         super(properties);
+        this.filmType = filmType;
         this.frameSize = frameSize;
         this.frameCount = frameCount;
+    }
+
+    public FilmType getType() {
+        return filmType;
     }
 
     public int getFrameSize() {
@@ -35,8 +42,6 @@ public class FilmItem extends Item {
     public ItemStack setFrame(ItemStack film, int slot, ExposureFrame frame) {
         Preconditions.checkArgument(film.getItem() instanceof FilmItem,  film + " is not a FilmItem!");
         Preconditions.checkArgument(slot >= 0 && slot < getFrameCount(), slot + " is out of range. Frames: " + getFrameCount());
-//        Preconditions.checkArgument(frame.width <= getFrameSize() && frame.height <= getFrameSize(),
-//                 frame + " ExposureFrame size is larger than maximum frame size for this film. Frame size: " + getFrameSize());
 
         ListTag frames = getFramesTag(film);
         if (!frames.setTag(slot, frame.save(new CompoundTag())))

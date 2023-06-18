@@ -2,11 +2,16 @@ package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CaptureProperties;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.IExposureModifier;
+import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.client.GUI;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundUpdateCameraPacket;
+import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -25,8 +30,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CameraItem extends Item {
     public CameraItem(Properties properties) {
@@ -90,7 +95,14 @@ public class CameraItem extends Item {
             return ItemStack.EMPTY;
 
         CompoundTag film = cameraStack.getOrCreateTag().getCompound("Film");
-        return ItemStack.of(film);
+        ItemStack filmStack = ItemStack.of(film);
+
+        if (!(filmStack.getItem() instanceof FilmItem)) {
+            Exposure.LOGGER.error(filmStack + " is not a FilmItem.");
+            return ItemStack.EMPTY;
+        }
+
+        return filmStack;
     }
 
     public boolean tryLoadFilmRoll(Player player, InteractionHand hand) {
@@ -136,35 +148,51 @@ public class CameraItem extends Item {
             return false;
         }
 
-//        level.playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 1f,
-//                level.getRandom().nextFloat() * 0.2f + 1.1f);
-
-
+        level.playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 1f,
+                level.getRandom().nextFloat() * 0.2f + 1.1f);
 
         if (player.level.isClientSide) {
-            String id = player.getName().getString() + "_" + level.getGameTime();
-
-            Camera.capture(id);
+            CaptureProperties captureProperties = createCaptureProperties(player, hand);
+            Camera.capture(captureProperties);
 
 //            setFilm(cameraStack, filmItem.setFrame(film, slot, new ExposureFrame(id)));
 //            player.setItemInHand(hand, cameraStack);
 
 //            ItemStack itemInHand = cameraStack;
 //            itemInHand.getOrCreateTag().putString("lastShot", id);
-            Packets.sendToServer(new ServerboundUpdateCameraPacket(id, hand, slot));
+            //TODO: Update camera on the server
+            Packets.sendToServer(new ServerboundUpdateCameraPacket(captureProperties.id, hand, slot));
         }
 
-//        boolean useFlash = true;
-//
-//        if (useFlash) {
-//            BlockPos initialFlashPos = player.blockPosition().above();
-//
-////            if (level.getBlockState(initialFlashPos))
-//
-//
-//        }
-
         return true;
+    }
+
+    protected String getExposureId(Player player, Level level) {
+        // This method called only client-side and then gets sent to server in a packet
+        // because gameTime is different between client/server (by 1 tick, as I've seen), and IDs won't match.
+        return player.getName().getString() + "_" + level.getGameTime();
+    }
+
+    protected CaptureProperties createCaptureProperties(Player player, InteractionHand hand) {
+        String id = getExposureId(player, player.level);
+
+        // TODO: Crop Factor config
+        float cropFactor = 1.142f;
+
+        ItemStack film = getLoadedFilm(player.getItemInHand(hand));
+        int frameSize = ((FilmItem) film.getItem()).getFrameSize();
+
+        return new CaptureProperties(id, frameSize, cropFactor, 1f, getExposureModifiers(player, hand));
+    }
+
+    protected List<IExposureModifier> getExposureModifiers(Player player, InteractionHand hand) {
+        List<IExposureModifier> modifiers = new ArrayList<>();
+
+        ItemStack film = getLoadedFilm(player.getItemInHand(hand));
+        if (((FilmItem) film.getItem()).getType() == FilmType.BLACK_AND_WHITE)
+            modifiers.add(ExposureModifiers.BLACK_AND_WHITE);
+
+        return modifiers;
     }
 
     @Override

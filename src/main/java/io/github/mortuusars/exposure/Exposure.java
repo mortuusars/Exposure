@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.FilmItem;
@@ -52,22 +53,22 @@ public class Exposure {
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<Item> SMALL_FORMAT_BLACK_AND_WHITE_FILM = ITEMS.register("small_format_black_and_white_film",
-                () -> new FilmItem(192, 36, new Item.Properties()
+                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 192, 36, new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<Item> SMALL_FORMAT_COLOR_FILM = ITEMS.register("small_format_color_film",
-                () -> new FilmItem(192, 36, new Item.Properties()
+                () -> new FilmItem(FilmType.COLOR, 192, 36, new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<Item> LARGE_FORMAT_BLACK_AND_WHITE_FILM = ITEMS.register("large_format_black_and_white_film",
-                () -> new FilmItem(384, 8, new Item.Properties()
+                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 384, 8, new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<Item> LARGE_FORMAT_COLOR_FILM = ITEMS.register("large_format_color_film",
-                () -> new FilmItem(384, 8, new Item.Properties()
+                () -> new FilmItem(FilmType.COLOR, 384, 8, new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
     }
