@@ -5,42 +5,30 @@ import net.minecraft.world.level.material.MaterialColor;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.util.Arrays;
 import java.util.Objects;
 
 public class FloydDither {
     private record NegatableColor(int r, int g, int b) {}
 
-    public static BufferedImage dither(BufferedImage image) {
-        BufferedImage resized = convertToBufferedImage(image);
-        int width = resized.getWidth();
-        int height = resized.getHeight();
-        int[][] pixels = convertPixelArray(resized);
-        MaterialColor[] mapColors = getColors();
-        Color imageColor;
-        mapColors = Arrays.stream(mapColors).filter(Objects::nonNull).toArray(MaterialColor[]::new);
+    public static byte[] dither(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int[][] pixels = convertToPixelArray(image);
+        MaterialColor[] mapColors = Arrays.stream(getMaterialColors()).filter(Objects::nonNull).toArray(MaterialColor[]::new);
 
-        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
+        byte[] bytes = new byte[width * height];
 
-        for (int i = 0; i < width; i++) {
-            for (int j = 0; j < height; j++) {
-                imageColor = new Color(pixels[j][i], true);
-                    byte b = (byte) floydDither(mapColors, pixels, i, j, imageColor);
-
-                    int rgb = MaterialColor.getColorFromPackedId(b);
-
-                    int red = (rgb >> 16) & 0xFF;
-                    int green = (rgb >> 8) & 0xFF;
-                    int blue = rgb & 0xFF;
-
-                    bufferedImage.setRGB(i, j, blue << 16 | green << 8 | red);
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                Color imageColor = new Color(pixels[y][x], false);
+                byte b = (byte) floydDither(mapColors, pixels, x, y, imageColor);
+                bytes[x + y * width] = b;
             }
         }
 
-        return bufferedImage;
+        return bytes;
     }
-
     private static int floydDither(MaterialColor[] mapColors, int[][] pixels, int x, int y, Color imageColor) {
         int colorIndex = nearestColor(mapColors, imageColor);
         Color palletedColor = mapColorToRGBColor(mapColors, colorIndex);
@@ -75,12 +63,12 @@ public class FloydDither {
 
     private static Color mapColorToRGBColor(MaterialColor[] colors, int color) {
         Color mcColor = new Color(colors[color >> 2].col);
-        double[] mcColorVec = { (double) mcColor.getRed(), (double) mcColor.getGreen(), (double) mcColor.getBlue() };
+        double[] mcColorVec = { mcColor.getRed(), mcColor.getGreen(), mcColor.getBlue() };
         double coeff = shadeCoeffs[color & 3];
         return new Color((int) (mcColorVec[0] * coeff), (int) (mcColorVec[1] * coeff), (int) (mcColorVec[2] * coeff));
     }
 
-    public static MaterialColor[] getColors(){
+    public static MaterialColor[] getMaterialColors(){
         MaterialColor[] colors = new MaterialColor[64];
         for (int i = 0; i<= 63; i++){
             colors[i] = MaterialColor.byId(i);
@@ -125,36 +113,53 @@ public class FloydDither {
                 + Math.pow(vectorA[2] - vectorB[2], 2));
     }
 
-    private static int[][] convertPixelArray(BufferedImage image) {
-        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+    private static int[][] convertToPixelArray(BufferedImage image) {
         final int width = image.getWidth();
         final int height = image.getHeight();
-
         int[][] result = new int[height][width];
-        final int pixelLength = 4;
-        for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
-            int argb = 0;
-            argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
-            argb += ((int) pixels[pixel + 1] & 0xff); // blue
-            argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
-            argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
-            result[row][col] = argb;
-            col++;
-            if (col == width) {
-                col = 0;
-                row++;
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                int rgb = image.getRGB(x, y);
+                result[y][x] = rgb;
             }
         }
+
+
+//        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
+//        final int width = image.getWidth();
+//        final int height = image.getHeight();
+//
+//        int[][] result = new int[height][width];
+//        final int pixelLength = 4;
+//        for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
+//            int r = (pixels[pixel + 3] & 0xff) << 16;
+//            int g = (pixels[pixel + 2] & 0xff) << 8;
+//            int b = (pixels[pixel + 1] & 0xff);
+//
+////            int argb = 0;
+////            argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
+////            argb += ((int) pixels[pixel + 1] & 0xff); // blue
+////            argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
+////            argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
+//            result[row][col] = 0xFF << 24 | r << 16 | g << 8 | b;
+//
+//            col++;
+//            if (col == width) {
+//                col = 0;
+//                row++;
+//            }
+//        }
 
         return result;
     }
 
-    private static BufferedImage convertToBufferedImage(Image image) {
-        BufferedImage newImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-                BufferedImage.TYPE_4BYTE_ABGR);
-        Graphics2D g = newImage.createGraphics();
-        g.drawImage(image, 0, 0, null);
-        g.dispose();
-        return newImage;
-    }
+//    private static BufferedImage convertToBufferedImage(Image image) {
+//        BufferedImage newImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
+//                BufferedImage.TYPE_4BYTE_ABGR);
+//        Graphics2D g = newImage.createGraphics();
+//        g.drawImage(image, 0, 0, null);
+//        g.dispose();
+//        return newImage;
+//    }
 }

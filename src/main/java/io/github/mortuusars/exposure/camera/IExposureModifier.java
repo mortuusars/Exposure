@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.camera;
 
 import net.minecraft.core.Vec3i;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 @SuppressWarnings("unused")
@@ -34,8 +35,8 @@ public interface IExposureModifier {
      * @param blue 0 - 255
      * @return Vector of RGB colors (0 - 255).
      */
-    default Vec3i modifyPixel(CaptureProperties properties, int red, int green, int blue) {
-        return new Vec3i(red, green, blue);
+    default Color modifyPixel(CaptureProperties properties, int red, int green, int blue) {
+        return new Color(red, green, blue);
     }
 
     /**

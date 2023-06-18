@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
-
-import java.io.ByteArrayOutputStream;
-import java.util.zip.DeflaterOutputStream;
-import java.util.zip.InflaterOutputStream;
+import org.jetbrains.annotations.NotNull;
 
 public class ExposureSavedData extends SavedData {
     private int width;
@@ -53,7 +50,7 @@ public class ExposureSavedData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag compoundTag) {
+    public @NotNull CompoundTag save(CompoundTag compoundTag) {
         compoundTag.putInt("width", width);
         compoundTag.putInt("height", height);
         compoundTag.putByteArray("pixels", pixels);

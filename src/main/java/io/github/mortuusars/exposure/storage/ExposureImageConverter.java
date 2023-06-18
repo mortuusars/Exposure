@@ -1,20 +1,72 @@
 package io.github.mortuusars.exposure.storage;
 
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.level.material.MaterialColor;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ExposureImageConverter {
-    public static byte[] convert(BufferedImage image) {
+//    private static final Map<Integer, Byte> SHADED_MATERIAL_COLORS;
+//
+//    static {
+//        SHADED_MATERIAL_COLORS = new HashMap<>();
+//
+//        for (MaterialColor color : getColors()) {
+//            for (MaterialColor.Brightness brightness : MaterialColor.Brightness.values()) {
+//                int rgb = color.calculateRGBColor(brightness);
+//                byte id = color.getPackedId(brightness);
+//                SHADED_MATERIAL_COLORS.put(rgb, id);
+//            }
+//        }
+//    }
 
+    private static final List<Pair<Integer, Byte>> COLORS;
+
+    static {
+        COLORS = new ArrayList<>();
+
+        for (MaterialColor color : getColors()) {
+            for (MaterialColor.Brightness brightness : MaterialColor.Brightness.values()) {
+                int rgb = color.calculateRGBColor(brightness);
+                byte id = color.getPackedId(brightness);
+                COLORS.add(Pair.of(rgb, id));
+            }
+        }
+    }
+
+    public static byte[] toMaterialColors(BufferedImage image) {
+        byte[] pixels = new byte[image.getWidth() * image.getHeight()];
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                int rgb = image.getRGB(x, y);
+
+                byte matColor = 0;
+                for (Pair<Integer, Byte> pair : COLORS) {
+                    if (pair.getFirst().equals(rgb))
+                        matColor = pair.getSecond();
+                }
+
+                pixels[x + y * image.getWidth()] = matColor;
+            }
+        }
+
+        return pixels;
+    }
+
+    public static byte[] convert(BufferedImage image) {
         MaterialColor[] colors = getColors();
 
         byte[] pixels = new byte[image.getWidth() * image.getHeight()];
 
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                pixels[x + y * image.getWidth()] = (byte) nearestColor(colors, new Color(image.getRGB(x, y)));
+                int rgb = image.getRGB(x, y);
+                pixels[x + y * image.getWidth()] = (byte) nearestColor(colors, new Color(rgb));
             }
         }
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
+import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -85,8 +86,8 @@ public class ExposureRenderer {
 
             for(int y = 0; y < exposureData.getHeight(); y++) {
                 for(int x = 0; x < exposureData.getWidth(); x++) {
-                    int color = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
-                    this.texture.getPixels().setPixelRGBA(x, y, color);
+                    int bgr = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
+                    this.texture.getPixels().setPixelRGBA(x, y, bgr); // Texture is in BGR format
                 }
             }
 

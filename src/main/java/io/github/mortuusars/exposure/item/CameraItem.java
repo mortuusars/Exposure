@@ -11,7 +11,6 @@ import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.client.GUI;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundUpdateCameraPacket;
-import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
@@ -129,19 +128,15 @@ public class CameraItem extends Item {
 
     protected boolean tryTakeShot(Player player, InteractionHand hand) {
         Level level = player.level;
-
         ItemStack cameraStack = player.getItemInHand(hand);
         ItemStack film = getLoadedFilm(cameraStack);
 
         if (!(film.getItem() instanceof FilmItem filmItem))
             throw new IllegalStateException("Loaded film is not a film item: " + film);
 
+        int emptyFrame = filmItem.getEmptyFrame(film);
 
-        int slot = filmItem.getEmptyFrame(film);
-
-//        setFilm(cameraStack, film);
-
-        if (slot == -1) {
+        if (emptyFrame == -1) {
             player.displayClientMessage(Component.translatable("item.exposure.camera.no_empty_frames"), true);
             level.playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 1f,
                     level.getRandom().nextFloat() * 0.2f + 1.1f);
@@ -155,13 +150,8 @@ public class CameraItem extends Item {
             CaptureProperties captureProperties = createCaptureProperties(player, hand);
             Camera.capture(captureProperties);
 
-//            setFilm(cameraStack, filmItem.setFrame(film, slot, new ExposureFrame(id)));
-//            player.setItemInHand(hand, cameraStack);
-
-//            ItemStack itemInHand = cameraStack;
-//            itemInHand.getOrCreateTag().putString("lastShot", id);
             //TODO: Update camera on the server
-            Packets.sendToServer(new ServerboundUpdateCameraPacket(captureProperties.id, hand, slot));
+            Packets.sendToServer(new ServerboundUpdateCameraPacket(captureProperties.id, hand, emptyFrame));
         }
 
         return true;
