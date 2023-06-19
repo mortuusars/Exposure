@@ -29,6 +29,18 @@ public class ClientEvents {
     }
 
     @SubscribeEvent
+    public static void renderPlayer(RenderPlayerEvent.Pre event) {
+//        LocalPlayer player = Minecraft.getInstance().player;
+//        ((LocalPlayer) event.getEntity()).lerpHeadTo(20, 20);
+//        event.getEntity().lookAt(EntityAnchorArgument.Anchor.EYES, player.position());
+
+//        player.lerpHeadTo(player.yHeadRotO, 10);
+//        player.startUsingItem(InteractionHand.MAIN_HAND);
+
+//        Minecraft.getInstance().player
+    }
+
+    @SubscribeEvent
     public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
         if (event.getScrollDelta() == 0D || !Viewfinder.isActive())
             return;

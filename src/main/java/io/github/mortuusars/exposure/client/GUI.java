@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client;
 
+import io.github.mortuusars.exposure.client.screen.ExposureScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 

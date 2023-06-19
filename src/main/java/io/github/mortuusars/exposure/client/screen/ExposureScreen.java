@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client;
+package io.github.mortuusars.exposure.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -70,7 +70,7 @@ public class ExposureScreen extends Screen {
 //            poseStack.translate(x, y, 0);
 
             fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-            ExposureRenderer.render(poseStack, bufferSource, exposureIds.get(currentExposureIndex).id, exposureData, LightTexture.FULL_BRIGHT);
+            ExposureRenderer.render(poseStack, bufferSource, exposureIds.get(currentExposureIndex).id + "asd", exposureData, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
     //        float scale = 2f / mps.length;
     //        int startX = (int) (centerX - (mps.length * 128 * scale) / 2);

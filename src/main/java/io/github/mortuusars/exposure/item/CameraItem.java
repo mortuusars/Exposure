@@ -9,25 +9,32 @@ import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.client.GUI;
+import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundUpdateCameraPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,41 +59,66 @@ public class CameraItem extends Item {
 
     protected void useCamera(Player player, InteractionHand hand) {
         if (player.isSecondaryUseActive()) {
-            if (tryLoadFilmRoll(player, hand))
+
+            if (player instanceof ServerPlayer serverPlayer) {
+                openCameraGUI(serverPlayer, hand);
+            }
+
+            return;
+//            if (tryLoadFilmRoll(player, hand))
+//                return;
+
+//            if (player.getLevel().isClientSide) {
+//                if (Viewfinder.isActive())
+//                    Viewfinder.setActive(false);
+//                else {
+//                    ItemStack itemInHand = player.getItemInHand(hand);
+//
+//                    ItemStack film = getLoadedFilm(itemInHand);
+//                    List<ExposureFrame> frames = ((FilmItem) film.getItem()).getFrames(film).stream()
+//                            .filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).toList();
+//                    if (frames.size() > 0)
+//                        GUI.showExposureViewScreen(film);
+//                    else
+//                        player.displayClientMessage(Component.translatable("item.camera.no_exposures"), true);
+//                }
+//            }
+        }
+
+        if (Viewfinder.isActive()) {
+            if (!hasLoadedFilm(player.getItemInHand(hand))) {
+                player.displayClientMessage(Component.translatable("item.exposure.camera.no_film_loaded")
+                        .withStyle(ChatFormatting.RED), true);
                 return;
-
-            if (player.getLevel().isClientSide) {
-                if (Viewfinder.isActive())
-                    Viewfinder.setActive(false);
-                else {
-                    ItemStack itemInHand = player.getItemInHand(hand);
-
-                    ItemStack film = getLoadedFilm(itemInHand);
-                    List<ExposureFrame> frames = ((FilmItem) film.getItem()).getFrames(film).stream()
-                            .filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).toList();
-                    if (frames.size() > 0)
-                        GUI.showExposureViewScreen(film);
-                    else
-                        player.displayClientMessage(Component.translatable("item.camera.no_exposures"), true);
-                }
             }
+
+            tryTakeShot(player, hand);
         }
-        else {
-            if (Viewfinder.isActive()) {
-                if (hasLoadedFilm(player.getItemInHand(hand)))
-                    tryTakeShot(player, hand);
-                else {
-                    player.displayClientMessage(Component.translatable("item.exposure.camera.no_film_loaded")
-                            .withStyle(ChatFormatting.RED), true);
-                }
+        else
+            Viewfinder.setActive(true);
+    }
+
+    protected void openCameraGUI(ServerPlayer serverPlayer, InteractionHand hand) {
+        ItemStack cameraStack = serverPlayer.getItemInHand(hand);
+        NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
+            @Override
+            public @NotNull Component getDisplayName() {
+                return cameraStack.getHoverName();
             }
-            else
-                Viewfinder.setActive(true);
-        }
+
+            @Override
+            public @NotNull AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+                return new CameraMenu(containerId, playerInventory, cameraStack);
+            }
+        }, buffer -> buffer.writeItem(cameraStack));
     }
 
     public boolean hasLoadedFilm(ItemStack cameraStack) {
         return cameraStack.getTag() != null && cameraStack.getTag().contains("Film", Tag.TAG_COMPOUND);
+    }
+
+    public void setFilm(ItemStack cameraStack, ItemStack filmStack) {
+        cameraStack.getOrCreateTag().put("Film", filmStack.save(new CompoundTag()));
     }
 
     public ItemStack getLoadedFilm(ItemStack cameraStack) {
@@ -122,8 +154,13 @@ public class CameraItem extends Item {
         return false;
     }
 
-    public void setFilm(ItemStack cameraStack, ItemStack filmStack) {
-        cameraStack.getOrCreateTag().put("Film", filmStack.save(new CompoundTag()));
+    public ItemStack getLens(ItemStack cameraStack) {
+        CompoundTag lensTag = cameraStack.getOrCreateTag().getCompound("Lens");
+        return ItemStack.of(lensTag);
+    }
+
+    public void setLens(ItemStack cameraStack, ItemStack lensStack) {
+        cameraStack.getOrCreateTag().put("Lens", lensStack.save(new CompoundTag()));
     }
 
     protected boolean tryTakeShot(Player player, InteractionHand hand) {

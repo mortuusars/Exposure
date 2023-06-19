@@ -3,11 +3,17 @@ package io.github.mortuusars.exposure.item;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.client.GUI;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,5 +97,15 @@ public class FilmItem extends Item {
 
         film.getOrCreateTag().put(FRAMES_TAG, framesTag);
         return film;
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        ItemStack film = player.getItemInHand(hand);
+
+        if (level.isClientSide)
+            GUI.showExposureViewScreen(film);
+
+        return InteractionResultHolder.success(film);
     }
 }

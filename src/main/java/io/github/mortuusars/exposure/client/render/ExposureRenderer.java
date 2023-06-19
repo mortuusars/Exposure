@@ -30,14 +30,20 @@ public class ExposureRenderer {
         close();
     }
 
-    public static void render(PoseStack poseStack, MultiBufferSource bufferSource, String id, @NotNull ExposureSavedData exposureData, int packedLight) {
-        getOrCreateMapInstance(id, exposureData).draw(poseStack, bufferSource, packedLight);
+    public static void render(PoseStack poseStack, MultiBufferSource bufferSource, String id,
+                              @NotNull ExposureSavedData exposureData, int packedLight) {
+        getOrCreateMapInstance(id, exposureData, false).draw(poseStack, bufferSource, packedLight);
     }
 
-    private static ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData) {
+    public static void renderNegative(PoseStack poseStack, MultiBufferSource bufferSource, String id,
+                              @NotNull ExposureSavedData exposureData, int packedLight) {
+        getOrCreateMapInstance(id, exposureData, true).draw(poseStack, bufferSource, packedLight);
+    }
+
+    private static ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative) {
         return exposures.compute(id, (expId, expData) -> {
             if (expData == null) {
-                return new ExposureInstance(expId, exposureData);
+                return new ExposureInstance(expId, exposureData, negative);
             } else {
                 expData.replaceExposureData(exposureData);
                 return expData;
@@ -60,13 +66,16 @@ public class ExposureRenderer {
     static class ExposureInstance implements AutoCloseable {
         private ExposureSavedData exposureData;
         private final DynamicTexture texture;
+        private final boolean negative;
         private final RenderType renderType;
         private boolean requiresUpload = true;
 
-        ExposureInstance(String id, ExposureSavedData data) {
+        ExposureInstance(String id, ExposureSavedData data, boolean negative) {
             this.exposureData = data;
             this.texture = new DynamicTexture(data.getWidth(), data.getHeight(), true);
-            ResourceLocation resourcelocation = Minecraft.getInstance().textureManager.register("exposure/" + id.toLowerCase(), this.texture);
+            this.negative = negative;
+            ResourceLocation resourcelocation = Minecraft.getInstance().textureManager
+                    .register("exposure/" + id.toLowerCase() + (negative ? "negative" : ""), this.texture);
             this.renderType = RenderType.text(resourcelocation);
         }
 
@@ -87,6 +96,10 @@ public class ExposureRenderer {
             for(int y = 0; y < exposureData.getHeight(); y++) {
                 for(int x = 0; x < exposureData.getWidth(); x++) {
                     int bgr = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
+
+                    if (negative)
+                        bgr = bgr ^ 0x00FFFFFF;
+
                     this.texture.getPixels().setPixelRGBA(x, y, bgr); // Texture is in BGR format
                 }
             }
