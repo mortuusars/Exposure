@@ -1,30 +1,62 @@
 package io.github.mortuusars.exposure.camera.viewfinder;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.item.CameraItem;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
 
 public class Viewfinder {
+    public static final String FOCAL_LENGTH_TAG = "FocalLength";
+
     private static final ResourceLocation VIEWFINDER_TEXTURE = new ResourceLocation("exposure:textures/misc/viewfinder.png");
 
     private static float maxFov = focalLengthToFov(18);
-    private static float minFov = focalLengthToFov(200);
+    private static float minFov = focalLengthToFov(55);
 
     public static float currentFov;
-    public static float targetFov = minFov;
+    public static float targetFov = maxFov;
 
     private static boolean isActive;
+    private static ItemStack cameraStack;
+    private static InteractionHand holdingHand;
 
-    public static void setActive(boolean active) {
+    public static void activate(ItemStack camera, InteractionHand hand) {
+        Preconditions.checkArgument(!camera.isEmpty(), "Camera cannot be empty.");
+        setActive(true, camera, hand);
+    }
+
+    public static void deactivate() {
+        setActive(false, cameraStack, holdingHand);
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    private static void setActive(boolean active, ItemStack camera, InteractionHand hand) {
         isActive = active;
+        cameraStack = camera;
+        holdingHand = hand;
+
+        MinMaxBounds<Integer> focalRange = ((CameraItem) cameraStack.getItem()).getFocalRange(cameraStack);
+
+        maxFov = focalLengthToFov(focalRange.getMin());
+        minFov = focalLengthToFov(focalRange.getMax());
+
+        if (cameraStack.getTag() != null && camera.getTag().contains(FOCAL_LENGTH_TAG, Tag.TAG_INT)) {
+            int focalLength = cameraStack.getOrCreateTag().getInt(FOCAL_LENGTH_TAG);
+            float fov = focalLengthToFov(focalLength);
+
+            targetFov = Mth.clamp(fov, minFov, maxFov);
+        }
     }
 
     public static boolean isActive() {
@@ -38,6 +70,7 @@ public class Viewfinder {
     }
 
     public static double getMouseSensitivityModifier() {
+        // TODO: Should take lens focal ranges into account
         return isActive ? Mth.clamp(1f - (maxFov - targetFov) / maxFov, 0.1f, 1f) : 1f;
     }
 
@@ -68,7 +101,7 @@ public class Viewfinder {
         GuiComponent.fill(poseStack, 0, (int)openingEndY, width, height, color);
 
         // TODO: Shutter
-        if (Camera.isProcessing()) {
+        if (!Camera.isCapturing() && Minecraft.getInstance().player.getCooldowns().isOnCooldown(cameraStack.getItem())) {
             GuiComponent.fill(poseStack, (int) openingStartX, (int)openingStartY, (int) openingEndX, (int) openingEndY, color);
         }
 
@@ -119,5 +152,8 @@ public class Viewfinder {
             change *= 0.25f;
 
         targetFov = Mth.clamp(targetFov += direction == ZoomDirection.IN ? +change : -change, minFov, maxFov);
+
+        cameraStack.getOrCreateTag().putInt(FOCAL_LENGTH_TAG, fovToFocalLength(targetFov));
+        ((CameraItem) cameraStack.getItem()).clientsideUpdateCameraInInventory(cameraStack, holdingHand);
     }
 }

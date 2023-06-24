@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.Exposure;
+import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
@@ -8,18 +8,18 @@ import io.github.mortuusars.exposure.camera.IExposureModifier;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
-import io.github.mortuusars.exposure.client.GUI;
+import io.github.mortuusars.exposure.client.ClientOnlyLogic;
+import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
+import io.github.mortuusars.exposure.item.attachment.Film;
 import io.github.mortuusars.exposure.menu.CameraMenu;
-import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ServerboundUpdateCameraPacket;
-import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMaps;
+import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -34,14 +34,31 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class CameraItem extends Item {
+    public static final int FILM = 0;
+    public static final int LENS = 1;
+    public static final int FILTER = 2;
+
+    public static final Int2ObjectSortedMap<String> SLOTS = new Int2ObjectRBTreeMap<>(
+            new int[] {0, 1, 2},
+            new String[] {"Film", "Lens", "Filter"}
+    );
+
     public CameraItem(Properties properties) {
         super(properties);
+    }
+
+    @Override
+    public int getUseDuration(@NotNull ItemStack stack) {
+        return Integer.MAX_VALUE;
+    }
+
+    @Override
+    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
+        return UseAnim.SPYGLASS;
     }
 
     @Override
@@ -58,44 +75,22 @@ public class CameraItem extends Item {
     }
 
     protected void useCamera(Player player, InteractionHand hand) {
-        if (player.isSecondaryUseActive()) {
-
-            if (player instanceof ServerPlayer serverPlayer) {
+        if (player.isSecondaryUseActive() && !Viewfinder.isActive()) {
+            if (player instanceof ServerPlayer serverPlayer)
                 openCameraGUI(serverPlayer, hand);
-            }
 
             return;
-//            if (tryLoadFilmRoll(player, hand))
-//                return;
-
-//            if (player.getLevel().isClientSide) {
-//                if (Viewfinder.isActive())
-//                    Viewfinder.setActive(false);
-//                else {
-//                    ItemStack itemInHand = player.getItemInHand(hand);
-//
-//                    ItemStack film = getLoadedFilm(itemInHand);
-//                    List<ExposureFrame> frames = ((FilmItem) film.getItem()).getFrames(film).stream()
-//                            .filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).toList();
-//                    if (frames.size() > 0)
-//                        GUI.showExposureViewScreen(film);
-//                    else
-//                        player.displayClientMessage(Component.translatable("item.camera.no_exposures"), true);
-//                }
-//            }
         }
 
-        if (Viewfinder.isActive()) {
-            if (!hasLoadedFilm(player.getItemInHand(hand))) {
-                player.displayClientMessage(Component.translatable("item.exposure.camera.no_film_loaded")
-                        .withStyle(ChatFormatting.RED), true);
-                return;
-            }
+        if (!player.getLevel().isClientSide)
+            return;
 
+        ItemStack cameraStack = player.getItemInHand(hand);
+
+        if (Viewfinder.isActive())
             tryTakeShot(player, hand);
-        }
         else
-            Viewfinder.setActive(true);
+            Viewfinder.activate(cameraStack, hand);
     }
 
     protected void openCameraGUI(ServerPlayer serverPlayer, InteractionHand hand) {
@@ -113,70 +108,34 @@ public class CameraItem extends Item {
         }, buffer -> buffer.writeItem(cameraStack));
     }
 
-    public boolean hasLoadedFilm(ItemStack cameraStack) {
-        return cameraStack.getTag() != null && cameraStack.getTag().contains("Film", Tag.TAG_COMPOUND);
+    public CameraAttachments getAttachments(ItemStack cameraStack) {
+        validateCameraStack(cameraStack);
+        return new CameraAttachments(cameraStack);
     }
 
-    public void setFilm(ItemStack cameraStack, ItemStack filmStack) {
-        cameraStack.getOrCreateTag().put("Film", filmStack.save(new CompoundTag()));
-    }
-
-    public ItemStack getLoadedFilm(ItemStack cameraStack) {
-        if (!hasLoadedFilm(cameraStack))
-            return ItemStack.EMPTY;
-
-        CompoundTag film = cameraStack.getOrCreateTag().getCompound("Film");
-        ItemStack filmStack = ItemStack.of(film);
-
-        if (!(filmStack.getItem() instanceof FilmItem)) {
-            Exposure.LOGGER.error(filmStack + " is not a FilmItem.");
-            return ItemStack.EMPTY;
-        }
-
-        return filmStack;
-    }
-
-    public boolean tryLoadFilmRoll(Player player, InteractionHand hand) {
-        ItemStack itemInHand = player.getItemInHand(hand);
-        if (itemInHand.getItem() instanceof CameraItem && !hasLoadedFilm(itemInHand)) {
-            InteractionHand otherHand = InteractionHand.values()[(hand.ordinal() + 1) % 2];
-            ItemStack otherHandItem = player.getItemInHand(otherHand);
-            if (otherHandItem.getItem() instanceof FilmItem) {
-                itemInHand.getOrCreateTag().put("Film", otherHandItem.save(new CompoundTag()));
-
-                otherHandItem.shrink(1);
-                player.level.playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 1f, 1f);
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public ItemStack getLens(ItemStack cameraStack) {
-        CompoundTag lensTag = cameraStack.getOrCreateTag().getCompound("Lens");
-        return ItemStack.of(lensTag);
-    }
-
-    public void setLens(ItemStack cameraStack, ItemStack lensStack) {
-        cameraStack.getOrCreateTag().put("Lens", lensStack.save(new CompoundTag()));
+    protected void validateCameraStack(ItemStack cameraStack) {
+        Preconditions.checkArgument(!cameraStack.isEmpty(), "cameraStack is empty.");
+        Preconditions.checkArgument(cameraStack.getItem() instanceof CameraItem,  cameraStack + " is not a CameraItem.");
     }
 
     protected boolean tryTakeShot(Player player, InteractionHand hand) {
         Level level = player.level;
         ItemStack cameraStack = player.getItemInHand(hand);
-        ItemStack film = getLoadedFilm(cameraStack);
+        Optional<Film> filmOpt = getAttachments(cameraStack).getFilm();
 
-        if (!(film.getItem() instanceof FilmItem filmItem))
-            throw new IllegalStateException("Loaded film is not a film item: " + film);
+        if (filmOpt.isEmpty()) {
+            onShutterReleased(player, hand, cameraStack);
+            return false;
+        }
 
-        int emptyFrame = filmItem.getEmptyFrame(film);
+        Film film = filmOpt.get();
+
+        int emptyFrame = film.getItem().getEmptyFrame(film.getStack());
 
         if (emptyFrame == -1) {
             player.displayClientMessage(Component.translatable("item.exposure.camera.no_empty_frames"), true);
-            level.playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 1f,
-                    level.getRandom().nextFloat() * 0.2f + 1.1f);
+            player.getLevel().playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 1f,
+                    player.getLevel().getRandom().nextFloat() * 0.2f + 1.1f);
             return false;
         }
 
@@ -187,11 +146,23 @@ public class CameraItem extends Item {
             CaptureProperties captureProperties = createCaptureProperties(player, hand);
             Camera.capture(captureProperties);
 
-            //TODO: Update camera on the server
-            Packets.sendToServer(new ServerboundUpdateCameraPacket(captureProperties.id, hand, emptyFrame));
+            onShutterReleased(player, hand, cameraStack);
+
+            film.getItem().setFrame(film.getStack(), emptyFrame, new ExposureFrame(captureProperties.id));
+            getAttachments(cameraStack).setFilm(film.getStack());
+
+            clientsideUpdateCameraInInventory(cameraStack, hand);
         }
 
         return true;
+    }
+
+    protected void onShutterReleased(Player player, InteractionHand hand, ItemStack cameraStack) {
+        player.getCooldowns().addCooldown(this, 10);
+
+        // TODO: shutter open sound
+        player.getLevel().playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 1f,
+                player.getLevel().getRandom().nextFloat() * 0.2f + 1.1f);
     }
 
     protected String getExposureId(Player player, Level level) {
@@ -200,14 +171,20 @@ public class CameraItem extends Item {
         return player.getName().getString() + "_" + level.getGameTime();
     }
 
+    public MinMaxBounds<Integer> getFocalRange(ItemStack cameraStack) {
+        CameraAttachments attachments = getAttachments(cameraStack);
+        ItemStack lensStack = attachments.getAttachment(SLOTS.get(LENS));
+        return lensStack.isEmpty() ? MinMaxBounds.Ints.between(18, 55) : MinMaxBounds.Ints.between(55, 200);
+    }
+
     protected CaptureProperties createCaptureProperties(Player player, InteractionHand hand) {
         String id = getExposureId(player, player.level);
 
         // TODO: Crop Factor config
         float cropFactor = 1.142f;
 
-        ItemStack film = getLoadedFilm(player.getItemInHand(hand));
-        int frameSize = ((FilmItem) film.getItem()).getFrameSize();
+        CameraAttachments attachments = getAttachments(player.getItemInHand(hand));
+        int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize()).orElse(-1);
 
         return new CaptureProperties(id, frameSize, cropFactor, 1f, getExposureModifiers(player, hand));
     }
@@ -215,20 +192,23 @@ public class CameraItem extends Item {
     protected List<IExposureModifier> getExposureModifiers(Player player, InteractionHand hand) {
         List<IExposureModifier> modifiers = new ArrayList<>();
 
-        ItemStack film = getLoadedFilm(player.getItemInHand(hand));
-        if (((FilmItem) film.getItem()).getType() == FilmType.BLACK_AND_WHITE)
-            modifiers.add(ExposureModifiers.BLACK_AND_WHITE);
+        CameraAttachments attachments = getAttachments(player.getItemInHand(hand));
+        attachments.getFilm().ifPresent(f -> {
+            if (f.getItem().getType() == FilmType.BLACK_AND_WHITE)
+                modifiers.add(ExposureModifiers.BLACK_AND_WHITE);
+        });
 
         return modifiers;
     }
 
-    @Override
-    public int getUseDuration(@NotNull ItemStack stack) {
-        return Integer.MAX_VALUE;
+    public void attachmentsChanged(Player player, ItemStack cameraStack, int slot, ItemStack attachmentStack) {
+        getAttachments(cameraStack).setAttachment(SLOTS.get(slot), attachmentStack);
+
+        if (!attachmentStack.isEmpty())
+            player.playSound(SoundEvents.COMPARATOR_CLICK);
     }
 
-    @Override
-    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
-        return UseAnim.SPYGLASS;
+    public void clientsideUpdateCameraInInventory(ItemStack cameraStack, InteractionHand hand) {
+        ClientOnlyLogic.updateAndSendCameraStack(cameraStack, hand);
     }
 }

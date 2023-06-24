@@ -3,33 +3,25 @@ package io.github.mortuusars.exposure.menu;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.inventory.CameraItemStackHandler;
-import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
 public class CameraMenu extends AbstractContainerMenu {
-    public static final int FILM_SLOT = 0;
-    public static final int LENS_SLOT = 1;
-    public static final int FILTER_SLOT = 2;
-
     public CameraMenu(int containerId, Inventory playerInventory, ItemStack cameraStack) {
         super(Exposure.MenuTypes.CAMERA.get(), containerId);
 
         IItemHandler itemStackHandler = new CameraItemStackHandler(playerInventory.player, cameraStack);
 
-        addSlot(new SlotItemHandler(itemStackHandler, FILM_SLOT, 35, 29));
-        addSlot(new SlotItemHandler(itemStackHandler, LENS_SLOT, 116, 57));
-        addSlot(new SlotItemHandler(itemStackHandler, FILTER_SLOT, 125, 14));
+        addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILM, 35, 29));
+        addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS, 116, 57));
+        addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILTER, 125, 14));
 
         //Player Inventory
         for (int row = 0; row < 3; row++) {
@@ -45,8 +37,34 @@ public class CameraMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
-        return ItemStack.EMPTY;
+    public @NotNull ItemStack quickMoveStack(@NotNull Player player, int slotIndex) {
+
+        ItemStack itemstack = ItemStack.EMPTY;
+        Slot slot = this.slots.get(slotIndex);
+        if (slot.hasItem()) {
+            ItemStack slotStack = slot.getItem();
+            itemstack = slotStack.copy();
+            if (slotIndex < CameraItem.SLOTS.size()) {
+                if (!this.moveItemStackTo(slotStack, CameraItem.SLOTS.size(), this.slots.size(), true))
+                    return ItemStack.EMPTY;
+            }
+            else {
+                for (int i = 0; i < CameraItem.SLOTS.size(); i++) {
+                    Slot cameraSlot = this.slots.get(i);
+                    if (cameraSlot.mayPlace(itemstack)) {
+                        if (!this.moveItemStackTo(slotStack, i, i + 1, false))
+                            return ItemStack.EMPTY;
+                    }
+                }
+            }
+
+            if (slotStack.isEmpty())
+                slot.set(ItemStack.EMPTY);
+            else
+                slot.setChanged();
+        }
+
+        return itemstack;
     }
 
     @Override

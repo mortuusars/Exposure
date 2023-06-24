@@ -1,8 +1,10 @@
 package io.github.mortuusars.exposure.network.packet;
 
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -40,12 +42,17 @@ public record ServerboundUpdateCameraPacket(String id, InteractionHand hand, int
         if (!(camera.getItem() instanceof CameraItem cameraItem))
             throw new IllegalStateException("Cannot handle UpdateCameraPacket: Item in hand is not camera: " + camera);
 
-        ItemStack film = cameraItem.getLoadedFilm(camera);
-        if (!(film.getItem() instanceof FilmItem filmItem))
-            throw new IllegalStateException("Cannot handle UpdateCameraPacket: Film in camera is not a FilmItem: " + film);
+        CameraAttachments attachments = cameraItem.getAttachments(camera);
+        attachments.getFilm().ifPresentOrElse(f -> {
+            f.getItem().setFrame(f.getStack(), filmFrameIndex, new ExposureFrame(id));
+        }, () -> Exposure.LOGGER.error("Cannot update camera on the server. No film is loaded. Stack: " + camera));
 
-        film = filmItem.setFrame(film, filmFrameIndex, new ExposureFrame(id));
-        cameraItem.setFilm(camera, film);
-//        player.setItemInHand(hand, camera);
+//        ItemStack film = cameraItem.getFilm(camera);
+//        if (!(film.getItem() instanceof FilmItem filmItem))
+//            throw new IllegalStateException("Cannot handle UpdateCameraPacket: Film in camera is not a FilmItem: " + film);
+//
+//        film = filmItem.setFrame(film, filmFrameIndex, new ExposureFrame(id));
+//        cameraItem.setFilm(camera, film);
+////        player.setItemInHand(hand, camera);
     }
 }

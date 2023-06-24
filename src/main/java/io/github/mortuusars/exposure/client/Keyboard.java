@@ -8,7 +8,7 @@ public class Keyboard {
     public static boolean handleKeyPress(long windowId, int key, int scanCode, int action, int modifiers) {
         if (Viewfinder.isActive() &&
                 (key == InputConstants.KEY_ESCAPE || Minecraft.getInstance().options.keyInventory.matches(key, scanCode))) {
-            Viewfinder.setActive(false);
+            Viewfinder.deactivate();
             return true;
         }
 

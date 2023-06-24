@@ -38,6 +38,12 @@ public class Packets {
                 .consumerMainThread(ServerboundUpdateCameraPacket::handle)
                 .add();
 
+        CHANNEL.messageBuilder(ServerboundSyncCameraPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ServerboundSyncCameraPacket::toBuffer)
+                .decoder(ServerboundSyncCameraPacket::fromBuffer)
+                .consumerMainThread(ServerboundSyncCameraPacket::handle)
+                .add();
+
         CHANNEL.messageBuilder(ExposureDataPartPacket.class, id++)
                 .encoder(ExposureDataPartPacket::toBuffer)
                 .decoder(ExposureDataPartPacket::fromBuffer)
