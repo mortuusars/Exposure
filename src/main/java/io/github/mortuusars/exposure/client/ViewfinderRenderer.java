@@ -4,22 +4,27 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Camera;
-import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOld;
+import io.github.mortuusars.exposure.camera.CameraCapture;
 import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.Fov;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ViewportEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Optional;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class ViewfinderRenderer {
@@ -33,7 +38,7 @@ public class ViewfinderRenderer {
     private static double defaultFov = -1;
     private static double currentFov = -1;
     private static double targetFov = -1;
-    private static boolean fovRestored;
+    public static boolean fovRestored;
 
     public static boolean shouldRender() {
         return Camera.getViewfinder().isActive(Minecraft.getInstance().player);
@@ -65,10 +70,13 @@ public class ViewfinderRenderer {
         // Bottom
         GuiComponent.fill(poseStack, 0, (int)openingEndY, width, height, color);
 
+        Optional<ItemAndStack<CameraItem>> cameraInHand = CameraItem.getCameraInHand(Minecraft.getInstance().player);
+
         // TODO: Shutter
-//        if (!Camera.isCapturing() && Minecraft.getInstance().player.getCooldowns().isOnCooldown(cameraStack.getItem())) {
-//            GuiComponent.fill(poseStack, (int) openingStartX, (int)openingStartY, (int) openingEndX, (int) openingEndY, color);
-//        }
+        if (!CameraCapture.isCapturing() && cameraInHand.isPresent()
+                && Minecraft.getInstance().player.getCooldowns().isOnCooldown(cameraInHand.get().getItem())) {
+            GuiComponent.fill(poseStack, (int) openingStartX, (int)openingStartY, (int) openingEndX, (int) openingEndY, color);
+        }
 
         // Texture overlay
         if (!Minecraft.getInstance().options.hideGui) {
@@ -121,9 +129,19 @@ public class ViewfinderRenderer {
             fovRestored = false;
         }
         else if (!fovRestored) {
-            currentFov += (defaultFov - currentFov) * 0.125 * event.getPartialTick();
-            if (Math.abs(currentFov - defaultFov) < 0.001d)
+            currentFov += (defaultFov - currentFov) * 0.05 * event.getPartialTick();
+
+            if (Math.abs(currentFov - defaultFov) < 0.0001d) {
                 fovRestored = true;
+
+                LocalPlayer player = Minecraft.getInstance().player;
+                if (player != null) {
+                    // Item in hand snaps weirdly when fov is changing to normal.
+                    // So we render hand only after fov is restored and play equip animation to smoothly show a hand.
+                    Minecraft.getInstance().gameRenderer.itemInHandRenderer.itemUsed(player.getItemInHand(
+                            InteractionHand.MAIN_HAND).isEmpty() ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
+                }
+            }
         }
         else {
             currentFov = defaultFov;

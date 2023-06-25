@@ -5,6 +5,7 @@ import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.inventory.CameraItemStackHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -14,7 +15,11 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class CameraMenu extends AbstractContainerMenu {
+    public boolean initialized = false;
+
     private final ItemStack cameraStack;
     private final int slotMatchingItem;
 
@@ -40,6 +45,12 @@ public class CameraMenu extends AbstractContainerMenu {
         for (int slot = 0; slot < 9; slot++) {
             addSlot(new Slot(playerInventory, slot, slot * 18 + 8, 142));
         }
+    }
+
+    @Override
+    public void initializeContents(int pStateId, List<ItemStack> pItems, ItemStack pCarried) {
+        super.initializeContents(pStateId, pItems, pCarried);
+        initialized = true;
     }
 
     @Override
@@ -81,4 +92,11 @@ public class CameraMenu extends AbstractContainerMenu {
     public static CameraMenu fromBuffer(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new CameraMenu(containerId, playerInventory, buffer.readItem());
     }
+
+    @Override
+    public void slotsChanged(Container pContainer) {
+        super.slotsChanged(pContainer);
+    }
+
+
 }

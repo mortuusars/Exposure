@@ -1,40 +1,89 @@
 package io.github.mortuusars.exposure.camera.viewfinder;
 
+import io.github.mortuusars.exposure.client.ViewfinderRenderer;
+import io.github.mortuusars.exposure.network.Packets;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.server.ServerLifecycleHooks;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 public class Viewfinder implements IViewfinder {
-    private static final Viewfinder INSTANCE = new Viewfinder();
+    private static final Map<Player, InteractionHand> playersWithActiveViewfinder = new HashMap<>();
 
-    private final ViewfinderClient CLIENT = new ViewfinderClient();
-    private final ViewfinderServer SERVER = new ViewfinderServer();
-
-    private Viewfinder() {}
-
-    public static Viewfinder get() {
-        return INSTANCE;
+    @Override
+    public void activate(Player player, InteractionHand hand) {
+        playersWithActiveViewfinder.put(player, hand);
+        ViewfinderRenderer.update();
+        broadcast(player, true, hand);
     }
 
-    public void activate(Player player) {
-        getSidedViewfinder().activate(player);
-    }
-
+    @Override
     public void deactivate(Player player) {
-        getSidedViewfinder().deactivate(player);
+        @Nullable InteractionHand hand = playersWithActiveViewfinder.remove(player);
+        if (hand != null)
+            broadcast(player, false, hand);
     }
 
     @Override
     public boolean isActive(Player player) {
-        return getSidedViewfinder().isActive(player);
+        return playersWithActiveViewfinder.containsKey(player); //TODO: check for camera in hand?
     }
 
     @Override
-    public void update() {
-        getSidedViewfinder().update();
+    public InteractionHand getActiveHand(Player player) {
+        @Nullable InteractionHand activeHand = playersWithActiveViewfinder.get(player);
+        return activeHand != null ? activeHand : InteractionHand.MAIN_HAND;
     }
 
-    public IViewfinder getSidedViewfinder() {
-        return Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER ?
-                SERVER : CLIENT;
+    private void broadcast(Player player, boolean isActive, InteractionHand hand) {
+        if (player.getLevel().isClientSide)
+            Packets.sendToServer(new UpdateViewfinderPacket(isActive, hand));
+    }
+
+    public record UpdateViewfinderPacket(boolean isActive, InteractionHand hand) {
+        public void toBuffer(FriendlyByteBuf buffer) {
+            buffer.writeBoolean(isActive);
+            buffer.writeEnum(hand);
+        }
+
+        public static UpdateViewfinderPacket fromBuffer(FriendlyByteBuf buffer) {
+            return new UpdateViewfinderPacket(buffer.readBoolean(), buffer.readEnum(InteractionHand.class));
+        }
+
+        public boolean handle(Supplier<NetworkEvent.Context> contextSupplier) {
+            NetworkEvent.Context context = contextSupplier.get();
+
+            if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
+                handleServerside(context.getSender());
+            else
+                handleClientSide();
+
+            return true;
+        }
+
+        private void handleClientSide() {
+            if (isActive)
+                playersWithActiveViewfinder.put(Minecraft.getInstance().player, hand);
+            else
+                playersWithActiveViewfinder.remove(Minecraft.getInstance().player);
+        }
+
+        private void handleServerside(@Nullable ServerPlayer sourcePlayer) {
+            List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers();
+            for (ServerPlayer player : players) {
+                if (!player.equals(sourcePlayer))
+                    Packets.sendToClient(new UpdateViewfinderPacket(isActive, hand), player);
+            }
+        }
     }
 }

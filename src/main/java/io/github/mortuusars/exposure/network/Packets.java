@@ -1,8 +1,7 @@
 package io.github.mortuusars.exposure.network;
 
 
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderNew;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderServer;
+import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.network.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -22,17 +21,10 @@ public class Packets {
             PROTOCOL_VERSION::equals);
 
     public static void register() {
-        CHANNEL.messageBuilder(ViewfinderNew.UpdateViewfinderPacket.class, id++)
-                .encoder(ViewfinderNew.UpdateViewfinderPacket::toBuffer)
-                .decoder(ViewfinderNew.UpdateViewfinderPacket::fromBuffer)
-                .consumerMainThread(ViewfinderNew.UpdateViewfinderPacket::handle)
-                .add();
-
-
-        CHANNEL.messageBuilder(ViewfinderServer.ClientboundUpdateViewfinderPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ViewfinderServer.ClientboundUpdateViewfinderPacket::toBuffer)
-                .decoder(ViewfinderServer.ClientboundUpdateViewfinderPacket::fromBuffer)
-                .consumerMainThread(ViewfinderServer.ClientboundUpdateViewfinderPacket::handleClientside)
+        CHANNEL.messageBuilder(Viewfinder.UpdateViewfinderPacket.class, id++)
+                .encoder(Viewfinder.UpdateViewfinderPacket::toBuffer)
+                .decoder(Viewfinder.UpdateViewfinderPacket::fromBuffer)
+                .consumerMainThread(Viewfinder.UpdateViewfinderPacket::handle)
                 .add();
 
         CHANNEL.messageBuilder(ClientboundApplyShaderPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)

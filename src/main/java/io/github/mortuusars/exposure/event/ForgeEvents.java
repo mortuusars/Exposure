@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.event;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
+import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.item.CameraItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.TickEvent;
@@ -20,6 +20,6 @@ public class ForgeEvents {
         Player player = event.player;
 
         if (CameraItem.getCameraInHand(player).isEmpty())
-            Viewfinder.get().deactivate(player);
+            Camera.getViewfinder().deactivate(player);
     }
 }

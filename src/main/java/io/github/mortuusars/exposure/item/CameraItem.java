@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOld;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.client.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
@@ -201,7 +200,7 @@ public class CameraItem extends Item {
     public void attachmentsChanged(Player player, ItemStack cameraStack, int slot, ItemStack attachmentStack) {
         getAttachments(cameraStack).setAttachment(SLOTS.get(slot), attachmentStack);
 
-        if (!attachmentStack.isEmpty())
+        if (!attachmentStack.isEmpty() && player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized)
             player.playSound(SoundEvents.COMPARATOR_CLICK);
 
         if (player.getLevel().isClientSide)

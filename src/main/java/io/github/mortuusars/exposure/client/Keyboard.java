@@ -2,8 +2,6 @@ package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.camera.Camera;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderNew;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOld;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
