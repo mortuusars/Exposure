@@ -80,21 +80,20 @@ public class CameraCapture {
 
         NativeImage screenshot = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
 
-        try {
-            BufferedImage read = ImageIO.read(new File("E:/img.jpg"));
-
-            screenshot = new NativeImage(read.getWidth(), read.getHeight(), false);
-
-            for (int x = 0; x < read.getWidth(); x++) {
-                for (int y = 0; y < read.getHeight(); y++) {
-                    screenshot.setPixelRGBA(x, y, ColorUtils.BGRtoRGB(read.getRGB(x, y)));
-                }
-            }
-
-        } catch (IOException e) {
-            Exposure.LOGGER.error(e.toString());
-        }
-
+//        try {
+//            BufferedImage read = ImageIO.read(new File("E:/img.jpg"));
+//
+//            screenshot = new NativeImage(read.getWidth(), read.getHeight(), false);
+//
+//            for (int x = 0; x < read.getWidth(); x++) {
+//                for (int y = 0; y < read.getHeight(); y++) {
+//                    screenshot.setPixelRGBA(x, y, ColorUtils.BGRtoRGB(read.getRGB(x, y)));
+//                }
+//            }
+//
+//        } catch (IOException e) {
+//            Exposure.LOGGER.error(e.toString());
+//        }
 
         capturing = false;
 

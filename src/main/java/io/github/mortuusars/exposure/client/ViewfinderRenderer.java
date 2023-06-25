@@ -177,7 +177,7 @@ public class ViewfinderRenderer {
                 .map(itemAndStack -> itemAndStack.getItem().getFocalRange(itemAndStack.getStack()))
                 .orElse(Camera.FocalRange.DEFAULT);
 
-        Exposure.LOGGER.info(focalRange.toString());
+//        Exposure.LOGGER.info(focalRange.toString());
 
         targetFov = Mth.clamp(targetFov, Fov.focalLengthToFov(focalRange.max()), Fov.focalLengthToFov(focalRange.min()));
     }

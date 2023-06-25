@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.event;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.client.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
@@ -42,7 +43,7 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onGuiOpen(ScreenEvent.Opening event) {
-        if (isLookingThroughViewfinder()) {
+        if (isLookingThroughViewfinder() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
             //TODO: if not ViewfinderConfig screen
             Camera.getViewfinder().deactivate(Minecraft.getInstance().player);
         }
