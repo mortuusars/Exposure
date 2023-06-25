@@ -15,8 +15,11 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 @OnlyIn(Dist.CLIENT)
@@ -76,6 +79,23 @@ public class CameraCapture {
         }
 
         NativeImage screenshot = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
+
+        try {
+            BufferedImage read = ImageIO.read(new File("E:/img.jpg"));
+
+            screenshot = new NativeImage(read.getWidth(), read.getHeight(), false);
+
+            for (int x = 0; x < read.getWidth(); x++) {
+                for (int y = 0; y < read.getHeight(); y++) {
+                    screenshot.setPixelRGBA(x, y, ColorUtils.BGRtoRGB(read.getRGB(x, y)));
+                }
+            }
+
+        } catch (IOException e) {
+            Exposure.LOGGER.error(e.toString());
+        }
+
+
         capturing = false;
 
         Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;

@@ -4,8 +4,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
 import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.ServerboundPrintPhotographPacket;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
@@ -23,23 +27,32 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ExposureScreen extends Screen {
-    @Nullable
-    private ExposureSavedData exposureData;
-
+public class ExposureScreen extends ExposureRenderScreen {
     private List<ExposureFrame> exposureIds = new ArrayList<>();
     private int currentExposureIndex;
+    private int frameSize;
 
     public ExposureScreen(ItemStack film) {
         super(Component.empty());
 
+        ExposureRenderer.resetData();
+
         if (film.getItem() instanceof FilmItem filmItem) {
             List<ExposureFrame> frames = filmItem.getFrames(film);
             exposureIds = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
-        }
+            frameSize = filmItem.getFrameSize();
 
-        currentExposureIndex = exposureIds.size() - 1;
-        loadExposure();
+            currentExposureIndex = exposureIds.size() - 1;
+            loadExposure();
+        }
+        else {
+            this.onClose();
+        }
+    }
+
+    @Override
+    protected String getExposureId() {
+        return exposureIds.get(currentExposureIndex).id;
     }
 
     @Override
@@ -67,25 +80,10 @@ public class ExposureScreen extends Screen {
             poseStack.scale(scale, scale, scale);
             // Set origin point to center (for scale)
             poseStack.translate(exposureData.getWidth() / -2d, exposureData.getHeight() / -2d, 0);
-//            poseStack.translate(x, y, 0);
 
-            fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-            ExposureRenderer.renderNegative(poseStack, bufferSource, exposureIds.get(currentExposureIndex).id + "asd", exposureData, LightTexture.FULL_BRIGHT);
+//            fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
+            renderExposure(poseStack, bufferSource, LightTexture.FULL_BRIGHT, true);
             poseStack.popPose();
-    //        float scale = 2f / mps.length;
-    //        int startX = (int) (centerX - (mps.length * 128 * scale) / 2);
-    //        int startY = (int) (centerY - (mps.length * 128 * scale) / 2);
-    //
-    //        for (int column = 0; column < mps.length; column++) {
-    //            for (int row = 0; row < mps[0].length; row++) {
-    //                poseStack.pushPose();
-    //                poseStack.translate(startX + (column * 128 * scale), startY + (row * 128 * scale), 0);
-    //                poseStack.scale(scale, scale, scale);
-    //                Minecraft.getInstance().gameRenderer.getMapRenderer().render(poseStack, bufferSource,
-    //                        row + column * 4, mps[column][row], true, LightTexture.FULL_BRIGHT);
-    //                poseStack.popPose();
-    //            }
-    //        }
 
             bufferSource.endBatch();
         }
@@ -100,14 +98,16 @@ public class ExposureScreen extends Screen {
             currentExposureIndex = (Math.max(0, currentExposureIndex - 1));
         else if (key == InputConstants.KEY_RIGHT)
             currentExposureIndex = (Math.min(exposureIds.size() - 1, currentExposureIndex + 1));
+        else if (key == InputConstants.KEY_P) { //TODO: Proper printing
+            ExposureFrame exposureFrame = exposureIds.get(currentExposureIndex);
+            Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id, frameSize, "", "")));
+        }
+        else if (Minecraft.getInstance().options.keyInventory.matches(key, scanCode))
+            this.onClose();
 
         loadExposure();
 
         return super.keyPressed(key, scanCode, modifiers);
-    }
-
-    private void loadExposure() {
-        exposureData = ExposureStorage.CLIENT.getOrQuery(exposureIds.get(currentExposureIndex).id).orElse(null);
     }
 
     @Override

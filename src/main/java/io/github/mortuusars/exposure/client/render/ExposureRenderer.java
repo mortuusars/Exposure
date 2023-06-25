@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.level.LevelEvent;
@@ -37,7 +38,7 @@ public class ExposureRenderer {
 
     public static void renderNegative(PoseStack poseStack, MultiBufferSource bufferSource, String id,
                               @NotNull ExposureSavedData exposureData, int packedLight) {
-        getOrCreateMapInstance(id, exposureData, true).draw(poseStack, bufferSource, packedLight);
+        getOrCreateMapInstance(id + "_negative", exposureData, true).draw(poseStack, bufferSource, packedLight);
     }
 
     private static ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative) {
@@ -97,8 +98,16 @@ public class ExposureRenderer {
                 for(int x = 0; x < exposureData.getWidth(); x++) {
                     int bgr = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
 
-                    if (negative)
+                    if (negative) {
                         bgr = bgr ^ 0x00FFFFFF;
+                        int blue = bgr >> 16 & 0xFF;
+                        int green = bgr >> 8 & 0xFF;
+                        int red = bgr & 0xFF;
+                        int luma = Mth.clamp((int) (0.4 * red + 0.6 * green + 0.15 * blue), 0, 255);
+                        float transparency = luma / 255f;
+
+                        bgr = (bgr & 0x00FFFFFF) | (luma << 24);
+                    }
 
                     this.texture.getPixels().setPixelRGBA(x, y, bgr); // Texture is in BGR format
                 }

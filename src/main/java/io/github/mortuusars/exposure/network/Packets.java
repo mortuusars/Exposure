@@ -56,6 +56,13 @@ public class Packets {
                 .decoder(ExposureDataPartPacket::fromBuffer)
                 .consumerMainThread(ExposureDataPartPacket::handle)
                 .add();
+
+
+        CHANNEL.messageBuilder(ServerboundPrintPhotographPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(ServerboundPrintPhotographPacket::toBuffer)
+                .decoder(ServerboundPrintPhotographPacket::fromBuffer)
+                .consumerMainThread(ServerboundPrintPhotographPacket::handle)
+                .add();
     }
 
     public static <MSG> void sendToServer(MSG message) {

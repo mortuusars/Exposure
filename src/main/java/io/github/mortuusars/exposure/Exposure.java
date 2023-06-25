@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure;
 
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.FilmItem;
@@ -50,7 +51,8 @@ public class Exposure {
         private static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ID);
 
         public static final RegistryObject<CameraItem> CAMERA = ITEMS.register("camera",
-                () -> new CameraItem(new Item.Properties().stacksTo(1)
+                () -> new CameraItem(new Item.Properties()
+                        .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<FilmItem> SMALL_FORMAT_BLACK_AND_WHITE_FILM = ITEMS.register("small_format_black_and_white_film",
@@ -71,6 +73,11 @@ public class Exposure {
         public static final RegistryObject<FilmItem> LARGE_FORMAT_COLOR_FILM = ITEMS.register("large_format_color_film",
                 () -> new FilmItem(FilmType.COLOR, 384, 8, new Item.Properties()
                         .stacksTo(16)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
+        public static final RegistryObject<PhotographItem> PHOTOGRAPH = ITEMS.register("photograph",
+                () -> new PhotographItem(new Item.Properties()
+                        .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
     }
 
