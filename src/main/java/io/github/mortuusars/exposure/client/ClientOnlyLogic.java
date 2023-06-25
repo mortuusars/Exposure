@@ -25,6 +25,7 @@ public class ClientOnlyLogic {
             return;
         }
 
+        ViewfinderRenderer.update();
         Packets.sendToServer(new ServerboundSyncCameraPacket(cameraStack, hand));
     }
 }

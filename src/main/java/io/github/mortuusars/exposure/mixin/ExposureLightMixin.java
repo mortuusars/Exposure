@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CameraCapture;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ExposureLightMixin {
     @Inject(method = "getBrightness", at = @At(value = "RETURN"), cancellable = true)
     private static void modifyBrightness(DimensionType pDimensionType, int pLightLevel, CallbackInfoReturnable<Float> cir) {
-        if (!Camera.isCapturing())
+        if (!CameraCapture.isCapturing())
             return;
 
-        cir.setReturnValue(Camera.modifyBrightness(cir.getReturnValue()));
+        cir.setReturnValue(CameraCapture.modifyBrightness(cir.getReturnValue()));
     }
 }

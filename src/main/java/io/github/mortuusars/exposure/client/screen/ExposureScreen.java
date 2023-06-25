@@ -70,7 +70,7 @@ public class ExposureScreen extends Screen {
 //            poseStack.translate(x, y, 0);
 
             fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-            ExposureRenderer.render(poseStack, bufferSource, exposureIds.get(currentExposureIndex).id + "asd", exposureData, LightTexture.FULL_BRIGHT);
+            ExposureRenderer.renderNegative(poseStack, bufferSource, exposureIds.get(currentExposureIndex).id + "asd", exposureData, LightTexture.FULL_BRIGHT);
             poseStack.popPose();
     //        float scale = 2f / mps.length;
     //        int startX = (int) (centerX - (mps.length * 128 * scale) / 2);

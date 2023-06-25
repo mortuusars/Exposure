@@ -1,21 +1,18 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.camera.Camera;
-import io.github.mortuusars.exposure.camera.CaptureProperties;
-import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.camera.IExposureModifier;
+import io.github.mortuusars.exposure.camera.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
-import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOld;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
+import io.github.mortuusars.exposure.client.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import io.github.mortuusars.exposure.item.attachment.Film;
 import io.github.mortuusars.exposure.menu.CameraMenu;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMaps;
-import net.minecraft.advancements.critereon.MinMaxBounds;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -35,7 +32,9 @@ import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class CameraItem extends Item {
     public static final int FILM = 0;
@@ -43,8 +42,8 @@ public class CameraItem extends Item {
     public static final int FILTER = 2;
 
     public static final Int2ObjectSortedMap<String> SLOTS = new Int2ObjectRBTreeMap<>(
-            new int[] {0, 1, 2},
-            new String[] {"Film", "Lens", "Filter"}
+            new int[] { 0, 1, 2 },
+            new String[] { "Film", "Lens", "Filter" }
     );
 
     public CameraItem(Properties properties) {
@@ -53,12 +52,12 @@ public class CameraItem extends Item {
 
     @Override
     public int getUseDuration(@NotNull ItemStack stack) {
-        return Integer.MAX_VALUE;
+        return 1000;
     }
 
     @Override
     public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
-        return UseAnim.SPYGLASS;
+        return UseAnim.BLOCK;
     }
 
     @Override
@@ -75,7 +74,7 @@ public class CameraItem extends Item {
     }
 
     protected void useCamera(Player player, InteractionHand hand) {
-        if (player.isSecondaryUseActive() && !Viewfinder.isActive()) {
+        if (player.isSecondaryUseActive() && !Camera.getViewfinder().isActive(player)) {
             if (player instanceof ServerPlayer serverPlayer)
                 openCameraGUI(serverPlayer, hand);
 
@@ -85,12 +84,10 @@ public class CameraItem extends Item {
         if (!player.getLevel().isClientSide)
             return;
 
-        ItemStack cameraStack = player.getItemInHand(hand);
-
-        if (Viewfinder.isActive())
+        if (Camera.getViewfinder().isActive(player))
             tryTakeShot(player, hand);
         else
-            Viewfinder.activate(cameraStack, hand);
+            Camera.getViewfinder().activate(player, hand);
     }
 
     protected void openCameraGUI(ServerPlayer serverPlayer, InteractionHand hand) {
@@ -144,7 +141,7 @@ public class CameraItem extends Item {
 
         if (player.level.isClientSide) {
             CaptureProperties captureProperties = createCaptureProperties(player, hand);
-            Camera.capture(captureProperties);
+            CameraCapture.capture(captureProperties);
 
             onShutterReleased(player, hand, cameraStack);
 
@@ -171,10 +168,10 @@ public class CameraItem extends Item {
         return player.getName().getString() + "_" + level.getGameTime();
     }
 
-    public MinMaxBounds<Integer> getFocalRange(ItemStack cameraStack) {
+    public Camera.FocalRange getFocalRange(ItemStack cameraStack) {
         CameraAttachments attachments = getAttachments(cameraStack);
         ItemStack lensStack = attachments.getAttachment(SLOTS.get(LENS));
-        return lensStack.isEmpty() ? MinMaxBounds.Ints.between(18, 55) : MinMaxBounds.Ints.between(55, 200);
+        return lensStack.isEmpty() ? new Camera.FocalRange(18, 55) : new Camera.FocalRange(55, 200);
     }
 
     protected CaptureProperties createCaptureProperties(Player player, InteractionHand hand) {
@@ -206,9 +203,24 @@ public class CameraItem extends Item {
 
         if (!attachmentStack.isEmpty())
             player.playSound(SoundEvents.COMPARATOR_CLICK);
+
+        if (player.getLevel().isClientSide)
+            ViewfinderRenderer.update();
     }
 
     public void clientsideUpdateCameraInInventory(ItemStack cameraStack, InteractionHand hand) {
         ClientOnlyLogic.updateAndSendCameraStack(cameraStack, hand);
+    }
+
+    public static Optional<ItemAndStack<CameraItem>> getCameraInHand(Player player) {
+        ItemStack cameraStack = ItemStack.EMPTY;
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack itemInHand = player.getItemInHand(hand);
+            if (itemInHand.getItem() instanceof CameraItem)
+                cameraStack = itemInHand;
+        }
+
+        return cameraStack.isEmpty() ? Optional.empty() : Optional.of(new ItemAndStack<>(cameraStack));
     }
 }

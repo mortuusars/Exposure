@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
+import io.github.mortuusars.exposure.client.ViewfinderRenderer;
 import net.minecraft.client.MouseHandler;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 public class ViewfinderSensitivityMixin {
     @ModifyVariable(method = "turnPlayer", at = @At(value = "STORE"), ordinal = 3)
     private double modifySensitivity(double sensitivity) {
-        return Viewfinder.isActive() ? sensitivity * Viewfinder.getMouseSensitivityModifier() : sensitivity;
+        return ViewfinderRenderer.modifyMouseSensitivity(sensitivity);
+//        return ViewfinderOld.isActive() ? sensitivity * ViewfinderOld.getMouseSensitivityModifier() : sensitivity;
     }
 }
