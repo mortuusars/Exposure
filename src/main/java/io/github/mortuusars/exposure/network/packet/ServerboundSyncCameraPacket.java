@@ -1,9 +1,5 @@
 package io.github.mortuusars.exposure.network.packet;
 
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.item.CameraItem;
-import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

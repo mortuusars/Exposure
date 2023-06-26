@@ -17,14 +17,6 @@ public class ClientOnlyLogic {
         }
 
         player.setItemInHand(hand, cameraStack);
-
-        int slot = player.getInventory().findSlotMatchingItem(cameraStack);
-
-        if (slot == -1) {
-            Exposure.LOGGER.error("Cannot send camera to the server: matching slot in player's inventory is not found.");
-            return;
-        }
-
         ViewfinderRenderer.update();
         Packets.sendToServer(new ServerboundSyncCameraPacket(cameraStack, hand));
     }
