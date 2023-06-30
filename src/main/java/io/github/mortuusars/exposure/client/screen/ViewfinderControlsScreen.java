@@ -4,6 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
+import io.github.mortuusars.exposure.client.ViewfinderRenderer;
+import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.screens.Screen;
@@ -53,6 +56,9 @@ public class ViewfinderControlsScreen extends Screen {
 
         fill(poseStack, 200, 50, 420, 250, 0xAAFF88AA);
 
+        int focalLength = Math.round(Fov.fovToFocalLength((float) ViewfinderRenderer.getCurrentFov()));
+        Minecraft.getInstance().font.draw(poseStack, focalLength + "mm", width / 2f, height - 14, 0xFFc1b4a3);
+
         super.render(poseStack, mouseX, mouseY, partialTick);
     }
 
@@ -75,8 +81,7 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-
-
+        ViewfinderRenderer.zoom(delta < 0d ? ZoomDirection.IN : ZoomDirection.OUT, true);
         return super.mouseScrolled(mouseX, mouseY, delta);
     }
 }

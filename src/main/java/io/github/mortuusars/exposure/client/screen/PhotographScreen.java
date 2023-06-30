@@ -28,8 +28,12 @@ public class PhotographScreen extends ExposureRenderScreen {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
-        if (exposureData == null)
-            return;
+        if (exposureData == null) {
+            loadExposure();
+
+            if (exposureData == null)
+                return;
+        }
 
         float scale = (height - (height / 6f)) / exposureData.getHeight();
         scale += zoom;

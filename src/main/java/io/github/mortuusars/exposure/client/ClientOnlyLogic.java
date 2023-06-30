@@ -17,7 +17,6 @@ public class ClientOnlyLogic {
         }
 
         player.setItemInHand(hand, cameraStack);
-        ViewfinderRenderer.update();
         Packets.sendToServer(new ServerboundSyncCameraPacket(cameraStack, hand));
     }
 }

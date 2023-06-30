@@ -23,7 +23,7 @@ public class Viewfinder implements IViewfinder {
     @Override
     public void activate(Player player, InteractionHand hand) {
         playersWithActiveViewfinder.put(player, hand);
-        ViewfinderRenderer.update();
+        ViewfinderRenderer.setup(player, hand);
         broadcast(player, true, hand);
     }
 

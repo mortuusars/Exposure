@@ -200,11 +200,10 @@ public class CameraItem extends Item {
     public void attachmentsChanged(Player player, ItemStack cameraStack, int slot, ItemStack attachmentStack) {
         getAttachments(cameraStack).setAttachment(SLOTS.get(slot), attachmentStack);
 
-        if (!attachmentStack.isEmpty() && player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized)
-            player.playSound(SoundEvents.COMPARATOR_CLICK);
-
-        if (player.getLevel().isClientSide)
-            ViewfinderRenderer.update();
+        if (player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized) {
+            if (slot == LENS)
+                player.playSound(attachmentStack.isEmpty() ? SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE);
+        }
     }
 
     public void clientsideUpdateCameraInInventory(ItemStack cameraStack, InteractionHand hand) {

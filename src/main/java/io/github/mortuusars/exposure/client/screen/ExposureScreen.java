@@ -94,20 +94,24 @@ public class ExposureScreen extends ExposureRenderScreen {
 
     @Override
     public boolean keyPressed(int key, int scanCode, int modifiers) {
-        if (key == InputConstants.KEY_LEFT)
+        if (key == InputConstants.KEY_LEFT) {
             currentExposureIndex = (Math.max(0, currentExposureIndex - 1));
-        else if (key == InputConstants.KEY_RIGHT)
+            loadExposure();
+        }
+        else if (key == InputConstants.KEY_RIGHT) {
             currentExposureIndex = (Math.min(exposureIds.size() - 1, currentExposureIndex + 1));
+            loadExposure();
+        }
         else if (key == InputConstants.KEY_P) { //TODO: Proper printing
             ExposureFrame exposureFrame = exposureIds.get(currentExposureIndex);
             Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id, frameSize, "", "")));
         }
         else if (Minecraft.getInstance().options.keyInventory.matches(key, scanCode))
             this.onClose();
+        else
+            return super.keyPressed(key, scanCode, modifiers);
 
-        loadExposure();
-
-        return super.keyPressed(key, scanCode, modifiers);
+        return true;
     }
 
     @Override
