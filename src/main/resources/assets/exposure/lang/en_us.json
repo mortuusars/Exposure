@@ -1,0 +1,10 @@
+{
+  "gui.exposure.composition_guide.none": "None",
+  "gui.exposure.composition_guide.cross": "Cross",
+  "gui.exposure.composition_guide.rule_of_thirds": "Rule of Thirds",
+
+  "gui.exposure.viewfinder.composition_guide.tooltip": "Composition Guide",
+  "gui.exposure.viewfinder.focal_length": "%smm",
+  "gui.exposure.viewfinder.film_frame_counter.tooltip": "Film Frames",
+  "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length"
+}

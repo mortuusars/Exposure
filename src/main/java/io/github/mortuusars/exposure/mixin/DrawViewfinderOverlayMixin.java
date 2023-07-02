@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.client.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import org.spongepowered.asm.mixin.Mixin;

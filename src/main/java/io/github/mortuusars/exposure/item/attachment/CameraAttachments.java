@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.item.attachment;
 
+import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
@@ -18,12 +20,12 @@ public class CameraAttachments {
         this.cameraStack = cameraStack;
     }
 
-    public Optional<Film> getFilm() {
+    public Optional<ItemAndStack<FilmItem>> getFilm() {
         ItemStack filmStack = getAttachment(FILM);
         if (filmStack.isEmpty())
             return Optional.empty();
 
-        return Optional.of(new Film(filmStack));
+        return Optional.of(new ItemAndStack<>(filmStack));
     }
 
     public void setFilm(ItemStack stack) {

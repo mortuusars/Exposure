@@ -2,20 +2,21 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.*;
+import io.github.mortuusars.exposure.camera.component.CompositionGuide;
+import io.github.mortuusars.exposure.camera.component.CompositionGuides;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
-import io.github.mortuusars.exposure.client.ClientOnlyLogic;
-import io.github.mortuusars.exposure.client.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
-import io.github.mortuusars.exposure.item.attachment.Film;
 import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -73,7 +74,7 @@ public class CameraItem extends Item {
     }
 
     protected void useCamera(Player player, InteractionHand hand) {
-        if (player.isSecondaryUseActive() && !Camera.getViewfinder().isActive(player)) {
+        if (player.isSecondaryUseActive() && !Camera.isActive(player)) {
             if (player instanceof ServerPlayer serverPlayer)
                 openCameraGUI(serverPlayer, hand);
 
@@ -83,10 +84,10 @@ public class CameraItem extends Item {
         if (!player.getLevel().isClientSide)
             return;
 
-        if (Camera.getViewfinder().isActive(player))
+        if (Camera.isActive(player))
             tryTakeShot(player, hand);
         else
-            Camera.getViewfinder().activate(player, hand);
+            Camera.activate(hand);
     }
 
     protected void openCameraGUI(ServerPlayer serverPlayer, InteractionHand hand) {
@@ -117,21 +118,17 @@ public class CameraItem extends Item {
     protected boolean tryTakeShot(Player player, InteractionHand hand) {
         Level level = player.level;
         ItemStack cameraStack = player.getItemInHand(hand);
-        Optional<Film> filmOpt = getAttachments(cameraStack).getFilm();
+        Optional<ItemAndStack<FilmItem>> filmOpt = getAttachments(cameraStack).getFilm();
 
         if (filmOpt.isEmpty()) {
             onShutterReleased(player, hand, cameraStack);
             return false;
         }
 
-        Film film = filmOpt.get();
+        ItemAndStack<FilmItem> film = filmOpt.get();
 
-        int emptyFrame = film.getItem().getEmptyFrame(film.getStack());
-
-        if (emptyFrame == -1) {
-            player.displayClientMessage(Component.translatable("item.exposure.camera.no_empty_frames"), true);
-            player.getLevel().playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 1f,
-                    player.getLevel().getRandom().nextFloat() * 0.2f + 1.1f);
+        if (!film.getItem().canAddFrame(film.getStack())) {
+            onShutterReleased(player, hand, cameraStack);
             return false;
         }
 
@@ -144,10 +141,10 @@ public class CameraItem extends Item {
 
             onShutterReleased(player, hand, cameraStack);
 
-            film.getItem().setFrame(film.getStack(), emptyFrame, new ExposureFrame(captureProperties.id));
+            film.getItem().addFrame(film.getStack(), new ExposureFrame(captureProperties.id));
             getAttachments(cameraStack).setFilm(film.getStack());
 
-            clientsideUpdateCameraInInventory(cameraStack, hand);
+            Camera.updateAndSyncCameraInHand(cameraStack);
         }
 
         return true;
@@ -198,27 +195,41 @@ public class CameraItem extends Item {
     }
 
     public void attachmentsChanged(Player player, ItemStack cameraStack, int slot, ItemStack attachmentStack) {
+        // Adjust zoom for new focal range to the same percentage:
+        if (slot == LENS) {
+            float prevZoom = getZoom(cameraStack);
+            Camera.FocalRange prevFocalRange = getFocalRange(cameraStack);
+            Camera.FocalRange newFocalLength = attachmentStack.isEmpty() ? Camera.FocalRange.SHORT : Camera.FocalRange.LONG;
+
+            float adjustedZoom = Mth.map(prevZoom, prevFocalRange.min(), prevFocalRange.max(), newFocalLength.min(), newFocalLength.max());
+            setZoom(cameraStack, adjustedZoom);
+        }
+
         getAttachments(cameraStack).setAttachment(SLOTS.get(slot), attachmentStack);
 
-        if (player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized) {
-            if (slot == LENS)
+        if (player.getLevel().isClientSide && player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized) {
+            if (slot == LENS) {
                 player.playSound(attachmentStack.isEmpty() ? SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE);
+            }
         }
     }
 
-    public void clientsideUpdateCameraInInventory(ItemStack cameraStack, InteractionHand hand) {
-        ClientOnlyLogic.updateAndSendCameraStack(cameraStack, hand);
+    public float getZoom(ItemStack cameraStack) {
+        return cameraStack.hasTag() ? cameraStack.getOrCreateTag().getFloat("Zoom") : getFocalRange(cameraStack).min();
     }
 
-    public static Optional<ItemAndStack<CameraItem>> getCameraInHand(Player player) {
-        ItemStack cameraStack = ItemStack.EMPTY;
+    public void setZoom(ItemStack cameraStack, float focalLength) {
+        cameraStack.getOrCreateTag().putFloat("Zoom", focalLength);
+    }
 
-        for (InteractionHand hand : InteractionHand.values()) {
-            ItemStack itemInHand = player.getItemInHand(hand);
-            if (itemInHand.getItem() instanceof CameraItem)
-                cameraStack = itemInHand;
-        }
+    public CompositionGuide getCompositionGuide(ItemStack cameraStack) {
+        if (!cameraStack.hasTag() || !cameraStack.getOrCreateTag().contains("CompositionGuide", Tag.TAG_STRING))
+            return CompositionGuides.NONE;
 
-        return cameraStack.isEmpty() ? Optional.empty() : Optional.of(new ItemAndStack<>(cameraStack));
+        return CompositionGuides.byIdOrNone(cameraStack.getOrCreateTag().getString("CompositionGuide"));
+    }
+
+    public void setCompositionGuide(ItemStack cameraStack, CompositionGuide guide) {
+        cameraStack.getOrCreateTag().putString("CompositionGuide", guide.getId());
     }
 }

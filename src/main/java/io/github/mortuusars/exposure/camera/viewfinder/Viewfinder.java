@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.camera.viewfinder;
 
-import io.github.mortuusars.exposure.client.ViewfinderRenderer;
 import io.github.mortuusars.exposure.network.Packets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
@@ -23,7 +22,6 @@ public class Viewfinder implements IViewfinder {
     @Override
     public void activate(Player player, InteractionHand hand) {
         playersWithActiveViewfinder.put(player, hand);
-        ViewfinderRenderer.setup(player, hand);
         broadcast(player, true, hand);
     }
 
@@ -60,15 +58,13 @@ public class Viewfinder implements IViewfinder {
             return new UpdateViewfinderPacket(buffer.readBoolean(), buffer.readEnum(InteractionHand.class));
         }
 
-        public boolean handle(Supplier<NetworkEvent.Context> contextSupplier) {
+        public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
             NetworkEvent.Context context = contextSupplier.get();
 
             if (Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER)
                 handleServerside(context.getSender());
             else
                 handleClientSide();
-
-            return true;
         }
 
         private void handleClientSide() {

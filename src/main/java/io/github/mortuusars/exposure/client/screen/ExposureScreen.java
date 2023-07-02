@@ -81,7 +81,7 @@ public class ExposureScreen extends ExposureRenderScreen {
             // Set origin point to center (for scale)
             poseStack.translate(exposureData.getWidth() / -2d, exposureData.getHeight() / -2d, 0);
 
-//            fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
+            fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
             renderExposure(poseStack, bufferSource, LightTexture.FULL_BRIGHT, true);
             poseStack.popPose();
 

@@ -19,7 +19,7 @@ public class ForgeEvents {
     public static void playerTick(TickEvent.PlayerTickEvent event) {
         Player player = event.player;
 
-        if (CameraItem.getCameraInHand(player).isEmpty())
-            Camera.getViewfinder().deactivate(player);
+        if (Camera.getCameraInHand(player).isEmpty())
+            Camera.deactivate();
     }
 }

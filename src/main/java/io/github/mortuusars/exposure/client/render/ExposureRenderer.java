@@ -104,7 +104,10 @@ public class ExposureRenderer {
                         int green = bgr >> 8 & 0xFF;
                         int red = bgr & 0xFF;
                         int luma = Mth.clamp((int) (0.4 * red + 0.6 * green + 0.15 * blue), 0, 255);
-                        float transparency = luma / 255f;
+
+                        //TODO: Proper negative transparency
+                        luma = (int) Mth.clamp(luma * luma / 255f - 100, 0, 255);
+                        luma = (255 - luma);
 
                         bgr = (bgr & 0x00FFFFFF) | (luma << 24);
                     }

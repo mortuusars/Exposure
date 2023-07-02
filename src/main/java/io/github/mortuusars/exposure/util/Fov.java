@@ -10,7 +10,7 @@ public class Fov {
     }
 
     public static float fovToFocalLength(float fov, float filmWidth) {
-        return Math.round(filmWidth / (2.0 * Math.tan(Math.toRadians(fov / 2.0))));
+        return (float) (filmWidth / (2.0f * Math.tan(Math.toRadians(fov / 2.0f))));
     }
 
     public static float focalLengthToFov(float focalLength, float filmWidth) {
