@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.camera;
 
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
+import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.camera.processing;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;

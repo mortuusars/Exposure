@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.camera.modifier;
 
 import io.github.mortuusars.exposure.camera.CaptureProperties;
-import io.github.mortuusars.exposure.camera.IExposureModifier;
 import net.minecraft.util.Mth;
 
 import java.awt.*;

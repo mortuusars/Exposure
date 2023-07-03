@@ -1,13 +1,13 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.*;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
+import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
@@ -110,29 +110,7 @@ public class CameraItem extends Item {
             tryTakeShot(player, hand);
         else {
             Camera.activate(hand);
-
-            test(player, hand);
         }
-    }
-
-    private void test(Player player, InteractionHand hand) {
-//        ItemStack cameraStack = player.getItemInHand(hand);
-//        List<ShutterSpeed> allShutterSpeeds = getAllShutterSpeeds(cameraStack);
-//        ShutterSpeed defaultShutterSpeed = getDefaultShutterSpeed(cameraStack);
-//
-//        for (ShutterSpeed speed : allShutterSpeeds) {
-//            float v = speed.calculateBrightnessImpact(defaultShutterSpeed);
-//
-//            int red = 103;
-//            int green = 72;
-//            int blue = 54;
-//
-//            red = Math.round(Mth.clamp(red * v, 0f, 255f));
-//            green = Math.round(Mth.clamp(green * v, 0f, 255f));
-//            blue = Math.round(Mth.clamp(blue * v, 0f, 255f));
-//
-//            Exposure.LOGGER.warn(Integer.toHexString(0xFF << 24 | red << 16 | green << 8 | blue));
-//        }
     }
 
     protected void openCameraGUI(ServerPlayer serverPlayer, InteractionHand hand) {

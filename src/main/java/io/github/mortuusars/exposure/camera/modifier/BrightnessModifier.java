@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.camera.modifier;
 
 import io.github.mortuusars.exposure.camera.CameraCapture;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
-import io.github.mortuusars.exposure.camera.IExposureModifier;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import net.minecraft.util.Mth;
 

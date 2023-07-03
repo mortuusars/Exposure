@@ -2,6 +2,8 @@ package io.github.mortuusars.exposure.camera;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
+import io.github.mortuusars.exposure.camera.processing.FloydDither;
 import io.github.mortuusars.exposure.storage.saver.ExposureFileSaver;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.ColorUtils;
@@ -59,7 +61,6 @@ public class CameraCapture {
 
     public static float getModifiedBrightness(float originalBrightness) {
         return originalBrightness + additionalBrightness;
-//        return capturing ? originalBrightness + additionalBrightness : originalBrightness + 0.11f;
     }
 
     @SubscribeEvent
@@ -70,9 +71,8 @@ public class CameraCapture {
         if (captureDelay > 0) {
             captureDelay--;
 
-            //TODO: Flash light
             for (IExposureModifier modifier : captureProperties.modifiers) {
-                modifier.onSetupDelayTick(captureProperties);
+                modifier.onSetupDelayTick(captureProperties, captureDelay);
             }
 
             return;

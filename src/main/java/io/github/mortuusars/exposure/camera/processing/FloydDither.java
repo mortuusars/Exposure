@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.camera.processing;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.MaterialColor;

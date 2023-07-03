@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class Camera {
-
     public record FocalRange(float min, float max) {
         public static final FocalRange FULL = new FocalRange(18, 200);
         public static final FocalRange SHORT = new FocalRange(18, 55);
@@ -59,6 +58,11 @@ public class Camera {
         return Optional.ofNullable(camera);
     }
 
+    public static void refreshActiveCamera(ItemStack cameraStack) {
+        Preconditions.checkState(!cameraStack.isEmpty(), "Camera stack cannot be empty.");
+        camera = new ItemAndStack<>(cameraStack);
+    }
+
     public static Optional<ItemAndStack<CameraItem>> getCameraInHand(Player player) {
         ItemStack cameraStack = ItemStack.EMPTY;
 
@@ -69,11 +73,6 @@ public class Camera {
         }
 
         return cameraStack.isEmpty() ? Optional.empty() : Optional.of(new ItemAndStack<>(cameraStack));
-    }
-
-    public static void updateActiveCamera(ItemStack cameraStack) {
-        Preconditions.checkState(!cameraStack.isEmpty(), "Camera stack cannot be empty.");
-        camera = new ItemAndStack<>(cameraStack);
     }
 
     public static void changeZoom(float focalLength) {

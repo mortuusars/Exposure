@@ -22,7 +22,7 @@ public class ClientOnlyLogic {
                 InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 
         player.setItemInHand(hand, cameraStack);
-        Camera.updateActiveCamera(cameraStack);
+        Camera.refreshActiveCamera(cameraStack);
 
         Packets.sendToServer(new ServerboundSyncCameraPacket(cameraStack, hand));
     }

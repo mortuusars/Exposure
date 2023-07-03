@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.camera.modifier;
 
-import io.github.mortuusars.exposure.camera.IExposureModifier;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 
 public class ExposureModifiers {

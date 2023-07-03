@@ -1,5 +1,6 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.camera.modifier;
 
+import io.github.mortuusars.exposure.camera.CaptureProperties;
 import net.minecraft.core.Vec3i;
 
 import java.awt.*;
@@ -26,7 +27,7 @@ public interface IExposureModifier {
     /**
      * Called on every delay tick (before taking a shot). If something needs to be done continuously before a shot.
      */
-    default void onSetupDelayTick(CaptureProperties properties) {}
+    default void onSetupDelayTick(CaptureProperties properties, int ticksLeft) {}
 
     /**
      * Modifies a single pixel. Will be called for every pixel in the image.
