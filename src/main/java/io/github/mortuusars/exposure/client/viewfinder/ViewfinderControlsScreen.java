@@ -144,7 +144,7 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (Minecraft.getInstance().options.keyShift.matches(keyCode, scanCode)) {
+        if (Minecraft.getInstance().options.keySprint.matches(keyCode, scanCode)) {
             if (level.getGameTime() - openedAtTimestamp >= 5)
                 this.onClose();
 

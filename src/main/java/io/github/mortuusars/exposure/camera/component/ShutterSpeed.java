@@ -3,7 +3,6 @@ package io.github.mortuusars.exposure.camera.component;
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.util.Mth;
 
 import java.util.Objects;
 
@@ -11,10 +10,10 @@ public class ShutterSpeed {
     private final float value;
     private final int cooldown;
 
-    public ShutterSpeed(float value, int cooldown) {
-        this.value = value;
+    public ShutterSpeed(float seconds, int cooldown) {
+        this.value = seconds;
         this.cooldown = cooldown;
-        Preconditions.checkState(value != 0f, "Shutter Speed cannot be 0.");
+        Preconditions.checkState(seconds != 0f, "Shutter Speed cannot be 0.");
     }
 
     public float getValue() {
