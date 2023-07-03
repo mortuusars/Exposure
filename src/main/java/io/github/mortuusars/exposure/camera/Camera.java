@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.camera;
 
+import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.viewfinder.IViewfinder;
 import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public class Camera {
+
     public record FocalRange(float min, float max) {
         public static final FocalRange FULL = new FocalRange(18, 200);
         public static final FocalRange SHORT = new FocalRange(18, 55);
@@ -67,6 +69,11 @@ public class Camera {
         }
 
         return cameraStack.isEmpty() ? Optional.empty() : Optional.of(new ItemAndStack<>(cameraStack));
+    }
+
+    public static void updateActiveCamera(ItemStack cameraStack) {
+        Preconditions.checkState(!cameraStack.isEmpty(), "Camera stack cannot be empty.");
+        camera = new ItemAndStack<>(cameraStack);
     }
 
     public static void changeZoom(float focalLength) {

@@ -8,7 +8,9 @@ import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
 import io.github.mortuusars.exposure.client.viewfinder.element.CompositionGuideButton;
 import io.github.mortuusars.exposure.client.viewfinder.element.FocalLengthButton;
 import io.github.mortuusars.exposure.client.viewfinder.element.FrameCounterButton;
+import io.github.mortuusars.exposure.client.viewfinder.element.ShutterSpeedButton;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.util.Fov;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
@@ -18,10 +20,12 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -66,15 +70,18 @@ public class ViewfinderControlsScreen extends Screen {
         int leftSideButtonPos = 18;
 
         addRenderableOnly(new FocalLengthButton(this,leftPos + leftSideButtonPos, topPos + 237, 49, 19,
-                WIDGETS_TEXTURE, activeCamera.get()));
+                WIDGETS_TEXTURE));
 
-        leftSideButtonPos += 49 - 4;
+        leftSideButtonPos += 49 - 2;
 
         addRenderableOnly(new FrameCounterButton(this,leftPos + leftSideButtonPos, topPos + 237, 49, 19,
-                WIDGETS_TEXTURE, activeCamera.get()));
+                WIDGETS_TEXTURE));
 
-        addRenderableWidget(new CompositionGuideButton(this,leftPos + 181, topPos + 237,
-                20, 19, WIDGETS_TEXTURE, activeCamera.get()));
+        addRenderableWidget(new ShutterSpeedButton(this,leftPos + 197, topPos + 237,
+                41, 19, WIDGETS_TEXTURE));
+
+        addRenderableWidget(new CompositionGuideButton(this,leftPos + 179, topPos + 237,
+                20, 19, WIDGETS_TEXTURE));
     }
 
     @Override
@@ -114,6 +121,20 @@ public class ViewfinderControlsScreen extends Screen {
 
         poseStack.popPose();
 
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        boolean handled = super.mouseClicked(mouseX, mouseY, button);
+
+        if (!handled && button == 1) {
+            ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
+            camera.getItem().tryTakeShot(player, player.getMainHandItem()
+                    .getItem() instanceof CameraItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+            handled = true;
+        }
+
+        return handled;
     }
 
     @Override

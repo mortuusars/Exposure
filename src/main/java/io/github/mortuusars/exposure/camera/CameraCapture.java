@@ -15,15 +15,14 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 @OnlyIn(Dist.CLIENT)
 public class CameraCapture {
+    public static float additionalBrightness = 0f;
+
     private static CaptureProperties captureProperties;
 
     private static boolean capturing;
@@ -58,8 +57,9 @@ public class CameraCapture {
         }
     }
 
-    public static float modifyBrightness(float originalBrightness) {
-        return originalBrightness; // TODO: brighten darks a little to not leave black spots on longer exposures.
+    public static float getModifiedBrightness(float originalBrightness) {
+        return originalBrightness + additionalBrightness;
+//        return capturing ? originalBrightness + additionalBrightness : originalBrightness + 0.11f;
     }
 
     @SubscribeEvent

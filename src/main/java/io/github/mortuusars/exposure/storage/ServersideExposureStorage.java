@@ -23,7 +23,8 @@ public class ServersideExposureStorage implements IExposureStorage {
         ExposureSavedData loadedExposureData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage()
                 .get(ExposureSavedData::load, getSaveId(id));
 
-        Exposure.LOGGER.error("Exposure '" + id + "' was not loaded. File does not exist or some error occurred.");
+        if (loadedExposureData == null)
+            Exposure.LOGGER.error("Exposure '" + id + "' was not loaded. File does not exist or some error occurred.");
 
         return Optional.ofNullable(loadedExposureData);
     }

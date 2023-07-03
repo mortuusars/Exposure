@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundSyncCameraPacket;
@@ -21,6 +22,8 @@ public class ClientOnlyLogic {
                 InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND;
 
         player.setItemInHand(hand, cameraStack);
+        Camera.updateActiveCamera(cameraStack);
+
         Packets.sendToServer(new ServerboundSyncCameraPacket(cameraStack, hand));
     }
 }

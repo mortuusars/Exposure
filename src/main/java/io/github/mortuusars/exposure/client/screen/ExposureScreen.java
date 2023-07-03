@@ -3,8 +3,10 @@ package io.github.mortuusars.exposure.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.Photograph;
+import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
 import io.github.mortuusars.exposure.item.FilmItem;
@@ -17,6 +19,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +38,7 @@ public class ExposureScreen extends ExposureRenderScreen {
     public ExposureScreen(ItemStack film) {
         super(Component.empty());
 
+        // TODO: remove?
         ExposureRenderer.resetData();
 
         if (film.getItem() instanceof FilmItem filmItem) {
@@ -82,7 +86,7 @@ public class ExposureScreen extends ExposureRenderScreen {
             poseStack.translate(exposureData.getWidth() / -2d, exposureData.getHeight() / -2d, 0);
 
             fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-            renderExposure(poseStack, bufferSource, LightTexture.FULL_BRIGHT, true);
+            renderExposure(poseStack, false);
             poseStack.popPose();
 
             bufferSource.endBatch();

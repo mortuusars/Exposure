@@ -6,5 +6,6 @@
   "gui.exposure.viewfinder.composition_guide.tooltip": "Composition Guide",
   "gui.exposure.viewfinder.focal_length": "%smm",
   "gui.exposure.viewfinder.film_frame_counter.tooltip": "Film Frames",
-  "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length"
+  "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length",
+  "gui.exposure.viewfinder.shutter_speed.tooltip": "Shutter Speed"
 }

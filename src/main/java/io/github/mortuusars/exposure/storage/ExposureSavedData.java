@@ -54,7 +54,6 @@ public class ExposureSavedData extends SavedData {
         compoundTag.putInt("width", width);
         compoundTag.putInt("height", height);
         compoundTag.putByteArray("pixels", pixels);
-        Exposure.LOGGER.info("Size: " + pixels.length);
         return compoundTag;
     }
 
