@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.util;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -19,5 +20,12 @@ public class ItemAndStack<T extends Item> {
 
     public ItemStack getStack() {
         return stack;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemAndStack{" +
+                "stack=" + stack +
+                '}';
     }
 }

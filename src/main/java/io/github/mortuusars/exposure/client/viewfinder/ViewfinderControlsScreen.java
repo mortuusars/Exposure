@@ -3,33 +3,22 @@ package io.github.mortuusars.exposure.client.viewfinder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
 import io.github.mortuusars.exposure.client.viewfinder.element.CompositionGuideButton;
 import io.github.mortuusars.exposure.client.viewfinder.element.FocalLengthButton;
 import io.github.mortuusars.exposure.client.viewfinder.element.FrameCounterButton;
 import io.github.mortuusars.exposure.client.viewfinder.element.ShutterSpeedButton;
-import io.github.mortuusars.exposure.item.CameraItem;
-import io.github.mortuusars.exposure.menu.CameraMenu;
-import io.github.mortuusars.exposure.util.Fov;
-import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Optional;
 
 public class ViewfinderControlsScreen extends Screen {
     public static final ResourceLocation OVERLAY_TEXTURE = Exposure.resource("textures/misc/viewfinder_controls_overlay.png");
@@ -63,8 +52,8 @@ public class ViewfinderControlsScreen extends Screen {
         leftPos = (width - 256) / 2;
         topPos = Math.round(ViewfinderRenderer.opening.y + ViewfinderRenderer.opening.height - 256);
 
-        Optional<ItemAndStack<CameraItem>> activeCamera = Camera.getActiveCamera();
-        if (activeCamera.isEmpty())
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+        if (camera.isEmpty())
             throw new IllegalStateException("Active Camera cannot be empty here.");
 
         int leftSideButtonPos = 18;
@@ -86,7 +75,7 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (!Camera.isActive(player)) {
+        if (!ViewfinderRenderer.shouldRender()) {
             this.onClose();
             return;
         }
@@ -128,10 +117,11 @@ public class ViewfinderControlsScreen extends Screen {
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
 
         if (!handled && button == 1) {
-            ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
-            camera.getItem().tryTakeShot(player, player.getMainHandItem()
-                    .getItem() instanceof CameraItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
-            handled = true;
+            CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+            if (!camera.isEmpty()) {
+                camera.getItem().useCamera(player, camera.getHand());
+                handled = true;
+            }
         }
 
         return handled;

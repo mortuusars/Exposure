@@ -20,7 +20,6 @@ import net.minecraftforge.fml.common.Mod;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 @OnlyIn(Dist.CLIENT)
 public class CameraCapture {
     public static float additionalBrightness = 0f;
@@ -44,6 +43,8 @@ public class CameraCapture {
     public static void capture(CaptureProperties properties) {
         captureProperties = properties;
 
+        //TODO: queue captures to ensure spam clicking works?
+
         capturing = true;
         hideGuiBeforeCapture = Minecraft.getInstance().options.hideGui;
         cameraTypeBeforeCapture = Minecraft.getInstance().options.getCameraType();
@@ -63,7 +64,6 @@ public class CameraCapture {
         return originalBrightness + additionalBrightness;
     }
 
-    @SubscribeEvent
     public static void onRenderTick(TickEvent.RenderTickEvent event) {
         if (!event.phase.equals(TickEvent.Phase.END) || !capturing || processing)
             return;

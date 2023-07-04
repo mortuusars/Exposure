@@ -5,12 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.Camera;
-import io.github.mortuusars.exposure.camera.CameraCapture;
+import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
-import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
-import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -19,16 +17,11 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
 import java.awt.geom.Rectangle2D;
-import java.util.Optional;
 
-@Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.FORGE, modid = Exposure.ID, value = Dist.CLIENT)
 public class ViewfinderRenderer {
     private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/misc/viewfinder.png");
     private static final PoseStack POSE_STACK = new PoseStack();
@@ -40,7 +33,7 @@ public class ViewfinderRenderer {
 
     private static float scale = 1f;
 
-    private static Camera.FocalRange focalRange = Camera.FocalRange.FULL;
+    private static FocalRange focalRange = FocalRange.FULL;
     private static float defaultFov = -1;
     private static float currentFov = -1;
     private static float targetFov = -1;
@@ -50,15 +43,14 @@ public class ViewfinderRenderer {
         return currentFov;
     }
 
-    public static void setup(Player player) {
+    public static void setup() {
         minecraft = Minecraft.getInstance();
-        ViewfinderRenderer.player = player;
+        player = minecraft.player;
 
-        Preconditions.checkState(player != null, "Why player is null?");
+        Preconditions.checkState(player != null, "Player should not be null");
 
-        Optional<ItemAndStack<CameraItem>> activeCamera = Camera.getActiveCamera();
-        Preconditions.checkState(activeCamera.isPresent(), "Camera should be present at this point.");
-        ItemAndStack<CameraItem> camera = activeCamera.get();
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+        Preconditions.checkState(!camera.isEmpty(), "Player must be holding a camera.");
 
         focalRange = camera.getItem().getFocalRange(camera.getStack());
         targetFov = Fov.focalLengthToFov( Mth.clamp(camera.getItem().getZoom(camera.getStack()), focalRange.min(), focalRange.max()));
@@ -71,7 +63,7 @@ public class ViewfinderRenderer {
     }
 
     public static boolean shouldRender() {
-        return Camera.isActive(player);
+        return Exposure.getCamera().isActive(Minecraft.getInstance().player);
     }
 
     public static void render() {
@@ -101,12 +93,15 @@ public class ViewfinderRenderer {
             drawRect(poseStack, -999, opening.y + opening.height, width + 999, height + 999, color);
 
             // Shutter
-            if (!CameraCapture.isCapturing()) {
-                Camera.getActiveCamera().ifPresent(camera -> {
-                    if (player.getCooldowns().isOnCooldown(camera.getItem()))
-                        drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, color);
-                });
-            }
+            if (Exposure.getCamera().getShutter().isOpen(player))
+                drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, color);
+
+//            if (!CameraCapture.isCapturing()) {
+//                CameraOld.getActiveCamera().ifPresent(camera -> {
+//                    if (player.getCooldowns().isOnCooldown(camera.getItem()))
+//                        drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, color);
+//                });
+//            }
 
             // Opening Texture
             RenderSystem.enableBlend();
@@ -133,8 +128,10 @@ public class ViewfinderRenderer {
             RenderSystem.depthMask(false);
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            ItemAndStack<CameraItem> camera = Camera.getActiveCamera().get();
+
+            CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
             RenderSystem.setShaderTexture(0, camera.getItem().getCompositionGuide(camera.getStack()).getTexture());
+
             tesselator = Tesselator.getInstance();
             bufferbuilder = tesselator.getBuilder();
 
@@ -194,8 +191,7 @@ public class ViewfinderRenderer {
         return sensitivity * Mth.clamp(1f - (defaultFov - currentFov) / defaultFov, 0.1f, 1f);
     }
 
-    @SubscribeEvent
-    public static void computeFov(ViewportEvent.ComputeFov event) {
+    public static void onComputeFovEvent(ViewportEvent.ComputeFov event) {
         if (event.usedConfiguredFov()) {
             defaultFov = (float) event.getFOV();
             if (targetFov == -1)
@@ -230,8 +226,7 @@ public class ViewfinderRenderer {
         event.setFOV(currentFov);
     }
 
-    @SubscribeEvent
-    public static void onMouseScroll(InputEvent.MouseScrollingEvent event) {
+    public static void onMouseScrollEvent(InputEvent.MouseScrollingEvent event) {
         if (shouldRender() && event.getScrollDelta() != 0) {
             event.setCanceled(true);
             zoom(event.getScrollDelta() > 0d ? ZoomDirection.IN : ZoomDirection.OUT, false);
@@ -249,7 +244,7 @@ public class ViewfinderRenderer {
 
         float prevFov = targetFov;
 
-        float fov = Mth.clamp(targetFov += direction == ZoomDirection.IN ? -change : +change,
+        float fov = Mth.clamp(targetFov + (direction == ZoomDirection.IN ? -change : +change),
                 Fov.focalLengthToFov(focalRange.max()),
                 Fov.focalLengthToFov(focalRange.min()));
 
@@ -257,9 +252,12 @@ public class ViewfinderRenderer {
             player.playSound(SoundEvents.SPYGLASS_STOP_USING);
 
 
-        Camera.changeZoom(Fov.fovToFocalLength(fov));
+        targetFov = fov;
+        //TODO: zoom
 
-        targetFov = Camera.getActiveCamera().map(camera -> Fov.focalLengthToFov(camera.getItem().getZoom(camera.getStack()))).orElse(defaultFov);
+//        CameraOld.changeZoom(Fov.fovToFocalLength(fov));
+
+//        targetFov = CameraOld.getActiveCamera().map(camera -> Fov.focalLengthToFov(camera.getItem().getZoom(camera.getStack()))).orElse(defaultFov);
 
     }
 }

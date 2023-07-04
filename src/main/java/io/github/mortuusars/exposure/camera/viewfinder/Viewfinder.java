@@ -20,13 +20,13 @@ public class Viewfinder implements IViewfinder {
     private static final Map<Player, InteractionHand> playersWithActiveViewfinder = new HashMap<>();
 
     @Override
-    public void activate(Player player, InteractionHand hand) {
+    public void activateAndBroadcast(Player player, InteractionHand hand) {
         playersWithActiveViewfinder.put(player, hand);
         broadcast(player, true, hand);
     }
 
     @Override
-    public void deactivate(Player player) {
+    public void deactivateAndBroadcast(Player player) {
         @Nullable InteractionHand hand = playersWithActiveViewfinder.remove(player);
         if (hand != null)
             broadcast(player, false, hand);

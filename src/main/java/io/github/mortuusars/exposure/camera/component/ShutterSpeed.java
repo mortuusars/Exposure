@@ -8,11 +8,11 @@ import java.util.Objects;
 
 public class ShutterSpeed {
     private final float value;
-    private final int cooldown;
+    private final int visibleDuration;
 
-    public ShutterSpeed(float seconds, int cooldown) {
+    public ShutterSpeed(float seconds, int visibleDuration) {
         this.value = seconds;
-        this.cooldown = cooldown;
+        this.visibleDuration = visibleDuration;
         Preconditions.checkState(seconds != 0f, "Shutter Speed cannot be 0.");
     }
 
@@ -20,8 +20,8 @@ public class ShutterSpeed {
         return value;
     }
 
-    public int getCooldown() {
-        return cooldown;
+    public int getVisibleDuration() {
+        return visibleDuration;
     }
 
     public float getStopsDifference(ShutterSpeed relative) {
@@ -30,14 +30,14 @@ public class ShutterSpeed {
 
     public CompoundTag save(CompoundTag tag) {
         tag.putFloat("Value", value);
-        tag.putInt("Cooldown", cooldown);
+        tag.putInt("VisibleDuration", visibleDuration);
         return tag;
     }
 
     public static ShutterSpeed loadOrDefault(CompoundTag tag, ShutterSpeed defaultShutterSpeed) {
         return new ShutterSpeed(
                 tag.contains("Value", Tag.TAG_ANY_NUMERIC) ? tag.getFloat("Value") : defaultShutterSpeed.getValue(),
-                tag.contains("Cooldown", Tag.TAG_ANY_NUMERIC) ? tag.getInt("Cooldown") : defaultShutterSpeed.getCooldown());
+                tag.contains("VisibleDuration", Tag.TAG_ANY_NUMERIC) ? tag.getInt("VisibleDuration") : defaultShutterSpeed.getVisibleDuration());
     }
 
     @Override
@@ -50,11 +50,11 @@ public class ShutterSpeed {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ShutterSpeed that = (ShutterSpeed) o;
-        return Float.compare(that.value, value) == 0 && cooldown == that.cooldown;
+        return Float.compare(that.value, value) == 0 && visibleDuration == that.visibleDuration;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, cooldown);
+        return Objects.hash(value, visibleDuration);
     }
 }

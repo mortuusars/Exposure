@@ -1,12 +1,15 @@
 package io.github.mortuusars.exposure.event;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CameraOld;
 import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
 import io.github.mortuusars.exposure.client.viewfinder.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -38,18 +41,21 @@ public class ClientEvents {
     @SubscribeEvent
     public static void renderPlayer(RenderPlayerEvent.Pre event) {
         Player player = event.getEntity();
-        if (Camera.isActive(player))
+        if (Exposure.getCamera().isActive(player))
             player.startUsingItem(player.getMainHandItem().getItem() instanceof CameraItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
 
     @SubscribeEvent
     public static void onGuiOpen(ScreenEvent.Opening event) {
         if (isLookingThroughViewfinder() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
-            Camera.deactivate();
+            LocalPlayer player = Minecraft.getInstance().player;
+            Exposure.getCamera().deactivate(player);
+            Packets.sendToServer(new UpdateActiveCameraPacket(player.getUUID(), false, player.getMainHandItem().getItem() instanceof CameraItem ?
+                    InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND));
         }
     }
 
     private static boolean isLookingThroughViewfinder() {
-        return Camera.isActive(Minecraft.getInstance().player);
+        return Exposure.getCamera().isActive(Minecraft.getInstance().player);
     }
 }

@@ -2,9 +2,11 @@ package io.github.mortuusars.exposure.client.viewfinder.element;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.CameraOld;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -39,7 +41,7 @@ public class FrameCounterButton extends ImageButton {
         // Button
         blit(poseStack, x, y, 49, 0, width, height);
 
-        ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
 
         String text = camera.getItem().getAttachments(camera.getStack()).getFilm().map(film -> {
             int exposedFrames = film.getItem().getFrames(film.getStack()).size();

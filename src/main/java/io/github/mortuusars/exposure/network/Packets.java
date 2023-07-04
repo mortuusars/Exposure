@@ -21,6 +21,12 @@ public class Packets {
             PROTOCOL_VERSION::equals);
 
     public static void register() {
+        CHANNEL.messageBuilder(UpdateActiveCameraPacket.class, id++)
+                .encoder(UpdateActiveCameraPacket::toBuffer)
+                .decoder(UpdateActiveCameraPacket::fromBuffer)
+                .consumerMainThread(UpdateActiveCameraPacket::handle)
+                .add();
+
         CHANNEL.messageBuilder(Viewfinder.UpdateViewfinderPacket.class, id++)
                 .encoder(Viewfinder.UpdateViewfinderPacket::toBuffer)
                 .decoder(Viewfinder.UpdateViewfinderPacket::fromBuffer)

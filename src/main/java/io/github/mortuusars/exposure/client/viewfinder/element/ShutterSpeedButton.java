@@ -2,10 +2,13 @@ package io.github.mortuusars.exposure.client.viewfinder.element;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.CameraOld;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
+import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -34,7 +37,7 @@ public class ShutterSpeedButton extends ImageButton {
         this.screen = screen;
         this.texture = texture;
 
-        ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
 
         shutterSpeeds = camera.getItem().getAllShutterSpeeds(camera.getStack());
 
@@ -62,7 +65,7 @@ public class ShutterSpeedButton extends ImageButton {
         // Button
         blit(poseStack, x, y, 138, height  * (offset - 1), width, height);
 
-        ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         ShutterSpeed shutterSpeed = camera.getItem().getShutterSpeed(camera.getStack());
         String text = shutterSpeed.toString();
         if (shutterSpeed.equals(camera.getItem().getDefaultShutterSpeed(camera.getStack())))
@@ -103,15 +106,17 @@ public class ShutterSpeedButton extends ImageButton {
 
         currentShutterSpeedIndex = Mth.clamp(currentShutterSpeedIndex + (reverse ? 1 : -1), 0, shutterSpeeds.size() - 1);
 
-        ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        if (!camera.isEmpty()) {
+            if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentShutterSpeedIndex)) {
+                camera.getItem().setShutterSpeed(camera.getStack(), shutterSpeeds.get(currentShutterSpeedIndex));
 
-        if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentShutterSpeedIndex)) {
-            camera.getItem().setShutterSpeed(camera.getStack(), shutterSpeeds.get(currentShutterSpeedIndex));
-            Camera.updateAndSyncCameraInHand(camera.getStack());
+                ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
 
-            assert Minecraft.getInstance().player != null;
-            Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);
-            lastChangeTime = System.currentTimeMillis();
+                assert Minecraft.getInstance().player != null;
+                Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);
+                lastChangeTime = System.currentTimeMillis();
+            }
         }
     }
 }

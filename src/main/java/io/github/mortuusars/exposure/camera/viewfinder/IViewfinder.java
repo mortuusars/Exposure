@@ -4,9 +4,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 
 public interface IViewfinder {
-    void activate(Player player, InteractionHand hand);
+    void activateAndBroadcast(Player player, InteractionHand hand);
 
-    void deactivate(Player player);
+    void deactivateAndBroadcast(Player player);
 
     boolean isActive(Player player);
 

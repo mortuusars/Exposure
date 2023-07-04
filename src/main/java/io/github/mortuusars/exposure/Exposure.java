@@ -1,8 +1,14 @@
 package io.github.mortuusars.exposure;
 
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CameraCapture;
+import io.github.mortuusars.exposure.camera.ClientCameraHolder;
+import io.github.mortuusars.exposure.camera.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.item.CameraItem;
@@ -13,9 +19,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -37,7 +45,19 @@ public class Exposure {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         Items.ITEMS.register(modEventBus);
         MenuTypes.MENU_TYPES.register(modEventBus);
-        MinecraftForge.EVENT_BUS.register(this);
+
+        MinecraftForge.EVENT_BUS.addListener(CommonEvents::playerTick);
+
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onComputeFovEvent);
+            MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onMouseScrollEvent);
+            MinecraftForge.EVENT_BUS.addListener(CameraCapture::onRenderTick);
+        });
+    }
+
+    public static Camera getCamera() {
+        return Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER ?
+                ServerCameraHolder.SERVER_CAMERA : ClientCameraHolder.CLIENT_CAMERA;
     }
 
     public static IExposureStorage getStorage() {

@@ -1,15 +1,19 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.*;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
+import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
+import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import io.github.mortuusars.exposure.menu.CameraMenu;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
@@ -61,10 +65,10 @@ public class CameraItem extends Item {
             new ShutterSpeed(1/15f, 15),
             new ShutterSpeed(1/30f, 13),
             new ShutterSpeed(1/60f, 10),
-            new ShutterSpeed(1/125f, 7),
-            new ShutterSpeed(1/250f, 5),
-            new ShutterSpeed(1/500f, 3),
-            new ShutterSpeed(1/1000f, 1)
+            new ShutterSpeed(1/125f, 8),
+            new ShutterSpeed(1/250f, 6),
+            new ShutterSpeed(1/500f, 4),
+            new ShutterSpeed(1/1000f, 2)
     );
 
     public CameraItem(Properties properties) {
@@ -91,41 +95,48 @@ public class CameraItem extends Item {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         useCamera(player, usedHand);
-
         return super.use(level, player, usedHand);
     }
 
-    protected void useCamera(Player player, InteractionHand hand) {
-        if (player.isSecondaryUseActive() && !Camera.isActive(player)) {
-            if (player instanceof ServerPlayer serverPlayer)
-                openCameraGUI(serverPlayer, hand);
+    public void useCamera(Player player, InteractionHand hand) {
+        if (!Exposure.getCamera().isActive(player)) {
+            if (player.isSecondaryUseActive())
+                openCameraGUI(player, hand);
+            else
+                Exposure.getCamera().activate(player, hand);
 
             return;
         }
 
-        if (!player.getLevel().isClientSide)
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+        Preconditions.checkState(!camera.isEmpty());
+
+        Exposure.getCamera().getShutter().open(player, getShutterSpeed(camera.getStack()));
+        player.getCooldowns().addCooldown(this, 4);
+
+        CameraAttachments attachments = getAttachments(camera.getStack());
+        Optional<ItemAndStack<FilmItem>> film = attachments.getFilm();
+
+        if (film.isEmpty() || !film.get().getItem().canAddFrame(film.get().getStack()))
             return;
 
-        if (Camera.isActive(player) && !player.getCooldowns().isOnCooldown(this))
-            tryTakeShot(player, hand);
-        else {
-            Camera.activate(hand);
+        if (player.level.isClientSide) {
+            if (CameraCapture.isCapturing())
+                return;
+
+            CaptureProperties captureProperties = createCaptureProperties(player, hand);
+            CameraCapture.capture(captureProperties);
+
+//            onShutterReleased(player, hand, cameraStack);
+
+            film.get().getItem().addFrame(film.get().getStack(), new ExposureFrame(captureProperties.id));
+            getAttachments(camera.getStack()).setFilm(film.get().getStack());
+
+
+            ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
         }
-    }
 
-    protected void openCameraGUI(ServerPlayer serverPlayer, InteractionHand hand) {
-        ItemStack cameraStack = serverPlayer.getItemInHand(hand);
-        NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
-            @Override
-            public @NotNull Component getDisplayName() {
-                return cameraStack.getHoverName();
-            }
-
-            @Override
-            public @NotNull AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-                return new CameraMenu(containerId, playerInventory, cameraStack);
-            }
-        }, buffer -> buffer.writeItem(cameraStack));
+        // TODO: Take Shot
     }
 
     public CameraAttachments getAttachments(ItemStack cameraStack) {
@@ -144,14 +155,14 @@ public class CameraItem extends Item {
         Optional<ItemAndStack<FilmItem>> filmOpt = getAttachments(cameraStack).getFilm();
 
         if (filmOpt.isEmpty()) {
-            onShutterReleased(player, hand, cameraStack);
+//            onShutterReleased(player, hand, cameraStack);
             return;
         }
 
         ItemAndStack<FilmItem> film = filmOpt.get();
 
         if (!film.getItem().canAddFrame(film.getStack())) {
-            onShutterReleased(player, hand, cameraStack);
+//            onShutterReleased(player, hand, cameraStack);
             return;
         }
 
@@ -165,22 +176,31 @@ public class CameraItem extends Item {
             CaptureProperties captureProperties = createCaptureProperties(player, hand);
             CameraCapture.capture(captureProperties);
 
-            onShutterReleased(player, hand, cameraStack);
+//            onShutterReleased(player, hand, cameraStack);
 
             film.getItem().addFrame(film.getStack(), new ExposureFrame(captureProperties.id));
             getAttachments(cameraStack).setFilm(film.getStack());
 
-            Camera.updateAndSyncCameraInHand(cameraStack);
+//            CameraOld.updateAndSyncCameraInHand(cameraStack);
         }
     }
 
-    protected void onShutterReleased(Player player, InteractionHand hand, ItemStack cameraStack) {
-        ShutterSpeed shutterSpeed = getShutterSpeed(cameraStack);
-        player.getCooldowns().addCooldown(this, shutterSpeed.getCooldown());
 
-        // TODO: shutter open sound
-        player.getLevel().playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 1f,
-                player.getLevel().getRandom().nextFloat() * 0.2f + 1.1f);
+    protected void openCameraGUI(Player player, InteractionHand hand) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            ItemStack cameraStack = player.getItemInHand(hand);
+            NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
+                @Override
+                public @NotNull Component getDisplayName() {
+                    return cameraStack.getHoverName();
+                }
+
+                @Override
+                public @NotNull AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+                    return new CameraMenu(containerId, playerInventory, cameraStack);
+                }
+            }, buffer -> buffer.writeItem(cameraStack));
+        }
     }
 
     protected String getExposureId(Player player, Level level) {
@@ -189,10 +209,10 @@ public class CameraItem extends Item {
         return player.getName().getString() + "_" + level.getGameTime();
     }
 
-    public Camera.FocalRange getFocalRange(ItemStack cameraStack) {
+    public FocalRange getFocalRange(ItemStack cameraStack) {
         CameraAttachments attachments = getAttachments(cameraStack);
         ItemStack lensStack = attachments.getAttachment(SLOTS.get(LENS));
-        return lensStack.isEmpty() ? new Camera.FocalRange(18, 55) : new Camera.FocalRange(55, 200);
+        return lensStack.isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
     protected CaptureProperties createCaptureProperties(Player player, InteractionHand hand) {
@@ -228,10 +248,10 @@ public class CameraItem extends Item {
         // Adjust zoom for new focal range to the same percentage:
         if (slot == LENS) {
             float prevZoom = getZoom(cameraStack);
-            Camera.FocalRange prevFocalRange = getFocalRange(cameraStack);
-            Camera.FocalRange newFocalLength = attachmentStack.isEmpty() ? Camera.FocalRange.SHORT : Camera.FocalRange.LONG;
+            FocalRange prevFocalRange = getFocalRange(cameraStack);
+            FocalRange newFocalRange = attachmentStack.isEmpty() ? FocalRange.SHORT : FocalRange.LONG;
 
-            float adjustedZoom = Mth.map(prevZoom, prevFocalRange.min(), prevFocalRange.max(), newFocalLength.min(), newFocalLength.max());
+            float adjustedZoom = Mth.map(prevZoom, prevFocalRange.min(), prevFocalRange.max(), newFocalRange.min(), newFocalRange.max());
             setZoom(cameraStack, adjustedZoom);
         }
 

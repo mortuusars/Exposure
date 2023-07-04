@@ -3,10 +3,13 @@ package io.github.mortuusars.exposure.client.viewfinder.element;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.CameraOld;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
+import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -37,8 +40,7 @@ public class CompositionGuideButton extends ImageButton {
         this.texture = texture;
         guides = CompositionGuides.getGuides();
 
-        ItemAndStack<CameraItem> camera = Camera.getActiveCamera().orElseThrow();
-
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());
 
         for (int i = 0; i < guides.size(); i++) {
@@ -105,15 +107,14 @@ public class CompositionGuideButton extends ImageButton {
         else if (currentGuideIndex >= guides.size())
             currentGuideIndex = 0;
 
-        Optional<ItemAndStack<CameraItem>> activeCamera = Camera.getActiveCamera();
-        Preconditions.checkState(activeCamera.isPresent(), "No active camera. This shouldn't happen.");
-        ItemAndStack<CameraItem> camera = activeCamera.get();
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        if (!camera.isEmpty()) {
+            camera.getItem().setCompositionGuide(camera.getStack(), guides.get(currentGuideIndex));
+            ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
 
-        camera.getItem().setCompositionGuide(camera.getStack(), guides.get(currentGuideIndex));
-        Camera.updateAndSyncCameraInHand(camera.getStack());
-
-        assert Minecraft.getInstance().player != null;
-        Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);
-        lastChangeTime = System.currentTimeMillis();
+            assert Minecraft.getInstance().player != null;
+            Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);
+            lastChangeTime = System.currentTimeMillis();
+        }
     }
 }
