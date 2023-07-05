@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.camera.modifier;
 
 import io.github.mortuusars.exposure.camera.CameraCapture;
-import io.github.mortuusars.exposure.camera.CaptureProperties;
+import io.github.mortuusars.exposure.camera.Capture;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import net.minecraft.util.Mth;
 
@@ -9,12 +9,12 @@ import java.awt.*;
 
 public record BrightnessModifier(String id, ShutterSpeed defaultShutterSpeed) implements IExposureModifier {
     @Override
-    public int getCaptureDelay(CaptureProperties properties) {
+    public int getCaptureDelay(Capture properties) {
         return 1;
     }
 
     @Override
-    public void setup(CaptureProperties properties) {
+    public void setup(Capture properties) {
         ShutterSpeed shutterSpeed = properties.shutterSpeed;
         float stopsDifference = shutterSpeed.getStopsDifference(new ShutterSpeed(1 / 60f, 1));
         if (stopsDifference >= 0.89f) {
@@ -23,7 +23,7 @@ public record BrightnessModifier(String id, ShutterSpeed defaultShutterSpeed) im
     }
 
     @Override
-    public Color modifyPixel(CaptureProperties properties, int red, int green, int blue) {
+    public Color modifyPixel(Capture properties, int red, int green, int blue) {
         ShutterSpeed shutterSpeed = properties.shutterSpeed;
         float stopsDif = shutterSpeed.getStopsDifference(defaultShutterSpeed) * 0.4f;
 
@@ -50,7 +50,7 @@ public record BrightnessModifier(String id, ShutterSpeed defaultShutterSpeed) im
     }
 
     @Override
-    public void teardown(CaptureProperties properties) {
+    public void teardown(Capture properties) {
         CameraCapture.additionalBrightness = 0f;
     }
 

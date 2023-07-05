@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.CameraOld;
+import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
@@ -109,8 +110,7 @@ public class CompositionGuideButton extends ImageButton {
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
-            camera.getItem().setCompositionGuide(camera.getStack(), guides.get(currentGuideIndex));
-            ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
+            SynchronizedCameraInHandActions.setCompositionGuide(guides.get(currentGuideIndex));
 
             assert Minecraft.getInstance().player != null;
             Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);

@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.CameraOld;
+import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.config.ClientConfig;
@@ -109,9 +110,7 @@ public class ShutterSpeedButton extends ImageButton {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentShutterSpeedIndex)) {
-                camera.getItem().setShutterSpeed(camera.getStack(), shutterSpeeds.get(currentShutterSpeedIndex));
-
-                ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
+                SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(currentShutterSpeedIndex));
 
                 assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);

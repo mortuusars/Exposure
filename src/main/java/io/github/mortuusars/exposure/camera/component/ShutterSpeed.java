@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.camera.component;
 import com.google.common.base.Preconditions;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Objects;
 
@@ -38,6 +39,15 @@ public class ShutterSpeed {
         return new ShutterSpeed(
                 tag.contains("Value", Tag.TAG_ANY_NUMERIC) ? tag.getFloat("Value") : defaultShutterSpeed.getValue(),
                 tag.contains("VisibleDuration", Tag.TAG_ANY_NUMERIC) ? tag.getInt("VisibleDuration") : defaultShutterSpeed.getVisibleDuration());
+    }
+    
+    public void toBuffer(FriendlyByteBuf buffer) {
+        buffer.writeFloat(value);
+        buffer.writeInt(visibleDuration);
+    }
+
+    public static ShutterSpeed fromBuffer(FriendlyByteBuf buffer) {
+        return new ShutterSpeed(buffer.readFloat(), buffer.readInt());
     }
 
     @Override

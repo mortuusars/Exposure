@@ -9,6 +9,7 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+import org.checkerframework.checker.units.qual.C;
 
 public class Packets {
     private static final String PROTOCOL_VERSION = "1";
@@ -21,6 +22,10 @@ public class Packets {
             PROTOCOL_VERSION::equals);
 
     public static void register() {
+        ServerboundCameraSetZoomPacket.register(CHANNEL, id++);
+        ServerboundCameraSetCompositionGuidePacket.register(CHANNEL, id++);
+        ServerboundCameraSetShutterSpeedPacket.register(CHANNEL, id++);
+
         CHANNEL.messageBuilder(UpdateActiveCameraPacket.class, id++)
                 .encoder(UpdateActiveCameraPacket::toBuffer)
                 .decoder(UpdateActiveCameraPacket::fromBuffer)

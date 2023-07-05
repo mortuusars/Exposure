@@ -14,23 +14,29 @@ import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.LinkedList;
+import java.util.Queue;
 
 @OnlyIn(Dist.CLIENT)
 public class CameraCapture {
     public static float additionalBrightness = 0f;
 
-    private static CaptureProperties captureProperties;
-
+    private static final Queue<Capture> captureQueue = new LinkedList<>();
+    @Nullable
+    private static Capture currentCapture;
     private static boolean capturing;
     private static boolean processing;
     private static int captureDelay;
     private static boolean hideGuiBeforeCapture;
     private static CameraType cameraTypeBeforeCapture;
+
+    public static float getModifiedBrightness(float originalBrightness) {
+        return originalBrightness + additionalBrightness;
+    }
 
     public static boolean isCapturing() {
         return capturing;
@@ -40,12 +46,13 @@ public class CameraCapture {
         return processing;
     }
 
-    public static void capture(CaptureProperties properties) {
-        captureProperties = properties;
+    public static void enqueueCapture(Capture capture) {
+        captureQueue.add(capture);
+    }
 
-        //TODO: queue captures to ensure spam clicking works?
-
+    private static void capture(Capture capture) {
         capturing = true;
+        currentCapture = capture;
         hideGuiBeforeCapture = Minecraft.getInstance().options.hideGui;
         cameraTypeBeforeCapture = Minecraft.getInstance().options.getCameraType();
 
@@ -54,25 +61,26 @@ public class CameraCapture {
 
         captureDelay = 0;
 
-        for (IExposureModifier modifier : captureProperties.modifiers) {
-            captureDelay = Math.max(captureDelay, modifier.getCaptureDelay(captureProperties));
-            modifier.setup(properties);
+        for (IExposureModifier modifier : capture.modifiers) {
+            captureDelay = Math.max(captureDelay, modifier.getCaptureDelay(capture));
+            modifier.setup(capture);
         }
     }
 
-    public static float getModifiedBrightness(float originalBrightness) {
-        return originalBrightness + additionalBrightness;
-    }
-
     public static void onRenderTick(TickEvent.RenderTickEvent event) {
-        if (!event.phase.equals(TickEvent.Phase.END) || !capturing || processing)
+        if (!isCapturing() && !captureQueue.isEmpty()) {
+            capture(captureQueue.poll());
+            return;
+        }
+
+        if (!event.phase.equals(TickEvent.Phase.END) || !capturing || currentCapture == null/* || processing*/)
             return;
 
         if (captureDelay > 0) {
             captureDelay--;
 
-            for (IExposureModifier modifier : captureProperties.modifiers) {
-                modifier.onSetupDelayTick(captureProperties, captureDelay);
+            for (IExposureModifier modifier : currentCapture.modifiers) {
+                modifier.onSetupDelayTick(currentCapture, captureDelay);
             }
 
             return;
@@ -95,21 +103,22 @@ public class CameraCapture {
 //            Exposure.LOGGER.error(e.toString());
 //        }
 
-        capturing = false;
-
         Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;
         Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
 
-        processing = true;
+//        processing = true;
 
-        processAndSaveImageThreaded(screenshot, captureProperties);
+        processAndSaveImageThreaded(screenshot, currentCapture);
+
+        capturing = false;
+        currentCapture = null;
     }
 
-    private static void processAndSaveImageThreaded(NativeImage nativeImage, CaptureProperties properties) {
+    private static void processAndSaveImageThreaded(NativeImage nativeImage, Capture properties) {
         new Thread(() -> processAndSaveImage(nativeImage, properties), "ProcessingAndSavingExposure").start();
     }
 
-    private static void processAndSaveImage(NativeImage screenshotImage, CaptureProperties properties) {
+    private static void processAndSaveImage(NativeImage screenshotImage, Capture properties) {
         try {
             BufferedImage bufferedImage = scaleCropAndProcess(screenshotImage, properties);
 
@@ -137,12 +146,12 @@ public class CameraCapture {
         }
     }
 
-    private static BufferedImage scaleCropAndProcess(NativeImage sourceImage, CaptureProperties properties) {
+    private static BufferedImage scaleCropAndProcess(NativeImage sourceImage, Capture properties) {
         int sWidth = sourceImage.getWidth();
         int sHeight = sourceImage.getHeight();
 
         int sourceSize = Math.min(sWidth, sHeight);
-        float crop = sourceSize - (sourceSize / captureProperties.cropFactor);
+        float crop = sourceSize - (sourceSize / properties.cropFactor);
         sourceSize -= crop;
 
         int sourceXStart = sWidth > sHeight ? (sWidth - sHeight) / 2 : 0;
@@ -177,7 +186,8 @@ public class CameraCapture {
         return bufferedImage;
     }
 
-    private static void saveExposure(CaptureProperties properties, byte[] materialColorPixels) {
+    private static void saveExposure(Capture properties, byte[] materialColorPixels) {
+        //TODO: Save to file when printed
         new ExposureFileSaver().save(properties.id, materialColorPixels, properties.size, properties.size);
         new ExposureStorageSaver().save(properties.id, materialColorPixels, properties.size, properties.size);
     }

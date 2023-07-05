@@ -22,7 +22,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -99,6 +98,9 @@ public class CameraItem extends Item {
     }
 
     public void useCamera(Player player, InteractionHand hand) {
+        if (player.getCooldowns().isOnCooldown(this))
+            return;
+
         if (!Exposure.getCamera().isActive(player)) {
             if (player.isSecondaryUseActive())
                 openCameraGUI(player, hand);
@@ -108,11 +110,14 @@ public class CameraItem extends Item {
             return;
         }
 
+        if (Exposure.getCamera().getShutter().isOpen(player))
+            return;
+
         CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
         Preconditions.checkState(!camera.isEmpty());
 
         Exposure.getCamera().getShutter().open(player, getShutterSpeed(camera.getStack()));
-        player.getCooldowns().addCooldown(this, 4);
+        player.getCooldowns().addCooldown(this, 3);
 
         CameraAttachments attachments = getAttachments(camera.getStack());
         Optional<ItemAndStack<FilmItem>> film = attachments.getFilm();
@@ -120,14 +125,12 @@ public class CameraItem extends Item {
         if (film.isEmpty() || !film.get().getItem().canAddFrame(film.get().getStack()))
             return;
 
-        if (player.level.isClientSide) {
+        if (player.getLevel().isClientSide) {
             if (CameraCapture.isCapturing())
                 return;
 
-            CaptureProperties captureProperties = createCaptureProperties(player, hand);
-            CameraCapture.capture(captureProperties);
-
-//            onShutterReleased(player, hand, cameraStack);
+            Capture captureProperties = createCaptureProperties(player, hand);
+            CameraCapture.enqueueCapture(captureProperties);
 
             film.get().getItem().addFrame(film.get().getStack(), new ExposureFrame(captureProperties.id));
             getAttachments(camera.getStack()).setFilm(film.get().getStack());
@@ -135,8 +138,6 @@ public class CameraItem extends Item {
 
             ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
         }
-
-        // TODO: Take Shot
     }
 
     public CameraAttachments getAttachments(ItemStack cameraStack) {
@@ -148,43 +149,6 @@ public class CameraItem extends Item {
         Preconditions.checkArgument(!cameraStack.isEmpty(), "cameraStack is empty.");
         Preconditions.checkArgument(cameraStack.getItem() instanceof CameraItem,  cameraStack + " is not a CameraItem.");
     }
-
-    public void tryTakeShot(Player player, InteractionHand hand) {
-        Level level = player.level;
-        ItemStack cameraStack = player.getItemInHand(hand);
-        Optional<ItemAndStack<FilmItem>> filmOpt = getAttachments(cameraStack).getFilm();
-
-        if (filmOpt.isEmpty()) {
-//            onShutterReleased(player, hand, cameraStack);
-            return;
-        }
-
-        ItemAndStack<FilmItem> film = filmOpt.get();
-
-        if (!film.getItem().canAddFrame(film.getStack())) {
-//            onShutterReleased(player, hand, cameraStack);
-            return;
-        }
-
-        level.playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 1f,
-                level.getRandom().nextFloat() * 0.2f + 1.1f);
-
-        if (player.level.isClientSide) {
-            if (CameraCapture.isCapturing())
-                return;
-
-            CaptureProperties captureProperties = createCaptureProperties(player, hand);
-            CameraCapture.capture(captureProperties);
-
-//            onShutterReleased(player, hand, cameraStack);
-
-            film.getItem().addFrame(film.getStack(), new ExposureFrame(captureProperties.id));
-            getAttachments(cameraStack).setFilm(film.getStack());
-
-//            CameraOld.updateAndSyncCameraInHand(cameraStack);
-        }
-    }
-
 
     protected void openCameraGUI(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
@@ -215,7 +179,7 @@ public class CameraItem extends Item {
         return lensStack.isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
-    protected CaptureProperties createCaptureProperties(Player player, InteractionHand hand) {
+    protected Capture createCaptureProperties(Player player, InteractionHand hand) {
         String id = getExposureId(player, player.level);
 
         // TODO: Crop Factor config
@@ -227,7 +191,7 @@ public class CameraItem extends Item {
         CameraAttachments attachments = getAttachments(cameraStack);
         int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize()).orElse(-1);
 
-        return new CaptureProperties(id, frameSize, cropFactor, getShutterSpeed(cameraStack), getExposureModifiers(player, hand));
+        return new Capture(id, frameSize, cropFactor, getShutterSpeed(cameraStack), getExposureModifiers(player, hand));
     }
 
     protected List<IExposureModifier> getExposureModifiers(Player player, InteractionHand hand) {

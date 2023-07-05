@@ -51,18 +51,20 @@ public abstract class Camera {
 
     public void onShutterClosed(Player player, Shutter.OpenShutter shutter) {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-        camera.getItem().getAttachments(camera.getStack()).getFilm().ifPresent(film -> {
-            if (film.getItem().canAddFrame(film.getStack()))
-                player.getLevel().playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 0.9f, 1f);
-        });
+        if (!camera.isEmpty()) {
+            camera.getItem().getAttachments(camera.getStack()).getFilm().ifPresent(film -> {
+                if (film.getItem().canAddFrame(film.getStack()))
+                    player.getLevel().playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 0.9f, 1f);
+            });
+        }
     }
 
     public void tick(Player player) {
+        shutter.tick(player);
+
         if (getCameraInHand(player).isEmpty()) {
             deactivate(player);
             return;
         }
-
-        shutter.tick(player);
     }
 }

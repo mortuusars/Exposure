@@ -47,6 +47,7 @@ public class Exposure {
         MenuTypes.MENU_TYPES.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.addListener(CommonEvents::playerTick);
+        MinecraftForge.EVENT_BUS.addListener(CommonEvents::entityInteract);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onComputeFovEvent);

@@ -4,11 +4,14 @@ import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
@@ -63,7 +66,8 @@ public class ViewfinderRenderer {
     }
 
     public static boolean shouldRender() {
-        return Exposure.getCamera().isActive(Minecraft.getInstance().player);
+        return Exposure.getCamera().isActive(Minecraft.getInstance().player)
+                && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
     }
 
     public static void render() {
@@ -82,6 +86,9 @@ public class ViewfinderRenderer {
             poseStack.scale(scale, scale, scale);
             poseStack.translate(-width / 2f, -height / 2f, 0);
 
+            if (Minecraft.getInstance().options.bobView().get())
+                bobView(poseStack, Minecraft.getInstance().getPartialTick());
+
             // -999 to cover all screen when poseStack is scaled down.
             // Left
             drawRect(poseStack, -999, opening.y, opening.x, opening.y + opening.height, color);
@@ -96,13 +103,6 @@ public class ViewfinderRenderer {
             if (Exposure.getCamera().getShutter().isOpen(player))
                 drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, color);
 
-//            if (!CameraCapture.isCapturing()) {
-//                CameraOld.getActiveCamera().ifPresent(camera -> {
-//                    if (player.getCooldowns().isOnCooldown(camera.getItem()))
-//                        drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, color);
-//                });
-//            }
-
             // Opening Texture
             RenderSystem.enableBlend();
             RenderSystem.disableDepthTest();
@@ -116,10 +116,10 @@ public class ViewfinderRenderer {
             Matrix4f matrix = poseStack.last().pose();
 
             bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-            bufferbuilder.vertex(matrix, opening.x, opening.y + opening.height, -90).uv(0.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, opening.x + opening.width, opening.y + opening.height, -90).uv(1.0F, 1.0F).endVertex();
-            bufferbuilder.vertex(matrix, opening.x + opening.width, opening.y, -90).uv(1.0F, 0.0F).endVertex();
-            bufferbuilder.vertex(matrix, opening.x, opening.y, -90).uv(0.0F, 0.0F).endVertex();
+            bufferbuilder.vertex(matrix, opening.x, opening.y + opening.height, 0).uv(0.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(matrix, opening.x + opening.width, opening.y + opening.height, 0).uv(1.0F, 1.0F).endVertex();
+            bufferbuilder.vertex(matrix, opening.x + opening.width, opening.y, 0).uv(1.0F, 0.0F).endVertex();
+            bufferbuilder.vertex(matrix, opening.x, opening.y, 0).uv(0.0F, 0.0F).endVertex();
             tesselator.end();
 
             // Guide
@@ -181,6 +181,18 @@ public class ViewfinderRenderer {
         BufferUploader.drawWithShader(bufferbuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
+    }
+
+    private static void bobView(PoseStack pMatrixStack, float pPartialTicks) {
+        if (Minecraft.getInstance().getCameraEntity() instanceof Player) {
+            Player player = (Player)Minecraft.getInstance().getCameraEntity();
+            float f = player.walkDist - player.walkDistO;
+            float f1 = -(player.walkDist + f * pPartialTicks);
+            float f2 = Mth.lerp(pPartialTicks, player.oBob, player.bob);
+            pMatrixStack.translate((Mth.sin(f1 * (float)Math.PI) * f2 * 16F), (-Math.abs(Mth.cos(f1 * (float)Math.PI) * f2 * 32F)), 0.0D);
+            pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float)Math.PI) * f2 * 3.0F));
+            pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F));
+        }
     }
 
     public static double modifyMouseSensitivity(double sensitivity) {
@@ -251,13 +263,7 @@ public class ViewfinderRenderer {
         if (Math.abs(prevFov - fov) > 0.01f)
             player.playSound(SoundEvents.SPYGLASS_STOP_USING);
 
-
         targetFov = fov;
-        //TODO: zoom
-
-//        CameraOld.changeZoom(Fov.fovToFocalLength(fov));
-
-//        targetFov = CameraOld.getActiveCamera().map(camera -> Fov.focalLengthToFov(camera.getItem().getZoom(camera.getStack()))).orElse(defaultFov);
-
+        SynchronizedCameraInHandActions.setZoom(Fov.fovToFocalLength(fov));
     }
 }
