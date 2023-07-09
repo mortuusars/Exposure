@@ -17,7 +17,6 @@ import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,22 +51,22 @@ public class CameraItem extends Item {
             new String[] { "Film", "Lens", "Filter" }
     );
 
-    public static final List<ShutterSpeed> SHUTTER_SPEED_VALUES = List.of(
-            new ShutterSpeed(15f, 200),
-            new ShutterSpeed(8f, 110),
-            new ShutterSpeed(4f, 70),
-            new ShutterSpeed(2f, 45),
-            new ShutterSpeed(1f, 30),
-            new ShutterSpeed(1/2f, 25),
-            new ShutterSpeed(1/4f, 20),
-            new ShutterSpeed(1/8f, 17),
-            new ShutterSpeed(1/15f, 15),
-            new ShutterSpeed(1/30f, 13),
-            new ShutterSpeed(1/60f, 10),
-            new ShutterSpeed(1/125f, 8),
-            new ShutterSpeed(1/250f, 6),
-            new ShutterSpeed(1/500f, 4),
-            new ShutterSpeed(1/1000f, 2)
+    public static final List<ShutterSpeed> SHUTTER_SPEEDS = List.of(
+            new ShutterSpeed("15\""),
+            new ShutterSpeed("8\""),
+            new ShutterSpeed("4\""),
+            new ShutterSpeed("2\""),
+            new ShutterSpeed("1\""),
+            new ShutterSpeed("2"),
+            new ShutterSpeed("4"),
+            new ShutterSpeed("8"),
+            new ShutterSpeed("15"),
+            new ShutterSpeed("30"),
+            new ShutterSpeed("60"),
+            new ShutterSpeed("125"),
+            new ShutterSpeed("250"),
+            new ShutterSpeed("500"),
+            new ShutterSpeed("1000")
     );
 
     public CameraItem(Properties properties) {
@@ -129,7 +128,7 @@ public class CameraItem extends Item {
             if (CameraCapture.isCapturing())
                 return;
 
-            Capture captureProperties = createCaptureProperties(player, hand);
+            Capture captureProperties = createCaptureProperties(player, camera);
             CameraCapture.enqueueCapture(captureProperties);
 
             film.get().getItem().addFrame(film.get().getStack(), new ExposureFrame(captureProperties.id));
@@ -179,27 +178,26 @@ public class CameraItem extends Item {
         return lensStack.isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
-    protected Capture createCaptureProperties(Player player, InteractionHand hand) {
+    protected Capture createCaptureProperties(Player player, CameraInHand camera) {
+        Preconditions.checkState(!camera.isEmpty(), "Camera cannot be empty.");
         String id = getExposureId(player, player.level);
 
         // TODO: Crop Factor config
         float cropFactor = 1.142f;
 
-        ItemStack cameraStack = player.getItemInHand(hand);
-        Preconditions.checkState(cameraStack.getItem() instanceof CameraItem, cameraStack + " is not a CameraItem.");
 
-        CameraAttachments attachments = getAttachments(cameraStack);
+        CameraAttachments attachments = getAttachments(camera.getStack());
         int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize()).orElse(-1);
 
-        return new Capture(id, frameSize, cropFactor, getShutterSpeed(cameraStack), getExposureModifiers(player, hand));
+        return new Capture(camera, id, frameSize, cropFactor, getShutterSpeed(camera.getStack()), getExposureModifiers(player, camera));
     }
 
-    protected List<IExposureModifier> getExposureModifiers(Player player, InteractionHand hand) {
+    protected List<IExposureModifier> getExposureModifiers(Player player, CameraInHand camera) {
         List<IExposureModifier> modifiers = new ArrayList<>();
 
         modifiers.add(ExposureModifiers.BRIGHTNESS);
 
-        CameraAttachments attachments = getAttachments(player.getItemInHand(hand));
+        CameraAttachments attachments = getAttachments(camera.getStack());
         attachments.getFilm().ifPresent(f -> {
             if (f.getItem().getType() == FilmType.BLACK_AND_WHITE)
                 modifiers.add(ExposureModifiers.BLACK_AND_WHITE);
@@ -223,26 +221,31 @@ public class CameraItem extends Item {
 
         if (player.getLevel().isClientSide && player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized) {
             if (slot == LENS) {
-                player.playSound(attachmentStack.isEmpty() ? SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE);
+                player.playSound(attachmentStack.isEmpty() ? SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE, 1f, 1f);
             }
         }
     }
 
+    /**
+     * Brightness of the exposure will not be changed on this shutter speed.
+     */
     public ShutterSpeed getDefaultShutterSpeed(ItemStack cameraStack) {
-        return SHUTTER_SPEED_VALUES.get(10); // 1/60;
+        return SHUTTER_SPEEDS.get(10); // 1/60;
     }
 
+    /**
+     * Returns all possible Shutter Speeds for this camera.
+     */
     public List<ShutterSpeed> getAllShutterSpeeds(ItemStack cameraStack) {
-        return SHUTTER_SPEED_VALUES;
+        return SHUTTER_SPEEDS;
     }
 
     public ShutterSpeed getShutterSpeed(ItemStack cameraStack) {
-        return ShutterSpeed.loadOrDefault(cameraStack.getOrCreateTag().getCompound("ShutterSpeed"),
-                getDefaultShutterSpeed(cameraStack));
+        return ShutterSpeed.loadOrDefault(cameraStack.getOrCreateTag(), getDefaultShutterSpeed(cameraStack));
     }
 
     public void setShutterSpeed(ItemStack cameraStack, ShutterSpeed shutterSpeed) {
-        cameraStack.getOrCreateTag().put("ShutterSpeed", shutterSpeed.save(new CompoundTag()));
+        shutterSpeed.save(cameraStack.getOrCreateTag());
     }
 
     public float getZoom(ItemStack cameraStack) {

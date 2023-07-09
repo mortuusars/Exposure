@@ -1,17 +1,12 @@
 package io.github.mortuusars.exposure.client.viewfinder.element;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.CameraOld;
 import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
-import io.github.mortuusars.exposure.client.ClientOnlyLogic;
-import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
-import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -94,14 +89,22 @@ public class CompositionGuideButton extends ImageButton {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        cycleGuide(delta < 0d);
+        if (System.currentTimeMillis() - lastChangeTime > 50)
+            cycleGuide(delta < 0d);
         return true;
     }
 
-    private void cycleGuide(boolean reverse) {
-        if (System.currentTimeMillis() - lastChangeTime < 60)
-            return;
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        boolean pressed = super.keyPressed(pKeyCode, pScanCode, pModifiers);
 
+        if (pressed)
+            cycleGuide(Screen.hasShiftDown());
+
+        return pressed;
+    }
+
+    private void cycleGuide(boolean reverse) {
         currentGuideIndex += reverse ? -1 : 1;
         if (currentGuideIndex < 0)
             currentGuideIndex = guides.size() - 1;

@@ -7,16 +7,16 @@ import net.minecraft.util.Mth;
 
 import java.awt.*;
 
-public record BrightnessModifier(String id, ShutterSpeed defaultShutterSpeed) implements IExposureModifier {
+public record BrightnessModifier(String id) implements IExposureModifier {
     @Override
     public int getCaptureDelay(Capture properties) {
-        return 1;
+        return 1; // Changing the gamma is not applied instantly for some reason. Delay of 1 seem to fix it.
     }
 
     @Override
     public void setup(Capture properties) {
         ShutterSpeed shutterSpeed = properties.shutterSpeed;
-        float stopsDifference = shutterSpeed.getStopsDifference(new ShutterSpeed(1 / 60f, 1));
+        float stopsDifference = shutterSpeed.getStopsDifference(properties.camera.getItem().getDefaultShutterSpeed(properties.camera.getStack()));
         if (stopsDifference >= 0.89f) {
             CameraCapture.additionalBrightness = 0.0075f * stopsDifference;
         }
@@ -25,7 +25,7 @@ public record BrightnessModifier(String id, ShutterSpeed defaultShutterSpeed) im
     @Override
     public Color modifyPixel(Capture properties, int red, int green, int blue) {
         ShutterSpeed shutterSpeed = properties.shutterSpeed;
-        float stopsDif = shutterSpeed.getStopsDifference(defaultShutterSpeed) * 0.4f;
+        float stopsDif = shutterSpeed.getStopsDifference(properties.camera.getItem().getDefaultShutterSpeed(properties.camera.getStack())) * 0.4f;
 
         // Shorter Shutter Speeds have less impact on the brightness:
         if (stopsDif < 0f)

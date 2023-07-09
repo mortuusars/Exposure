@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.camera.component;
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -8,51 +9,69 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.util.Objects;
 
 public class ShutterSpeed {
-    private final float value;
-    private final int visibleDuration;
+    private final String text;
+    private final float valueMilliseconds;
 
-    public ShutterSpeed(float seconds, int visibleDuration) {
-        this.value = seconds;
-        this.visibleDuration = visibleDuration;
-        Preconditions.checkState(seconds != 0f, "Shutter Speed cannot be 0.");
+    public ShutterSpeed(String shutterSpeed) {
+        this.text = shutterSpeed;
+        this.valueMilliseconds = parseMilliseconds(shutterSpeed);
+        Preconditions.checkState(valueMilliseconds != -1,  shutterSpeed + " is not valid. (format should be: '1/60', '60', '2\"')");
+        Preconditions.checkState(valueMilliseconds > 0, "Shutter Speed cannot be 0 or smaller.");
     }
 
-    public float getValue() {
-        return value;
+    private float parseMilliseconds(String shutterSpeed) {
+        shutterSpeed = shutterSpeed.trim();
+
+        if (shutterSpeed.contains("\""))
+            return Integer.parseInt(shutterSpeed.replace("\"", "")) * 1000;
+        else if (shutterSpeed.contains("1/"))
+            return 1f / Integer.parseInt(shutterSpeed.replace("1/", "")) * 1000;
+        else
+            return 1f / Integer.parseInt(shutterSpeed) * 1000;
     }
 
-    public int getVisibleDuration() {
-        return visibleDuration;
+    public String getText() {
+        return text;
+    }
+
+    public float getMilliseconds() {
+        return valueMilliseconds;
     }
 
     public float getStopsDifference(ShutterSpeed relative) {
-        return (float) (Math.log(value / relative.getValue()) / Math.log(2));
+        return (float) (Math.log(valueMilliseconds / relative.getMilliseconds()) / Math.log(2));
     }
 
     public CompoundTag save(CompoundTag tag) {
-        tag.putFloat("Value", value);
-        tag.putInt("VisibleDuration", visibleDuration);
+        tag.putString("ShutterSpeed", text);
         return tag;
     }
 
     public static ShutterSpeed loadOrDefault(CompoundTag tag, ShutterSpeed defaultShutterSpeed) {
-        return new ShutterSpeed(
-                tag.contains("Value", Tag.TAG_ANY_NUMERIC) ? tag.getFloat("Value") : defaultShutterSpeed.getValue(),
-                tag.contains("VisibleDuration", Tag.TAG_ANY_NUMERIC) ? tag.getInt("VisibleDuration") : defaultShutterSpeed.getVisibleDuration());
+        try {
+            if (tag.contains("ShutterSpeed", Tag.TAG_STRING)) {
+                String shutterSpeed = tag.getString("ShutterSpeed");
+                return new ShutterSpeed(shutterSpeed);
+            }
+        }
+        catch (IllegalStateException e) {
+            Exposure.LOGGER.error("Cannot load a shutter speed from tag: " + e);
+        }
+
+        return defaultShutterSpeed;
     }
     
     public void toBuffer(FriendlyByteBuf buffer) {
-        buffer.writeFloat(value);
-        buffer.writeInt(visibleDuration);
+        buffer.writeUtf(text);
     }
 
     public static ShutterSpeed fromBuffer(FriendlyByteBuf buffer) {
-        return new ShutterSpeed(buffer.readFloat(), buffer.readInt());
+        return new ShutterSpeed(buffer.readUtf());
     }
 
     @Override
     public String toString() {
-        return value >= 1d ? Math.round(value) + "\"" : Integer.toString(Math.round(1f / value));
+        return text;
     }
 
     @Override
@@ -60,11 +79,11 @@ public class ShutterSpeed {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ShutterSpeed that = (ShutterSpeed) o;
-        return Float.compare(that.value, value) == 0 && visibleDuration == that.visibleDuration;
+        return Float.compare(that.valueMilliseconds, valueMilliseconds) == 0 && Objects.equals(text, that.text);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value, visibleDuration);
+        return Objects.hash(text, valueMilliseconds);
     }
 }

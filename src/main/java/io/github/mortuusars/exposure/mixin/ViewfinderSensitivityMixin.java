@@ -11,6 +11,5 @@ public class ViewfinderSensitivityMixin {
     @ModifyVariable(method = "turnPlayer", at = @At(value = "STORE"), ordinal = 3)
     private double modifySensitivity(double sensitivity) {
         return ViewfinderRenderer.modifyMouseSensitivity(sensitivity);
-//        return ViewfinderOld.isActive() ? sensitivity * ViewfinderOld.getMouseSensitivityModifier() : sensitivity;
     }
 }

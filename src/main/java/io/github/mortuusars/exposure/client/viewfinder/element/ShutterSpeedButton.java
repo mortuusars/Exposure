@@ -3,14 +3,10 @@ package io.github.mortuusars.exposure.client.viewfinder.element;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.CameraOld;
 import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
-import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.config.ClientConfig;
-import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
-import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
@@ -97,14 +93,23 @@ public class ShutterSpeedButton extends ImageButton {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        cycleShutterSpeed(delta < 0d);
+        if (System.currentTimeMillis() - lastChangeTime > 50)
+            cycleShutterSpeed(delta < 0d);
+
         return true;
     }
 
-    public void cycleShutterSpeed(boolean reverse) {
-        if (System.currentTimeMillis() - lastChangeTime < 40)
-            return;
+    @Override
+    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
+        boolean pressed = super.keyPressed(pKeyCode, pScanCode, pModifiers);
 
+        if (pressed)
+            cycleShutterSpeed(Screen.hasShiftDown());
+
+        return pressed;
+    }
+
+    public void cycleShutterSpeed(boolean reverse) {
         currentShutterSpeedIndex = Mth.clamp(currentShutterSpeedIndex + (reverse ? 1 : -1), 0, shutterSpeeds.size() - 1);
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);

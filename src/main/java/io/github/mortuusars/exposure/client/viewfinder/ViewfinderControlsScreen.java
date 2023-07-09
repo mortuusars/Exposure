@@ -38,6 +38,8 @@ public class ViewfinderControlsScreen extends Screen {
         level = Minecraft.getInstance().level;
         assert level != null;
         openedAtTimestamp = level.getGameTime();
+
+        passEvents = true;
     }
 
     @Override
@@ -125,11 +127,6 @@ public class ViewfinderControlsScreen extends Screen {
         }
 
         return handled;
-    }
-
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

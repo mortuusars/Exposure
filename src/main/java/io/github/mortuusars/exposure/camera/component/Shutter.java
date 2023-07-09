@@ -45,7 +45,7 @@ public class Shutter {
         List<Player> toClose = new ArrayList<>();
 
         for (Map.Entry<Player, OpenShutter> shutter : openShutters.entrySet()) {
-            if (System.currentTimeMillis() - shutter.getValue().openedAt > shutter.getValue().shutterSpeed.getValue() * 1000)
+            if (System.currentTimeMillis() - shutter.getValue().openedAt > shutter.getValue().shutterSpeed.getMilliseconds())
                 toClose.add(shutter.getKey());
         }
 
