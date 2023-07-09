@@ -1,6 +1,9 @@
 package io.github.mortuusars.exposure.client.screen;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
 import net.minecraft.network.chat.Component;
@@ -38,8 +41,6 @@ public class PhotographScreen extends ExposureRenderScreen {
         float scale = (height - (height / 6f)) / exposureData.getHeight();
         scale += zoom;
 
-        poseStack = new PoseStack();
-
         poseStack.pushPose();
 
         // Move to center
@@ -51,8 +52,8 @@ public class PhotographScreen extends ExposureRenderScreen {
 
         // Paper (frame)
         fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-
         renderExposure(poseStack,false);
+
         poseStack.popPose();
     }
 

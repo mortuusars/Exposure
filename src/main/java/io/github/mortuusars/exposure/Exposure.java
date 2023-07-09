@@ -8,6 +8,7 @@ import io.github.mortuusars.exposure.camera.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.CameraMenu;
@@ -46,10 +47,13 @@ public class Exposure {
         Items.ITEMS.register(modEventBus);
         MenuTypes.MENU_TYPES.register(modEventBus);
 
-        MinecraftForge.EVENT_BUS.addListener(CommonEvents::playerTick);
-        MinecraftForge.EVENT_BUS.addListener(CommonEvents::entityInteract);
+        modEventBus.register(CommonEvents.ModBus.class);
+        MinecraftForge.EVENT_BUS.register(CommonEvents.ForgeBus.class);
 
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
+            modEventBus.register(ClientEvents.ModBus.class);
+            MinecraftForge.EVENT_BUS.register(ClientEvents.ForgeBus.class);
+
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onComputeFovEvent);
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onMouseScrollEvent);
             MinecraftForge.EVENT_BUS.addListener(CameraCapture::onRenderTick);
