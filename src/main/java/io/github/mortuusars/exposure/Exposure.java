@@ -1,6 +1,8 @@
 package io.github.mortuusars.exposure;
 
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.exposure.block.DarkroomBlock;
+import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.camera.CameraCapture;
 import io.github.mortuusars.exposure.camera.ClientCameraHolder;
@@ -14,12 +16,19 @@ import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.menu.DarkroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -44,6 +53,8 @@ public class Exposure {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+        Blocks.BLOCKS.register(modEventBus);
+        BlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
         Items.ITEMS.register(modEventBus);
         MenuTypes.MENU_TYPES.register(modEventBus);
 
@@ -75,6 +86,23 @@ public class Exposure {
      */
     public static ResourceLocation resource(String path) {
         return new ResourceLocation(ID, path);
+    }
+
+    public static class Blocks {
+        private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ID);
+
+        public static final RegistryObject<DarkroomBlock> DARKROOM = BLOCKS.register("darkroom",
+                () -> new DarkroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
+                        .color(MaterialColor.COLOR_BROWN)));
+    }
+
+    @SuppressWarnings("DataFlowIssue")
+    public static class BlockEntityTypes {
+        private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+                DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ID);
+
+        public static final RegistryObject<BlockEntityType<DarkroomBlockEntity>> DARKROOM = BLOCK_ENTITY_TYPES.register("darkroom",
+                () -> BlockEntityType.Builder.of(DarkroomBlockEntity::new, Blocks.DARKROOM.get()).build(null));
     }
 
     public static class Items {
@@ -109,6 +137,10 @@ public class Exposure {
                 () -> new PhotographItem(new Item.Properties()
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
+
+        public static final RegistryObject<BlockItem> DARKROOM = ITEMS.register("darkroom",
+                () -> new BlockItem(Blocks.DARKROOM.get(), new Item.Properties()
+                        .tab(CreativeModeTab.TAB_DECORATIONS)));
     }
 
     public static class MenuTypes {
@@ -116,5 +148,8 @@ public class Exposure {
 
         public static final RegistryObject<MenuType<CameraMenu>> CAMERA = MENU_TYPES
                 .register("camera", () -> IForgeMenuType.create(CameraMenu::fromBuffer));
+
+        public static final RegistryObject<MenuType<DarkroomMenu>> DARKROOM = MENU_TYPES
+                .register("darkroom", () -> IForgeMenuType.create(DarkroomMenu::fromBuffer));
     }
 }

@@ -1,4 +1,6 @@
 {
+  "block.exposure.darkroom": "Darkroom",
+
   "item.exposure.camera": "Camera",
   "item.exposure.small_format_black_and_white_film": "Black and White Film",
   "item.exposure.small_format_color_film": "Color Film",

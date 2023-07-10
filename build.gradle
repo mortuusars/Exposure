@@ -64,7 +64,7 @@ minecraft {
                         // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
             property 'forge.enabledGameTestNamespaces', 'exposure'
 
-            jvmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:+IgnoreUnrecognizedVMOptions', '-XX:HotswapAgent=fatjar'
+            jvmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:+IgnoreUnrecognizedVMOptions'
 
             mods {
                 exposure {

@@ -103,13 +103,13 @@ public class ExposureRenderer {
                         int blue = bgr >> 16 & 0xFF;
                         int green = bgr >> 8 & 0xFF;
                         int red = bgr & 0xFF;
-                        int luma = Mth.clamp((int) (0.4 * red + 0.6 * green + 0.15 * blue), 0, 255);
-
-                        //TODO: Proper negative transparency
-                        luma = (int) Mth.clamp(luma * luma / 255f - 100, 0, 255);
-                        luma = (255 - luma);
-
-                        bgr = (bgr & 0x00FFFFFF) | (luma << 24);
+//                        int luma = Mth.clamp((int) (0.4 * red + 0.6 * green + 0.15 * blue), 0, 255);
+//
+//                        //TODO: Proper negative transparency
+//                        luma = (int) Mth.clamp(luma * luma / 255f - 100, 0, 255);
+//                        luma = (255 - luma);
+//
+//                        bgr = (bgr & 0x00FFFFFF) | (luma << 24);
                     }
 
                     this.texture.getPixels().setPixelRGBA(x, y, bgr); // Texture is in BGR format
