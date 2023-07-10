@@ -1,4 +1,13 @@
 {
+  "item.exposure.camera": "Camera",
+  "item.exposure.small_format_black_and_white_film": "Black and White Film",
+  "item.exposure.small_format_color_film": "Color Film",
+  "item.exposure.large_format_black_and_white_film": "Large Format Black and White Film",
+  "item.exposure.large_format_color_film": "Large Format Color Film",
+  "item.exposure.photograph": "Photograph",
+
+  "item.exposure.film.frames_tooltip": "%s/%s",
+
   "gui.exposure.composition_guide.none": "None",
   "gui.exposure.composition_guide.cross": "Cross",
   "gui.exposure.composition_guide.rule_of_thirds": "Rule of Thirds",

@@ -6,25 +6,17 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.Photograph;
-import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
 import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundPrintPhotographPacket;
-import io.github.mortuusars.exposure.storage.ExposureSavedData;
-import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,17 +33,19 @@ public class ExposureScreen extends ExposureRenderScreen {
         // TODO: remove?
         ExposureRenderer.resetData();
 
-        if (film.getItem() instanceof FilmItem filmItem) {
-            List<ExposureFrame> frames = filmItem.getFrames(film);
-            exposureIds = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
-            frameSize = filmItem.getFrameSize();
-
-            currentExposureIndex = exposureIds.size() - 1;
-            loadExposure();
-        }
-        else {
+        if (!(film.getItem() instanceof FilmItem filmItem)) {
             this.onClose();
+            return;
         }
+
+        List<ExposureFrame> frames = filmItem.getExposedFrames(film);
+        exposureIds = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
+        frameSize = filmItem.getFrameSize();
+
+        currentExposureIndex = exposureIds.size() - 1;
+        loadExposure();
+
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -108,7 +102,7 @@ public class ExposureScreen extends ExposureRenderScreen {
         }
         else if (key == InputConstants.KEY_P) { //TODO: Proper printing
             ExposureFrame exposureFrame = exposureIds.get(currentExposureIndex);
-            Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id, frameSize, "", "")));
+            Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id, frameSize, "")));
         }
         else if (Minecraft.getInstance().options.keyInventory.matches(key, scanCode))
             this.onClose();
@@ -116,6 +110,12 @@ public class ExposureScreen extends ExposureRenderScreen {
             return super.keyPressed(key, scanCode, modifiers);
 
         return true;
+    }
+
+    @Override
+    public void onClose() {
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(false);
+        super.onClose();
     }
 
     @Override

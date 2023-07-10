@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.network;
 
 
-import io.github.mortuusars.exposure.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.network.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -9,7 +8,6 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import org.checkerframework.checker.units.qual.C;
 
 public class Packets {
     private static final String PROTOCOL_VERSION = "1";
@@ -30,12 +28,6 @@ public class Packets {
                 .encoder(UpdateActiveCameraPacket::toBuffer)
                 .decoder(UpdateActiveCameraPacket::fromBuffer)
                 .consumerMainThread(UpdateActiveCameraPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(Viewfinder.UpdateViewfinderPacket.class, id++)
-                .encoder(Viewfinder.UpdateViewfinderPacket::toBuffer)
-                .decoder(Viewfinder.UpdateViewfinderPacket::fromBuffer)
-                .consumerMainThread(Viewfinder.UpdateViewfinderPacket::handle)
                 .add();
 
         CHANNEL.messageBuilder(ClientboundApplyShaderPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)

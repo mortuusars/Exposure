@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.network.handler;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Player;
@@ -19,5 +20,15 @@ public class ClientPacketsHandler {
             Exposure.getCamera().activate(player, packet.hand());
         else
             Exposure.getCamera().deactivate(player);
+    }
+
+    public static void applyShader(ClientboundApplyShaderPacket packet) {
+        Minecraft mc = Minecraft.getInstance();
+        if (packet.shaderLocation().getPath().equals("none")) {
+            mc.gameRenderer.shutdownEffect();
+        }
+        else {
+            mc.gameRenderer.loadEffect(packet.shaderLocation());
+        }
     }
 }

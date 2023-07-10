@@ -8,7 +8,7 @@ import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
-import io.github.mortuusars.exposure.camera.viewfinder.ZoomDirection;
+import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.CameraType;

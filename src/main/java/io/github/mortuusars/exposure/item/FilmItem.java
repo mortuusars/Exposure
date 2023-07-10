@@ -1,20 +1,22 @@
 package io.github.mortuusars.exposure.item;
 
-import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.client.GUI;
-import net.minecraft.core.NonNullList;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,11 +44,11 @@ public class FilmItem extends Item {
         return frameSize;
     }
 
-    public int getFrameCount() {
+    public int getMaxFrameCount() {
         return frameCount;
     }
 
-    public List<ExposureFrame> getFrames(ItemStack filmStack) {
+    public List<ExposureFrame> getExposedFrames(ItemStack filmStack) {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
             return Collections.emptyList();
 
@@ -68,7 +70,7 @@ public class FilmItem extends Item {
 
         ListTag listTag = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
 
-        if (listTag.size() >= getFrameCount())
+        if (listTag.size() >= getMaxFrameCount())
             throw new IllegalStateException("Cannot add more frames than film could have. Size: " + listTag.size());
 
         listTag.add(frame.save(new CompoundTag()));
@@ -79,63 +81,8 @@ public class FilmItem extends Item {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
             return true;
 
-        return filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() < getFrameCount();
+        return filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() < getMaxFrameCount();
     }
-
-
-//    public ItemStack setFrame(ItemStack film, int slot, ExposureFrame frame) {
-//        Preconditions.checkArgument(film.getItem() instanceof FilmItem,  film + " is not a FilmItem!");
-//        Preconditions.checkArgument(slot >= 0 && slot < getFrameCount(), slot + " is out of range. Frames: " + getFrameCount());
-//
-//        ListTag frames = getFramesTag(film);
-//        if (!frames.setTag(slot, frame.save(new CompoundTag())))
-//            throw new IllegalStateException("ExposureFrame was not saved to film.");
-//
-//        return film;
-//    }
-//
-//    public int getEmptyFrame(ItemStack film) {
-//        ListTag frames = getFramesTag(film);
-//
-//        for (int frame = 0; frame < frames.size(); frame++) {
-//            if (frames.getCompound(frame).isEmpty())
-//                return frame;
-//        }
-//
-//        return -1;
-//    }
-//
-//    public List<ExposureFrame> getFrames(ItemStack film) {
-//        List<ExposureFrame> frames = new ArrayList<>();
-//
-//        for (Tag frameTag : getFramesTag(film)) {
-//            frames.add(new ExposureFrame(((CompoundTag) frameTag)));
-//        }
-//
-//        return frames;
-//    }
-//
-//    protected ListTag getFramesTag(ItemStack film) {
-//        Preconditions.checkArgument(film.getItem() instanceof FilmItem, film + " is not a FilmItem.");
-//
-//        CompoundTag tag = film.getOrCreateTag();
-//        if (!tag.contains(FRAMES_TAG, Tag.TAG_LIST))
-//            createEmptyFrames(film);
-//
-//        return film.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND);
-//    }
-//
-//    @SuppressWarnings("UnusedReturnValue")
-//    protected ItemStack createEmptyFrames(ItemStack film) {
-//        ListTag framesTag = new ListTag();
-//
-//        for (int frame = 0; frame < getFrameCount(); frame++) {
-//            framesTag.add(frame, new CompoundTag());
-//        }
-//
-//        film.getOrCreateTag().put(FRAMES_TAG, framesTag);
-//        return film;
-//    }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
@@ -145,5 +92,15 @@ public class FilmItem extends Item {
             GUI.showExposureViewScreen(film);
 
         return InteractionResultHolder.success(film);
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+        int exposedFrames = getExposedFrames(stack).size();
+        if (exposedFrames == 0)
+            return;
+
+        int totalFrames = getMaxFrameCount();
+        tooltipComponents.add(Component.translatable("item.exposure.film.frames_tooltip", exposedFrames, totalFrames).withStyle(ChatFormatting.GRAY));
     }
 }
