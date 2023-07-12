@@ -10,7 +10,11 @@ import java.awt.*;
 public record BrightnessModifier(String id) implements IExposureModifier {
     @Override
     public int getCaptureDelay(Capture properties) {
-        return 1; // Changing the gamma is not applied instantly for some reason. Delay of 1 seem to fix it.
+        ShutterSpeed defaultShutterSpeed = properties.camera.getItem()
+                .getDefaultShutterSpeed(properties.camera.getStack());
+
+        // Changing the gamma is not applied instantly for some reason. Delay of 1 seem to fix it.
+        return properties.shutterSpeed.getStopsDifference(defaultShutterSpeed) > 0 ? 1 : 0;
     }
 
     @Override

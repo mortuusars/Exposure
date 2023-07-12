@@ -113,23 +113,13 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<FilmItem> SMALL_FORMAT_BLACK_AND_WHITE_FILM = ITEMS.register("small_format_black_and_white_film",
-                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 192, 36, new Item.Properties()
+        public static final RegistryObject<FilmItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
+                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 8, new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<FilmItem> SMALL_FORMAT_COLOR_FILM = ITEMS.register("small_format_color_film",
-                () -> new FilmItem(FilmType.COLOR, 192, 36, new Item.Properties()
-                        .stacksTo(16)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
-
-        public static final RegistryObject<FilmItem> LARGE_FORMAT_BLACK_AND_WHITE_FILM = ITEMS.register("large_format_black_and_white_film",
-                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 384, 8, new Item.Properties()
-                        .stacksTo(16)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
-
-        public static final RegistryObject<FilmItem> LARGE_FORMAT_COLOR_FILM = ITEMS.register("large_format_color_film",
-                () -> new FilmItem(FilmType.COLOR, 384, 8, new Item.Properties()
+        public static final RegistryObject<FilmItem> COLOR_FILM = ITEMS.register("color_film",
+                () -> new FilmItem(FilmType.COLOR, 16, new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 

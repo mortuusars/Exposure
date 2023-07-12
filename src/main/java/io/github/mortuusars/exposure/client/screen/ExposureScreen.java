@@ -40,7 +40,7 @@ public class ExposureScreen extends ExposureRenderScreen {
 
         List<ExposureFrame> frames = filmItem.getExposedFrames(film);
         exposureIds = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
-        frameSize = filmItem.getFrameSize();
+        frameSize = filmItem.getFrameSize(film);
 
         currentExposureIndex = exposureIds.size() - 1;
         loadExposure();

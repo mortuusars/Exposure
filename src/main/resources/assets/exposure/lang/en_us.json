@@ -2,13 +2,12 @@
   "block.exposure.darkroom": "Darkroom",
 
   "item.exposure.camera": "Camera",
-  "item.exposure.small_format_black_and_white_film": "Black and White Film",
-  "item.exposure.small_format_color_film": "Color Film",
-  "item.exposure.large_format_black_and_white_film": "Large Format Black and White Film",
-  "item.exposure.large_format_color_film": "Large Format Color Film",
+  "item.exposure.black_and_white_film": "Black and White Film",
+  "item.exposure.color_film": "Color Film",
   "item.exposure.photograph": "Photograph",
 
-  "item.exposure.film.frames_tooltip": "%s/%s",
+  "item.exposure.film.tooltip.frame_count": "%s/%s",
+  "item.exposure.film.tooltip.frame_size": "Size: %smm",
 
   "gui.exposure.composition_guide.none": "None",
   "gui.exposure.composition_guide.cross": "Cross",

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 @OnlyIn(Dist.CLIENT)
@@ -107,6 +108,11 @@ public class CameraCapture {
         Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
 
 //        processing = true;
+
+//        for (int size : new int[] { 192, 256, 320, 384, 448}) {
+//            processAndSaveImageThreaded(screenshot, new Capture(currentCapture.camera, currentCapture.id + "_" + size,
+//                    size, currentCapture.cropFactor, currentCapture.shutterSpeed, currentCapture.modifiers));
+//        }
 
         processAndSaveImageThreaded(screenshot, currentCapture);
 

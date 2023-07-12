@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.client.screen.base;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
@@ -25,7 +26,7 @@ public abstract class ExposureRenderScreen extends Screen {
     protected void loadExposure() {
         String exposureId = getExposureId();
         if (exposureId != null)
-            exposureData = ExposureStorage.CLIENT.getOrQuery(exposureId).orElse(null);
+            exposureData = Exposure.getStorage().getOrQuery(exposureId).orElse(null);
     }
 
     protected void renderExposure(PoseStack poseStack, boolean negative) {

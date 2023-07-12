@@ -65,8 +65,7 @@ public class CameraItem extends Item {
             new ShutterSpeed("60"),
             new ShutterSpeed("125"),
             new ShutterSpeed("250"),
-            new ShutterSpeed("500"),
-            new ShutterSpeed("1000")
+            new ShutterSpeed("500")
     );
 
     public CameraItem(Properties properties) {
@@ -185,9 +184,8 @@ public class CameraItem extends Item {
         // TODO: Crop Factor config
         float cropFactor = 1.142f;
 
-
         CameraAttachments attachments = getAttachments(camera.getStack());
-        int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize()).orElse(-1);
+        int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize(f.getStack())).orElse(-1);
 
         return new Capture(camera, id, frameSize, cropFactor, getShutterSpeed(camera.getStack()), getExposureModifiers(player, camera));
     }

@@ -44,13 +44,15 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
     public static final int[] INPUT_SLOTS = new int[] { 0, 1, 2, 3, 4, 5 };
     public static final int[] OUTPUT_SLOTS = new int[] { 6 };
 
-    public static final int CONTAINER_DATA_SIZE = 1;
+    public static final int CONTAINER_DATA_SIZE = 2;
     public static final int CONTAINER_DATA_PROGRESS_ID = 0;
+    public static final int CONTAINER_DATA_CURRENT_FRAME_ID = 1;
 
     protected final ContainerData containerData = new ContainerData() {
         public int get(int id) {
             return switch (id) {
                 case CONTAINER_DATA_PROGRESS_ID -> DarkroomBlockEntity.this.progress;
+                case CONTAINER_DATA_CURRENT_FRAME_ID -> DarkroomBlockEntity.this.currentFrame;
                 default -> 0;
             };
         }
@@ -58,6 +60,8 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
         public void set(int id, int value) {
             if (id == CONTAINER_DATA_PROGRESS_ID)
                 DarkroomBlockEntity.this.progress = value;
+            else if (id == CONTAINER_DATA_CURRENT_FRAME_ID)
+                DarkroomBlockEntity.this.currentFrame = value;
         }
 
         public int getCount() {
@@ -67,6 +71,7 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
 
     protected final ItemStackHandler inventory;
     private final LazyOptional<IItemHandler> inventoryHandler;
+    protected int currentFrame = 0;
     protected int progress = 0;
 
     public DarkroomBlockEntity(BlockPos pos, BlockState blockState) {
@@ -111,9 +116,17 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
 
             @Override
             protected void onContentsChanged(int slot) {
-                setChanged();
+                inventoryContentsChanged(slot);
             }
         };
+    }
+
+    private void inventoryContentsChanged(int slot) {
+        if (slot == FILM_SLOT) {
+            currentFrame = 0;
+        }
+
+        setChanged();
     }
 
     public IItemHandler getInventory() {

@@ -110,7 +110,7 @@ public class ShutterSpeedButton extends ImageButton {
     }
 
     public void cycleShutterSpeed(boolean reverse) {
-        currentShutterSpeedIndex = Mth.clamp(currentShutterSpeedIndex + (reverse ? 1 : -1), 0, shutterSpeeds.size() - 1);
+        currentShutterSpeedIndex = Mth.clamp(currentShutterSpeedIndex + (reverse ? -1 : 1), 0, shutterSpeeds.size() - 1);
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {

@@ -24,15 +24,14 @@ import java.util.List;
 
 public class FilmItem extends Item {
     private static final String FRAMES_TAG = "Frames";
+    private static final String FRAME_SIZE_TAG = "FrameSize";
 
     private final FilmType filmType;
-    private final int frameSize;
     private final int frameCount;
 
-    public FilmItem (FilmType filmType, int frameSize, int frameCount, Properties properties) {
+    public FilmItem (FilmType filmType, int frameCount, Properties properties) {
         super(properties);
         this.filmType = filmType;
-        this.frameSize = frameSize;
         this.frameCount = frameCount;
     }
 
@@ -40,12 +39,19 @@ public class FilmItem extends Item {
         return filmType;
     }
 
-    public int getFrameSize() {
-        return frameSize;
-    }
-
     public int getMaxFrameCount() {
         return frameCount;
+    }
+
+    public int getFrameSize(ItemStack filmStack) {
+        if (filmStack.getOrCreateTag().contains(FRAME_SIZE_TAG, Tag.TAG_INT))
+            return filmStack.getOrCreateTag().getInt(FRAME_SIZE_TAG);
+        else
+            return getDefaultFrameSize();
+    }
+
+    public int getDefaultFrameSize() {
+        return 384;
     }
 
     public List<ExposureFrame> getExposedFrames(ItemStack filmStack) {
@@ -71,7 +77,7 @@ public class FilmItem extends Item {
         ListTag listTag = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
 
         if (listTag.size() >= getMaxFrameCount())
-            throw new IllegalStateException("Cannot add more frames than film could have. Size: " + listTag.size());
+            throw new IllegalStateException("Cannot add more frames than film could fit. Size: " + listTag.size());
 
         listTag.add(frame.save(new CompoundTag()));
         tag.put(FRAMES_TAG, listTag);
@@ -97,10 +103,27 @@ public class FilmItem extends Item {
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         int exposedFrames = getExposedFrames(stack).size();
-        if (exposedFrames == 0)
-            return;
+        if (exposedFrames > 0) {
+            int totalFrames = getMaxFrameCount();
+            tooltipComponents.add(Component.translatable("item.exposure.film.tooltip.frame_count", exposedFrames, totalFrames)
+                    .withStyle(ChatFormatting.GRAY));
+        }
 
-        int totalFrames = getMaxFrameCount();
-        tooltipComponents.add(Component.translatable("item.exposure.film.frames_tooltip", exposedFrames, totalFrames).withStyle(ChatFormatting.GRAY));
+        int frameSize = getFrameSize(stack);
+        if (frameSize != getDefaultFrameSize()) {
+            tooltipComponents.add(Component.translatable("item.exposure.film.tooltip.frame_size",
+                    Component.literal(String.format("%.1f", frameSize / 10f)))
+                            .withStyle(ChatFormatting.GRAY));
+        }
+
+        if (stack.hasTag() && stack.getOrCreateTag().contains("Notes", Tag.TAG_LIST)) {
+            ListTag notes = stack.getOrCreateTag().getList("Notes", Tag.TAG_STRING);
+            if (notes.size() > 0) {
+                tooltipComponents.add(Component.literal("Notes:"));
+                for (int i = 0; i < notes.size(); i++) {
+                    tooltipComponents.add(Component.literal("  " + notes.getString(i)).withStyle(ChatFormatting.GRAY));
+                }
+            }
+        }
     }
 }
