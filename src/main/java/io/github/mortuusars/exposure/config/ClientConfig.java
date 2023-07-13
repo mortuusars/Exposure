@@ -9,6 +9,9 @@ public class ClientConfig {
     public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_MAIN_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
 
+    public static final ForgeConfigSpec.ConfigValue<String> EXPOSURE_SAVE_PATH;
+    public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_LEVEL_SUBFOLDER;
+
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -17,14 +20,23 @@ public class ClientConfig {
         VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FFB7AFAB");
         builder.pop();
 
+        builder.push("Saving");
+        EXPOSURE_SAVE_PATH = builder.define("ExposureSavePath", "exposures");
+        EXPOSURE_SAVE_LEVEL_SUBFOLDER = builder.define("ExposureSavePutInLevelSubfolder", true);
+        builder.pop();
+
         SPEC = builder.build();
     }
 
     public static int getMainFontColor() {
-        return new Color((int)Long.parseLong(VIEWFINDER_FONT_MAIN_COLOR.get(), 16), true).getRGB();
+        String value = VIEWFINDER_FONT_MAIN_COLOR.get();
+        value = value.replace("#", "");
+        return new Color((int)Long.parseLong(value, 16), true).getRGB();
     }
 
     public static int getSecondaryFontColor() {
-        return new Color((int)Long.parseLong(VIEWFINDER_FONT_SECONDARY_COLOR.get(), 16), true).getRGB();
+        String value = VIEWFINDER_FONT_SECONDARY_COLOR.get();
+        value = value.replace("#", "");
+        return new Color((int)Long.parseLong(value, 16), true).getRGB();
     }
 }

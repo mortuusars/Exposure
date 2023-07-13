@@ -4,8 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 import io.github.mortuusars.exposure.camera.processing.FloydDither;
-import io.github.mortuusars.exposure.storage.saver.ExposureFileSaver;
-import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
+import io.github.mortuusars.exposure.storage.saver.IExposureSaver;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -19,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 @OnlyIn(Dist.CLIENT)
@@ -74,7 +72,7 @@ public class CameraCapture {
             return;
         }
 
-        if (!event.phase.equals(TickEvent.Phase.END) || !capturing || currentCapture == null/* || processing*/)
+        if (!event.phase.equals(TickEvent.Phase.END) || !capturing || currentCapture == null)
             return;
 
         if (captureDelay > 0) {
@@ -153,6 +151,7 @@ public class CameraCapture {
     }
 
     private static BufferedImage scaleCropAndProcess(NativeImage sourceImage, Capture properties) {
+        //TODO: Aspect ratios
         int sWidth = sourceImage.getWidth();
         int sHeight = sourceImage.getHeight();
 
@@ -166,16 +165,17 @@ public class CameraCapture {
         sourceXStart += crop / 2;
         sourceYStart += crop / 2;
 
-        int outputSize = properties.size;
+        int width = properties.width;
+        int height = properties.height;
 
-        BufferedImage bufferedImage = new BufferedImage(outputSize, outputSize, BufferedImage.TYPE_INT_RGB);
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-        for (int x = 0; x < outputSize; x++) {
-            float sourceX = sourceSize * (x / (float)outputSize);
+        for (int x = 0; x < width; x++) {
+            float sourceX = sourceSize * (x / (float)width);
             int sx = Mth.clamp((int)sourceX + sourceXStart, sourceXStart, sourceXStart + sourceSize);
 
-            for (int y = 0; y < outputSize; y++) {
-                float sourceY = sourceSize * (y / (float)outputSize);
+            for (int y = 0; y < height; y++) {
+                float sourceY = sourceSize * (y / (float)height);
                 int sy = Mth.clamp((int)sourceY + sourceYStart, sourceYStart, sourceYStart + sourceSize);
 
                 int rgba = ColorUtils.BGRtoRGB(sourceImage.getPixelRGBA(sx, sy)); // Mojang decided to return BGR in getPixelRGBA method.
@@ -193,8 +193,9 @@ public class CameraCapture {
     }
 
     private static void saveExposure(Capture properties, byte[] materialColorPixels) {
-        //TODO: Save to file when printed
-        new ExposureFileSaver().save(properties.id, materialColorPixels, properties.size, properties.size);
-        new ExposureStorageSaver().save(properties.id, materialColorPixels, properties.size, properties.size);
+        for (IExposureSaver saver : properties.savers) {
+            saver.save(properties.id, materialColorPixels, properties.width, properties.height);
+        }
     }
 }
+

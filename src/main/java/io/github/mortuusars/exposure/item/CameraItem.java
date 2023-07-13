@@ -13,6 +13,7 @@ import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import io.github.mortuusars.exposure.menu.CameraMenu;
+import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
@@ -187,7 +188,9 @@ public class CameraItem extends Item {
         CameraAttachments attachments = getAttachments(camera.getStack());
         int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize(f.getStack())).orElse(-1);
 
-        return new Capture(camera, id, frameSize, cropFactor, getShutterSpeed(camera.getStack()), getExposureModifiers(player, camera));
+        float brightnessStops = getDefaultShutterSpeed(camera.getStack()).getStopsDifference(getShutterSpeed(camera.getStack()));
+        return new Capture(id, frameSize, frameSize, cropFactor, brightnessStops, getExposureModifiers(player, camera),
+                List.of(new ExposureStorageSaver()));
     }
 
     protected List<IExposureModifier> getExposureModifiers(Player player, CameraInHand camera) {

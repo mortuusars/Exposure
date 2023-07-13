@@ -3,33 +3,20 @@ package io.github.mortuusars.exposure.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
-import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.MaterialColor;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Mod.EventBusSubscriber(modid = Exposure.ID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public class ExposureRenderer {
     private static final Map<String, ExposureRenderer.ExposureInstance> exposures = new HashMap<>();
-
-    @SubscribeEvent
-    public static void onLevelClear(LevelEvent.Unload event) {
-        close();
-    }
 
     public static void render(PoseStack poseStack, MultiBufferSource bufferSource, String id,
                               @NotNull ExposureSavedData exposureData, int packedLight) {
@@ -52,16 +39,12 @@ public class ExposureRenderer {
         });
     }
 
-    public static void resetData() {
+    public static void clearData() {
         for(ExposureRenderer.ExposureInstance instance : exposures.values()) {
             instance.close();
         }
 
         exposures.clear();
-    }
-
-    public static void close() {
-        resetData();
     }
 
     static class ExposureInstance implements AutoCloseable {

@@ -3,7 +3,6 @@ package io.github.mortuusars.exposure.client.screen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
@@ -31,7 +30,7 @@ public class ExposureScreen extends ExposureRenderScreen {
         super(Component.empty());
 
         // TODO: remove?
-        ExposureRenderer.resetData();
+        ExposureRenderer.clearData();
 
         if (!(film.getItem() instanceof FilmItem filmItem)) {
             this.onClose();

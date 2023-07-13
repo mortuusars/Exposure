@@ -3,8 +3,6 @@ package io.github.mortuusars.exposure.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
@@ -19,7 +17,6 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 public class ShaderCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {

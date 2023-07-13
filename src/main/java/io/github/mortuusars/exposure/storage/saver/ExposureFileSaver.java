@@ -16,10 +16,19 @@ import java.nio.file.Path;
 
 @OnlyIn(Dist.CLIENT)
 public class ExposureFileSaver implements IExposureSaver {
+
+    private final String folder;
+    private final boolean levelNameSubfolder;
+
+    public ExposureFileSaver(String folder, boolean levelNameSubfolder) {
+        this.folder = folder;
+        this.levelNameSubfolder = levelNameSubfolder;
+    }
+
     public void save(String id, byte[] materialColorPixels, int width, int height) {
         BufferedImage img = convertToBufferedImage(materialColorPixels, width, height);
 
-        File outputFile = new File("exposures/" + getLevelName() + "/" + id + ".png");
+        File outputFile = new File(folder + "/" + (levelNameSubfolder ? getLevelName() + "/" : "") + id + ".png");
         try {
             //noinspection ResultOfMethodCallIgnored
             outputFile.mkdirs();
