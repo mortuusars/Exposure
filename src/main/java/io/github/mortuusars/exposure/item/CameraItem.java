@@ -189,7 +189,7 @@ public class CameraItem extends Item {
         int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize(f.getStack())).orElse(-1);
 
         float brightnessStops = getDefaultShutterSpeed(camera.getStack()).getStopsDifference(getShutterSpeed(camera.getStack()));
-        return new Capture(id, frameSize, frameSize, cropFactor, brightnessStops, getExposureModifiers(player, camera),
+        return new Capture(id, frameSize, cropFactor, brightnessStops, getExposureModifiers(player, camera),
                 List.of(new ExposureStorageSaver()));
     }
 

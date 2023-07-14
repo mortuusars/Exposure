@@ -51,7 +51,7 @@ public class FilmItem extends Item {
     }
 
     public int getDefaultFrameSize() {
-        return 384;
+        return 320;
     }
 
     public List<ExposureFrame> getExposedFrames(ItemStack filmStack) {

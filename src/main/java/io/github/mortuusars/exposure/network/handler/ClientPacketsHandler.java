@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.network.handler;
 
+import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.CameraCapture;
 import io.github.mortuusars.exposure.camera.Capture;
@@ -38,20 +39,12 @@ public class ClientPacketsHandler {
         }
     }
 
-    public static void exposeScreenshot(int width, int height, boolean storeOnServer) {
-        if (width == Integer.MAX_VALUE && height == Integer.MAX_VALUE) {
-            width = Minecraft.getInstance().getWindow().getWidth();
-            height = Minecraft.getInstance().getWindow().getHeight();
+    public static void exposeScreenshot(int size, boolean storeOnServer) {
+        Preconditions.checkState(size > 0,  size + " size is invalid. Should be larger than 0.");
+        if (size == Integer.MAX_VALUE)
+            size = Math.min(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight());
 
-            width = Math.min(width, height);
-            height = width;
-        }
-
-        if (width != Integer.MAX_VALUE && height == Integer.MAX_VALUE) {
-            height = width;
-        }
-
-        CameraCapture.enqueueCapture(new Capture("test", width, height, 1f, 0f, Collections.emptyList(),
+        CameraCapture.enqueueCapture(new Capture("test", size, 1f, 0f, Collections.emptyList(),
                 List.of(new ExposureFileSaver(ClientConfig.EXPOSURE_SAVE_PATH.get(), ClientConfig.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get()))));
     }
 }

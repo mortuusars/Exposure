@@ -7,9 +7,9 @@ public class ItemAndStack<T extends Item> {
     private final T item;
     private final ItemStack stack;
 
+    @SuppressWarnings("unchecked")
     public ItemAndStack(ItemStack stack) {
         this.stack = stack;
-        //noinspection unchecked
         this.item = (T) stack.getItem();
     }
 

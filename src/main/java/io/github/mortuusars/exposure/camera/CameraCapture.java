@@ -105,13 +105,6 @@ public class CameraCapture {
         Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;
         Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
 
-//        processing = true;
-
-//        for (int size : new int[] { 192, 256, 320, 384, 448}) {
-//            processAndSaveImageThreaded(screenshot, new Capture(currentCapture.camera, currentCapture.id + "_" + size,
-//                    size, currentCapture.cropFactor, currentCapture.shutterSpeed, currentCapture.modifiers));
-//        }
-
         processAndSaveImageThreaded(screenshot, currentCapture);
 
         capturing = false;
@@ -151,7 +144,6 @@ public class CameraCapture {
     }
 
     private static BufferedImage scaleCropAndProcess(NativeImage sourceImage, Capture properties) {
-        //TODO: Aspect ratios
         int sWidth = sourceImage.getWidth();
         int sHeight = sourceImage.getHeight();
 
@@ -165,17 +157,16 @@ public class CameraCapture {
         sourceXStart += crop / 2;
         sourceYStart += crop / 2;
 
-        int width = properties.width;
-        int height = properties.height;
+        int size = properties.size;
 
-        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 
-        for (int x = 0; x < width; x++) {
-            float sourceX = sourceSize * (x / (float)width);
+        for (int x = 0; x < size; x++) {
+            float sourceX = sourceSize * (x / (float)size);
             int sx = Mth.clamp((int)sourceX + sourceXStart, sourceXStart, sourceXStart + sourceSize);
 
-            for (int y = 0; y < height; y++) {
-                float sourceY = sourceSize * (y / (float)height);
+            for (int y = 0; y < size; y++) {
+                float sourceY = sourceSize * (y / (float)size);
                 int sy = Mth.clamp((int)sourceY + sourceYStart, sourceYStart, sourceYStart + sourceSize);
 
                 int rgba = ColorUtils.BGRtoRGB(sourceImage.getPixelRGBA(sx, sy)); // Mojang decided to return BGR in getPixelRGBA method.
@@ -194,7 +185,7 @@ public class CameraCapture {
 
     private static void saveExposure(Capture properties, byte[] materialColorPixels) {
         for (IExposureSaver saver : properties.savers) {
-            saver.save(properties.id, materialColorPixels, properties.width, properties.height);
+            saver.save(properties.id, materialColorPixels, properties.size, properties.size);
         }
     }
 }
