@@ -21,12 +21,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 @OnlyIn(Dist.CLIENT)
-public class CameraCapture {
+public class ExposureCapture {
     public static float additionalBrightness = 0f;
 
-    private static final Queue<Capture> captureQueue = new LinkedList<>();
+    private static final Queue<CaptureProperties> captureQueue = new LinkedList<>();
     @Nullable
-    private static Capture currentCapture;
+    private static CaptureProperties currentCapture;
     private static boolean capturing;
     private static boolean processing;
     private static int captureDelay;
@@ -45,13 +45,13 @@ public class CameraCapture {
         return processing;
     }
 
-    public static void enqueueCapture(Capture capture) {
-        captureQueue.add(capture);
+    public static void enqueueCapture(CaptureProperties properties) {
+        captureQueue.add(properties);
     }
 
-    private static void capture(Capture capture) {
+    private static void capture(CaptureProperties properties) {
         capturing = true;
-        currentCapture = capture;
+        currentCapture = properties;
         hideGuiBeforeCapture = Minecraft.getInstance().options.hideGui;
         cameraTypeBeforeCapture = Minecraft.getInstance().options.getCameraType();
 
@@ -60,9 +60,9 @@ public class CameraCapture {
 
         captureDelay = 0;
 
-        for (IExposureModifier modifier : capture.modifiers) {
-            captureDelay = Math.max(captureDelay, modifier.getCaptureDelay(capture));
-            modifier.setup(capture);
+        for (IExposureModifier modifier : properties.modifiers) {
+            captureDelay = Math.max(captureDelay, modifier.getCaptureDelay(properties));
+            modifier.setup(properties);
         }
     }
 
@@ -111,11 +111,11 @@ public class CameraCapture {
         currentCapture = null;
     }
 
-    private static void processAndSaveImageThreaded(NativeImage nativeImage, Capture properties) {
+    private static void processAndSaveImageThreaded(NativeImage nativeImage, CaptureProperties properties) {
         new Thread(() -> processAndSaveImage(nativeImage, properties), "ProcessingAndSavingExposure").start();
     }
 
-    private static void processAndSaveImage(NativeImage screenshotImage, Capture properties) {
+    private static void processAndSaveImage(NativeImage screenshotImage, CaptureProperties properties) {
         try {
             BufferedImage bufferedImage = scaleCropAndProcess(screenshotImage, properties);
 
@@ -143,7 +143,7 @@ public class CameraCapture {
         }
     }
 
-    private static BufferedImage scaleCropAndProcess(NativeImage sourceImage, Capture properties) {
+    private static BufferedImage scaleCropAndProcess(NativeImage sourceImage, CaptureProperties properties) {
         int sWidth = sourceImage.getWidth();
         int sHeight = sourceImage.getHeight();
 
@@ -183,7 +183,7 @@ public class CameraCapture {
         return bufferedImage;
     }
 
-    private static void saveExposure(Capture properties, byte[] materialColorPixels) {
+    private static void saveExposure(CaptureProperties properties, byte[] materialColorPixels) {
         for (IExposureSaver saver : properties.savers) {
             saver.save(properties.id, materialColorPixels, properties.size, properties.size);
         }

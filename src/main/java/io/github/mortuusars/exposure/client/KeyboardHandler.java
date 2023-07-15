@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.viewfinder.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.client.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -32,7 +32,7 @@ public class KeyboardHandler {
 
         if (Minecraft.getInstance().options.keySprint.matches(key, scanCode) &&
             !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
-            GUI.showViewfinderConfigScreen();
+            ClientGUI.showViewfinderConfigScreen();
             return true;
         }
 

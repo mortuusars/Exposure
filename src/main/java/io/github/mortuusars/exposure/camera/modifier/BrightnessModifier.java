@@ -1,27 +1,27 @@
 package io.github.mortuusars.exposure.camera.modifier;
 
-import io.github.mortuusars.exposure.camera.CameraCapture;
-import io.github.mortuusars.exposure.camera.Capture;
+import io.github.mortuusars.exposure.camera.ExposureCapture;
+import io.github.mortuusars.exposure.camera.CaptureProperties;
 import net.minecraft.util.Mth;
 
 import java.awt.*;
 
 public record BrightnessModifier(String id) implements IExposureModifier {
     @Override
-    public int getCaptureDelay(Capture properties) {
+    public int getCaptureDelay(CaptureProperties properties) {
         // Changing the gamma is not applied instantly for some reason. Delay of 1 seem to fix it.
         return properties.brightnessStops > 0 ? 1 : 0;
     }
 
     @Override
-    public void setup(Capture properties) {
+    public void setup(CaptureProperties properties) {
         if (properties.brightnessStops >= 0.89f) {
-            CameraCapture.additionalBrightness = 0.0075f * properties.brightnessStops;
+            ExposureCapture.additionalBrightness = 0.0075f * properties.brightnessStops;
         }
     }
 
     @Override
-    public Color modifyPixel(Capture properties, int red, int green, int blue) {
+    public Color modifyPixel(CaptureProperties properties, int red, int green, int blue) {
         float stopsDif = properties.brightnessStops;
 
         // Shorter Shutter Speeds have less impact on the brightness:
@@ -47,8 +47,8 @@ public record BrightnessModifier(String id) implements IExposureModifier {
     }
 
     @Override
-    public void teardown(Capture properties) {
-        CameraCapture.additionalBrightness = 0f;
+    public void teardown(CaptureProperties properties) {
+        ExposureCapture.additionalBrightness = 0f;
     }
 
 

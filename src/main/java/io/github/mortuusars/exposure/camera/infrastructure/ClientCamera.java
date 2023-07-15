@@ -1,7 +1,7 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.camera.component.Shutter;
-import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 

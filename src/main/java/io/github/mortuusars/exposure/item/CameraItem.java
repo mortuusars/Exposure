@@ -13,6 +13,8 @@ import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import io.github.mortuusars.exposure.menu.CameraMenu;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.ServerboundSyncCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
@@ -125,17 +127,19 @@ public class CameraItem extends Item {
             return;
 
         if (player.getLevel().isClientSide) {
-            if (CameraCapture.isCapturing())
+            if (ExposureCapture.isCapturing())
                 return;
 
-            Capture captureProperties = createCaptureProperties(player, camera);
-            CameraCapture.enqueueCapture(captureProperties);
+            CaptureProperties captureProperties = createCaptureProperties(player, camera);
+            ExposureCapture.enqueueCapture(captureProperties);
 
             film.get().getItem().addFrame(film.get().getStack(), new ExposureFrame(captureProperties.id));
             getAttachments(camera.getStack()).setFilm(film.get().getStack());
 
+            // Update camera serverside:
+            Packets.sendToServer(new ServerboundSyncCameraPacket(camera.getStack(), hand));
 
-            ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
+//            ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
         }
     }
 
@@ -178,7 +182,7 @@ public class CameraItem extends Item {
         return lensStack.isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
-    protected Capture createCaptureProperties(Player player, CameraInHand camera) {
+    protected CaptureProperties createCaptureProperties(Player player, CameraInHand camera) {
         Preconditions.checkState(!camera.isEmpty(), "Camera cannot be empty.");
         String id = getExposureId(player, player.level);
 
@@ -189,7 +193,7 @@ public class CameraItem extends Item {
         int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize(f.getStack())).orElse(-1);
 
         float brightnessStops = getDefaultShutterSpeed(camera.getStack()).getStopsDifference(getShutterSpeed(camera.getStack()));
-        return new Capture(id, frameSize, cropFactor, brightnessStops, getExposureModifiers(player, camera),
+        return new CaptureProperties(id, frameSize, cropFactor, brightnessStops, getExposureModifiers(player, camera),
                 List.of(new ExposureStorageSaver()));
     }
 

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Photograph;
-import io.github.mortuusars.exposure.client.GUI;
+import io.github.mortuusars.exposure.client.ClientGUI;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -22,7 +22,7 @@ public class PhotographItem extends Item {
         Photograph photographData = getPhotographData(itemInHand);
         if (photographData != Photograph.EMPTY) {
             if (level.isClientSide)
-                GUI.showPhotographScreen(photographData);
+                ClientGUI.showPhotographScreen(photographData);
 
             return InteractionResultHolder.success(itemInHand);
         }

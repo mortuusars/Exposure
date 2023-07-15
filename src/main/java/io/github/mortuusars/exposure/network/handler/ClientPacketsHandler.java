@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure.network.handler;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.CameraCapture;
-import io.github.mortuusars.exposure.camera.Capture;
+import io.github.mortuusars.exposure.camera.ExposureCapture;
+import io.github.mortuusars.exposure.camera.CaptureProperties;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
@@ -44,7 +44,7 @@ public class ClientPacketsHandler {
         if (size == Integer.MAX_VALUE)
             size = Math.min(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight());
 
-        CameraCapture.enqueueCapture(new Capture("test", size, 1f, 0f, Collections.emptyList(),
+        ExposureCapture.enqueueCapture(new CaptureProperties("test", size, 1f, 0f, Collections.emptyList(),
                 List.of(new ExposureFileSaver(ClientConfig.EXPOSURE_SAVE_PATH.get(), ClientConfig.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get()))));
     }
 }

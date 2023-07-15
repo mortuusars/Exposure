@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.GUI;
+import io.github.mortuusars.exposure.client.ClientGUI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -95,7 +95,7 @@ public class FilmItem extends Item {
         ItemStack film = player.getItemInHand(hand);
 
         if (level.isClientSide)
-            GUI.showExposureViewScreen(film);
+            ClientGUI.showExposureViewScreen(film);
 
         return InteractionResultHolder.success(film);
     }

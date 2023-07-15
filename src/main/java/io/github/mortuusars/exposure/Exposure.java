@@ -3,12 +3,12 @@ package io.github.mortuusars.exposure;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.block.DarkroomBlock;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
-import io.github.mortuusars.exposure.camera.Camera;
-import io.github.mortuusars.exposure.camera.CameraCapture;
-import io.github.mortuusars.exposure.camera.ClientCameraHolder;
-import io.github.mortuusars.exposure.camera.ServerCameraHolder;
+import io.github.mortuusars.exposure.camera.infrastructure.Camera;
+import io.github.mortuusars.exposure.camera.ExposureCapture;
+import io.github.mortuusars.exposure.camera.infrastructure.ClientCameraHolder;
+import io.github.mortuusars.exposure.camera.infrastructure.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
@@ -67,7 +67,7 @@ public class Exposure {
 
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onComputeFovEvent);
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onMouseScrollEvent);
-            MinecraftForge.EVENT_BUS.addListener(CameraCapture::onRenderTick);
+            MinecraftForge.EVENT_BUS.addListener(ExposureCapture::onRenderTick);
         });
     }
 

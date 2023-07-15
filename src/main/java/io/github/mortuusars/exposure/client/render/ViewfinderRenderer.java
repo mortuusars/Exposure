@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.viewfinder;
+package io.github.mortuusars.exposure.client.render;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
+import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.util.CameraInHand;

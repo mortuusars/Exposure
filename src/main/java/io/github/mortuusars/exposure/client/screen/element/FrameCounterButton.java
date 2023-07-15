@@ -1,10 +1,10 @@
-package io.github.mortuusars.exposure.client.viewfinder.element;
+package io.github.mortuusars.exposure.client.screen.element;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.client.viewfinder.ViewfinderRenderer;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.config.ClientConfig;
-import io.github.mortuusars.exposure.util.Fov;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
@@ -12,15 +12,14 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-public class FocalLengthButton extends ImageButton {
+public class FrameCounterButton extends ImageButton {
     private final Screen screen;
     private final ResourceLocation texture;
 
-    public FocalLengthButton(Screen screen, int x, int y, int width, int height, ResourceLocation texture) {
+    public FrameCounterButton(Screen screen, int x, int y, int width, int height, ResourceLocation texture) {
         super(x, y, width, height, 0, 0, 0, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
         this.screen = screen;
         this.texture = texture;
@@ -37,14 +36,19 @@ public class FocalLengthButton extends ImageButton {
         RenderSystem.enableDepthTest();
 
         // Button
-        blit(poseStack, x, y, 0, 0, width, height);
+        blit(poseStack, x, y, 49, 0, width, height);
 
-        int focalLength = Math.round(Fov.fovToFocalLength(ViewfinderRenderer.getCurrentFov()));
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+
+        String text = camera.getItem().getAttachments(camera.getStack()).getFilm().map(film -> {
+            int exposedFrames = film.getItem().getExposedFrames(film.getStack()).size();
+            int totalFrames = film.getItem().getMaxFrameCount();
+            return exposedFrames + "/" + totalFrames;
+        }).orElse("-");
 
         Font font = minecraft.font;
-        MutableComponent text = Component.translatable("gui.exposure.viewfinder.focal_length", focalLength);
         int textWidth = font.width(text);
-        int xPos = 14 + (29 - textWidth) / 2;
+        int xPos = 16 + (27 - textWidth) / 2;
 
         font.draw(poseStack, text, x + xPos, y + 5, ClientConfig.getSecondaryFontColor());
         font.draw(poseStack, text, x + xPos, y + 4, ClientConfig.getMainFontColor());
@@ -52,6 +56,6 @@ public class FocalLengthButton extends ImageButton {
 
     @Override
     public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
-        screen.renderTooltip(poseStack, Component.translatable("gui.exposure.viewfinder.focal_length.tooltip"), mouseX, mouseY);
+        screen.renderTooltip(poseStack, Component.translatable("gui.exposure.viewfinder.film_frame_counter.tooltip"), mouseX, mouseY);
     }
 }

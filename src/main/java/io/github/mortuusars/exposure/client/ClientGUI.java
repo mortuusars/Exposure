@@ -3,11 +3,11 @@ package io.github.mortuusars.exposure.client;
 import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.screen.ExposureScreen;
 import io.github.mortuusars.exposure.client.screen.PhotographScreen;
-import io.github.mortuusars.exposure.client.viewfinder.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.client.screen.ViewfinderControlsScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 
-public class GUI {
+public class ClientGUI {
     public static void showExposureViewScreen(ItemStack film) {
         Minecraft.getInstance().setScreen(new ExposureScreen(film));
     }

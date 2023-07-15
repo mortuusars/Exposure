@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;

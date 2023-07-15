@@ -1,9 +1,9 @@
-package io.github.mortuusars.exposure.client.viewfinder.element;
+package io.github.mortuusars.exposure.client.screen.element;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.SynchronizedCameraInHandActions;
+import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.util.CameraInHand;
