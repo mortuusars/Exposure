@@ -22,34 +22,36 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ExposureScreen extends ExposureRenderScreen {
-    private List<ExposureFrame> exposureIds = new ArrayList<>();
+    private List<ExposureFrame> exposureFrames = new ArrayList<>();
     private int currentExposureIndex;
     private int frameSize;
 
     public ExposureScreen(ItemStack film) {
         super(Component.empty());
+        minecraft = Minecraft.getInstance();
 
         // TODO: remove?
         ExposureRenderer.clearData();
 
-        if (!(film.getItem() instanceof FilmItem filmItem)) {
+        if (!(film.getItem() instanceof FilmItem filmItem) || filmItem.getExposedFrames(film).size() == 0) {
+            currentExposureIndex = -1;
             this.onClose();
-            return;
         }
+        else {
+            List<ExposureFrame> frames = filmItem.getExposedFrames(film);
+            exposureFrames = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
+            frameSize = filmItem.getFrameSize(film);
 
-        List<ExposureFrame> frames = filmItem.getExposedFrames(film);
-        exposureIds = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
-        frameSize = filmItem.getFrameSize(film);
+            currentExposureIndex = exposureFrames.size() - 1;
+            loadExposure();
 
-        currentExposureIndex = exposureIds.size() - 1;
-        loadExposure();
-
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+            Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+        }
     }
 
     @Override
     protected String getExposureId() {
-        return exposureIds.get(currentExposureIndex).id;
+        return currentExposureIndex >= 0 ? exposureFrames.get(currentExposureIndex).id : "";
     }
 
     @Override
@@ -96,11 +98,11 @@ public class ExposureScreen extends ExposureRenderScreen {
             loadExposure();
         }
         else if (key == InputConstants.KEY_RIGHT) {
-            currentExposureIndex = (Math.min(exposureIds.size() - 1, currentExposureIndex + 1));
+            currentExposureIndex = (Math.min(exposureFrames.size() - 1, currentExposureIndex + 1));
             loadExposure();
         }
         else if (key == InputConstants.KEY_P) { //TODO: Proper printing
-            ExposureFrame exposureFrame = exposureIds.get(currentExposureIndex);
+            ExposureFrame exposureFrame = exposureFrames.get(currentExposureIndex);
             Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id, frameSize, "")));
         }
         else if (Minecraft.getInstance().options.keyInventory.matches(key, scanCode))

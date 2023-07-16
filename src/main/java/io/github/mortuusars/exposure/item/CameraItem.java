@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Pair;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.*;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
@@ -10,13 +11,14 @@ import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
-import io.github.mortuusars.exposure.client.ClientOnlyLogic;
+import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
 import io.github.mortuusars.exposure.menu.CameraMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundSyncCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
+import io.github.mortuusars.exposure.util.Fov;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
@@ -29,6 +31,10 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -37,6 +43,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
@@ -123,6 +131,33 @@ public class CameraItem extends Item {
         CameraAttachments attachments = getAttachments(camera.getStack());
         Optional<ItemAndStack<FilmItem>> film = attachments.getFilm();
 
+
+
+//        float currentFov = ViewfinderRenderer.getCurrentFov() / 1.142f;
+//        float currentFocalLength = Fov.fovToFocalLength(currentFov);
+//
+//        List<Entity> entitiesInSight = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),
+//                entity -> entity instanceof LivingEntity);
+//
+//        for (Entity entity : entitiesInSight) {
+//            double relativeAngleDegrees = getRelativeAngle(player, entity);
+//
+//            if (relativeAngleDegrees < currentFov / 2f) {
+//                double distanceInBlocks = Math.sqrt(player.distanceToSqr(entity));
+//
+//                AABB boundingBox = entity.getBoundingBoxForCulling();
+//                double size = boundingBox.getSize();
+//                //TODO: add safety checks for size
+//
+//                double sizeModifier = (size - 1.0) * 0.6d + 1.0;
+//                double modifiedDistance = (distanceInBlocks / sizeModifier) / 1.142f;
+//
+//                if (modifiedDistance < currentFocalLength) {
+//                    ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.GLOWING, 5));
+//                }
+//            }
+//        }
+
         if (film.isEmpty() || !film.get().getItem().canAddFrame(film.get().getStack()))
             return;
 
@@ -138,9 +173,15 @@ public class CameraItem extends Item {
 
             // Update camera serverside:
             Packets.sendToServer(new ServerboundSyncCameraPacket(camera.getStack(), hand));
-
-//            ClientOnlyLogic.updateAndSyncCameraStack(camera.getStack(), camera.getHand());
         }
+    }
+
+    private double getRelativeAngle(LivingEntity origin, Entity target) {
+        Vec3 lookAngle = origin.getLookAngle();
+        Vec3 originEyePos = origin.position().add(0, origin.getEyeHeight(), 0);
+        Vec3 targetEyePos = target.position().add(0, target.getEyeHeight(), 0);
+        Vec3 originToTargetAngle = targetEyePos.subtract(originEyePos).normalize();
+        return Math.toDegrees(Math.acos(lookAngle.dot(originToTargetAngle)));
     }
 
     public CameraAttachments getAttachments(ItemStack cameraStack) {
