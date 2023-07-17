@@ -41,7 +41,7 @@ public class Photograph {
         String tagId = tag.getString("Id");
         Preconditions.checkState(tagId.length() > 0, "Id cannot be empty.");
         int tagSize = tag.getInt("Size");
-        Preconditions.checkState(tagSize > 0, "Size cannot be less or equal to zero.");
+//        Preconditions.checkState(tagSize > 0, "Size cannot be less or equal to zero.");
         String tagNote = tag.getString("Note");
 
         return new Photograph(tagId, tagSize, tagNote);

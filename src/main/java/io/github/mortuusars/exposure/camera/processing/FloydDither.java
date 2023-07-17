@@ -11,7 +11,7 @@ import java.util.Objects;
 public class FloydDither {
     private record NegatableColor(int r, int g, int b) {}
 
-    public static byte[] dither(BufferedImage image) {
+    public static byte[] ditherWithMapColors(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
         int[][] pixels = convertToPixelArray(image);
@@ -96,7 +96,6 @@ public class FloydDither {
                 double distance = distance(imageVec, applyShade(mcColorVec, shadeInd));
                 if (distance < lowest_distance) {
                     lowest_distance = distance;
-                    // todo: handle shading with alpha values other than 255
                     if (k == 0 && imageColor.getAlpha() == 255) {
                         best_color = 119;
                     } else {
@@ -125,41 +124,6 @@ public class FloydDither {
             }
         }
 
-
-//        final byte[] pixels = ((DataBufferByte) image.getRaster().getDataBuffer()).getData();
-//        final int width = image.getWidth();
-//        final int height = image.getHeight();
-//
-//        int[][] result = new int[height][width];
-//        final int pixelLength = 4;
-//        for (int pixel = 0, row = 0, col = 0; pixel + 3 < pixels.length; pixel += pixelLength) {
-//            int r = (pixels[pixel + 3] & 0xff) << 16;
-//            int g = (pixels[pixel + 2] & 0xff) << 8;
-//            int b = (pixels[pixel + 1] & 0xff);
-//
-////            int argb = 0;
-////            argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
-////            argb += ((int) pixels[pixel + 1] & 0xff); // blue
-////            argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
-////            argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
-//            result[row][col] = 0xFF << 24 | r << 16 | g << 8 | b;
-//
-//            col++;
-//            if (col == width) {
-//                col = 0;
-//                row++;
-//            }
-//        }
-
         return result;
     }
-
-//    private static BufferedImage convertToBufferedImage(Image image) {
-//        BufferedImage newImage = new BufferedImage(image.getWidth(null), image.getHeight(null),
-//                BufferedImage.TYPE_4BYTE_ABGR);
-//        Graphics2D g = newImage.createGraphics();
-//        g.drawImage(image, 0, 0, null);
-//        g.dispose();
-//        return newImage;
-//    }
 }

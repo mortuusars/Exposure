@@ -49,7 +49,7 @@ public class ExposureRenderer {
 
     static class ExposureInstance implements AutoCloseable {
         private ExposureSavedData exposureData;
-        private final DynamicTexture texture;
+        private DynamicTexture texture;
         private final boolean negative;
         private final RenderType renderType;
         private boolean requiresUpload = true;
@@ -66,6 +66,8 @@ public class ExposureRenderer {
         private void replaceExposureData(ExposureSavedData exposureData) {
             boolean flag = this.exposureData != exposureData;
             this.exposureData = exposureData;
+            if (flag)
+                this.texture = new DynamicTexture(exposureData.getWidth(), exposureData.getHeight(), true);
             this.requiresUpload |= flag;
         }
 

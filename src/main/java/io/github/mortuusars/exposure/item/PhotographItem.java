@@ -36,7 +36,14 @@ public class PhotographItem extends Item {
             return Photograph.EMPTY;
         }
 
-        return Photograph.load(photographStack.getOrCreateTag());
+        try {
+            return Photograph.load(photographStack.getOrCreateTag());
+        }
+        catch (Exception e) {
+            Exposure.LOGGER.error("Cannot get photograph data: " + e);
+        }
+
+        return Photograph.EMPTY;
     }
 
     public ItemStack setPhotographData(ItemStack photographStack, Photograph photograph) {

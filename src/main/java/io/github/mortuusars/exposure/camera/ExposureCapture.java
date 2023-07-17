@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 import io.github.mortuusars.exposure.camera.processing.FloydDither;
+import io.github.mortuusars.exposure.camera.processing.RGBToMapColorConverter;
 import io.github.mortuusars.exposure.storage.saver.IExposureSaver;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.CameraType;
@@ -87,35 +88,20 @@ public class ExposureCapture {
 
         NativeImage screenshot = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
 
-//        try {
-//            BufferedImage read = ImageIO.read(new File("E:/img.jpg"));
-//
-//            screenshot = new NativeImage(read.getWidth(), read.getHeight(), false);
-//
-//            for (int x = 0; x < read.getWidth(); x++) {
-//                for (int y = 0; y < read.getHeight(); y++) {
-//                    screenshot.setPixelRGBA(x, y, ColorUtils.BGRtoRGB(read.getRGB(x, y)));
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            Exposure.LOGGER.error(e.toString());
-//        }
-
         Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;
         Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
 
-        processAndSaveImageThreaded(screenshot, currentCapture);
+        processAndSaveImageThreaded(screenshot, currentCapture, true);
 
         capturing = false;
         currentCapture = null;
     }
 
-    private static void processAndSaveImageThreaded(NativeImage nativeImage, CaptureProperties properties) {
-        new Thread(() -> processAndSaveImage(nativeImage, properties), "ProcessingAndSavingExposure").start();
+    public static void processAndSaveImageThreaded(NativeImage nativeImage, CaptureProperties properties, boolean dither) {
+        new Thread(() -> processAndSaveImage(nativeImage, properties, dither), "ProcessingAndSavingExposure").start();
     }
 
-    private static void processAndSaveImage(NativeImage screenshotImage, CaptureProperties properties) {
+    public static void processAndSaveImage(NativeImage screenshotImage, CaptureProperties properties, boolean dither) {
         try {
             BufferedImage bufferedImage = scaleCropAndProcess(screenshotImage, properties);
 
@@ -123,7 +109,9 @@ public class ExposureCapture {
                 bufferedImage = modifier.modifyImage(properties, bufferedImage);
             }
 
-            byte[] materialColorPixels = FloydDither.dither(bufferedImage);
+            byte[] materialColorPixels = dither ?
+                    FloydDither.ditherWithMapColors(bufferedImage)
+                    : RGBToMapColorConverter.convert(bufferedImage);
 
             for (IExposureModifier modifier : properties.modifiers) {
                 modifier.teardown(properties);
@@ -179,6 +167,7 @@ public class ExposureCapture {
                 bufferedImage.setRGB(x, y, 0xFF << 24 | pixel.getRed() << 16 | pixel.getGreen() << 8 | pixel.getBlue());
             }
         }
+        sourceImage.close();
 
         return bufferedImage;
     }

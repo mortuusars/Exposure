@@ -25,6 +25,7 @@ public class Packets {
         ServerboundCameraSetCompositionGuidePacket.register(CHANNEL, id++);
         ServerboundCameraSetShutterSpeedPacket.register(CHANNEL, id++);
 
+        ClientboundLoadExposureCommandPacket.register(CHANNEL, id++);
         ClientboundExposeCommandPacket.register(CHANNEL, id++);
 
         CHANNEL.messageBuilder(UpdateActiveCameraPacket.class, id++)

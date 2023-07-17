@@ -10,27 +10,30 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
-public record ClientboundExposeCommandPacket(int size) {
+public record ClientboundLoadExposureCommandPacket(String id, String path, int size, boolean dither) {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(ClientboundExposeCommandPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ClientboundExposeCommandPacket::toBuffer)
-                .decoder(ClientboundExposeCommandPacket::fromBuffer)
-                .consumerMainThread(ClientboundExposeCommandPacket::handle)
+        channel.messageBuilder(ClientboundLoadExposureCommandPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ClientboundLoadExposureCommandPacket::toBuffer)
+                .decoder(ClientboundLoadExposureCommandPacket::fromBuffer)
+                .consumerMainThread(ClientboundLoadExposureCommandPacket::handle)
                 .add();
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
+        buffer.writeUtf(id);
+        buffer.writeUtf(path);
         buffer.writeInt(size);
+        buffer.writeBoolean(dither);
     }
 
-    public static ClientboundExposeCommandPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ClientboundExposeCommandPacket(buffer.readInt());
+    public static ClientboundLoadExposureCommandPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new ClientboundLoadExposureCommandPacket(buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readBoolean());
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean handle(Supplier<NetworkEvent.Context> contextSupplier) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> contextSupplier.get().enqueueWork(
-                () -> ClientPacketsHandler.exposeScreenshot(size)));
+                () -> ClientPacketsHandler.loadExposure(id, path, size, dither)));
 
         return true;
     }
