@@ -26,9 +26,9 @@ public record BrightnessModifier(String id) implements IExposureModifier {
 
         // Shorter Shutter Speeds have less impact on the brightness:
         if (stopsDif < 0f)
-            stopsDif *= 0.5f;
+            stopsDif *= 0.75f;
 
-        float brightness = 1f + stopsDif;
+        float brightness = 1f + stopsDif * 0.35f;
 
         float r = red * brightness;
         float g = green * brightness;

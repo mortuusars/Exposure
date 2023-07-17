@@ -1,8 +1,10 @@
 package io.github.mortuusars.exposure.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
@@ -59,36 +61,29 @@ public class ExposureScreen extends ExposureRenderScreen {
         renderBackground(poseStack);
         super.render(poseStack, pMouseX, pMouseY, pPartialTick);
 
-//        fill(poseStack, 0, 0, width, height, 0x90000000);
+        float scale = (height - (height / 6f)) / frameSize;
+        poseStack.pushPose();
+
+        // Move to center
+        poseStack.translate(width / 2f, height / 2f, 0);
+        // Scale
+        poseStack.scale(scale, scale, scale);
+        // Set origin point to center (for scale)
+        poseStack.translate(frameSize / -2d, frameSize / -2d, 0);
+
 
         if (exposureData != null) {
-
-            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-
-            float scale = (height - (height / 6f)) / exposureData.getHeight();
-
-//            float scale = 1f / (exposureData.getHeight() / ((float)height));
-            float x = (width - exposureData.getWidth()) / 2f / scale;
-            float y = (height - exposureData.getHeight()) / 2f / scale;
-
-            poseStack.pushPose();
-
-            // Move to center
-            poseStack.translate(width / 2f, height / 2f, 0);
-            // Scale
-            poseStack.scale(scale, scale, scale);
-            // Set origin point to center (for scale)
-            poseStack.translate(exposureData.getWidth() / -2d, exposureData.getHeight() / -2d, 0);
-
-            fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
+            fill(poseStack, -8, -8, frameSize + 8, frameSize + 8, 0xFFDDDDDD);
             renderExposure(poseStack, false);
-            poseStack.popPose();
-
-            bufferSource.endBatch();
         }
         else {
             loadExposure();
+            RenderSystem.setShaderTexture(0, Exposure.resource("textures/misc/missing_image.png"));
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            blit(poseStack, 0, 0, getBlitOffset(), 0, 0, frameSize, frameSize, frameSize, frameSize);
         }
+
+        poseStack.popPose();
     }
 
     @Override

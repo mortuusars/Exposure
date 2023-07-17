@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -28,11 +29,30 @@ public class FilmItem extends Item {
 
     private final FilmType filmType;
     private final int frameCount;
+    private final int barColor;
 
-    public FilmItem (FilmType filmType, int frameCount, Properties properties) {
+    public FilmItem (FilmType filmType, int frameCount, int barColor, Properties properties) {
         super(properties);
         this.filmType = filmType;
         this.frameCount = frameCount;
+        this.barColor = barColor;
+    }
+
+    public boolean isBarVisible(@NotNull ItemStack stack) {
+        return getExposedFramesCount(stack) > 0;
+    }
+
+    public int getBarWidth(@NotNull ItemStack stack) {
+        return Math.min(1 + 12 * getExposedFramesCount(stack) / getMaxFrameCount(), 13);
+    }
+
+    public int getBarColor(@NotNull ItemStack stack) {
+        return barColor;
+    }
+
+    protected int getExposedFramesCount(ItemStack stack) {
+        return stack.hasTag() && stack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST) ?
+                stack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() : 0;
     }
 
     public FilmType getType() {
@@ -61,7 +81,7 @@ public class FilmItem extends Item {
         List<ExposureFrame> frames = new ArrayList<>();
 
         for (Tag frameTag : filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND)) {
-            frames.add(new ExposureFrame((CompoundTag) frameTag));
+            frames.add(ExposureFrame.load((CompoundTag) frameTag));
         }
 
         return frames;
