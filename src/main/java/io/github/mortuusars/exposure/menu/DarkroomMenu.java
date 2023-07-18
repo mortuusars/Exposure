@@ -105,7 +105,7 @@ public class DarkroomMenu extends AbstractContainerMenu {
                 if (currentFrame >= 0 && currentFrame < exposedFrames.size()) {
                     ExposureFrame exposureFrame = exposedFrames.get(currentFrame);
                     ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-                    Exposure.Items.PHOTOGRAPH.get().setPhotographData(photographStack, new Photograph(exposureFrame.id, 1, ""));
+                    Exposure.Items.PHOTOGRAPH.get().setPhotographData(photographStack, new Photograph(exposureFrame.id));
                     darkroomBlockEntity.setItem(DarkroomBlockEntity.RESULT_SLOT, photographStack);
                 }
             }

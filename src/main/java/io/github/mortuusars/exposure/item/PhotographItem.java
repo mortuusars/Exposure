@@ -30,14 +30,15 @@ public class PhotographItem extends Item {
         return super.use(level, player, hand);
     }
 
-    public Photograph getPhotographData(ItemStack photographStack) {
-        if (!photographStack.hasTag()) {
-            Exposure.LOGGER.error(photographStack + " doesn't have a tag.");
+    public Photograph getPhotographData(ItemStack stack) {
+
+        if (!stack.hasTag()) {
+            Exposure.LOGGER.error(stack + " doesn't have a tag.");
             return Photograph.EMPTY;
         }
 
         try {
-            return Photograph.load(photographStack.getOrCreateTag());
+            return Photograph.load(stack.getOrCreateTag());
         }
         catch (Exception e) {
             Exposure.LOGGER.error("Cannot get photograph data: " + e);

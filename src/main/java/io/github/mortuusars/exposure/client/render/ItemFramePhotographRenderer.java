@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.Photograph;
@@ -17,11 +18,9 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
 import net.minecraftforge.client.model.data.ModelData;
 
-import java.util.List;
 import java.util.Optional;
 
 public class ItemFramePhotographRenderer {
@@ -34,7 +33,10 @@ public class ItemFramePhotographRenderer {
             return;
 
         Photograph photographData = photographItem.getPhotographData(itemStack);
-        Optional<ExposureSavedData> queriedExposureData = Exposure.getStorage().getOrQuery(photographData.getId());
+        if (photographData.getIdOrResource().left().isEmpty())
+            return;
+
+        Optional<ExposureSavedData> queriedExposureData = Exposure.getStorage().getOrQuery(photographData.getIdOrResource().left().get());
         if (queriedExposureData.isEmpty())
             return;
 
@@ -70,7 +72,7 @@ public class ItemFramePhotographRenderer {
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-exposureSavedData.getWidth() / 2f, -exposureSavedData.getHeight() / 2f, -1);
-        ExposureRenderer.render(poseStack, event.getMultiBufferSource(), photographData.getId(), exposureSavedData, packedLight);
+        ExposureRenderer.render(poseStack, event.getMultiBufferSource(), photographData.getIdOrResource().left().get(), exposureSavedData, packedLight);
         poseStack.popPose();
 
         event.setCanceled(true);

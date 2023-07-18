@@ -2,16 +2,20 @@ package io.github.mortuusars.exposure.client.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PhotographScreen extends ExposureRenderScreen {
     private final Photograph photograph;
+    @Nullable
+    private final ResourceLocation texture;
     private float zoom = 0f;
 
     private double xPos;
@@ -20,6 +24,7 @@ public class PhotographScreen extends ExposureRenderScreen {
     public PhotographScreen(Photograph photograph) {
         super(Component.empty());
         this.photograph = photograph;
+        texture = photograph.getIdOrResource().right().orElse(null);
 
         loadExposure();
     }
@@ -34,7 +39,7 @@ public class PhotographScreen extends ExposureRenderScreen {
 
     @Override
     protected String getExposureId() {
-        return photograph.getId();
+        return photograph.getIdOrResource().left().orElse(null);
     }
 
     @Override
@@ -42,15 +47,10 @@ public class PhotographScreen extends ExposureRenderScreen {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
-        if (exposureData == null) {
-            loadExposure();
-//            scale = (height - (height / 6f)) / exposureData.getHeight();
+        float imgWidth = exposureData != null ? exposureData.getWidth() : 256;
+        float imgHeight = exposureData != null ? exposureData.getHeight() : 256;
 
-            if (exposureData == null)
-                return;
-        }
-
-        float scale = (height - (height / 6f)) / exposureData.getHeight();
+        float scale = (height - (height / 6f)) / imgHeight;
         scale += zoom;
 
         poseStack.pushPose();
@@ -60,11 +60,23 @@ public class PhotographScreen extends ExposureRenderScreen {
         // Scale
         poseStack.scale(scale, scale, scale);
         // Set origin point to center (for scale)
-        poseStack.translate(exposureData.getWidth() / -2d, exposureData.getHeight() / -2d, 0);
+        poseStack.translate(imgWidth / -2d, imgHeight / -2d, 0);
 
         // Paper (frame)
-        fill(poseStack, -8, -8, exposureData.getWidth() + 8, exposureData.getHeight() + 8, 0xFFDDDDDD);
-        renderExposure(poseStack,false);
+
+        fill(poseStack, -8, -8, (int) (imgWidth + 8), (int) (imgHeight + 8), 0xFFDDDDDD);
+
+        if (texture != null) {
+            RenderSystem.setShaderTexture(0, texture);
+            RenderSystem.setShaderColor(1, 1, 1, 1);
+            blit(poseStack, 0, 0, 0, 0, 256, 256);
+        }
+        else {
+            if (exposureData == null)
+                loadExposure();
+            else
+                renderExposure(poseStack, false);
+        }
 
         poseStack.popPose();
     }
@@ -80,17 +92,13 @@ public class PhotographScreen extends ExposureRenderScreen {
         float modifier = Mth.map(zoom, -0.5f, 2f, 1f, 8f);
         zoom = Mth.clamp(zoom + (zoomChange * modifier), -0.5f, 2f);
 
-        double mX = mouseX - width / 2f;
-        double mY = mouseY - height / 2f;
-
-        if (zoom < 1.5f) {
-            double moveDelta = (zoomChange * modifier) * -1;
-            xPos = Mth.lerp(moveDelta, xPos, mouseX);
-            yPos = Mth.lerp(moveDelta, yPos, mouseY);
+        if (zoom > -0.5f & zoom < 2f) {
+            if (zoom < 1.5f) {
+                double moveDelta = (zoomChange * modifier) * -1;
+                xPos = Mth.lerp(moveDelta, xPos, mouseX);
+                yPos = Mth.lerp(moveDelta, yPos, mouseY);
+            }
         }
-
-//        xPos += mX * 0.5f;
-//        yPos += mY * 0.5f;
 
         return true;
     }
