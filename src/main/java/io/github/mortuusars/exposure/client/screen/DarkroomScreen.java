@@ -6,9 +6,11 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
@@ -90,21 +92,16 @@ public class DarkroomScreen extends AbstractContainerScreen<DarkroomMenu> {
                     return;
 
                 ExposureFrame exposureFrame = exposedFrames.get(currentFrameId);
-                Optional<ExposureSavedData> exp = Exposure.getStorage().getOrQuery(exposureFrame.id);
-                if (exp.isPresent()) {
-                    ExposureSavedData exposureSavedData = exp.get();
-                    MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+                Exposure.getStorage().getOrQuery(exposureFrame.id).ifPresent(exposureData -> {
+                    int size = PhotographRenderer.SIZE;
 
                     poseStack.pushPose();
                     poseStack.translate(this.leftPos + 64, this.topPos + 31, 0);
-                    float scale = 48f / exposureSavedData.getHeight();
+                    float scale = 48f / size;
                     poseStack.scale(scale, scale, scale);
-                    ExposureRenderer.render(poseStack, bufferSource,
-                            exposureFrame.id, exposureSavedData, LightTexture.FULL_BRIGHT);
+                    ExposureClient.getExposureRenderer().render(exposureFrame.id, exposureData, true, poseStack, size, size);
                     poseStack.popPose();
-
-                    bufferSource.endBatch();
-                }
+                });
             }
         }
     }

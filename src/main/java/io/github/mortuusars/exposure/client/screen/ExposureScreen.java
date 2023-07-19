@@ -1,19 +1,18 @@
 package io.github.mortuusars.exposure.client.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.Photograph;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
-import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
+import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundPrintPhotographPacket;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
@@ -21,39 +20,38 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class ExposureScreen extends ExposureRenderScreen {
+public class ExposureScreen extends Screen {
     private List<ExposureFrame> exposureFrames = new ArrayList<>();
-    private int currentExposureIndex;
-    private int frameSize;
+    private int currentExposureIndex = -1;
 
     public ExposureScreen(ItemStack film) {
         super(Component.empty());
         minecraft = Minecraft.getInstance();
 
-        // TODO: remove?
-        ExposureRenderer.clearData();
-
-        if (!(film.getItem() instanceof FilmItem filmItem) || filmItem.getExposedFrames(film).size() == 0) {
-            currentExposureIndex = -1;
+        if (!(film.getItem() instanceof FilmItem filmItem)) {
             this.onClose();
+            return;
         }
-        else {
-            List<ExposureFrame> frames = filmItem.getExposedFrames(film);
-            exposureFrames = frames.stream().filter(frame -> !StringUtil.isNullOrEmpty(frame.id)).collect(Collectors.toList());
-            frameSize = filmItem.getFrameSize(film);
 
-            currentExposureIndex = exposureFrames.size() - 1;
-            loadExposure();
+        List<ExposureFrame> frames = filmItem.getExposedFrames(film)
+                .stream()
+                .filter(frame -> !StringUtil.isNullOrEmpty(frame.id))
+                .toList();
 
-            Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+        if (frames.size() == 0) {
+            this.onClose();
+            return;
         }
+
+        exposureFrames = frames;
+        currentExposureIndex = 0;
+
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
-    @Override
     protected String getExposureId() {
-        return currentExposureIndex >= 0 ? exposureFrames.get(currentExposureIndex).id : "";
+        return exposureFrames.size() > 0 && currentExposureIndex >= 0 ? exposureFrames.get(currentExposureIndex).id : "";
     }
 
     @Override
@@ -61,7 +59,12 @@ public class ExposureScreen extends ExposureRenderScreen {
         renderBackground(poseStack);
         super.render(poseStack, pMouseX, pMouseY, pPartialTick);
 
-        float scale = (height - (height / 6f)) / frameSize;
+        String exposureId = getExposureId();
+
+        if (exposureId.length() == 0)
+            return;
+
+        float scale = (height - (height / 6f)) / PhotographRenderer.SIZE;
         poseStack.pushPose();
 
         // Move to center
@@ -69,33 +72,23 @@ public class ExposureScreen extends ExposureRenderScreen {
         // Scale
         poseStack.scale(scale, scale, scale);
         // Set origin point to center (for scale)
-        poseStack.translate(frameSize / -2d, frameSize / -2d, 0);
+        poseStack.translate(PhotographRenderer.SIZE / -2d, PhotographRenderer.SIZE / -2d, 0);
 
-
-        if (exposureData != null) {
-            fill(poseStack, -8, -8, frameSize + 8, frameSize + 8, 0xFFDDDDDD);
-            renderExposure(poseStack, false);
-        }
-        else {
-            loadExposure();
-            RenderSystem.setShaderTexture(0, Exposure.resource("textures/misc/missing_image.png"));
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            blit(poseStack, 0, 0, getBlitOffset(), 0, 0, frameSize, frameSize, frameSize, frameSize);
-        }
+        fill(poseStack, -8, -8, PhotographRenderer.SIZE + 8, PhotographRenderer.SIZE + 8, 0xFFDDDDDD);
+        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
+            ExposureClient.getExposureRenderer().render(exposureId, exposureData, false, poseStack,
+                    LightTexture.FULL_BRIGHT, PhotographRenderer.SIZE, PhotographRenderer.SIZE);
+        });
 
         poseStack.popPose();
     }
 
     @Override
     public boolean keyPressed(int key, int scanCode, int modifiers) {
-        if (key == InputConstants.KEY_LEFT) {
+        if (key == InputConstants.KEY_LEFT)
             currentExposureIndex = (Math.max(0, currentExposureIndex - 1));
-            loadExposure();
-        }
-        else if (key == InputConstants.KEY_RIGHT) {
+        else if (key == InputConstants.KEY_RIGHT)
             currentExposureIndex = (Math.min(exposureFrames.size() - 1, currentExposureIndex + 1));
-            loadExposure();
-        }
         else if (key == InputConstants.KEY_P) { //TODO: Proper printing
             ExposureFrame exposureFrame = exposureFrames.get(currentExposureIndex);
             Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id)));

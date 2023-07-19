@@ -1,10 +1,12 @@
 package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -15,21 +17,29 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExposureRenderer {
-    private static final Map<String, ExposureRenderer.ExposureInstance> exposures = new HashMap<>();
+public class ExposureRenderer implements AutoCloseable {
+    private final Map<String, ExposureRenderer.ExposureInstance> exposures = new HashMap<>();
+    private final Map<String, ExposureRenderer.ExposureInstance> negativeExposures = new HashMap<>();
 
-    public static void render(PoseStack poseStack, MultiBufferSource bufferSource, String id,
-                              @NotNull ExposureSavedData exposureData, int packedLight) {
-        getOrCreateMapInstance(id, exposureData, false).draw(poseStack, bufferSource, packedLight);
+    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
+                       PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height) {
+        getOrCreateMapInstance(id, exposureData, negative).draw(poseStack, bufferSource, packedLight, width, height);
     }
 
-    public static void renderNegative(PoseStack poseStack, MultiBufferSource bufferSource, String id,
-                              @NotNull ExposureSavedData exposureData, int packedLight) {
-        getOrCreateMapInstance(id + "_negative", exposureData, true).draw(poseStack, bufferSource, packedLight);
+    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
+                       PoseStack poseStack, int packedLight, float width, float height) {
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        render(id, exposureData, negative, poseStack, bufferSource, packedLight, width, height);
+        bufferSource.endBatch();
     }
 
-    private static ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative) {
-        return exposures.compute(id, (expId, expData) -> {
+    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
+                       PoseStack poseStack, float width, float height) {
+        render(id, exposureData, negative, poseStack, LightTexture.FULL_BRIGHT, width, height);
+    }
+
+    private ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative) {
+        return (negative ? negativeExposures : exposures).compute(id, (expId, expData) -> {
             if (expData == null) {
                 return new ExposureInstance(expId, exposureData, negative);
             } else {
@@ -39,12 +49,23 @@ public class ExposureRenderer {
         });
     }
 
-    public static void clearData() {
+    public void clearData() {
         for(ExposureRenderer.ExposureInstance instance : exposures.values()) {
             instance.close();
         }
 
         exposures.clear();
+
+        for(ExposureRenderer.ExposureInstance instance : negativeExposures.values()) {
+            instance.close();
+        }
+
+        negativeExposures.clear();
+    }
+
+    @Override
+    public void close() {
+        clearData();
     }
 
     static class ExposureInstance implements AutoCloseable {
@@ -104,20 +125,18 @@ public class ExposureRenderer {
             this.texture.upload();
         }
 
-        void draw(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        void draw(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height) {
             if (this.requiresUpload) {
                 this.updateTexture();
                 this.requiresUpload = false;
             }
 
-            int width = exposureData.getWidth();
-            int height = exposureData.getHeight();
             Matrix4f matrix4f = poseStack.last().pose();
             VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
-            vertexconsumer.vertex(matrix4f, 0, height, -0.01F).color(255, 255, 255, 255).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, width, height, -0.01F).color(255, 255, 255, 255).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, width, 0, -0.01F).color(255, 255, 255, 255).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, 0, 0, -0.01F).color(255, 255, 255, 255).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, 0, height, 0).color(255, 255, 255, 255).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, width, height, 0).color(255, 255, 255, 255).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, width, 0, 0).color(255, 255, 255, 255).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, 0, 0, 0).color(255, 255, 255, 255).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
         }
 
         public void close() {

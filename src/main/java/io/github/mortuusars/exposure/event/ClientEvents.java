@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.event;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.screen.CameraScreen;
@@ -27,6 +28,7 @@ public class ClientEvents {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
+                ExposureClient.init();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.DARKROOM.get(), DarkroomScreen::new);
             });
@@ -36,7 +38,7 @@ public class ClientEvents {
     public static class ForgeBus {
         @SubscribeEvent
         public static void onLevelClear(LevelEvent.Unload event) {
-            ExposureRenderer.clearData();
+            ExposureClient.getExposureRenderer().clearData();
         }
 
         @SubscribeEvent

@@ -32,24 +32,18 @@ public class ItemFramePhotographRenderer {
         if (!(itemStack.getItem() instanceof PhotographItem photographItem))
             return;
 
-        Photograph photographData = photographItem.getPhotographData(itemStack);
-        if (photographData.getIdOrResource().left().isEmpty())
-            return;
-
-        Optional<ExposureSavedData> queriedExposureData = Exposure.getStorage().getOrQuery(photographData.getIdOrResource().left().get());
-        if (queriedExposureData.isEmpty())
+        Photograph photograph = photographItem.getPhotographData(itemStack);
+        if (photograph.getIdOrResource().left().isEmpty())
             return;
 
         //TODO: GLOW
-
-        ExposureSavedData exposureSavedData = queriedExposureData.get();
-        PoseStack poseStack = event.getPoseStack();
-
-        // TODO: BORDER/NO BORDER
+        //TODO: BORDER/NO BORDER
 
         ItemFrame entity = event.getItemFrameEntity();
         ModelManager modelmanager = Minecraft.getInstance().getBlockRenderer().getBlockModelShaper().getModelManager();
         ModelResourceLocation modelresourcelocation = entity.getType() == EntityType.GLOW_ITEM_FRAME ? GLOW_MAP_FRAME_LOCATION : MAP_FRAME_LOCATION;
+
+        PoseStack poseStack = event.getPoseStack();
 
         // Snap to 90 degrees like a map.
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(45 * entity.getRotation()));
@@ -58,12 +52,14 @@ public class ItemFramePhotographRenderer {
         poseStack.translate(-0.5D, -0.5D, -0.46875D * 2f);
         int packedLight = entity.getType() == EntityType.GLOW_ITEM_FRAME ? LightTexture.FULL_BRIGHT : event.getPackedLight();
         Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
-                event.getMultiBufferSource().getBuffer(Sheets.solidBlockSheet()), (BlockState)null,
+                event.getMultiBufferSource().getBuffer(Sheets.solidBlockSheet()), null,
                 modelmanager.getModel(modelresourcelocation), 1.0F, 1.0F, 1.0F, packedLight, OverlayTexture.NO_OVERLAY,
                 ModelData.EMPTY, RenderType.solid());
         poseStack.popPose();
 
-        float scale = 1f / exposureSavedData.getWidth();
+        float size = PhotographRenderer.SIZE;
+
+        float scale = 1f / size;
         float pixelScale = scale / 16f;
         // 1px border around a photograph:
         scale -= pixelScale * 2;
@@ -71,8 +67,8 @@ public class ItemFramePhotographRenderer {
         poseStack.pushPose();
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
-        poseStack.translate(-exposureSavedData.getWidth() / 2f, -exposureSavedData.getHeight() / 2f, -1);
-        ExposureRenderer.render(poseStack, event.getMultiBufferSource(), photographData.getIdOrResource().left().get(), exposureSavedData, packedLight);
+        poseStack.translate(-size / 2f, -size / 2f, -1);
+        PhotographRenderer.render(photograph, poseStack, packedLight);
         poseStack.popPose();
 
         event.setCanceled(true);

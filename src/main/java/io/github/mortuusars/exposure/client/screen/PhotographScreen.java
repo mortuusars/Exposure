@@ -1,21 +1,15 @@
 package io.github.mortuusars.exposure.client.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.camera.Photograph;
-import io.github.mortuusars.exposure.client.screen.base.ExposureRenderScreen;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.AbstractTexture;
+import io.github.mortuusars.exposure.client.render.PhotographRenderer;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-public class PhotographScreen extends ExposureRenderScreen {
+public class PhotographScreen extends Screen {
     private final Photograph photograph;
-    @Nullable
-    private final ResourceLocation texture;
     private float zoom = 0f;
 
     private double xPos;
@@ -24,9 +18,6 @@ public class PhotographScreen extends ExposureRenderScreen {
     public PhotographScreen(Photograph photograph) {
         super(Component.empty());
         this.photograph = photograph;
-        texture = photograph.getIdOrResource().right().orElse(null);
-
-        loadExposure();
     }
 
     @Override
@@ -38,19 +29,14 @@ public class PhotographScreen extends ExposureRenderScreen {
     }
 
     @Override
-    protected String getExposureId() {
-        return photograph.getIdOrResource().left().orElse(null);
-    }
-
-    @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
-        float imgWidth = exposureData != null ? exposureData.getWidth() : 256;
-        float imgHeight = exposureData != null ? exposureData.getHeight() : 256;
+        float phWidth = PhotographRenderer.SIZE;
+        float phHeight = PhotographRenderer.SIZE;
 
-        float scale = (height - (height / 6f)) / imgHeight;
+        float scale = (height - (height / 6f)) / phHeight;
         scale += zoom;
 
         poseStack.pushPose();
@@ -60,23 +46,11 @@ public class PhotographScreen extends ExposureRenderScreen {
         // Scale
         poseStack.scale(scale, scale, scale);
         // Set origin point to center (for scale)
-        poseStack.translate(imgWidth / -2d, imgHeight / -2d, 0);
+        poseStack.translate(phWidth / -2d, phHeight / -2d, 0);
 
         // Paper (frame)
-
-        fill(poseStack, -8, -8, (int) (imgWidth + 8), (int) (imgHeight + 8), 0xFFDDDDDD);
-
-        if (texture != null) {
-            RenderSystem.setShaderTexture(0, texture);
-            RenderSystem.setShaderColor(1, 1, 1, 1);
-            blit(poseStack, 0, 0, 0, 0, 256, 256);
-        }
-        else {
-            if (exposureData == null)
-                loadExposure();
-            else
-                renderExposure(poseStack, false);
-        }
+        fill(poseStack, -8, -8, (int) (phWidth + 8), (int) (phHeight + 8), 0xFFDDDDDD);
+        PhotographRenderer.render(photograph, poseStack);
 
         poseStack.popPose();
     }

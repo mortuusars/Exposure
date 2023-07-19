@@ -41,7 +41,7 @@ public class CommonEvents {
         @SubscribeEvent
         public static void entityInteract(PlayerInteractEvent.EntityInteractSpecific event) {
             Player player = event.getEntity();
-            if (!Exposure.getCamera().getCameraInHand(player).isEmpty()) { // TODO: Config whether to block entity interact
+            if (Exposure.getCamera().isActive(player)) { // TODO: Config whether to block entity interact
                 event.setCanceled(true);
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 CameraInHand camera = Exposure.getCamera().getCameraInHand(player);

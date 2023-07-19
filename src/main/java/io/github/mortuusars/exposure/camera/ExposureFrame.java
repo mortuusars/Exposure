@@ -1,16 +1,21 @@
 package io.github.mortuusars.exposure.camera;
 
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ExposureFrame {
     public String id;
     public Vec3 shotPosition;
     public List<EntityInfo> entitiesInFrame;
+
+    public static final ExposureFrame EMPTY = new ExposureFrame("", Vec3.ZERO, Collections.emptyList());
 
     public ExposureFrame(String id, Vec3 shotPosition, List<EntityInfo> entitiesInFrame) {
         this.id = id;
@@ -37,6 +42,10 @@ public class ExposureFrame {
 
     public static ExposureFrame load(CompoundTag tag) {
         String id = tag.getString("Id");
+        if (id.length() == 0) {
+            Exposure.LOGGER.error("Cannot load exposure frame: id is not valid. Tag: " + tag);
+            return EMPTY;
+        }
 
         ListTag posTag = tag.getList("Pos", Tag.TAG_DOUBLE);
         Vec3 pos = new Vec3(posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2));
