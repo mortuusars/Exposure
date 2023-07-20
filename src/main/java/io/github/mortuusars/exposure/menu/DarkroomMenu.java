@@ -1,12 +1,16 @@
 package io.github.mortuusars.exposure.menu;
 
+import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -79,6 +83,8 @@ public class DarkroomMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
+        Preconditions.checkState(!player.level.isClientSide, "This should be server-side only.");
+
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = darkroomBlockEntity.getItem(DarkroomBlockEntity.FILM_SLOT);
             if (!filmStack.isEmpty() && filmStack.getItem() instanceof FilmItem filmItem) {
@@ -104,9 +110,13 @@ public class DarkroomMenu extends AbstractContainerMenu {
                 int currentFrame = data.get(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
                 if (currentFrame >= 0 && currentFrame < exposedFrames.size()) {
                     ExposureFrame exposureFrame = exposedFrames.get(currentFrame);
-                    ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-                    Exposure.Items.PHOTOGRAPH.get().setPhotographData(photographStack, new Photograph(exposureFrame.id));
+                    PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
+                    ItemStack photographStack = new ItemStack(photographItem);
+
+                    photographItem.setId(photographStack, exposureFrame.id);
+
                     darkroomBlockEntity.setItem(DarkroomBlockEntity.RESULT_SLOT, photographStack);
+                    player.level.playSound(null, player, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
                 }
             }
 

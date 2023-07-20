@@ -2,11 +2,11 @@ package io.github.mortuusars.exposure.event;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.client.gui.screen.CameraScreen;
+import io.github.mortuusars.exposure.client.gui.screen.DarkroomScreen;
+import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
-import io.github.mortuusars.exposure.client.screen.CameraScreen;
-import io.github.mortuusars.exposure.client.screen.DarkroomScreen;
-import io.github.mortuusars.exposure.client.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
@@ -15,7 +15,6 @@ import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.*;
@@ -32,6 +31,11 @@ public class ClientEvents {
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.DARKROOM.get(), DarkroomScreen::new);
             });
+        }
+
+        @SubscribeEvent
+        public static void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
+            event.register(PhotographTooltip.class, photographTooltip -> photographTooltip);
         }
     }
 
@@ -79,8 +83,6 @@ public class ClientEvents {
                 }
             }
         }
-
-        private static final ModelResourceLocation MAP_FRAME_LOCATION = new ModelResourceLocation("item_frame", "map=true");
 
         @SubscribeEvent
         public static void renderItemFrameItem(RenderItemInFrameEvent event) {

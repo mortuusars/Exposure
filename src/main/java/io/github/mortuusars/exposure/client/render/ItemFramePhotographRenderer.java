@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
@@ -32,9 +33,11 @@ public class ItemFramePhotographRenderer {
         if (!(itemStack.getItem() instanceof PhotographItem photographItem))
             return;
 
-        Photograph photograph = photographItem.getPhotographData(itemStack);
-        if (photograph.getIdOrResource().left().isEmpty())
+        Optional<Either<String, ResourceLocation>> idOrResourceHolder = photographItem.getIdOrResource(itemStack);
+        if (idOrResourceHolder.isEmpty())
             return;
+
+        Either<String, ResourceLocation> idOrResource = idOrResourceHolder.get();
 
         //TODO: GLOW
         //TODO: BORDER/NO BORDER
@@ -68,7 +71,7 @@ public class ItemFramePhotographRenderer {
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, -1);
-        PhotographRenderer.render(photograph, poseStack, packedLight);
+        PhotographRenderer.render(idOrResource, poseStack, packedLight);
         poseStack.popPose();
 
         event.setCanceled(true);

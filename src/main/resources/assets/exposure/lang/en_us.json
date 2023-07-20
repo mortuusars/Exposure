@@ -18,5 +18,6 @@
   "gui.exposure.viewfinder.film_frame_counter.tooltip": "Film Frames",
   "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Shutter Speed",
-  "command.exposure.shader.removed": "Shader removed"
+  "command.exposure.shader.removed": "Shader removed",
+  "item.exposure.photograph.message.no_data": "The paper is clean. No trace of an image is found on it, even if it had one at some point."
 }

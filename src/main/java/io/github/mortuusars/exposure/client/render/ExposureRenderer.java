@@ -69,10 +69,10 @@ public class ExposureRenderer implements AutoCloseable {
     }
 
     static class ExposureInstance implements AutoCloseable {
-        private ExposureSavedData exposureData;
-        private DynamicTexture texture;
         private final boolean negative;
         private final RenderType renderType;
+        private ExposureSavedData exposureData;
+        private DynamicTexture texture;
         private boolean requiresUpload = true;
 
         ExposureInstance(String id, ExposureSavedData data, boolean negative) {

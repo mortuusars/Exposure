@@ -1,15 +1,12 @@
-package io.github.mortuusars.exposure.client.screen;
+package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.FilmItem;
-import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ServerboundPrintPhotographPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
@@ -89,10 +86,6 @@ public class ExposureScreen extends Screen {
             currentExposureIndex = (Math.max(0, currentExposureIndex - 1));
         else if (key == InputConstants.KEY_RIGHT)
             currentExposureIndex = (Math.min(exposureFrames.size() - 1, currentExposureIndex + 1));
-        else if (key == InputConstants.KEY_P) { //TODO: Proper printing
-            ExposureFrame exposureFrame = exposureFrames.get(currentExposureIndex);
-            Packets.sendToServer(new ServerboundPrintPhotographPacket(new Photograph(exposureFrame.id)));
-        }
         else if (Minecraft.getInstance().options.keyInventory.matches(key, scanCode))
             this.onClose();
         else

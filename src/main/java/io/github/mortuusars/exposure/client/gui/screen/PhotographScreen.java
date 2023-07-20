@@ -1,23 +1,34 @@
-package io.github.mortuusars.exposure.client.screen;
+package io.github.mortuusars.exposure.client.gui.screen;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.Photograph;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
+import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Optional;
+
 public class PhotographScreen extends Screen {
-    private final Photograph photograph;
+    private final ItemAndStack<PhotographItem> photograph;
+    private final Either<String, ResourceLocation> idOrResource;
     private float zoom = 0f;
 
     private double xPos;
     private double yPos;
 
-    public PhotographScreen(Photograph photograph) {
+    public PhotographScreen(ItemAndStack<PhotographItem> photograph) {
         super(Component.empty());
         this.photograph = photograph;
+
+        Optional<Either<String, ResourceLocation>> idOrResource = photograph.getItem().getIdOrResource(photograph.getStack());
+        Preconditions.checkState(idOrResource.isPresent(), "No Id or Resource on the photograph.");
+        this.idOrResource = idOrResource.get();
     }
 
     @Override
@@ -50,7 +61,7 @@ public class PhotographScreen extends Screen {
 
         // Paper (frame)
         fill(poseStack, -8, -8, (int) (phWidth + 8), (int) (phHeight + 8), 0xFFDDDDDD);
-        PhotographRenderer.render(photograph, poseStack);
+        PhotographRenderer.render(idOrResource, poseStack);
 
         poseStack.popPose();
     }

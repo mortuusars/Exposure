@@ -1,14 +1,14 @@
-package io.github.mortuusars.exposure.client.screen;
+package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
-import io.github.mortuusars.exposure.client.screen.element.CompositionGuideButton;
-import io.github.mortuusars.exposure.client.screen.element.FocalLengthButton;
-import io.github.mortuusars.exposure.client.screen.element.FrameCounterButton;
-import io.github.mortuusars.exposure.client.screen.element.ShutterSpeedButton;
+import io.github.mortuusars.exposure.client.gui.screen.element.CompositionGuideButton;
+import io.github.mortuusars.exposure.client.gui.screen.element.FocalLengthButton;
+import io.github.mortuusars.exposure.client.gui.screen.element.FrameCounterButton;
+import io.github.mortuusars.exposure.client.gui.screen.element.ShutterSpeedButton;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;

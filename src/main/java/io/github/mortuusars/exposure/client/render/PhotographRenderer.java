@@ -2,33 +2,31 @@ package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.datafixers.util.Either;
 import com.mojang.math.Matrix4f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.camera.Photograph;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.resources.ResourceLocation;
 
 public class PhotographRenderer {
     public static final int SIZE = 256;
-    public static void render(Photograph photograph, PoseStack poseStack, int packedLight) {
-        photograph.getIdOrResource()
+    public static void render(Either<String, ResourceLocation> photograph, PoseStack poseStack, int packedLight) {
+        photograph
                 .ifLeft(id -> renderExposure(id, poseStack, packedLight))
                 .ifRight(resource -> renderTexture(resource, poseStack, packedLight));
     }
 
-    public static void render(Photograph photograph, PoseStack poseStack) {
-        photograph.getIdOrResource()
+    public static void render(Either<String, ResourceLocation> photograph, PoseStack poseStack) {
+        photograph
                 .ifLeft(id -> renderExposure(id, poseStack, LightTexture.FULL_BRIGHT))
                 .ifRight(resource -> renderTexture(resource, poseStack, LightTexture.FULL_BRIGHT));
     }
 
     public static void renderExposure(String id, PoseStack poseStack, int packedLight) {
-        Exposure.getStorage().getOrQuery(id).ifPresent(exposureData -> {
-            ExposureClient.getExposureRenderer().render(id, exposureData, false, poseStack, packedLight, SIZE, SIZE);
-        });
+        Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
+                ExposureClient.getExposureRenderer().render(id, exposureData, false, poseStack, packedLight, SIZE, SIZE));
     }
 
     public static void renderTexture(ResourceLocation resource, PoseStack poseStack, int packedLight) {
@@ -36,10 +34,10 @@ public class PhotographRenderer {
         RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
-        GuiComponent.blit(poseStack, 0, 0, 0, 0, SIZE, SIZE, SIZE, SIZE);
         drawTextureQuad(poseStack, 0, 0, SIZE, SIZE, 0, 0, 0, 1, 1, packedLight);
     }
 
+    @SuppressWarnings("SameParameterValue")
     private static void drawTextureQuad(PoseStack poseStack, float minX, float minY, float maxX, float maxY, float blitOffset,
                                         float minU, float minV, float maxU, float maxV, int packedLight) {
         Matrix4f matrix = poseStack.last().pose();

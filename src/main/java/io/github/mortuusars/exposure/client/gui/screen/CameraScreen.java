@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.screen;
+package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

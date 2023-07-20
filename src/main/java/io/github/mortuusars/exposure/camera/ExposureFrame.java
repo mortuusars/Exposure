@@ -1,8 +1,10 @@
 package io.github.mortuusars.exposure.camera;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.DoubleTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
@@ -25,17 +27,22 @@ public class ExposureFrame {
 
     public CompoundTag save(CompoundTag tag) {
         tag.putString("Id", id);
-        ListTag pos = new ListTag();
-        pos.add(DoubleTag.valueOf(shotPosition.x));
-        pos.add(DoubleTag.valueOf(shotPosition.y));
-        pos.add(DoubleTag.valueOf(shotPosition.z));
-        tag.put("Pos", pos);
 
-        ListTag entities = new ListTag();
-        for (EntityInfo entityInfo : entitiesInFrame) {
-            entities.add(entityInfo.save(new CompoundTag()));
+        if (!shotPosition.equals(Vec3.ZERO)) {
+            ListTag pos = new ListTag();
+            pos.add(DoubleTag.valueOf(shotPosition.x));
+            pos.add(DoubleTag.valueOf(shotPosition.y));
+            pos.add(DoubleTag.valueOf(shotPosition.z));
+            tag.put("Pos", pos);
         }
-        tag.put("Entities", entities);
+
+        if (entitiesInFrame.size() > 0) {
+            ListTag entities = new ListTag();
+            for (EntityInfo entityInfo : entitiesInFrame) {
+                entities.add(entityInfo.save(new CompoundTag()));
+            }
+            tag.put("Entities", entities);
+        }
 
         return tag;
     }
@@ -48,7 +55,8 @@ public class ExposureFrame {
         }
 
         ListTag posTag = tag.getList("Pos", Tag.TAG_DOUBLE);
-        Vec3 pos = new Vec3(posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2));
+        Vec3 pos = posTag.size() == 3 ? new Vec3(posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2))
+                : Vec3.ZERO;
 
         ListTag entities = tag.getList("Entities", Tag.TAG_COMPOUND);
         List<EntityInfo> entitiesInFrame = new ArrayList<>();
@@ -61,21 +69,21 @@ public class ExposureFrame {
 
     public static class EntityInfo {
         public ResourceLocation typeId;
-        public CompoundTag tag;
+        public CompoundTag data;
 
-        public EntityInfo(ResourceLocation typeId, CompoundTag tag) {
+        public EntityInfo(ResourceLocation typeId, CompoundTag data) {
             this.typeId = typeId;
-            this.tag = tag;
+            this.data = data;
         }
 
         public CompoundTag save(CompoundTag tag) {
             tag.putString("Id", typeId.toString());
-            tag.put("Tag", this.tag);
+            tag.put("Data", this.data);
             return tag;
         }
 
         public static EntityInfo fromTag(CompoundTag tag) {
-            return new EntityInfo(new ResourceLocation(tag.getString("Id")), tag.getCompound("Tag"));
+            return new EntityInfo(new ResourceLocation(tag.getString("Id")), tag.getCompound("Data"));
         }
     }
 }
