@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class PhotographTooltip implements ClientTooltipComponent, TooltipComponent {
     private final ItemAndStack<PhotographItem> photograph;
-    private static final int SIZE = 86;
+    private static final int SIZE = 72;
 
     public PhotographTooltip(ItemAndStack<PhotographItem> photograph) {
         this.photograph = photograph;
