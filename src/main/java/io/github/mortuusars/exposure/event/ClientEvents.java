@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.event;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
-import io.github.mortuusars.exposure.client.gui.screen.CameraScreen;
+import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.DarkroomScreen;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
@@ -28,7 +28,7 @@ public class ClientEvents {
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
                 ExposureClient.init();
-                MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraScreen::new);
+                MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.DARKROOM.get(), DarkroomScreen::new);
             });
         }

@@ -40,7 +40,7 @@ public class FrameCounterButton extends ImageButton {
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
 
-        String text = camera.getItem().getAttachments(camera.getStack()).getFilm().map(film -> {
+        String text = camera.getItem().getFilm(camera.getStack()).map(film -> {
             int exposedFrames = film.getItem().getExposedFrames(film.getStack()).size();
             int totalFrames = film.getItem().getMaxFrameCount();
             return exposedFrames + "/" + totalFrames;

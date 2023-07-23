@@ -52,7 +52,7 @@ public abstract class Camera {
     public void onShutterClosed(Player player, Shutter.OpenShutter shutter) {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
         if (!camera.isEmpty()) {
-            camera.getItem().getAttachments(camera.getStack()).getFilm().ifPresent(film -> {
+            camera.getItem().getFilm(camera.getStack()).ifPresent(film -> {
                 if (film.getItem().canAddFrame(film.getStack()))
                     player.getLevel().playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 0.9f, 1f);
             });

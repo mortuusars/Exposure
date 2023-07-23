@@ -2,7 +2,9 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.*;
+import io.github.mortuusars.exposure.camera.CaptureProperties;
+import io.github.mortuusars.exposure.camera.ExposureCapture;
+import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
@@ -11,15 +13,12 @@ import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
-import io.github.mortuusars.exposure.item.attachment.CameraAttachments;
-import io.github.mortuusars.exposure.menu.CameraMenu;
+import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.ServerboundSyncCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
-import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectSortedMap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -27,7 +26,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -39,10 +37,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpyglassItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.Tags;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -50,16 +50,18 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class CameraItem extends Item {
-    public static final int FILM = 0;
-    public static final int LENS = 1;
-    public static final int FILTER = 2;
+    public record AttachmentType(String id, int slot, Predicate<ItemStack> stackValidator) {}
 
-    public static final Int2ObjectSortedMap<String> SLOTS = new Int2ObjectRBTreeMap<>(
-            new int[] { 0, 1, 2 },
-            new String[] { "Film", "Lens", "Filter" }
-    );
+    public static final AttachmentType FILM_ATTACHMENT = new AttachmentType("Film", 0, stack -> stack.getItem() instanceof FilmItem);
+    public static final AttachmentType LENS_ATTACHMENT = new AttachmentType("Lens", 1, stack -> stack.getItem() instanceof SpyglassItem);
+    public static final AttachmentType FILTER_ATTACHMENT = new AttachmentType("Filter", 2, stack -> stack.is(Tags.Items.GLASS_PANES));
+    public static final List<AttachmentType> ATTACHMENTS = List.of(
+            FILM_ATTACHMENT,
+            LENS_ATTACHMENT,
+            FILTER_ATTACHMENT);
 
     public static final List<ShutterSpeed> SHUTTER_SPEEDS = List.of(
             new ShutterSpeed("15\""),
@@ -111,7 +113,7 @@ public class CameraItem extends Item {
 
         if (!Exposure.getCamera().isActive(player)) {
             if (player.isSecondaryUseActive())
-                openCameraGUI(player, hand);
+                openCameraAttachmentsGUI(player, hand);
             else
                 Exposure.getCamera().activate(player, hand);
 
@@ -127,8 +129,7 @@ public class CameraItem extends Item {
         Exposure.getCamera().getShutter().open(player, getShutterSpeed(camera.getStack()));
         player.getCooldowns().addCooldown(this, 3);
 
-        CameraAttachments attachments = getAttachments(camera.getStack());
-        Optional<ItemAndStack<FilmItem>> film = attachments.getFilm();
+        Optional<ItemAndStack<FilmItem>> film = getFilm(camera.getStack());
 
         if (film.isEmpty() || !film.get().getItem().canAddFrame(film.get().getStack()))
             return;
@@ -144,7 +145,7 @@ public class CameraItem extends Item {
 
             film.get().getItem().addFrame(film.get().getStack(), exposureFrame);
 
-            getAttachments(camera.getStack()).setFilm(film.get().getStack());
+            setFilm(camera.getStack(), film.get().getStack());
 
             // Update camera serverside:
             Packets.sendToServer(new ServerboundSyncCameraPacket(camera.getStack(), hand));
@@ -174,17 +175,7 @@ public class CameraItem extends Item {
         return tag;
     }
 
-    public CameraAttachments getAttachments(ItemStack cameraStack) {
-        validateCameraStack(cameraStack);
-        return new CameraAttachments(cameraStack);
-    }
-
-    protected void validateCameraStack(ItemStack cameraStack) {
-        Preconditions.checkArgument(!cameraStack.isEmpty(), "cameraStack is empty.");
-        Preconditions.checkArgument(cameraStack.getItem() instanceof CameraItem,  cameraStack + " is not a CameraItem.");
-    }
-
-    protected void openCameraGUI(Player player, InteractionHand hand) {
+    protected void openCameraAttachmentsGUI(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             ItemStack cameraStack = player.getItemInHand(hand);
             NetworkHooks.openScreen(serverPlayer, new MenuProvider() {
@@ -194,8 +185,8 @@ public class CameraItem extends Item {
                 }
 
                 @Override
-                public @NotNull AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-                    return new CameraMenu(containerId, playerInventory, cameraStack);
+                public @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
+                    return new CameraAttachmentsMenu(containerId, playerInventory, cameraStack);
                 }
             }, buffer -> buffer.writeItem(cameraStack));
         }
@@ -208,9 +199,7 @@ public class CameraItem extends Item {
     }
 
     public FocalRange getFocalRange(ItemStack cameraStack) {
-        CameraAttachments attachments = getAttachments(cameraStack);
-        ItemStack lensStack = attachments.getAttachment(SLOTS.get(LENS));
-        return lensStack.isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
+        return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
     protected CaptureProperties createCaptureProperties(Player player, CameraInHand camera) {
@@ -220,8 +209,7 @@ public class CameraItem extends Item {
         // TODO: Crop Factor config
         float cropFactor = 1.142f;
 
-        CameraAttachments attachments = getAttachments(camera.getStack());
-        int frameSize = attachments.getFilm().map(f -> f.getItem().getFrameSize(f.getStack())).orElse(-1);
+        int frameSize = getFilm(camera.getStack()).map(f -> f.getItem().getFrameSize(f.getStack())).orElseThrow();
 
         float brightnessStops = getShutterSpeed(camera.getStack()).getStopsDifference(getDefaultShutterSpeed(camera.getStack()));
         return new CaptureProperties(id, frameSize, cropFactor, brightnessStops, getExposureModifiers(player, camera),
@@ -233,34 +221,66 @@ public class CameraItem extends Item {
 
         modifiers.add(ExposureModifiers.BRIGHTNESS);
 
-        CameraAttachments attachments = getAttachments(camera.getStack());
-        attachments.getFilm().ifPresent(f -> {
-            if (f.getItem().getType() == FilmType.BLACK_AND_WHITE)
+        getFilm(camera.getStack()).ifPresent(film -> {
+            if (film.getItem().getType() == FilmType.BLACK_AND_WHITE)
                 modifiers.add(ExposureModifiers.BLACK_AND_WHITE);
         });
 
         return modifiers;
     }
 
-    public void attachmentsChanged(Player player, ItemStack cameraStack, int slot, ItemStack attachmentStack) {
-        // Adjust zoom for new focal range to the same percentage:
-        if (slot == LENS) {
+    public List<AttachmentType> getAttachmentTypes(ItemStack cameraStack) {
+        return ATTACHMENTS;
+    }
+
+    public Optional<AttachmentType> getAttachmentTypeForSlot(ItemStack cameraStack, int slot) {
+        List<AttachmentType> attachmentTypes = getAttachmentTypes(cameraStack);
+        for (AttachmentType attachmentType : attachmentTypes) {
+            if (attachmentType.slot == slot)
+                return Optional.of(attachmentType);
+        }
+        return Optional.empty();
+    }
+
+    public Optional<ItemAndStack<FilmItem>> getFilm(ItemStack cameraStack) {
+        return getAttachment(cameraStack, FILM_ATTACHMENT).map(ItemAndStack::new);
+    }
+
+    public void setFilm(ItemStack cameraStack, ItemStack filmStack) {
+        setAttachment(cameraStack, FILM_ATTACHMENT, filmStack);
+    }
+
+    public Optional<ItemStack> getAttachment(ItemStack cameraStack, AttachmentType attachmentType) {
+        if (cameraStack.getTag() != null && cameraStack.getTag().contains(attachmentType.id, Tag.TAG_COMPOUND)) {
+            ItemStack itemStack = ItemStack.of(cameraStack.getTag().getCompound(attachmentType.id));
+            if (!itemStack.isEmpty())
+                return Optional.of(itemStack);
+        }
+        return Optional.empty();
+    }
+
+    public void setAttachment(ItemStack cameraStack, AttachmentType attachmentType, ItemStack attachmentStack) {
+        if (attachmentStack.isEmpty()) {
+            if (cameraStack.getTag() != null)
+                cameraStack.getOrCreateTag().remove(attachmentType.id);
+        }
+        else {
+            Preconditions.checkState(attachmentType.stackValidator.test(attachmentStack),
+                    attachmentStack + " is not valid for the '" + attachmentType + "' attachment type.");
+
+            cameraStack.getOrCreateTag().put(attachmentType.id, attachmentStack.save(new CompoundTag()));
+        }
+
+        if (attachmentType == LENS_ATTACHMENT) {
             float prevZoom = getZoom(cameraStack);
             FocalRange prevFocalRange = getFocalRange(cameraStack);
             FocalRange newFocalRange = attachmentStack.isEmpty() ? FocalRange.SHORT : FocalRange.LONG;
-
             float adjustedZoom = Mth.map(prevZoom, prevFocalRange.min(), prevFocalRange.max(), newFocalRange.min(), newFocalRange.max());
             setZoom(cameraStack, adjustedZoom);
         }
-
-        getAttachments(cameraStack).setAttachment(SLOTS.get(slot), attachmentStack);
-
-        if (player.getLevel().isClientSide && player.containerMenu instanceof CameraMenu cameraMenu && cameraMenu.initialized) {
-            if (slot == LENS) {
-                player.playSound(attachmentStack.isEmpty() ? SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE, 1f, 1f);
-            }
-        }
     }
+
+    // ---
 
     /**
      * Brightness of the exposure will not be changed on this shutter speed.

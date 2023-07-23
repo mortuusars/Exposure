@@ -13,7 +13,7 @@ import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.menu.CameraMenu;
+import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
@@ -137,8 +137,8 @@ public class Exposure {
     public static class MenuTypes {
         private static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, ID);
 
-        public static final RegistryObject<MenuType<CameraMenu>> CAMERA = MENU_TYPES
-                .register("camera", () -> IForgeMenuType.create(CameraMenu::fromBuffer));
+        public static final RegistryObject<MenuType<CameraAttachmentsMenu>> CAMERA = MENU_TYPES
+                .register("camera", () -> IForgeMenuType.create(CameraAttachmentsMenu::fromBuffer));
 
         public static final RegistryObject<MenuType<DarkroomMenu>> DARKROOM = MENU_TYPES
                 .register("darkroom", () -> IForgeMenuType.create(DarkroomMenu::fromBuffer));
