@@ -19,11 +19,13 @@ import io.github.mortuusars.exposure.network.packet.ServerboundSyncCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -41,6 +43,8 @@ import net.minecraft.world.item.SpyglassItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.network.NetworkHooks;
@@ -51,6 +55,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class CameraItem extends Item {
     public record AttachmentType(String id, int slot, Predicate<ItemStack> stackValidator) {}
@@ -168,7 +173,11 @@ public class CameraItem extends Item {
             entitiesData.add(new ExposureFrame.EntityInfo(entityTypeKey, tag));
         }
 
-        return new ExposureFrame(captureProperties.id, shotPosition, entitiesData);
+        ResourceLocation dimension = player.level.dimension().location();
+        ResourceLocation biome = player.level.getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location).orElse(null);
+
+        return new ExposureFrame(captureProperties.id, player.getScoreboardName(), Util.getFilenameFormattedDateTime(),
+                shotPosition, dimension, biome, entitiesData);
     }
 
     protected CompoundTag addAdditionalEntityInFrameData(CompoundTag tag, Player player, Entity entityInFrame, CaptureProperties captureProperties, ItemAndStack<CameraItem> camera) {

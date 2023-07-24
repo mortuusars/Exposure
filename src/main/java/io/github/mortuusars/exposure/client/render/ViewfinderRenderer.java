@@ -59,6 +59,7 @@ public class ViewfinderRenderer {
         targetFov = Fov.focalLengthToFov( Mth.clamp(camera.getItem().getZoom(camera.getStack()), focalRange.min(), focalRange.max()));
         fovRestored = false;
         scale = 0.5f;
+        //TODO: Filter shader effect. Store previous. Restore when exited viewfinder.
     }
 
     public static float getScale() {

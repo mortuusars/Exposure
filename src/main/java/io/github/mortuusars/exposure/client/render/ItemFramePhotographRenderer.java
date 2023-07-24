@@ -3,10 +3,7 @@ package io.github.mortuusars.exposure.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
@@ -18,7 +15,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
 import net.minecraftforge.client.model.data.ModelData;
 

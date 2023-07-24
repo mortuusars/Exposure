@@ -4,11 +4,9 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.camera.Photograph;
 import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -113,6 +111,7 @@ public class DarkroomMenu extends AbstractContainerMenu {
                     PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
                     ItemStack photographStack = new ItemStack(photographItem);
 
+                    exposureFrame.save(photographStack.getOrCreateTag());
                     photographItem.setId(photographStack, exposureFrame.id);
 
                     darkroomBlockEntity.setItem(DarkroomBlockEntity.RESULT_SLOT, photographStack);
