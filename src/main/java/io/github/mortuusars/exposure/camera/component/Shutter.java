@@ -1,6 +1,8 @@
 package io.github.mortuusars.exposure.camera.component;
 
-import net.minecraft.sounds.SoundEvents;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -13,29 +15,21 @@ import java.util.function.BiConsumer;
 
 public class Shutter {
     private final Map<Player, OpenShutter> openShutters = new HashMap<>();
-    @Nullable
-    private BiConsumer<Player, OpenShutter> onShutterClosed;
-
-    public void setOnShutterClosed(@Nullable BiConsumer<Player, OpenShutter> onShutterClosed) {
-        this.onShutterClosed = onShutterClosed;
-    }
 
     public boolean isOpen(Player player) {
         return openShutters.containsKey(player);
     }
 
-    public void open(Player player, ShutterSpeed shutterSpeed) {
-        openShutters.put(player, new OpenShutter(shutterSpeed, System.currentTimeMillis()));
-        player.getLevel().playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 0.8f, 0.65f);
+    public void open(Player player, ItemAndStack<CameraItem> camera, ShutterSpeed shutterSpeed, boolean exposingFrame) {
+        OpenShutter openShutter = new OpenShutter(camera, shutterSpeed, System.currentTimeMillis(), exposingFrame);
+        openShutters.put(player, openShutter);
+        camera.getItem().onShutterOpen(player, openShutter);
     }
 
     public void close(Player player) {
         @Nullable OpenShutter shutter = openShutters.remove(player);
-        if (shutter != null) {
-            player.getLevel().playSound(player, player, SoundEvents.UI_BUTTON_CLICK, SoundSource.PLAYERS, 0.8f, 0.9f);
-            if (onShutterClosed != null)
-                onShutterClosed.accept(player, shutter);
-        }
+        if (shutter != null)
+            shutter.camera().getItem().onShutterClosed(player, shutter);
     }
 
     public void tick(Player player) {
@@ -47,6 +41,8 @@ public class Shutter {
         for (Map.Entry<Player, OpenShutter> shutter : openShutters.entrySet()) {
             if (System.currentTimeMillis() - shutter.getValue().openedAt > shutter.getValue().shutterSpeed.getMilliseconds())
                 toClose.add(shutter.getKey());
+            else
+                shutter.getValue().camera.getItem().onShutterTick(shutter.getKey(), shutter.getValue());
         }
 
         for (Player pl : toClose) {
@@ -54,5 +50,5 @@ public class Shutter {
         }
     }
 
-    public record OpenShutter(ShutterSpeed shutterSpeed, long openedAt) {}
+    public record OpenShutter(ItemAndStack<CameraItem> camera, ShutterSpeed shutterSpeed, long openedAt, boolean exposingFrame) {}
 }

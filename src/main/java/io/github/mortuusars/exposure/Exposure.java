@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure;
 
+import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.block.DarkroomBlock;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
@@ -20,6 +21,7 @@ import io.github.mortuusars.exposure.menu.DarkroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -58,6 +60,7 @@ public class Exposure {
         BlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
         Items.ITEMS.register(modEventBus);
         MenuTypes.MENU_TYPES.register(modEventBus);
+        SoundEvents.SOUNDS.register(modEventBus);
 
         modEventBus.register(CommonEvents.ModBus.class);
         MinecraftForge.EVENT_BUS.register(CommonEvents.ForgeBus.class);
@@ -142,5 +145,20 @@ public class Exposure {
 
         public static final RegistryObject<MenuType<DarkroomMenu>> DARKROOM = MENU_TYPES
                 .register("darkroom", () -> IForgeMenuType.create(DarkroomMenu::fromBuffer));
+    }
+
+    public static class SoundEvents {
+        private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Exposure.ID);
+
+        public static final RegistryObject<SoundEvent> SHUTTER_OPEN = register("item", "camera.shutter_open");
+        public static final RegistryObject<SoundEvent> SHUTTER_CLOSE = register("item", "camera.shutter_close");
+        public static final RegistryObject<SoundEvent> FILM_ADVANCE = register("item", "camera.film_advance");
+
+        private static RegistryObject<SoundEvent> register(String category, String key) {
+            Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");
+            Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
+            String path = category + "." + key;
+            return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path)));
+        }
     }
 }

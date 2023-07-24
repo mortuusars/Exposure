@@ -20,7 +20,6 @@ public abstract class Camera {
 
     public Camera(Shutter shutter) {
         this.shutter = shutter;
-        this.shutter.setOnShutterClosed(this::onShutterClosed);
     }
 
     public abstract boolean isClientSide();
@@ -47,16 +46,6 @@ public abstract class Camera {
 
     public CameraInHand getCameraInHand(Player player) {
         return new CameraInHand(player);
-    }
-
-    public void onShutterClosed(Player player, Shutter.OpenShutter shutter) {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-        if (!camera.isEmpty()) {
-            camera.getItem().getFilm(camera.getStack()).ifPresent(film -> {
-                if (film.getItem().canAddFrame(film.getStack()))
-                    player.getLevel().playSound(player, player, SoundEvents.UI_LOOM_SELECT_PATTERN, SoundSource.PLAYERS, 0.9f, 1f);
-            });
-        }
     }
 
     public void tick(Player player) {

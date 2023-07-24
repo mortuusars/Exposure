@@ -1,0 +1,23 @@
+{
+  "item.camera.film_advance": {
+    "sounds": [
+      "exposure:item/camera/film_advance1",
+      "exposure:item/camera/film_advance2"
+    ],
+    "subtitle": "subtitle.exposure.camera.film_advance"
+  },
+  "item.camera.shutter_close": {
+    "sounds": [
+      "exposure:item/camera/shutter_close1",
+      "exposure:item/camera/shutter_close2"
+    ],
+    "subtitle": "subtitle.exposure.camera.shutter"
+  },
+  "item.camera.shutter_open": {
+    "sounds": [
+      "exposure:item/camera/shutter_open1",
+      "exposure:item/camera/shutter_open2"
+    ],
+    "subtitle": "subtitle.exposure.camera.shutter"
+  }
+}

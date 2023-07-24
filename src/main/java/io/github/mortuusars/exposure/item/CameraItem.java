@@ -5,10 +5,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.camera.component.CompositionGuide;
-import io.github.mortuusars.exposure.camera.component.CompositionGuides;
-import io.github.mortuusars.exposure.camera.component.FocalRange;
-import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
+import io.github.mortuusars.exposure.camera.component.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
@@ -28,6 +25,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -43,8 +41,6 @@ import net.minecraft.world.item.SpyglassItem;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.network.NetworkHooks;
@@ -55,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class CameraItem extends Item {
     public record AttachmentType(String id, int slot, Predicate<ItemStack> stackValidator) {}
@@ -122,6 +117,7 @@ public class CameraItem extends Item {
             else
                 Exposure.getCamera().activate(player, hand);
 
+            player.getCooldowns().addCooldown(this, 2);
             return;
         }
 
@@ -131,15 +127,12 @@ public class CameraItem extends Item {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
         Preconditions.checkState(!camera.isEmpty());
 
-        Exposure.getCamera().getShutter().open(player, getShutterSpeed(camera.getStack()));
-        player.getCooldowns().addCooldown(this, 3);
+        boolean hasFilmFrame = getFilm(camera.getStack()).map(f -> f.getItem().canAddFrame(f.getStack())).orElse(false);
 
-        Optional<ItemAndStack<FilmItem>> film = getFilm(camera.getStack());
+        Exposure.getCamera().getShutter().open(player, camera.getCamera(), getShutterSpeed(camera.getStack()), hasFilmFrame);
+        player.getCooldowns().addCooldown(this, 4);
 
-        if (film.isEmpty() || !film.get().getItem().canAddFrame(film.get().getStack()))
-            return;
-
-        if (player.getLevel().isClientSide) {
+        if (hasFilmFrame && player.getLevel().isClientSide) {
             if (ExposureCapture.isCapturing())
                 return;
 
@@ -148,9 +141,9 @@ public class CameraItem extends Item {
 
             ExposureFrame exposureFrame = createExposureFrame(player, captureProperties, camera.getCamera(), EntitiesInFrame.get(player));
 
-            film.get().getItem().addFrame(film.get().getStack(), exposureFrame);
-
-            setFilm(camera.getStack(), film.get().getStack());
+            ItemAndStack<FilmItem> film = getFilm(camera.getStack()).orElseThrow();
+            film.getItem().addFrame(film.getStack(), exposureFrame);
+            setFilm(camera.getStack(), film.getStack());
 
             // Update camera serverside:
             Packets.sendToServer(new ServerboundSyncCameraPacket(camera.getStack(), hand));
@@ -237,6 +230,27 @@ public class CameraItem extends Item {
 
         return modifiers;
     }
+
+    public void onShutterOpen(Player player, Shutter.OpenShutter shutter) {
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
+                player.getLevel().getRandom().nextFloat() * 0.1f + (shutter.exposingFrame() ? 1f : 1.3f));
+    }
+
+    public void onShutterTick(Player player, Shutter.OpenShutter shutter) {
+
+    }
+
+    public void onShutterClosed(Player player, Shutter.OpenShutter shutter) {
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
+                player.getLevel().getRandom().nextFloat() * 0.1f + (shutter.exposingFrame() ? 0.9f : 1.25f));
+        if (shutter.exposingFrame()) {
+            //TODO: Stop playing advancing sound when shutter opens to not overlap them.
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS, 1f,
+                    player.getLevel().getRandom().nextFloat() * 0.1f + 0.95f);
+        }
+    }
+
+    // ---
 
     public List<AttachmentType> getAttachmentTypes(ItemStack cameraStack) {
         return ATTACHMENTS;
