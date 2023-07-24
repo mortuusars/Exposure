@@ -233,7 +233,7 @@ public class CameraItem extends Item {
 
     public void onShutterOpen(Player player, Shutter.OpenShutter shutter) {
         player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
-                player.getLevel().getRandom().nextFloat() * 0.1f + (shutter.exposingFrame() ? 1f : 1.3f));
+                player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1.1f : 1.25f));
     }
 
     public void onShutterTick(Player player, Shutter.OpenShutter shutter) {
@@ -242,11 +242,11 @@ public class CameraItem extends Item {
 
     public void onShutterClosed(Player player, Shutter.OpenShutter shutter) {
         player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
-                player.getLevel().getRandom().nextFloat() * 0.1f + (shutter.exposingFrame() ? 0.9f : 1.25f));
+                player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1f : 1.2f));
         if (shutter.exposingFrame()) {
             //TODO: Stop playing advancing sound when shutter opens to not overlap them.
             player.getLevel().playSound(player, player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS, 1f,
-                    player.getLevel().getRandom().nextFloat() * 0.1f + 0.95f);
+                    player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
         }
     }
 

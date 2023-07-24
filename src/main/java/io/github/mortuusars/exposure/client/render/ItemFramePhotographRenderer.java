@@ -46,27 +46,27 @@ public class ItemFramePhotographRenderer {
 
         // Snap to 90 degrees like a map.
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(45 * entity.getRotation()));
-
-        poseStack.pushPose();
-        poseStack.translate(-0.5D, -0.5D, -0.46875D * 2f);
         int packedLight = entity.getType() == EntityType.GLOW_ITEM_FRAME ? LightTexture.FULL_BRIGHT : event.getPackedLight();
-        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
-                event.getMultiBufferSource().getBuffer(Sheets.solidBlockSheet()), null,
-                modelmanager.getModel(modelresourcelocation), 1.0F, 1.0F, 1.0F, packedLight, OverlayTexture.NO_OVERLAY,
-                ModelData.EMPTY, RenderType.solid());
-        poseStack.popPose();
+
+//        poseStack.pushPose();
+//        poseStack.translate(-0.5D, -0.5D, -0.46875D * 2f);
+//        Minecraft.getInstance().getBlockRenderer().getModelRenderer().renderModel(poseStack.last(),
+//                event.getMultiBufferSource().getBuffer(Sheets.solidBlockSheet()), null,
+//                modelmanager.getModel(modelresourcelocation), 1.0F, 1.0F, 1.0F, packedLight, OverlayTexture.NO_OVERLAY,
+//                ModelData.EMPTY, RenderType.solid());
+//        poseStack.popPose();
 
         float size = PhotographRenderer.SIZE;
 
         float scale = 1f / size;
         float pixelScale = scale / 16f;
         // 1px border around a photograph:
-        scale -= pixelScale * 2;
+        scale -= pixelScale * 6;
 
         poseStack.pushPose();
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
-        poseStack.translate(-size / 2f, -size / 2f, -1);
+        poseStack.translate(-size / 2f, -size / 2f, 10);
         PhotographRenderer.render(idOrResource, poseStack, packedLight);
         poseStack.popPose();
 
