@@ -72,6 +72,9 @@ public class ViewfinderRenderer {
     }
 
     public static void render() {
+//        Preconditions.checkState(!Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player).isEmpty(),
+//                "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
+
         int color = 0xfa1f1d1b; //TODO: configurable colors.
         int width = minecraft.getWindow().getGuiScaledWidth();
         int height = minecraft.getWindow().getGuiScaledHeight();

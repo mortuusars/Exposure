@@ -2,12 +2,8 @@ package io.github.mortuusars.exposure.network.packet;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.ExposureSender;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.storage.ExposureSavedData;
-import io.github.mortuusars.exposure.storage.ServersideExposureStorage;
 import io.github.mortuusars.exposure.util.CameraInHand;
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -17,25 +13,25 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record ServerboundCameraSetZoomPacket(float focalLength) {
+public record CameraSetZoomServerboundPacket(float focalLength) {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(ServerboundCameraSetZoomPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ServerboundCameraSetZoomPacket::toBuffer)
-                .decoder(ServerboundCameraSetZoomPacket::fromBuffer)
-                .consumerMainThread(ServerboundCameraSetZoomPacket::handle)
+        channel.messageBuilder(CameraSetZoomServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CameraSetZoomServerboundPacket::toBuffer)
+                .decoder(CameraSetZoomServerboundPacket::fromBuffer)
+                .consumerMainThread(CameraSetZoomServerboundPacket::handle)
                 .add();
     }
 
     public static void send(float focalLength) {
-        Packets.sendToServer(new ServerboundCameraSetZoomPacket(focalLength));
+        Packets.sendToServer(new CameraSetZoomServerboundPacket(focalLength));
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
         buffer.writeFloat(focalLength);
     }
 
-    public static ServerboundCameraSetZoomPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ServerboundCameraSetZoomPacket(buffer.readFloat());
+    public static CameraSetZoomServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new CameraSetZoomServerboundPacket(buffer.readFloat());
     }
 
     @SuppressWarnings("UnusedReturnValue")

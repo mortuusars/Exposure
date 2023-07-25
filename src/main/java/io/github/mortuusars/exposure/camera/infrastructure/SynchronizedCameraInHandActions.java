@@ -3,9 +3,9 @@ package io.github.mortuusars.exposure.camera.infrastructure;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
-import io.github.mortuusars.exposure.network.packet.ServerboundCameraSetCompositionGuidePacket;
-import io.github.mortuusars.exposure.network.packet.ServerboundCameraSetShutterSpeedPacket;
-import io.github.mortuusars.exposure.network.packet.ServerboundCameraSetZoomPacket;
+import io.github.mortuusars.exposure.network.packet.CameraSetCompositionGuideServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.CameraSetShutterSpeedServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.CameraSetZoomServerboundPacket;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
@@ -17,7 +17,7 @@ public class SynchronizedCameraInHandActions {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setZoom(camera.getStack(), focalLength);
-            ServerboundCameraSetZoomPacket.send(focalLength);
+            CameraSetZoomServerboundPacket.send(focalLength);
         }
     }
 
@@ -25,7 +25,7 @@ public class SynchronizedCameraInHandActions {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setCompositionGuide(camera.getStack(), guide);
-            ServerboundCameraSetCompositionGuidePacket.send(guide);
+            CameraSetCompositionGuideServerboundPacket.send(guide);
         }
     }
 
@@ -33,7 +33,7 @@ public class SynchronizedCameraInHandActions {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setShutterSpeed(camera.getStack(), shutterSpeed);
-            ServerboundCameraSetShutterSpeedPacket.send(shutterSpeed);
+            CameraSetShutterSpeedServerboundPacket.send(shutterSpeed);
         }
     }
 }

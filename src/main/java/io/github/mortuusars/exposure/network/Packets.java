@@ -4,11 +4,9 @@ package io.github.mortuusars.exposure.network;
 import io.github.mortuusars.exposure.network.packet.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import org.checkerframework.checker.units.qual.C;
 
 public class Packets {
     private static final String PROTOCOL_VERSION = "1";
@@ -21,42 +19,19 @@ public class Packets {
             PROTOCOL_VERSION::equals);
 
     public static void register() {
-        ServerboundCameraSetZoomPacket.register(CHANNEL, id++);
-        ServerboundCameraSetCompositionGuidePacket.register(CHANNEL, id++);
-        ServerboundCameraSetShutterSpeedPacket.register(CHANNEL, id++);
+        UpdateActiveCameraPacket.register(CHANNEL, id++);
+        ExposureDataPartPacket.register(CHANNEL, id++);
 
-        ClientboundLoadExposureCommandPacket.register(CHANNEL, id++);
-        ClientboundExposeCommandPacket.register(CHANNEL, id++);
+        CameraSetZoomServerboundPacket.register(CHANNEL, id++);
+        CameraSetCompositionGuideServerboundPacket.register(CHANNEL, id++);
+        CameraSetShutterSpeedServerboundPacket.register(CHANNEL, id++);
+        SyncCameraServerboundPacket.register(CHANNEL, id++);
+        QueryExposureDataServerboundPacket.register(CHANNEL, id++);
 
-        CHANNEL.messageBuilder(UpdateActiveCameraPacket.class, id++)
-                .encoder(UpdateActiveCameraPacket::toBuffer)
-                .decoder(UpdateActiveCameraPacket::fromBuffer)
-                .consumerMainThread(UpdateActiveCameraPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(ClientboundApplyShaderPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ClientboundApplyShaderPacket::toBuffer)
-                .decoder(ClientboundApplyShaderPacket::fromBuffer)
-                .consumerMainThread(ClientboundApplyShaderPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(ServerboundQueryExposureDataPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ServerboundQueryExposureDataPacket::toBuffer)
-                .decoder(ServerboundQueryExposureDataPacket::fromBuffer)
-                .consumerMainThread(ServerboundQueryExposureDataPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(ServerboundSyncCameraPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(ServerboundSyncCameraPacket::toBuffer)
-                .decoder(ServerboundSyncCameraPacket::fromBuffer)
-                .consumerMainThread(ServerboundSyncCameraPacket::handle)
-                .add();
-
-        CHANNEL.messageBuilder(ExposureDataPartPacket.class, id++)
-                .encoder(ExposureDataPartPacket::toBuffer)
-                .decoder(ExposureDataPartPacket::fromBuffer)
-                .consumerMainThread(ExposureDataPartPacket::handle)
-                .add();
+        ApplyShaderClientboundPacket.register(CHANNEL, id++);
+        LoadExposureCommandClientboundPacket.register(CHANNEL, id++);
+        ExposeCommandClientboundPacket.register(CHANNEL, id++);
+        PlayFilmAdvanceSoundClientboundPacket.register(CHANNEL, id++);
     }
 
     public static <MSG> void sendToServer(MSG message) {

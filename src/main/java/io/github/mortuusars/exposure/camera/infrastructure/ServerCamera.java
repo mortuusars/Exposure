@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.camera.component.Shutter;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,16 +28,17 @@ public class ServerCamera extends Camera {
 
     @Override
     public @Nullable InteractionHand deactivate(Player player) {
-        InteractionHand hand = super.deactivate(player);
+        @Nullable InteractionHand hand = super.deactivate(player);
         if (hand != null)
             updateOtherClients(player, false, hand);
         return hand;
     }
-    private void updateOtherClients(@Nullable Player player, boolean isActive, InteractionHand hand) {
+
+    private void updateOtherClients(Player player, boolean isActive, InteractionHand hand) {
         List<ServerPlayer> players = ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers();
         for (ServerPlayer serverPlayer : players) {
-            if (!serverPlayer.equals(player))
-                Packets.sendToClient(new UpdateActiveCameraPacket(serverPlayer.getUUID(), isActive, hand), serverPlayer);
+            if (!serverPlayer.equals(player)) //TODO: update on player join
+                Packets.sendToClient(new UpdateActiveCameraPacket(player.getUUID(), isActive, hand), serverPlayer);
         }
     }
 }

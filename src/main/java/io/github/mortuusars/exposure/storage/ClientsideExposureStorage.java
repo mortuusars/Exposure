@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.storage;
 
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ServerboundQueryExposureDataPacket;
+import io.github.mortuusars.exposure.network.packet.QueryExposureDataServerboundPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -15,7 +15,7 @@ public class ClientsideExposureStorage implements IExposureStorage {
         ExposureSavedData exposureData = CACHE.get(id);
 
         if(exposureData == null && !QUERIED_IDS.contains(id)) {
-            Packets.sendToServer(new ServerboundQueryExposureDataPacket(id));
+            Packets.sendToServer(new QueryExposureDataServerboundPacket(id));
             QUERIED_IDS.add(id);
         }
 

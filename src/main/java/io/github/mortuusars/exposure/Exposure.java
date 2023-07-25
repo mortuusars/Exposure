@@ -118,7 +118,7 @@ public class Exposure {
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<FilmItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
-                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 8, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
+                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 16, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 

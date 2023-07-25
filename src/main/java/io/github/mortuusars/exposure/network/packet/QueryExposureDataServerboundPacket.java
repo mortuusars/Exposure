@@ -6,19 +6,29 @@ import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ServersideExposureStorage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-public record ServerboundQueryExposureDataPacket(String id) {
+public record QueryExposureDataServerboundPacket(String id) {
+    public static void register(SimpleChannel channel, int id) {
+        channel.messageBuilder(QueryExposureDataServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(QueryExposureDataServerboundPacket::toBuffer)
+                .decoder(QueryExposureDataServerboundPacket::fromBuffer)
+                .consumerMainThread(QueryExposureDataServerboundPacket::handle)
+                .add();
+    }
+
     public void toBuffer(FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeUtf(id);
     }
 
-    public static ServerboundQueryExposureDataPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ServerboundQueryExposureDataPacket(buffer.readUtf());
+    public static QueryExposureDataServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new QueryExposureDataServerboundPacket(buffer.readUtf());
     }
 
     @SuppressWarnings("UnusedReturnValue")

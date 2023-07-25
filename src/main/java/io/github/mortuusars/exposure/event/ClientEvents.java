@@ -12,6 +12,7 @@ import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.player.LocalPlayer;
@@ -43,6 +44,11 @@ public class ClientEvents {
         @SubscribeEvent
         public static void onLevelClear(LevelEvent.Unload event) {
             ExposureClient.getExposureRenderer().clearData();
+            Exposure.getCamera().clear();
+        }
+
+        public static void loggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+
         }
 
         @SubscribeEvent
@@ -67,9 +73,11 @@ public class ClientEvents {
         @SubscribeEvent
         public static void renderPlayer(RenderPlayerEvent.Pre event) {
             Player player = event.getEntity();
-            if (Exposure.getCamera().isActive(player))
-                player.startUsingItem(player.getMainHandItem()
-                        .getItem() instanceof CameraItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+            if (Exposure.getCamera().isActive(player)) {
+                CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+                if (!camera.isEmpty())
+                   player.startUsingItem(camera.getHand());
+            }
         }
 
         @SubscribeEvent
@@ -78,8 +86,9 @@ public class ClientEvents {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null) {
                     Exposure.getCamera().deactivate(player);
-                    Packets.sendToServer(new UpdateActiveCameraPacket(player.getUUID(), false, player.getMainHandItem()
-                            .getItem() instanceof CameraItem ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND));
+                    CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+                    if (!camera.isEmpty())
+                        Packets.sendToServer(new UpdateActiveCameraPacket(player.getUUID(), false, camera.getHand()));
                 }
             }
         }

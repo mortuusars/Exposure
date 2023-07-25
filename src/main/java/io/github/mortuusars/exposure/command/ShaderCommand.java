@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
+import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -34,7 +34,7 @@ public class ShaderCommand {
     private static int applyShader(CommandContext<CommandSourceStack> context) {
         ResourceLocation shaderLocation = ResourceLocationArgument.getId(context, "shaderLocation");
         for (ServerPlayer targetPlayer : getTargetPlayers(context)) {
-            Packets.sendToClient(new ClientboundApplyShaderPacket(shaderLocation), targetPlayer);
+            Packets.sendToClient(new ApplyShaderClientboundPacket(shaderLocation), targetPlayer);
         }
         return 0;
     }
@@ -42,7 +42,7 @@ public class ShaderCommand {
     private static int removeShader(CommandContext<CommandSourceStack> context) {
         ResourceLocation shaderLocation = new ResourceLocation("minecraft:none");
         for (ServerPlayer targetPlayer : getTargetPlayers(context)) {
-            Packets.sendToClient(new ClientboundApplyShaderPacket(shaderLocation), targetPlayer);
+            Packets.sendToClient(new ApplyShaderClientboundPacket(shaderLocation), targetPlayer);
             context.getSource().sendSuccess(Component.translatable("command.exposure.shader.removed"), false);
         }
         return 0;

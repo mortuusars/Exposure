@@ -73,6 +73,11 @@ minecraft {
             }
         }
 
+        client2 {
+            parent runs.client
+            args '--username', 'AnotherDev'
+        }
+
         server {
             workingDirectory project.file('run')
 
@@ -80,7 +85,7 @@ minecraft {
 
             property 'forge.logging.console.level', 'debug'
 
-                        property 'forge.enabledGameTestNamespaces', 'exposure'
+            property 'forge.enabledGameTestNamespaces', 'exposure'
             
             mods {
                 exposure {

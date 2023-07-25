@@ -8,11 +8,20 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.UUID;
 import java.util.function.Supplier;
 
 public record UpdateActiveCameraPacket(UUID playerID, boolean isActive, InteractionHand hand) {
+    public static void register(SimpleChannel channel, int id) {
+        channel.messageBuilder(UpdateActiveCameraPacket.class, id)
+                .encoder(UpdateActiveCameraPacket::toBuffer)
+                .decoder(UpdateActiveCameraPacket::fromBuffer)
+                .consumerMainThread(UpdateActiveCameraPacket::handle)
+                .add();
+    }
+
     public void toBuffer(FriendlyByteBuf buffer) {
         buffer.writeUUID(playerID);
         buffer.writeBoolean(isActive);

@@ -8,11 +8,14 @@ import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.component.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
+import io.github.mortuusars.exposure.camera.infrastructure.Shutter;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
+import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.ServerboundSyncCameraPacket;
+import io.github.mortuusars.exposure.network.packet.PlayFilmAdvanceSoundClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.SyncCameraServerboundPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
@@ -24,6 +27,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -146,7 +150,7 @@ public class CameraItem extends Item {
             setFilm(camera.getStack(), film.getStack());
 
             // Update camera serverside:
-            Packets.sendToServer(new ServerboundSyncCameraPacket(camera.getStack(), hand));
+            Packets.sendToServer(new SyncCameraServerboundPacket(camera.getStack(), hand));
         }
     }
 
@@ -244,9 +248,15 @@ public class CameraItem extends Item {
         player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
                 player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1f : 1.2f));
         if (shutter.exposingFrame()) {
-            //TODO: Stop playing advancing sound when shutter opens to not overlap them.
-            player.getLevel().playSound(player, player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS, 1f,
-                    player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
+            // Film Advance sound is cancellable (so do not play multiple time overlapping the next):
+            if (player.level.isClientSide)
+                ClientOnlyLogic.playCancellableFilmAdvanceSound(player);
+            else if (player.getLevel() instanceof ServerLevel serverLevel) {
+                for (ServerPlayer serverPlayer : serverLevel.players()) {
+                    if (!player.equals(serverPlayer) && player.distanceTo(serverPlayer) < 32f)
+                        Packets.sendToClient(new PlayFilmAdvanceSoundClientboundPacket(player.getUUID()), serverPlayer);
+                }
+            }
         }
     }
 

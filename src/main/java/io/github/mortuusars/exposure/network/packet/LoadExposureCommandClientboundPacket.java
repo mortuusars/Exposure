@@ -10,12 +10,12 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
-public record ClientboundLoadExposureCommandPacket(String id, String path, int size, boolean dither) {
+public record LoadExposureCommandClientboundPacket(String id, String path, int size, boolean dither) {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(ClientboundLoadExposureCommandPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ClientboundLoadExposureCommandPacket::toBuffer)
-                .decoder(ClientboundLoadExposureCommandPacket::fromBuffer)
-                .consumerMainThread(ClientboundLoadExposureCommandPacket::handle)
+        channel.messageBuilder(LoadExposureCommandClientboundPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(LoadExposureCommandClientboundPacket::toBuffer)
+                .decoder(LoadExposureCommandClientboundPacket::fromBuffer)
+                .consumerMainThread(LoadExposureCommandClientboundPacket::handle)
                 .add();
     }
 
@@ -26,8 +26,8 @@ public record ClientboundLoadExposureCommandPacket(String id, String path, int s
         buffer.writeBoolean(dither);
     }
 
-    public static ClientboundLoadExposureCommandPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ClientboundLoadExposureCommandPacket(buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readBoolean());
+    public static LoadExposureCommandClientboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new LoadExposureCommandClientboundPacket(buffer.readUtf(), buffer.readUtf(), buffer.readInt(), buffer.readBoolean());
     }
 
     @SuppressWarnings("UnusedReturnValue")

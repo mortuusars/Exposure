@@ -10,12 +10,12 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
-public record ClientboundExposeCommandPacket(int size) {
+public record ExposeCommandClientboundPacket(int size) {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(ClientboundExposeCommandPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
-                .encoder(ClientboundExposeCommandPacket::toBuffer)
-                .decoder(ClientboundExposeCommandPacket::fromBuffer)
-                .consumerMainThread(ClientboundExposeCommandPacket::handle)
+        channel.messageBuilder(ExposeCommandClientboundPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ExposeCommandClientboundPacket::toBuffer)
+                .decoder(ExposeCommandClientboundPacket::fromBuffer)
+                .consumerMainThread(ExposeCommandClientboundPacket::handle)
                 .add();
     }
 
@@ -23,8 +23,8 @@ public record ClientboundExposeCommandPacket(int size) {
         buffer.writeInt(size);
     }
 
-    public static ClientboundExposeCommandPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ClientboundExposeCommandPacket(buffer.readInt());
+    public static ExposeCommandClientboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new ExposeCommandClientboundPacket(buffer.readInt());
     }
 
     @SuppressWarnings("UnusedReturnValue")

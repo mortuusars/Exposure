@@ -5,17 +5,27 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
-public record ClientboundApplyShaderPacket(ResourceLocation shaderLocation) {
+public record ApplyShaderClientboundPacket(ResourceLocation shaderLocation) {
+    public static void register(SimpleChannel channel, int id) {
+        channel.messageBuilder(ApplyShaderClientboundPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ApplyShaderClientboundPacket::toBuffer)
+                .decoder(ApplyShaderClientboundPacket::fromBuffer)
+                .consumerMainThread(ApplyShaderClientboundPacket::handle)
+                .add();
+    }
+
     public void toBuffer(FriendlyByteBuf friendlyByteBuf) {
         friendlyByteBuf.writeResourceLocation(shaderLocation);
     }
 
-    public static ClientboundApplyShaderPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ClientboundApplyShaderPacket(buffer.readResourceLocation());
+    public static ApplyShaderClientboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new ApplyShaderClientboundPacket(buffer.readResourceLocation());
     }
 
     @SuppressWarnings("UnusedReturnValue")

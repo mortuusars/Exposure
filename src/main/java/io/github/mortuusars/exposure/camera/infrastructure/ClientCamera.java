@@ -1,9 +1,11 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.camera.component.Shutter;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Minecart;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientCamera extends Camera {
     public ClientCamera(Shutter shutter) {
@@ -18,6 +20,14 @@ public class ClientCamera extends Camera {
     @Override
     public void activate(Player player, InteractionHand hand) {
         super.activate(player, hand);
-        ViewfinderRenderer.setup();
+
+        if (player.equals(Minecraft.getInstance().player))
+            ViewfinderRenderer.setup();
+    }
+
+    @Override
+    public @Nullable InteractionHand deactivate(Player player) {
+        player.stopUsingItem();
+        return super.deactivate(player);
     }
 }

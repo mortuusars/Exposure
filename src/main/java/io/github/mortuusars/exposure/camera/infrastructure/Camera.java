@@ -1,10 +1,6 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.component.Shutter;
 import io.github.mortuusars.exposure.util.CameraInHand;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +32,11 @@ public abstract class Camera {
         return activeCameras.remove(player);
     }
 
+    public void clear() {
+        activeCameras.clear();
+        shutter.clear();
+    }
+
     public Optional<InteractionHand> getActiveHand(Player player) {
         return Optional.ofNullable(activeCameras.get(player));
     }
@@ -51,7 +52,7 @@ public abstract class Camera {
     public void tick(Player player) {
         shutter.tick(player);
 
-        if (getCameraInHand(player).isEmpty()) {
+        if (isActive(player) && getCameraInHand(player).isEmpty()) {
             deactivate(player);
             return;
         }

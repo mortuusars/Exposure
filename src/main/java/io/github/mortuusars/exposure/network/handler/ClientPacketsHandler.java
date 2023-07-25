@@ -5,8 +5,10 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
+import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.config.ClientConfig;
-import io.github.mortuusars.exposure.network.packet.ClientboundApplyShaderPacket;
+import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.PlayFilmAdvanceSoundClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureFileSaver;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
@@ -21,6 +23,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.network.NetworkEvent;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,12 +31,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientPacketsHandler {
     public static void updateActiveCamera(NetworkEvent.Context context, UpdateActiveCameraPacket packet) {
-        Player player = Objects.requireNonNull(Minecraft.getInstance().level).getPlayerByUUID(packet.playerID());
+        if (Minecraft.getInstance().level == null) return;
+        @Nullable Player player = Minecraft.getInstance().level.getPlayerByUUID(packet.playerID());
+        if (player == null) return;
 
         if (packet.isActive())
             Exposure.getCamera().activate(player, packet.hand());
@@ -41,7 +45,7 @@ public class ClientPacketsHandler {
             Exposure.getCamera().deactivate(player);
     }
 
-    public static void applyShader(ClientboundApplyShaderPacket packet) {
+    public static void applyShader(ApplyShaderClientboundPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (packet.shaderLocation().getPath().equals("none")) {
             mc.gameRenderer.shutdownEffect();
@@ -93,5 +97,12 @@ public class ClientPacketsHandler {
                 Exposure.LOGGER.error("Cannot load exposure:" + e);
             }
         }).start();
+    }
+
+    public static void playFilmAdvanceSound(PlayFilmAdvanceSoundClientboundPacket packet) {
+        if (Minecraft.getInstance().level != null) {
+            Player player = Minecraft.getInstance().level.getPlayerByUUID(packet.sourcePlayerId());
+            ClientOnlyLogic.playCancellableFilmAdvanceSound(player);
+        }
     }
 }

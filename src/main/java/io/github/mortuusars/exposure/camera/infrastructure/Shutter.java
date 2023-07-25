@@ -1,9 +1,11 @@
-package io.github.mortuusars.exposure.camera.component;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +30,7 @@ public class Shutter {
 
     public void close(Player player) {
         @Nullable OpenShutter shutter = openShutters.remove(player);
-        if (shutter != null)
+        if (shutter != null && !Exposure.getCamera().getCameraInHand(player).isEmpty())
             shutter.camera().getItem().onShutterClosed(player, shutter);
     }
 
@@ -41,13 +43,17 @@ public class Shutter {
         for (Map.Entry<Player, OpenShutter> shutter : openShutters.entrySet()) {
             if (System.currentTimeMillis() - shutter.getValue().openedAt > shutter.getValue().shutterSpeed.getMilliseconds())
                 toClose.add(shutter.getKey());
-            else
+            else if (!Exposure.getCamera().getCameraInHand(player).isEmpty())
                 shutter.getValue().camera.getItem().onShutterTick(shutter.getKey(), shutter.getValue());
         }
 
         for (Player pl : toClose) {
             close(pl);
         }
+    }
+
+    public void clear() {
+        openShutters.clear();
     }
 
     public record OpenShutter(ItemAndStack<CameraItem> camera, ShutterSpeed shutterSpeed, long openedAt, boolean exposingFrame) {}
