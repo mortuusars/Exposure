@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.camera.infrastructure;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
@@ -29,11 +30,18 @@ public abstract class Camera {
     public void activate(Player player, InteractionHand hand) {
         activeCameras.put(player, hand);
         player.startUsingItem(hand);
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), SoundSource.PLAYERS, 0.9f,
+                player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
     }
 
     public @Nullable InteractionHand deactivate(Player player) {
         player.stopUsingItem();
-        return activeCameras.remove(player);
+        @Nullable InteractionHand hand = activeCameras.remove(player);
+        if (hand != null) {
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), SoundSource.PLAYERS, 0.9f,
+                    player.getLevel().getRandom().nextFloat() * 0.2f + 0.85f);
+        }
+        return hand;
     }
 
     public void clear() {

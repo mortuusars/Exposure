@@ -265,7 +265,7 @@ public class ViewfinderRenderer {
                 Fov.focalLengthToFov(focalRange.min()));
 
         if (Math.abs(prevFov - fov) > 0.01f)
-            player.playSound(SoundEvents.SPYGLASS_STOP_USING);
+            player.playSound(Exposure.SoundEvents.LENS_RING_CLICK.get());
 
         targetFov = fov;
         SynchronizedCameraInHandActions.setZoom(Fov.fovToFocalLength(fov));

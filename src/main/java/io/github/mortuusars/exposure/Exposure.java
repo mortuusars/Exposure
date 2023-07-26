@@ -150,9 +150,14 @@ public class Exposure {
     public static class SoundEvents {
         private static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Exposure.ID);
 
+        public static final RegistryObject<SoundEvent> VIEWFINDER_OPEN = register("item", "camera.viewfinder_open");
+        public static final RegistryObject<SoundEvent> VIEWFINDER_CLOSE = register("item", "camera.viewfinder_close");
         public static final RegistryObject<SoundEvent> SHUTTER_OPEN = register("item", "camera.shutter_open");
         public static final RegistryObject<SoundEvent> SHUTTER_CLOSE = register("item", "camera.shutter_close");
+        public static final RegistryObject<SoundEvent> SHUTTER_TICKING = register("item", "camera.shutter_ticking");
         public static final RegistryObject<SoundEvent> FILM_ADVANCE = register("item", "camera.film_advance");
+        public static final RegistryObject<SoundEvent> CAMERA_BUTTON_CLICK = register("item", "camera.button_click");
+        public static final RegistryObject<SoundEvent> LENS_RING_CLICK = register("item", "camera.lens_ring_click");
 
         private static RegistryObject<SoundEvent> register(String category, String key) {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");

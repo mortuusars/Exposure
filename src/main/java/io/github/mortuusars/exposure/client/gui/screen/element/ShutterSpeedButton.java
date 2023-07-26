@@ -3,8 +3,8 @@ package io.github.mortuusars.exposure.client.gui.screen.element;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
+import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
@@ -13,13 +13,15 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ShutterSpeedButton extends ImageButton {
     private final Screen screen;
@@ -46,6 +48,12 @@ public class ShutterSpeedButton extends ImageButton {
             if (shutterSpeed.equals(shutterSpeeds.get(i)))
                 currentShutterSpeedIndex = i;
         }
+    }
+
+    @Override
+    public void playDownSound(SoundManager handler) {
+        handler.play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get(),
+                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.15f + 0.93f, 0.9f));
     }
 
     @Override
@@ -116,9 +124,7 @@ public class ShutterSpeedButton extends ImageButton {
         if (!camera.isEmpty()) {
             if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentShutterSpeedIndex)) {
                 SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(currentShutterSpeedIndex));
-
-                assert Minecraft.getInstance().player != null;
-                Minecraft.getInstance().player.playSound(SoundEvents.UI_BUTTON_CLICK);
+                this.playDownSound(Minecraft.getInstance().getSoundManager());
                 lastChangeTime = System.currentTimeMillis();
             }
         }

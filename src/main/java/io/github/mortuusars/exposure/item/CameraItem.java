@@ -251,14 +251,6 @@ public class CameraItem extends Item {
         if (shutter.exposingFrame()) {
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
                     1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
-//            if (player.level.isClientSide)
-//                ClientOnlyLogic.playCancellableFilmAdvanceSound(player);
-//            else if (player.getLevel() instanceof ServerLevel serverLevel) {
-//                for (ServerPlayer serverPlayer : serverLevel.players()) {
-//                    if (!player.equals(serverPlayer) && player.distanceTo(serverPlayer) < 32f)
-//                        Packets.sendToClient(new PlayFilmAdvanceSoundClientboundPacket(player.getUUID()), serverPlayer);
-//                }
-//            }
         }
     }
 
