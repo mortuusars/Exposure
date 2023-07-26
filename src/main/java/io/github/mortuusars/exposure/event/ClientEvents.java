@@ -72,12 +72,12 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void renderPlayer(RenderPlayerEvent.Pre event) {
-            Player player = event.getEntity();
-            if (Exposure.getCamera().isActive(player)) {
-                CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-                if (!camera.isEmpty())
-                   player.startUsingItem(camera.getHand());
-            }
+//            Player player = event.getEntity();
+//            if (Exposure.getCamera().isActive(player)) {
+//                CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+//                if (!camera.isEmpty())
+//                   player.startUsingItem(camera.getHand());
+//            }
         }
 
         @SubscribeEvent

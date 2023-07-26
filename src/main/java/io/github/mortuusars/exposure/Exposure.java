@@ -158,7 +158,7 @@ public class Exposure {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");
             Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
             String path = category + "." + key;
-            return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path)));
+            return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path), 16f));
         }
     }
 }

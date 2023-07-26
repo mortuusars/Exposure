@@ -3,10 +3,14 @@ package io.github.mortuusars.exposure.network;
 
 import io.github.mortuusars.exposure.network.packet.*;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.server.ServerLifecycleHooks;
+
+import java.util.function.Predicate;
 
 public class Packets {
     private static final String PROTOCOL_VERSION = "1";
@@ -32,6 +36,8 @@ public class Packets {
         LoadExposureCommandClientboundPacket.register(CHANNEL, id++);
         ExposeCommandClientboundPacket.register(CHANNEL, id++);
         PlayFilmAdvanceSoundClientboundPacket.register(CHANNEL, id++);
+        PlayOnePerPlayerSoundClientboundPacket.register(CHANNEL, id++);
+        StopOnePerPlayerSoundClientboundPacket.register(CHANNEL, id++);
     }
 
     public static <MSG> void sendToServer(MSG message) {
@@ -40,5 +46,20 @@ public class Packets {
 
     public static <MSG> void sendToClient(MSG message, ServerPlayer player) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
+    }
+
+    public static <MSG> void sendToClients(MSG message, Predicate<ServerPlayer> filter) {
+        for (ServerPlayer player : ServerLifecycleHooks.getCurrentServer().getPlayerList().getPlayers()) {
+            if (filter.test(player))
+                sendToClient(message, player);
+        }
+    }
+
+    public static <MSG> void sendToOtherClients(MSG message, ServerPlayer excludedPlayer) {
+        sendToClients(message, serverPlayer -> !serverPlayer.equals(excludedPlayer));
+    }
+
+    public static <MSG> void sendToOtherClients(MSG message, ServerPlayer excludedPlayer, Predicate<ServerPlayer> filter) {
+        sendToClients(message, serverPlayer -> !serverPlayer.equals(excludedPlayer) && filter.test(serverPlayer));
     }
 }

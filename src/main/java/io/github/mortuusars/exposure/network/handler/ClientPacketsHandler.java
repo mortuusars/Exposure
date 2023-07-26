@@ -8,7 +8,6 @@ import io.github.mortuusars.exposure.camera.CaptureProperties;
 import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
-import io.github.mortuusars.exposure.network.packet.PlayFilmAdvanceSoundClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureFileSaver;
 import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
@@ -97,12 +96,5 @@ public class ClientPacketsHandler {
                 Exposure.LOGGER.error("Cannot load exposure:" + e);
             }
         }).start();
-    }
-
-    public static void playFilmAdvanceSound(PlayFilmAdvanceSoundClientboundPacket packet) {
-        if (Minecraft.getInstance().level != null) {
-            Player player = Minecraft.getInstance().level.getPlayerByUUID(packet.sourcePlayerId());
-            ClientOnlyLogic.playCancellableFilmAdvanceSound(player);
-        }
     }
 }
