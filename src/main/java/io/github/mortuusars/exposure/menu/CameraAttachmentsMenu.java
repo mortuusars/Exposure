@@ -4,7 +4,11 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.inventory.CameraItemStackHandler;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
+import io.github.mortuusars.exposure.util.OnePerPlayerSoundsClient;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -33,15 +37,38 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
         int attachmentSlots = 0;
 
         if (attachmentTypes.contains(CameraItem.FILM_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILM_ATTACHMENT.slot(), 13, 42));
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILM_ATTACHMENT.slot(), 13, 42) {
+                @Override
+                public void set(@NotNull ItemStack stack) {
+                    super.set(stack);
+                    if (!stack.isEmpty() && playerInventory.player.getLevel().isClientSide)
+                        OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS, 0.9f, 1f);
+                }
+            });
             attachmentSlots++;
         }
         if (attachmentTypes.contains(CameraItem.LENS_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 147, 53));
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 147, 53) {
+                @Override
+                public void set(@NotNull ItemStack stack) {
+                    super.set(stack);
+                    if (playerInventory.player.getLevel().isClientSide)
+                        OnePerPlayerSounds.play(playerInventory.player, stack.isEmpty() ?
+                                SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE, SoundSource.PLAYERS, 0.9f, 1f);
+                }
+            });
             attachmentSlots++;
         }
         if (attachmentTypes.contains(CameraItem.FILTER_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILTER_ATTACHMENT.slot(), 147, 71));
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILTER_ATTACHMENT.slot(), 147, 71) {
+                @Override
+                public void set(@NotNull ItemStack stack) {
+                    super.set(stack);
+                    if (!stack.isEmpty() && playerInventory.player.getLevel().isClientSide)
+                        OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILTER_PLACE.get(), SoundSource.PLAYERS, 0.8f,
+                                playerInventory.player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+                }
+            });
             attachmentSlots++;
         }
 

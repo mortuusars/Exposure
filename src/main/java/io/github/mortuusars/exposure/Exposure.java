@@ -158,6 +158,7 @@ public class Exposure {
         public static final RegistryObject<SoundEvent> FILM_ADVANCE = register("item", "camera.film_advance");
         public static final RegistryObject<SoundEvent> CAMERA_BUTTON_CLICK = register("item", "camera.button_click");
         public static final RegistryObject<SoundEvent> LENS_RING_CLICK = register("item", "camera.lens_ring_click");
+        public static final RegistryObject<SoundEvent> FILTER_PLACE = register("item", "camera.filter_place");
 
         private static RegistryObject<SoundEvent> register(String category, String key) {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");

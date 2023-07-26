@@ -12,6 +12,11 @@
     ],
     "subtitle": "subtitle.exposure.camera.film_advance"
   },
+  "item.camera.filter_place": {
+    "sounds": [
+      "exposure:item/camera/filter_place"
+    ]
+  },
   "item.camera.lens_ring_click": {
     "sounds": [
       "exposure:item/camera/lens_ring1",
