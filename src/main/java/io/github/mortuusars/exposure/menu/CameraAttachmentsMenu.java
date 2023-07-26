@@ -33,15 +33,15 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
         int attachmentSlots = 0;
 
         if (attachmentTypes.contains(CameraItem.FILM_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILM_ATTACHMENT.slot(), 35, 29));
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILM_ATTACHMENT.slot(), 13, 42));
             attachmentSlots++;
         }
         if (attachmentTypes.contains(CameraItem.LENS_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 116, 57));
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 147, 53));
             attachmentSlots++;
         }
         if (attachmentTypes.contains(CameraItem.FILTER_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILTER_ATTACHMENT.slot(), 125, 14));
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILTER_ATTACHMENT.slot(), 147, 71));
             attachmentSlots++;
         }
 
@@ -51,13 +51,13 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
                 //TODO: Check for current camera slot to avoid duping
-                addSlot(new Slot(playerInventory, (column + row * 9) + 9, column * 18 + 8, 84 + row * 18));
+                addSlot(new Slot(playerInventory, (column + row * 9) + 9, column * 18 + 8, 103 + row * 18));
             }
         }
 
         //Hotbar
         for (int slot = 0; slot < 9; slot++) {
-            addSlot(new Slot(playerInventory, slot, slot * 18 + 8, 142));
+            addSlot(new Slot(playerInventory, slot, slot * 18 + 8, 161));
         }
     }
 
