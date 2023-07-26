@@ -1,10 +1,23 @@
 {
+  "item.camera.button_click": {
+    "sounds": [
+      "exposure:item/camera/button_click"
+    ],
+    "subtitle": "subtitle.exposure.camera.button_click"
+  },
   "item.camera.film_advance": {
     "sounds": [
       "exposure:item/camera/film_advance1",
       "exposure:item/camera/film_advance2"
     ],
     "subtitle": "subtitle.exposure.camera.film_advance"
+  },
+  "item.camera.lens_ring_click": {
+    "sounds": [
+      "exposure:item/camera/lens_ring1",
+      "exposure:item/camera/lens_ring2",
+      "exposure:item/camera/lens_ring3"
+    ]
   },
   "item.camera.shutter_close": {
     "sounds": [
@@ -19,5 +32,22 @@
       "exposure:item/camera/shutter_open2"
     ],
     "subtitle": "subtitle.exposure.camera.shutter"
+  },
+  "item.camera.shutter_ticking": {
+    "sounds": [
+      "exposure:item/camera/shutter_ticking"
+    ]
+  },
+  "item.camera.viewfinder_close": {
+    "sounds": [
+      "exposure:item/camera/viewfinder_close"
+    ],
+    "subtitle": "subtitle.exposure.camera.viewfinder_close"
+  },
+  "item.camera.viewfinder_open": {
+    "sounds": [
+      "exposure:item/camera/viewfinder_open"
+    ],
+    "subtitle": "subtitle.exposure.camera.viewfinder_open"
   }
 }

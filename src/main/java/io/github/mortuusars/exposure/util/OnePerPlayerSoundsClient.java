@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.util;
 
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.client.sound.ShutterTimerTickingSoundInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -10,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -21,8 +24,7 @@ public class OnePerPlayerSoundsClient {
         Level level = sourcePlayer.getLevel();
         stop(sourcePlayer, soundEvent);
 
-        EntityBoundSoundInstance soundInstance = new EntityBoundSoundInstance(soundEvent, source, volume, pitch,
-                sourcePlayer, level.getRandom().nextLong());
+        SoundInstance soundInstance = createSoundInstance(sourcePlayer, soundEvent, source, volume, pitch, level);
 
         List<SoundInstance> playingSounds = Optional.ofNullable(instances.get(sourcePlayer)).orElse(new ArrayList<>());
         playingSounds.add(soundInstance);
@@ -45,5 +47,14 @@ public class OnePerPlayerSoundsClient {
 
             instances.put(sourcePlayer, playingSounds);
         }
+    }
+
+
+    @NotNull
+    private static SoundInstance createSoundInstance(Player sourcePlayer, SoundEvent soundEvent, SoundSource source, float volume, float pitch, Level level) {
+        if (soundEvent == Exposure.SoundEvents.SHUTTER_TICKING.get())
+            return new ShutterTimerTickingSoundInstance(sourcePlayer, soundEvent, source, volume, pitch, sourcePlayer.level.getRandom());
+
+        return new EntityBoundSoundInstance(soundEvent, source, volume, pitch, sourcePlayer, level.getRandom().nextLong());
     }
 }

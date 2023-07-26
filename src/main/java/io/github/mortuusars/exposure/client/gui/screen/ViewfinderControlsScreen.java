@@ -108,11 +108,7 @@ public class ViewfinderControlsScreen extends Screen {
             }
         }
 
-
-        Minecraft.getInstance().font.draw(poseStack, "X: " + mouseX + ", Y: " + mouseY, 10, 10, 0xFFc1b4a3);
-
         poseStack.popPose();
-
     }
 
     @Override

@@ -21,6 +21,7 @@ import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
+import io.github.mortuusars.exposure.util.OnePerPlayerSoundsClient;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
@@ -122,7 +123,7 @@ public class CameraItem extends Item {
             else
                 Exposure.getCamera().activate(player, hand);
 
-            player.getCooldowns().addCooldown(this, 2);
+            player.getCooldowns().addCooldown(this, 6);
             return;
         }
 
@@ -239,6 +240,9 @@ public class CameraItem extends Item {
     public void onShutterOpen(Player player, Shutter.OpenShutter shutter) {
         player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
                 player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1.1f : 1.25f));
+
+        if (shutter.shutterSpeed().getMilliseconds() > 50) // More than 1/30
+            OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
     }
 
     public void onShutterTick(Player player, Shutter.OpenShutter shutter) {

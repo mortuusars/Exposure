@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client;
+package io.github.mortuusars.exposure.client.sound;
 
 import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -10,22 +10,23 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class FilmAdvanceSoundInstance extends AbstractTickableSoundInstance {
+public class ShutterTimerTickingSoundInstance extends AbstractTickableSoundInstance {
     private final Player player;
 
-    protected FilmAdvanceSoundInstance(Player player, SoundEvent soundEvent, SoundSource soundSource, RandomSource random) {
+    public ShutterTimerTickingSoundInstance(Player player, SoundEvent soundEvent, SoundSource soundSource, float volume, float pitch, RandomSource random) {
         super(soundEvent, soundSource, random);
         this.player = player;
         this.x = player.getX();
         this.y = player.getY();
         this.z = player.getZ();
-        this.volume = 1f;
-        this.pitch = random.nextFloat() * 0.15f + 0.93f;
+        this.volume = volume;
+        this.pitch = pitch;
+        this.looping = true;
     }
 
     @Override
     public void tick() {
-        if (Exposure.getCamera().getCameraInHand(player).isEmpty())
+        if (Exposure.getCamera().getCameraInHand(player).isEmpty() || !Exposure.getCamera().getShutter().isOpen(player))
             this.stop();
 
         this.x = player.getX();

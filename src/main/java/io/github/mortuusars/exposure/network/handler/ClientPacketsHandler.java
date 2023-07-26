@@ -5,7 +5,6 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
-import io.github.mortuusars.exposure.client.ClientOnlyLogic;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;

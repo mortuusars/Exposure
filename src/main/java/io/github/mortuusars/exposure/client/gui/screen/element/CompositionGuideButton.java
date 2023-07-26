@@ -98,7 +98,7 @@ public class CompositionGuideButton extends ImageButton {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (System.currentTimeMillis() - lastChangeTime > 50)
+        if (System.currentTimeMillis() - lastChangeTime > 40)
             cycleGuide(delta < 0d);
         return true;
     }

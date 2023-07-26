@@ -41,7 +41,7 @@ public class SoundsProvider extends SoundDefinitionsProvider {
                 .with(sound(Exposure.ID + ":item/camera/button_click")));
 
         add(Exposure.SoundEvents.LENS_RING_CLICK.get(), definition()
-                .with(multiple(4, Exposure.ID + ":item/camera/lens_ring", 1f, 1)));
+                .with(multiple(3, Exposure.ID + ":item/camera/lens_ring", 1f, 1)));
     }
 
     private SoundDefinition.Sound[] multiple(int count, String name, float volume, float pitch) {

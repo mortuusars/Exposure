@@ -17,6 +17,7 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,7 +54,7 @@ public class ShutterSpeedButton extends ImageButton {
     @Override
     public void playDownSound(SoundManager handler) {
         handler.play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get(),
-                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.15f + 0.93f, 0.9f));
+                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.05f + 0.9f + currentShutterSpeedIndex * 0.01f, 0.75f));
     }
 
     @Override
@@ -101,8 +102,8 @@ public class ShutterSpeedButton extends ImageButton {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (System.currentTimeMillis() - lastChangeTime > 50)
-            cycleShutterSpeed(delta < 0d);
+        if (System.currentTimeMillis() - lastChangeTime > 40)
+            cycleShutterSpeed(delta > 0d);
 
         return true;
     }
@@ -118,14 +119,17 @@ public class ShutterSpeedButton extends ImageButton {
     }
 
     public void cycleShutterSpeed(boolean reverse) {
+        int prevIndex = currentShutterSpeedIndex;
         currentShutterSpeedIndex = Mth.clamp(currentShutterSpeedIndex + (reverse ? -1 : 1), 0, shutterSpeeds.size() - 1);
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
-        if (!camera.isEmpty()) {
-            if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentShutterSpeedIndex)) {
-                SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(currentShutterSpeedIndex));
-                this.playDownSound(Minecraft.getInstance().getSoundManager());
-                lastChangeTime = System.currentTimeMillis();
+        if (prevIndex != currentShutterSpeedIndex) {
+            CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+            if (!camera.isEmpty()) {
+                if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentShutterSpeedIndex)) {
+                    SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(currentShutterSpeedIndex));
+                    this.playDownSound(Minecraft.getInstance().getSoundManager());
+                    lastChangeTime = System.currentTimeMillis();
+                }
             }
         }
     }
