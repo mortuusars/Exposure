@@ -9,10 +9,13 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +29,7 @@ import net.minecraftforge.client.event.ViewportEvent;
 import java.awt.geom.Rectangle2D;
 
 public class ViewfinderRenderer {
-    private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/misc/viewfinder.png");
+    private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/misc/viewfinder.png");
     private static final PoseStack POSE_STACK = new PoseStack();
 
     public static Rectangle2D.Float opening;
@@ -72,8 +75,8 @@ public class ViewfinderRenderer {
     }
 
     public static void render() {
-//        Preconditions.checkState(!Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player).isEmpty(),
-//                "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
+        Preconditions.checkState(!Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player).isEmpty(),
+                "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
 
         int color = 0xfa1f1d1b; //TODO: configurable colors.
         int width = minecraft.getWindow().getGuiScaledWidth();
@@ -147,6 +150,17 @@ public class ViewfinderRenderer {
             bufferbuilder.vertex(matrix, opening.x + opening.width, opening.y, -90).uv(1.0F, 0.0F).endVertex();
             bufferbuilder.vertex(matrix, opening.x, opening.y, -90).uv(0.0F, 0.0F).endVertex();
             tesselator.end();
+
+            // Icons
+            if (camera.getItem().getFilm(camera.getStack()).isEmpty() && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
+                RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/misc/no_film_icon.png"));
+                float cropFactor = ClientConfig.VIEWFINDER_CROP_FACTOR.get().floatValue();
+
+                float fromEdge = (opening.height - (opening.height / (cropFactor))) / 2f;
+                GuiComponent.blit(poseStack, (int) (opening.x + (opening.width / 2) - 8),
+                        (int) (opening.y + opening.height - ((fromEdge / 2 + 8))),
+                        0, 0, 16, 16, 16,16);
+            }
 
             poseStack.popPose();
         }

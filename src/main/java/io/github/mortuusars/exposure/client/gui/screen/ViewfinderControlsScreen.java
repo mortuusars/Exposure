@@ -22,8 +22,8 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class ViewfinderControlsScreen extends Screen {
-    public static final ResourceLocation OVERLAY_TEXTURE = Exposure.resource("textures/misc/viewfinder_controls_overlay.png");
-    public static final ResourceLocation WIDGETS_TEXTURE = Exposure.resource("textures/misc/viewfinder_controls_widgets.png");
+    public static final ResourceLocation OVERLAY_TEXTURE = Exposure.resource("textures/gui/viewfinder_controls_overlay.png");
+    public static final ResourceLocation WIDGETS_TEXTURE = Exposure.resource("textures/gui/viewfinder_controls_widgets.png");
 
     private final Player player;
     private final ClientLevel level;
