@@ -3,10 +3,14 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -41,7 +45,7 @@ public class PhotographScreen extends Screen {
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(poseStack);
+//        renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
         float phWidth = PhotographRenderer.SIZE;
@@ -61,6 +65,7 @@ public class PhotographScreen extends Screen {
 
         // Paper (frame)
         fill(poseStack, -8, -8, (int) (phWidth + 8), (int) (phHeight + 8), 0xFFDDDDDD);
+
         PhotographRenderer.render(idOrResource, poseStack);
 
         poseStack.popPose();

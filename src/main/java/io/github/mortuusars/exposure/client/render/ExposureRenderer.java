@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.material.MaterialColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -105,17 +106,21 @@ public class ExposureRenderer implements AutoCloseable {
                     int bgr = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
 
                     if (negative) {
+                        // Invert:
                         bgr = bgr ^ 0x00FFFFFF;
+
+                        // Calculating transparency. Closer to white - more transparent:
                         int blue = bgr >> 16 & 0xFF;
                         int green = bgr >> 8 & 0xFF;
                         int red = bgr & 0xFF;
-//                        int luma = Mth.clamp((int) (0.4 * red + 0.6 * green + 0.15 * blue), 0, 255);
-//
-//                        //TODO: Proper negative transparency
-//                        luma = (int) Mth.clamp(luma * luma / 255f - 100, 0, 255);
-//                        luma = (255 - luma);
-//
-//                        bgr = (bgr & 0x00FFFFFF) | (luma << 24);
+                        // Fast approximation of perceived luminosity: (https://stackoverflow.com/a/596241)
+                        int luma = Mth.clamp(((red << 1) + red + (green << 2) + blue) >> 3, 0, 255);
+                        // Shift closer to opaque side, to increase visibility of an image:
+                        luma = (int) Mth.clamp(luma * luma * luma / 255f / 255f, 0, 255);
+                        // Cut ends to not have completely transparent or completely black pixels:
+                        int opacity = Mth.clamp(255 - luma, 30, 225);
+
+                        bgr = (bgr & 0x00FFFFFF) | (opacity << 24);
                     }
 
                     this.texture.getPixels().setPixelRGBA(x, y, bgr); // Texture is in BGR format

@@ -29,6 +29,11 @@ public class PhotographRenderer {
                 ExposureClient.getExposureRenderer().render(id, exposureData, false, poseStack, packedLight, SIZE, SIZE));
     }
 
+    public static void renderNegativeExposure(String id, PoseStack poseStack, int packedLight) {
+        Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
+                ExposureClient.getExposureRenderer().render(id, exposureData, true, poseStack, packedLight, SIZE, SIZE));
+    }
+
     public static void renderTexture(ResourceLocation resource, PoseStack poseStack, int packedLight) {
         RenderSystem.setShaderTexture(0, resource);
         RenderSystem.setShaderColor(1, 1, 1, 1);
