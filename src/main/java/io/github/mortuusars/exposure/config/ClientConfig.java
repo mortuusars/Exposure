@@ -44,7 +44,7 @@ public class ClientConfig {
     }
 
     public static int getBackgroundColor() {
-        String value = VIEWFINDER_FONT_MAIN_COLOR.get();
+        String value = VIEWFINDER_BACKGROUND_COLOR.get();
         value = value.replace("#", "");
         return new Color((int)Long.parseLong(value, 16), true).getRGB();
     }
