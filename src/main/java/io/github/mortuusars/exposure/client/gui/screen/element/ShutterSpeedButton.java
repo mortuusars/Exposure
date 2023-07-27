@@ -58,7 +58,15 @@ public class ShutterSpeedButton extends ImageButton {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float pPartialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        if (this.visible) {
+            this.isHovered = mouseX >= this.x + 3 && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+            this.renderButton(poseStack, mouseX, mouseY, partialTick);
+        }
+    }
+
+    @Override
+    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, texture);

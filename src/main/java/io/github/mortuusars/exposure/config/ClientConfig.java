@@ -6,8 +6,11 @@ import java.awt.*;
 
 public class ClientConfig {
     public static final ForgeConfigSpec SPEC;
+
     // VIEWFINDER
     public static final ForgeConfigSpec.DoubleValue VIEWFINDER_CROP_FACTOR;
+    public static final ForgeConfigSpec.DoubleValue VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER;
+    public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_BACKGROUND_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_MAIN_COLOR;
     public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
 
@@ -16,7 +19,6 @@ public class ClientConfig {
     public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_LEVEL_SUBFOLDER;
     public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_ON_EVERY_CAPTURE;
 
-
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -24,6 +26,10 @@ public class ClientConfig {
         VIEWFINDER_CROP_FACTOR = builder
                 .comment("Size of the texture relative to the size of the opening. Default: 256 / (256 - 16*2) = 1.142857")
                 .defineInRange("CropFactor", 1.142857, 1.0, 10.0);
+        VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER = builder
+                .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes. Default: 0.048")
+                .defineInRange("ZoomSensitivityModifier", 0.048, 0.0, 1.0);
+        VIEWFINDER_BACKGROUND_COLOR = builder.define("BackgroundColorHex", "FA1F1D1B");
         VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF5A5552");
         VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FFB7AFAB");
         builder.pop();
@@ -35,6 +41,12 @@ public class ClientConfig {
         builder.pop();
 
         SPEC = builder.build();
+    }
+
+    public static int getBackgroundColor() {
+        String value = VIEWFINDER_FONT_MAIN_COLOR.get();
+        value = value.replace("#", "");
+        return new Color((int)Long.parseLong(value, 16), true).getRGB();
     }
 
     public static int getMainFontColor() {

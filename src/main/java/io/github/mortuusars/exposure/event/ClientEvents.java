@@ -13,9 +13,14 @@ import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.CameraInHand;
+import io.github.mortuusars.exposure.util.ItemAndStack;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.*;
@@ -31,6 +36,21 @@ public class ClientEvents {
                 ExposureClient.init();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.DARKROOM.get(), DarkroomScreen::new);
+
+                ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"),
+                        (pStack, pLevel, pEntity, pSeed) -> {
+                            if (pEntity instanceof Player player) {
+                                CameraInHand cameraInHand = Exposure.getCamera().getCameraInHand(player);
+                                if (!cameraInHand.isEmpty() && Exposure.getCamera().isActive(player) && player.getItemInHand(cameraInHand.getHand()).equals(pStack)) {
+                                    return 0.1f;
+                                }
+
+                            }
+//                            CameraItem item = (CameraItem) pStack.getItem();
+//                            item.
+
+                            return 0f;
+                        });
             });
         }
 
@@ -74,9 +94,19 @@ public class ClientEvents {
         public static void renderPlayer(RenderPlayerEvent.Pre event) {
 //            Player player = event.getEntity();
 //            if (Exposure.getCamera().isActive(player)) {
-//                CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-//                if (!camera.isEmpty())
-//                   player.startUsingItem(camera.getHand());
+//                player.xRotO += 50;
+//                player.setXRot(player.getXRot() + 50);
+//                player.yBodyRot = player.yHeadRot;
+//                player.yBodyRotO = player.yHeadRotO;
+//            }
+        }
+
+        @SubscribeEvent
+        public static void renderPlayer(RenderPlayerEvent.Post event) {
+//            Player player = event.getEntity();
+//            if (Exposure.getCamera().isActive(player)) {
+//                player.xRotO -= 50;
+//                player.setXRot(player.getXRot() - 50);
 //            }
         }
 
@@ -99,7 +129,7 @@ public class ClientEvents {
         }
 
         private static boolean isLookingThroughViewfinder() {
-            return Exposure.getCamera().isActive(Minecraft.getInstance().player);
+            return Exposure.getCamera().isActive(Minecraft.getInstance().player) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
         }
     }
 }

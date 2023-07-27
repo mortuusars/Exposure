@@ -7,11 +7,11 @@
   "mixins": [
   ],
   "client": [
-    "ToggleKeyMappingMixin",
     "DrawViewfinderOverlayMixin",
     "ExposureLightMixin",
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
+    "ToggleKeyMappingMixin",
     "ViewfinderSensitivityMixin"
   ],
   "injectors": {

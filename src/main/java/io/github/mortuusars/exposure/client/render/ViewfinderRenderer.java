@@ -6,9 +6,9 @@ import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -19,7 +19,6 @@ import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
@@ -78,7 +77,7 @@ public class ViewfinderRenderer {
         Preconditions.checkState(!Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player).isEmpty(),
                 "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
 
-        int color = 0xfa1f1d1b; //TODO: configurable colors.
+        int color = ClientConfig.getBackgroundColor();
         int width = minecraft.getWindow().getGuiScaledWidth();
         int height = minecraft.getWindow().getGuiScaledHeight();
 
@@ -108,7 +107,7 @@ public class ViewfinderRenderer {
 
             // Shutter
             if (Exposure.getCamera().getShutter().isOpen(player))
-                drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, color);
+                drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, 0xfa1f1d1b);
 
             // Opening Texture
             RenderSystem.enableBlend();
@@ -202,11 +201,10 @@ public class ViewfinderRenderer {
     }
 
     private static void bobView(PoseStack pMatrixStack, float pPartialTicks) {
-        if (Minecraft.getInstance().getCameraEntity() instanceof Player) {
-            Player player = (Player)Minecraft.getInstance().getCameraEntity();
-            float f = player.walkDist - player.walkDistO;
-            float f1 = -(player.walkDist + f * pPartialTicks);
-            float f2 = Mth.lerp(pPartialTicks, player.oBob, player.bob);
+        if (Minecraft.getInstance().getCameraEntity() instanceof Player pl) {
+            float f = pl.walkDist - pl.walkDistO;
+            float f1 = -(pl.walkDist + f * pPartialTicks);
+            float f2 = Mth.lerp(pPartialTicks, pl.oBob, pl.bob);
             pMatrixStack.translate((Mth.sin(f1 * (float)Math.PI) * f2 * 16F), (-Math.abs(Mth.cos(f1 * (float)Math.PI) * f2 * 32F)), 0.0D);
             pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float)Math.PI) * f2 * 3.0F));
             pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F));
@@ -217,8 +215,8 @@ public class ViewfinderRenderer {
         if (!shouldRender())
             return sensitivity;
 
-        //TODO: config on/off sens, and multiplier
-        return sensitivity * Mth.clamp(1f - (defaultFov - currentFov) / defaultFov, 0.1f, 1f);
+        double modifier = Mth.clamp(1f - (ClientConfig.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get() * ((defaultFov - currentFov) / 5f)), 0.01, 2f);
+        return sensitivity * modifier;
     }
 
     public static void onComputeFovEvent(ViewportEvent.ComputeFov event) {
