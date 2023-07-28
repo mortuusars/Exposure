@@ -2,12 +2,15 @@
   "block.exposure.darkroom": "Darkroom",
 
   "item.exposure.camera": "Camera",
-  "item.exposure.black_and_white_film": "Black and White Film",
-  "item.exposure.color_film": "Color Film",
+  "item.exposure.black_and_white_film_roll": "Black and White Film",
+  "item.exposure.color_film_roll": "Color Film",
+  "item.exposure.developed_black_and_white_film": "Developed Black and White Film",
+  "item.exposure.developed_color_film": "Developed Color Film",
   "item.exposure.photograph": "Photograph",
 
-  "item.exposure.film.tooltip.frame_count": "%s/%s",
-  "item.exposure.film.tooltip.frame_size": "Size: %smm",
+  "item.exposure.film_roll.tooltip.frame_count": "%s/%s",
+  "item.exposure.film_roll.tooltip.frame_size": "Size: %smm",
+  "item.exposure.developed_film.tooltip.frame_count": "Frames: %s",
 
   "gui.exposure.composition_guide.none": "None",
   "gui.exposure.composition_guide.cross": "Cross",
@@ -21,5 +24,4 @@
   "command.exposure.shader.removed": "Shader removed",
   "item.exposure.photograph.message.no_data": "The paper is clean. No trace of an image is found on it, even if it had one at some point.",
   "subtitle.exposure.item.camera.shutter": "Camera shutter"
-
 }

@@ -50,7 +50,7 @@ public class FrameCounterButton extends ImageButton {
 
         String text = camera.getItem().getFilm(camera.getStack()).map(film -> {
             int exposedFrames = film.getItem().getExposedFrames(film.getStack()).size();
-            int totalFrames = film.getItem().getMaxFrameCount();
+            int totalFrames = film.getItem().getFrameCount(film.getStack());
             return exposedFrames + "/" + totalFrames;
         }).orElse("-");
 

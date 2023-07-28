@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
 import net.minecraft.core.BlockPos;
@@ -82,7 +82,7 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     public static boolean isItemValidForSlot(int slot, ItemStack stack) {
-        if (slot == FILM_SLOT) return stack.getItem() instanceof FilmItem;
+        if (slot == FILM_SLOT) return stack.getItem() instanceof FilmRollItem;
         else if (slot == CYAN_DYE_SLOT) return stack.is(Tags.Items.DYES_CYAN);
         else if (slot == MAGENTA_DYE_SLOT) return stack.is(Tags.Items.DYES_MAGENTA);
         else if (slot == YELLOW_DYE_SLOT) return stack.is(Tags.Items.DYES_YELLOW);

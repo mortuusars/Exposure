@@ -13,11 +13,13 @@ import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
+import io.github.mortuusars.exposure.item.DevelopedFilmItem;
+import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.item.CameraItem;
-import io.github.mortuusars.exposure.item.FilmItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
+import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +29,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -60,6 +64,7 @@ public class Exposure {
         BlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
         Items.ITEMS.register(modEventBus);
         MenuTypes.MENU_TYPES.register(modEventBus);
+        RecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         SoundEvents.SOUNDS.register(modEventBus);
 
         modEventBus.register(CommonEvents.ModBus.class);
@@ -117,14 +122,24 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<FilmItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
-                () -> new FilmItem(FilmType.BLACK_AND_WHITE, 16, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
+        public static final RegistryObject<FilmRollItem> BLACK_AND_WHITE_FILM_ROLL = ITEMS.register("black_and_white_film_roll",
+                () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, 16, 320, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<FilmItem> COLOR_FILM = ITEMS.register("color_film",
-                () -> new FilmItem(FilmType.COLOR, 16, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
+        public static final RegistryObject<FilmRollItem> COLOR_FILM_ROLL = ITEMS.register("color_film_roll",
+                () -> new FilmRollItem(FilmType.COLOR, 16, 320, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
                         .stacksTo(16)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
+        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = ITEMS.register("developed_black_and_white_film",
+                () -> new DevelopedFilmItem(FilmType.BLACK_AND_WHITE, new Item.Properties()
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
+        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_COLOR_FILM = ITEMS.register("developed_color_film",
+                () -> new DevelopedFilmItem(FilmType.COLOR, new Item.Properties()
+                        .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<PhotographItem> PHOTOGRAPH = ITEMS.register("photograph",
@@ -145,6 +160,14 @@ public class Exposure {
 
         public static final RegistryObject<MenuType<DarkroomMenu>> DARKROOM = MENU_TYPES
                 .register("darkroom", () -> IForgeMenuType.create(DarkroomMenu::fromBuffer));
+    }
+
+    public static class RecipeSerializers {
+        private static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
+                DeferredRegister.create(ForgeRegistries.RECIPE_SERIALIZERS, Exposure.ID);
+
+        public static final RegistryObject<RecipeSerializer<?>> FILM_DEVELOPING = RECIPE_SERIALIZERS.register("film_developing",
+                FilmDevelopingRecipe.Serializer::new);
     }
 
     public static class SoundEvents {

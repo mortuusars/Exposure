@@ -6,7 +6,8 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
-import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.item.FilmRollItem;
+import io.github.mortuusars.exposure.item.IFilmItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
@@ -26,7 +27,7 @@ public class ExposureScreen extends Screen {
         super(Component.empty());
         minecraft = Minecraft.getInstance();
 
-        if (!(film.getItem() instanceof FilmItem filmItem)) {
+        if (!(film.getItem() instanceof IFilmItem filmItem)) {
             this.onClose();
             return;
         }

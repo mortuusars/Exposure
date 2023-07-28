@@ -22,7 +22,6 @@ import io.github.mortuusars.exposure.storage.saver.ExposureStorageSaver;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
-import io.github.mortuusars.exposure.util.OnePerPlayerSoundsClient;
 import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
@@ -64,7 +63,7 @@ import java.util.function.Predicate;
 public class CameraItem extends Item {
     public record AttachmentType(String id, int slot, Predicate<ItemStack> stackValidator) {}
 
-    public static final AttachmentType FILM_ATTACHMENT = new AttachmentType("Film", 0, stack -> stack.getItem() instanceof FilmItem);
+    public static final AttachmentType FILM_ATTACHMENT = new AttachmentType("Film", 0, stack -> stack.getItem() instanceof FilmRollItem);
     public static final AttachmentType LENS_ATTACHMENT = new AttachmentType("Lens", 1, stack -> stack.getItem() instanceof SpyglassItem);
     public static final AttachmentType FILTER_ATTACHMENT = new AttachmentType("Filter", 2, stack -> stack.is(Tags.Items.GLASS_PANES));
     public static final List<AttachmentType> ATTACHMENTS = List.of(
@@ -155,7 +154,7 @@ public class CameraItem extends Item {
 
             ExposureFrame exposureFrame = createExposureFrame(player, captureProperties, camera.getCamera(), EntitiesInFrame.get(player));
 
-            ItemAndStack<FilmItem> film = getFilm(camera.getStack()).orElseThrow();
+            ItemAndStack<FilmRollItem> film = getFilm(camera.getStack()).orElseThrow();
             film.getItem().addFrame(film.getStack(), exposureFrame);
             setFilm(camera.getStack(), film.getStack());
 
@@ -280,7 +279,7 @@ public class CameraItem extends Item {
         return Optional.empty();
     }
 
-    public Optional<ItemAndStack<FilmItem>> getFilm(ItemStack cameraStack) {
+    public Optional<ItemAndStack<FilmRollItem>> getFilm(ItemStack cameraStack) {
         return getAttachment(cameraStack, FILM_ATTACHMENT).map(ItemAndStack::new);
     }
 

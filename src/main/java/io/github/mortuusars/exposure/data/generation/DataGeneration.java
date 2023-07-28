@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.data.generation;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.data.generation.provider.RecipeProvider;
 import io.github.mortuusars.exposure.data.generation.provider.SoundsProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -18,7 +19,7 @@ public class DataGeneration
 
 //        generator.addProvider(event.includeServer(), new Advancements(generator, helper));
 //        generator.addProvider(event.includeServer(), new LootTables(generator));
-//        generator.addProvider(event.includeServer(), new Recipes(generator));
+        generator.addProvider(event.includeServer(), new RecipeProvider(generator));
 //        BlockTags blockTags = new BlockTags(generator, helper);
 //        generator.addProvider(event.includeServer(), blockTags);
 //        generator.addProvider(event.includeServer(), new ItemTags(generator, blockTags, helper));

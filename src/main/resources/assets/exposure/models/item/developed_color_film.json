@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "exposure:item/color_film"
+    "layer0": "exposure:item/developed_color_film"
   }
 }

@@ -1,8 +1,10 @@
 package io.github.mortuusars.exposure.item;
 
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -22,19 +24,40 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FilmItem extends Item {
-    private static final String FRAMES_TAG = "Frames";
-    private static final String FRAME_SIZE_TAG = "FrameSize";
+public class FilmRollItem extends Item implements IFilmItem {
+    public static final String FRAMES_TAG = "Frames";
+    public static final String FRAME_COUNT_TAG = "FrameCount";
+    public static final String FRAME_SIZE_TAG = "FrameSize";
 
     private final FilmType filmType;
-    private final int frameCount;
+    private final int defaultFrameSize;
+    private final int defaultFrameCount;
     private final int barColor;
 
-    public FilmItem (FilmType filmType, int frameCount, int barColor, Properties properties) {
+    public FilmRollItem(FilmType filmType, int defaultFrameCount, int defaultFrameSize, int barColor, Properties properties) {
         super(properties);
         this.filmType = filmType;
-        this.frameCount = frameCount;
+        this.defaultFrameCount = defaultFrameCount;
+        this.defaultFrameSize = defaultFrameSize;
         this.barColor = barColor;
+    }
+
+    public FilmType getType() {
+        return filmType;
+    }
+
+    public int getFrameCount(ItemStack filmStack) {
+        if (filmStack.getTag() != null && filmStack.getOrCreateTag().contains(FRAME_COUNT_TAG, Tag.TAG_INT))
+            return filmStack.getOrCreateTag().getInt(FRAME_COUNT_TAG);
+        else
+            return defaultFrameCount;
+    }
+
+    public int getFrameSize(ItemStack filmStack) {
+        if (filmStack.getTag() != null && filmStack.getOrCreateTag().contains(FRAME_SIZE_TAG, Tag.TAG_INT))
+            return filmStack.getOrCreateTag().getInt(FRAME_SIZE_TAG);
+        else
+            return defaultFrameSize;
     }
 
     public boolean isBarVisible(@NotNull ItemStack stack) {
@@ -42,7 +65,7 @@ public class FilmItem extends Item {
     }
 
     public int getBarWidth(@NotNull ItemStack stack) {
-        return Math.min(1 + 12 * getExposedFramesCount(stack) / getMaxFrameCount(), 13);
+        return Math.min(1 + 12 * getExposedFramesCount(stack) / getFrameCount(stack), 13);
     }
 
     public int getBarColor(@NotNull ItemStack stack) {
@@ -52,25 +75,6 @@ public class FilmItem extends Item {
     protected int getExposedFramesCount(ItemStack stack) {
         return stack.hasTag() && stack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST) ?
                 stack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() : 0;
-    }
-
-    public FilmType getType() {
-        return filmType;
-    }
-
-    public int getMaxFrameCount() {
-        return frameCount;
-    }
-
-    public int getFrameSize(ItemStack filmStack) {
-        if (filmStack.getOrCreateTag().contains(FRAME_SIZE_TAG, Tag.TAG_INT))
-            return filmStack.getOrCreateTag().getInt(FRAME_SIZE_TAG);
-        else
-            return getDefaultFrameSize();
-    }
-
-    public int getDefaultFrameSize() {
-        return 320;
     }
 
     public List<ExposureFrame> getExposedFrames(ItemStack filmStack) {
@@ -95,7 +99,7 @@ public class FilmItem extends Item {
 
         ListTag listTag = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
 
-        if (listTag.size() >= getMaxFrameCount())
+        if (listTag.size() >= getFrameCount(filmStack))
             throw new IllegalStateException("Cannot add more frames than film could fit. Size: " + listTag.size());
 
         listTag.add(frame.save(new CompoundTag()));
@@ -106,43 +110,35 @@ public class FilmItem extends Item {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
             return true;
 
-        return filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() < getMaxFrameCount();
+        return filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() < getFrameCount(filmStack);
     }
 
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack film = player.getItemInHand(hand);
+    public ItemAndStack<DevelopedFilmItem> develop(ItemStack filmStack) {
+        DevelopedFilmItem developedItem = getType() == FilmType.COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM.get()
+                : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get();
 
-        if (level.isClientSide)
-            ClientGUI.showExposureViewScreen(film);
+        ListTag framesTag = filmStack.getTag() != null ?
+                filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND) : new ListTag();
 
-        return InteractionResultHolder.success(film);
+        ItemStack developedItemStack = new ItemStack(developedItem);
+        developedItemStack.getOrCreateTag().put(FRAMES_TAG, framesTag);
+        return new ItemAndStack<>(developedItemStack);
     }
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
-        int exposedFrames = getExposedFrames(stack).size();
+        int exposedFrames = getExposedFramesCount(stack);
         if (exposedFrames > 0) {
-            int totalFrames = getMaxFrameCount();
-            tooltipComponents.add(Component.translatable("item.exposure.film.tooltip.frame_count", exposedFrames, totalFrames)
+            int totalFrames = getFrameCount(stack);
+            tooltipComponents.add(Component.translatable("item.exposure.film_roll.tooltip.frame_count", exposedFrames, totalFrames)
                     .withStyle(ChatFormatting.GRAY));
         }
 
         int frameSize = getFrameSize(stack);
-        if (frameSize != getDefaultFrameSize()) {
-            tooltipComponents.add(Component.translatable("item.exposure.film.tooltip.frame_size",
+        if (frameSize != defaultFrameSize) {
+            tooltipComponents.add(Component.translatable("item.exposure.film_roll.tooltip.frame_size",
                     Component.literal(String.format("%.1f", frameSize / 10f)))
                             .withStyle(ChatFormatting.GRAY));
-        }
-
-        if (stack.hasTag() && stack.getOrCreateTag().contains("Notes", Tag.TAG_LIST)) {
-            ListTag notes = stack.getOrCreateTag().getList("Notes", Tag.TAG_STRING);
-            if (notes.size() > 0) {
-                tooltipComponents.add(Component.literal("Notes:"));
-                for (int i = 0; i < notes.size(); i++) {
-                    tooltipComponents.add(Component.literal("  " + notes.getString(i)).withStyle(ChatFormatting.GRAY));
-                }
-            }
         }
     }
 }

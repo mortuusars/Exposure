@@ -2,34 +2,26 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
-import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
-import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
 public class DarkroomScreen extends AbstractContainerScreen<DarkroomMenu> {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/darkroom.png");
@@ -84,7 +76,7 @@ public class DarkroomScreen extends AbstractContainerScreen<DarkroomMenu> {
 
     protected void renderFilmFrame(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         Slot filmSlot = menu.slots.get(DarkroomBlockEntity.FILM_SLOT);
-        if (filmSlot.hasItem() && filmSlot.getItem().getItem() instanceof FilmItem filmItem) {
+        if (filmSlot.hasItem() && filmSlot.getItem().getItem() instanceof FilmRollItem filmItem) {
             List<ExposureFrame> exposedFrames = filmItem.getExposedFrames(filmSlot.getItem());
             if (exposedFrames.size() > 0) {
                 int currentFrameId = menu.getData().get(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);

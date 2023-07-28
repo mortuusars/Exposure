@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
-import io.github.mortuusars.exposure.item.FilmItem;
+import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
@@ -85,14 +85,14 @@ public class DarkroomMenu extends AbstractContainerMenu {
 
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = darkroomBlockEntity.getItem(DarkroomBlockEntity.FILM_SLOT);
-            if (!filmStack.isEmpty() && filmStack.getItem() instanceof FilmItem filmItem) {
+            if (!filmStack.isEmpty() && filmStack.getItem() instanceof FilmRollItem filmItem) {
                 List<ExposureFrame> exposedFrames = filmItem.getExposedFrames(filmStack);
                 if (exposedFrames.size() == 0)
                     return true;
 
                 int currentFrame = data.get(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
                 currentFrame = currentFrame + (buttonId == NEXT_FRAME_BUTTON_ID ? 1 : -1);
-                currentFrame = Mth.clamp(currentFrame, 0, Math.min(exposedFrames.size() - 1, filmItem.getMaxFrameCount()));
+                currentFrame = Mth.clamp(currentFrame, 0, Math.min(exposedFrames.size() - 1, filmItem.getFrameCount(filmStack)));
                 data.set(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID, currentFrame);
                 return true;
             }
@@ -100,7 +100,7 @@ public class DarkroomMenu extends AbstractContainerMenu {
 
         if (buttonId == PRINT_BUTTON_ID && !slots.get(DarkroomBlockEntity.RESULT_SLOT).hasItem()) {
             ItemStack filmStack = darkroomBlockEntity.getItem(DarkroomBlockEntity.FILM_SLOT);
-            if (!filmStack.isEmpty() && filmStack.getItem() instanceof FilmItem filmItem) {
+            if (!filmStack.isEmpty() && filmStack.getItem() instanceof FilmRollItem filmItem) {
                 List<ExposureFrame> exposedFrames = filmItem.getExposedFrames(filmStack);
                 if (exposedFrames.size() == 0)
                     return true;
