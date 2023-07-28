@@ -3,10 +3,8 @@ package io.github.mortuusars.exposure.item;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.ListTag;
@@ -18,7 +16,10 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickAction;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -114,5 +115,27 @@ public class PhotographItem extends Item {
 
         player.getCooldowns().addCooldown(this, 10);
         return InteractionResultHolder.success(itemInHand);
+    }
+
+    @Override
+    public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
+        if (action != ClickAction.SECONDARY)
+            return false;
+
+        if (other.getItem() instanceof PhotographItem) {
+            StackedPhotographsItem stackedPhotographsItem = Exposure.Items.STACKED_PHOTOGRAPHS.get();
+            ItemStack stackedPhotographsStack = new ItemStack(stackedPhotographsItem);
+
+            stackedPhotographsItem.addPhotographOnTop(stackedPhotographsStack, stack);
+            stackedPhotographsItem.addPhotographOnTop(stackedPhotographsStack, other);
+            slot.set(ItemStack.EMPTY);
+            access.set(stackedPhotographsStack);
+
+            StackedPhotographsItem.playAddSoundClientside(player);
+
+            return true;
+        }
+
+        return false;
     }
 }

@@ -9,6 +9,7 @@ import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
@@ -41,14 +42,19 @@ public class ClientEvents {
                         (pStack, pLevel, pEntity, pSeed) -> {
                             if (pEntity instanceof Player player) {
                                 CameraInHand cameraInHand = Exposure.getCamera().getCameraInHand(player);
-                                if (!cameraInHand.isEmpty() && Exposure.getCamera().isActive(player) && player.getItemInHand(cameraInHand.getHand()).equals(pStack)) {
+                                if (!cameraInHand.isEmpty() && Exposure.getCamera().isActive(player)
+                                        && player.getItemInHand(cameraInHand.getHand()).equals(pStack)) {
                                     return 0.1f;
                                 }
-
                             }
-//                            CameraItem item = (CameraItem) pStack.getItem();
-//                            item.
+                            return 0f;
+                        });
 
+                ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
+                        (pStack, pLevel, pEntity, pSeed) -> {
+                            if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
+                                return stackedPhotographsItem.getPhotographsCount(pStack);
+                            }
                             return 0f;
                         });
             });

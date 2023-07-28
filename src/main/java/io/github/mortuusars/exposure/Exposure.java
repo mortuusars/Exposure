@@ -13,11 +13,8 @@ import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.ClientConfig;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
-import io.github.mortuusars.exposure.item.DevelopedFilmItem;
-import io.github.mortuusars.exposure.item.FilmRollItem;
-import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.item.*;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
-import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
@@ -147,6 +144,11 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
+        public static final RegistryObject<StackedPhotographsItem> STACKED_PHOTOGRAPHS = ITEMS.register("stacked_photographs",
+                () -> new StackedPhotographsItem(16, new Item.Properties()
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
         public static final RegistryObject<BlockItem> DARKROOM = ITEMS.register("darkroom",
                 () -> new BlockItem(Blocks.DARKROOM.get(), new Item.Properties()
                         .tab(CreativeModeTab.TAB_DECORATIONS)));
@@ -182,6 +184,8 @@ public class Exposure {
         public static final RegistryObject<SoundEvent> CAMERA_BUTTON_CLICK = register("item", "camera.button_click");
         public static final RegistryObject<SoundEvent> LENS_RING_CLICK = register("item", "camera.lens_ring_click");
         public static final RegistryObject<SoundEvent> FILTER_PLACE = register("item", "camera.filter_place");
+
+        public static final RegistryObject<SoundEvent> PHOTOGRAPH_RUSTLE = register("item", "photograph.rustle");
 
         private static RegistryObject<SoundEvent> register(String category, String key) {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");

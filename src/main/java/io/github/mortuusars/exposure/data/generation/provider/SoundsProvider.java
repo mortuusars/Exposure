@@ -45,6 +45,10 @@ public class SoundsProvider extends SoundDefinitionsProvider {
 
         add(Exposure.SoundEvents.FILTER_PLACE.get(), definition()
                 .with(sound(Exposure.ID + ":item/camera/filter_place")));
+
+        add(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), definition()
+                .subtitle("subtitle.exposure.photograph.rustle")
+                .with(multiple(2, Exposure.ID + ":item/photograph/rustle", 1f, 1)));
     }
 
     private SoundDefinition.Sound[] multiple(int count, String name, float volume, float pitch) {

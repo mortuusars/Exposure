@@ -54,5 +54,12 @@
       "exposure:item/camera/viewfinder_open"
     ],
     "subtitle": "subtitle.exposure.camera.viewfinder_open"
+  },
+  "item.photograph.rustle": {
+    "sounds": [
+      "exposure:item/photograph/rustle1",
+      "exposure:item/photograph/rustle2"
+    ],
+    "subtitle": "subtitle.exposure.photograph.rustle"
   }
 }
