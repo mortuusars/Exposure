@@ -27,7 +27,6 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.SimpleRecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -129,12 +128,12 @@ public class Exposure {
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = ITEMS.register("developed_black_and_white_film",
+        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM_ROLL = ITEMS.register("developed_black_and_white_film_roll",
                 () -> new DevelopedFilmItem(FilmType.BLACK_AND_WHITE, new Item.Properties()
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_COLOR_FILM = ITEMS.register("developed_color_film",
+        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_COLOR_FILM_ROLL = ITEMS.register("developed_color_film_roll",
                 () -> new DevelopedFilmItem(FilmType.COLOR, new Item.Properties()
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));

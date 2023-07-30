@@ -1,1 +1,9 @@
-// 1.19.2	2023-07-28T20:49:19.4214557	Recipes
+// 1.19.2	2023-07-30T12:30:19.544904	Recipes
+7faf2dfddf140d35e3d14a5f5f5017306fbb48ee data/exposure/advancements/recipes/tools/black_and_white_film_roll.json
+df003c8af8b4796d223f4d05be3a47fe540fa1b3 data/exposure/advancements/recipes/tools/color_film_roll.json
+7afc6eda252a1433b686b9714882f7fdbe383ef5 data/exposure/advancements/recipes/tools/developing_black_and_white_film_roll.json
+4c250459f8743c20d5910c4c14d6a6f7ac90eb6b data/exposure/advancements/recipes/tools/developing_color_film_roll.json
+2630188935f643c7b51ea1ac944ebb4e65deedfb data/exposure/recipes/black_and_white_film_roll.json
+3e11fb9a5479a1330d9cb0efb5228e94379e72e6 data/exposure/recipes/color_film_roll.json
+08fac46d06f9ff2a6df8ad87ec85d020be89964f data/exposure/recipes/developing_black_and_white_film_roll.json
+66b8ce779f1b28d8f4020a371f7684e4b5115d64 data/exposure/recipes/developing_color_film_roll.json

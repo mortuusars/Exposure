@@ -3,16 +3,12 @@ package io.github.mortuusars.exposure.item;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -114,8 +110,8 @@ public class FilmRollItem extends Item implements IFilmItem {
     }
 
     public ItemAndStack<DevelopedFilmItem> develop(ItemStack filmStack) {
-        DevelopedFilmItem developedItem = getType() == FilmType.COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM.get()
-                : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get();
+        DevelopedFilmItem developedItem = getType() == FilmType.COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM_ROLL.get()
+                : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM_ROLL.get();
 
         ListTag framesTag = filmStack.getTag() != null ?
                 filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND) : new ListTag();

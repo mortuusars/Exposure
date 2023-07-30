@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_film_roll": {
+    "has_camera": {
       "conditions": {
         "items": [
           {
             "items": [
-              "exposure:black_and_white_film_roll"
+              "exposure:camera"
             ]
           }
         ]
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "exposure:developing_black_and_white_film"
+        "recipe": "exposure:black_and_white_film_roll"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_film_roll",
+      "has_camera",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "exposure:developing_black_and_white_film"
+      "exposure:black_and_white_film_roll"
     ]
   }
 }

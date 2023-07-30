@@ -17,6 +17,7 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class FilmDevelopingRecipe extends ShapelessRecipe {
@@ -24,11 +25,26 @@ public class FilmDevelopingRecipe extends ShapelessRecipe {
         super(id, group, result, ingredients);
     }
 
+//    @Override
+//    public boolean matches(CraftingContainer container, Level level) {
+//        boolean hasFilmRoll = false;
+//
+//        for (int i = 0; i < container.getContainerSize(); i++) {
+//            if (hasFilmRoll && container.getItem(i).getItem() instanceof FilmRollItem)
+//                return false;
+//            if (container.getItem(i).getItem() instanceof FilmRollItem)
+//                hasFilmRoll = true;
+//        }
+//
+//        if (hasFilmRoll)
+//            return super.matches(container, level);
+//
+//        return false;
+//    }
+
     @Override
-    public NonNullList<ItemStack> getRemainingItems(CraftingContainer container) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingContainer container) {
         NonNullList<ItemStack> remainingItems = super.getRemainingItems(container);
-//        NonNullList<ItemStack> remainingItems = NonNullList.withSize(items.size() + container.getContainerSize(), ItemStack.EMPTY) ;
-//        remainingItems.addAll(items);
 
         for(int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack item = container.getItem(i);

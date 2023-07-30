@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_film_roll": {
+    "has_color_film": {
       "conditions": {
         "items": [
           {
@@ -15,20 +15,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "exposure:developing_color_film"
+        "recipe": "exposure:developing_color_film_roll"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_film_roll",
-      "has_the_recipe"
+      "has_the_recipe",
+      "has_color_film"
     ]
   ],
   "rewards": {
     "recipes": [
-      "exposure:developing_color_film"
+      "exposure:developing_color_film_roll"
     ]
   }
 }
