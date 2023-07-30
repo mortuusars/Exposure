@@ -86,6 +86,12 @@ public class ViewfinderRenderer {
         opening = new Rectangle2D.Float((width - openingSize) / 2f, (height - openingSize) / 2f, openingSize, openingSize);
 
         if (!minecraft.options.hideGui) {
+            RenderSystem.enableBlend();
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+
             PoseStack poseStack = POSE_STACK;
             poseStack.pushPose();
             poseStack.translate(width / 2f, height / 2f, 0);
