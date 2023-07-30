@@ -118,22 +118,22 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<FilmRollItem> BLACK_AND_WHITE_FILM_ROLL = ITEMS.register("black_and_white_film_roll",
+        public static final RegistryObject<FilmRollItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
                 () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, 16, 320, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<FilmRollItem> COLOR_FILM_ROLL = ITEMS.register("color_film_roll",
+        public static final RegistryObject<FilmRollItem> COLOR_FILM = ITEMS.register("color_film",
                 () -> new FilmRollItem(FilmType.COLOR, 16, 320, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM_ROLL = ITEMS.register("developed_black_and_white_film_roll",
+        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = ITEMS.register("developed_black_and_white_film",
                 () -> new DevelopedFilmItem(FilmType.BLACK_AND_WHITE, new Item.Properties()
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_COLOR_FILM_ROLL = ITEMS.register("developed_color_film_roll",
+        public static final RegistryObject<DevelopedFilmItem> DEVELOPED_COLOR_FILM = ITEMS.register("developed_color_film",
                 () -> new DevelopedFilmItem(FilmType.COLOR, new Item.Properties()
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));

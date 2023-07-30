@@ -1,11 +1,8 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "B": {
-      "item": "minecraft:bone_meal"
-    },
     "G": {
-      "item": "minecraft:gunpowder"
+      "tag": "forge:nuggets/gold"
     },
     "I": {
       "tag": "forge:ingots/iron"
@@ -13,16 +10,19 @@
     "K": {
       "item": "minecraft:dried_kelp"
     },
+    "L": {
+      "item": "minecraft:lapis_lazuli"
+    },
     "N": {
       "tag": "forge:nuggets/iron"
     }
   },
   "pattern": [
-    "NBB",
+    "NLL",
     "IGG",
     "IKK"
   ],
   "result": {
-    "item": "exposure:black_and_white_film_roll"
+    "item": "exposure:color_film"
   }
 }

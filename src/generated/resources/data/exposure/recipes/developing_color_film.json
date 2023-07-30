@@ -2,7 +2,7 @@
   "type": "exposure:film_developing",
   "ingredients": [
     {
-      "item": "exposure:color_film_roll"
+      "item": "exposure:color_film"
     },
     {
       "type": "forge:partial_nbt",
@@ -21,6 +21,6 @@
     }
   ],
   "result": {
-    "item": "exposure:developed_color_film_roll"
+    "item": "exposure:developed_color_film"
   }
 }

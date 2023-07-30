@@ -110,8 +110,8 @@ public class FilmRollItem extends Item implements IFilmItem {
     }
 
     public ItemAndStack<DevelopedFilmItem> develop(ItemStack filmStack) {
-        DevelopedFilmItem developedItem = getType() == FilmType.COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM_ROLL.get()
-                : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM_ROLL.get();
+        DevelopedFilmItem developedItem = getType() == FilmType.COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM.get()
+                : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get();
 
         ListTag framesTag = filmStack.getTag() != null ?
                 filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND) : new ListTag();

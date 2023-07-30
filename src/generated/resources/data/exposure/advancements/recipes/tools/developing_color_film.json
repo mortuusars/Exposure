@@ -6,7 +6,7 @@
         "items": [
           {
             "items": [
-              "exposure:color_film_roll"
+              "exposure:color_film"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "exposure:developing_color_film_roll"
+        "recipe": "exposure:developing_color_film"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -28,7 +28,7 @@
   ],
   "rewards": {
     "recipes": [
-      "exposure:developing_color_film_roll"
+      "exposure:developing_color_film"
     ]
   }
 }
