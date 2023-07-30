@@ -8,6 +8,7 @@ import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
+import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.menu.DarkroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
@@ -37,6 +38,8 @@ public class DarkroomScreen extends AbstractContainerScreen<DarkroomMenu> {
         imageHeight = 210;
         super.init();
         inventoryLabelY = 116;
+
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         addRenderableWidget(new Button( leftPos + 100, topPos + 94, 49, 20, Component.literal("PRINT"), pButton ->
                 Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, DarkroomMenu.PRINT_BUTTON_ID)));
@@ -76,7 +79,7 @@ public class DarkroomScreen extends AbstractContainerScreen<DarkroomMenu> {
 
     protected void renderFilmFrame(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         Slot filmSlot = menu.slots.get(DarkroomBlockEntity.FILM_SLOT);
-        if (filmSlot.hasItem() && filmSlot.getItem().getItem() instanceof FilmRollItem filmItem) {
+        if (filmSlot.hasItem() && filmSlot.getItem().getItem() instanceof DevelopedFilmItem filmItem) {
             List<ExposureFrame> exposedFrames = filmItem.getExposedFrames(filmSlot.getItem());
             if (exposedFrames.size() > 0) {
                 int currentFrameId = menu.getData().get(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);

@@ -2,25 +2,33 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.client.gui.ClientGUI;
+import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class StackedPhotographsItem extends Item {
     public static final String PHOTOGRAPHS_TAG = "Photographs";
@@ -101,14 +109,15 @@ public class StackedPhotographsItem extends Item {
 
     // ---
 
-
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
-        int photographsCount = getPhotographsCount(stack);
-        if (photographsCount > 0) {
-            pTooltipComponents.add(Component.translatable("item.exposure.stacked_photographs.count_tooltip", photographsCount)
-                    .withStyle(ChatFormatting.GRAY));
-        }
+    public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
+        List<ItemAndStack<PhotographItem>> photographs = getPhotographs(stack);
+        if (photographs.size() == 0)
+            return Optional.empty();
+
+        ItemAndStack<PhotographItem> topPhotograph = photographs.get(0);
+        return topPhotograph.getItem().getIdOrResource(topPhotograph.getStack())
+                .map(idOrResource -> new PhotographTooltip(idOrResource, photographs.size()));
     }
 
     @Override
@@ -189,6 +198,21 @@ public class StackedPhotographsItem extends Item {
         }
 
         return false;
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+        ItemStack itemInHand = player.getItemInHand(hand);
+
+        List<ItemAndStack<PhotographItem>> photographs = getPhotographs(itemInHand);
+        if (photographs.size() > 0) {
+            if (level.isClientSide)
+                ClientGUI.showPhotographScreen(photographs);
+
+            player.getCooldowns().addCooldown(this, 10);
+        }
+
+        return InteractionResultHolder.success(itemInHand);
     }
 
     public static void playAddSoundClientside(Player player) {

@@ -7,7 +7,9 @@
   "item.exposure.developed_black_and_white_film": "Developed Black and White Film",
   "item.exposure.developed_color_film": "Developed Color Film",
   "item.exposure.photograph": "Photograph",
-  "item.exposure.stacked_photographs": "Photographs",
+  "item.exposure.photograph.message.no_data": "The paper is clean. No trace of an image is found on it, even if it had one at some point.",
+  "item.exposure.stacked_photographs": "Stacked Photographs",
+
 
   "item.exposure.film_roll.tooltip.frame_count": "%s/%s",
   "item.exposure.film_roll.tooltip.frame_size": "Size: %smm",
@@ -23,8 +25,6 @@
   "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Shutter Speed",
   "command.exposure.shader.removed": "Shader removed",
-  "item.exposure.photograph.message.no_data": "The paper is clean. No trace of an image is found on it, even if it had one at some point.",
-  "item.exposure.stacked_photographs.count_tooltip": "%s photographs",
 
   "subtitle.exposure.camera.viewfinder_open": "Camera Viewfinder opens",
   "subtitle.exposure.camera.viewfinder_close": "Camera Viewfinder closes",

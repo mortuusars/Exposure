@@ -12,6 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class PhotographRenderer {
     public static final int SIZE = 256;
+    public static final ResourceLocation PHOTOGRAPH_PAPER_TEXTURE = Exposure.resource("textures/gui/misc/photograph_paper.png");
     public static void render(Either<String, ResourceLocation> photograph, PoseStack poseStack, int packedLight) {
         photograph
                 .ifLeft(id -> renderExposure(id, poseStack, packedLight))
@@ -19,9 +20,19 @@ public class PhotographRenderer {
     }
 
     public static void render(Either<String, ResourceLocation> photograph, PoseStack poseStack) {
-        photograph
-                .ifLeft(id -> renderExposure(id, poseStack, LightTexture.FULL_BRIGHT))
-                .ifRight(resource -> renderTexture(resource, poseStack, LightTexture.FULL_BRIGHT));
+        render(photograph, poseStack, LightTexture.FULL_BRIGHT);
+    }
+
+    public static void renderOnPaper(Either<String, ResourceLocation> photograph, PoseStack poseStack) {
+        poseStack.pushPose();
+
+        renderTexture(PHOTOGRAPH_PAPER_TEXTURE, poseStack, LightTexture.FULL_BRIGHT);
+
+        float offset = SIZE * 0.03f;
+        poseStack.translate(offset, offset, 0);
+        poseStack.scale(0.94f, 0.94f, 0.94f);
+        render(photograph, poseStack);
+        poseStack.popPose();
     }
 
     public static void renderExposure(String id, PoseStack poseStack, int packedLight) {
@@ -36,7 +47,6 @@ public class PhotographRenderer {
 
     public static void renderTexture(ResourceLocation resource, PoseStack poseStack, int packedLight) {
         RenderSystem.setShaderTexture(0, resource);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
         drawTextureQuad(poseStack, 0, 0, SIZE, SIZE, 0, 0, 0, 1, 1, packedLight);

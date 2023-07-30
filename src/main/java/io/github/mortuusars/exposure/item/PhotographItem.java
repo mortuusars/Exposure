@@ -90,10 +90,7 @@ public class PhotographItem extends Item {
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
-        Optional<Either<String, ResourceLocation>> idOrResource = getIdOrResource(stack);
-        if (idOrResource.isPresent())
-            return Optional.of(new PhotographTooltip(new ItemAndStack<>(stack)));
-        return super.getTooltipImage(stack);
+        return getIdOrResource(stack).map(PhotographTooltip::new);
     }
 
     @Override
@@ -102,7 +99,7 @@ public class PhotographItem extends Item {
 
         getIdOrResource(itemInHand).ifPresentOrElse(idOrResource -> {
             if (level.isClientSide)
-                ClientGUI.showPhotographScreen(new ItemAndStack<>(itemInHand));
+                ClientGUI.showPhotographScreen(List.of(new ItemAndStack<>(itemInHand)));
         },
         () -> {
             if (level.isClientSide) {

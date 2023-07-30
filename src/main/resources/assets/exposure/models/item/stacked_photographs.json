@@ -1,7 +1,7 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "exposure:item/stacked_photographs"
+    "layer0": "exposure:item/stacked_photographs_three"
   },
   "overrides": [
     {
@@ -15,12 +15,6 @@
         "count": 3
       },
       "model": "exposure:item/stacked_photographs_three"
-    },
-    {
-      "predicate": {
-        "count": 4
-      },
-      "model": "exposure:item/stacked_photographs"
     }
   ]
 }

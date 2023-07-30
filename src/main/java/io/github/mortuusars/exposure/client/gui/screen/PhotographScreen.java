@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
@@ -9,6 +10,8 @@ import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
@@ -16,28 +19,31 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Optional;
 
 public class PhotographScreen extends Screen {
-    private final ItemAndStack<PhotographItem> photograph;
-    private final Either<String, ResourceLocation> idOrResource;
+    private final List<ItemAndStack<PhotographItem>> photographs;
+
+    private int currentIndex = 0;
     private float zoom = 0f;
+    private long lastCycledAt;
+    private boolean playing = false;
 
     private double xPos;
     private double yPos;
 
-    public PhotographScreen(ItemAndStack<PhotographItem> photograph) {
+    public PhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
         super(Component.empty());
-        this.photograph = photograph;
-
-        Optional<Either<String, ResourceLocation>> idOrResource = photograph.getItem().getIdOrResource(photograph.getStack());
-        Preconditions.checkState(idOrResource.isPresent(), "No Id or Resource on the photograph.");
-        this.idOrResource = idOrResource.get();
+        Preconditions.checkState(photographs.size() > 0, "No photographs to display.");
+        this.photographs = photographs;
     }
 
     @Override
     protected void init() {
         super.init();
+        this.minecraft = Minecraft.getInstance();
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         xPos = width / 2f;
         yPos = height / 2f;
@@ -45,7 +51,10 @@ public class PhotographScreen extends Screen {
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-//        renderBackground(poseStack);
+        if (playing)
+            cyclePhotograph(false);
+
+        renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
         float phWidth = PhotographRenderer.SIZE;
@@ -63,10 +72,10 @@ public class PhotographScreen extends Screen {
         // Set origin point to center (for scale)
         poseStack.translate(phWidth / -2d, phHeight / -2d, 0);
 
-        // Paper (frame)
-        fill(poseStack, -8, -8, (int) (phWidth + 8), (int) (phHeight + 8), 0xFFDDDDDD);
-
-        PhotographRenderer.render(idOrResource, poseStack);
+        ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
+        photograph.getItem().getIdOrResource(photograph.getStack()).ifPresent(idOrResource -> {
+            PhotographRenderer.renderOnPaper(idOrResource, poseStack);
+        });
 
         poseStack.popPose();
     }
@@ -74,6 +83,66 @@ public class PhotographScreen extends Screen {
     @Override
     public boolean isPauseScreen() {
         return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        Preconditions.checkState(minecraft != null);
+
+        boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
+
+        if (!handled) {
+            if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT) {
+                cyclePhotograph(false);
+                playing = false;
+                handled = true;
+            }
+            else if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT) {
+                cyclePhotograph(true);
+                playing = false;
+                handled = true;
+            }
+            else if (minecraft.options.keyJump.matches(keyCode, scanCode)) {
+                playing = !playing;
+                handled = true;
+            }
+            else if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
+                this.onClose();
+                handled = true;
+            }
+        }
+
+        return handled;
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        Preconditions.checkState(minecraft != null);
+        if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT
+                || minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT) {
+            lastCycledAt = 0;
+        }
+
+        return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    private void cyclePhotograph(boolean backwards) {
+        if (Util.getMillis() - lastCycledAt < 83) // 12 fps
+            return;
+
+        int prevIndex = currentIndex;
+
+        currentIndex += backwards ? -1 : 1;
+        if (currentIndex >= photographs.size())
+            currentIndex = 0;
+        else if (currentIndex < 0)
+            currentIndex = photographs.size() - 1;
+
+        if (prevIndex != currentIndex && minecraft != null && minecraft.player != null) {
+            lastCycledAt = Util.getMillis();
+            minecraft.player.playSound(Exposure.SoundEvents.LENS_RING_CLICK.get(), 0.8f,
+                    minecraft.player.level.getRandom().nextFloat() * 0.2f + (backwards ? 0.9f : 1.1f));
+        }
     }
 
     @Override
