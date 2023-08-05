@@ -4,25 +4,21 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
-import io.github.mortuusars.exposure.client.gui.screen.DarkroomScreen;
+import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
-import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.CameraInHand;
-import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.level.LevelEvent;
@@ -36,7 +32,7 @@ public class ClientEvents {
             event.enqueueWork(() -> {
                 ExposureClient.init();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
-                MenuScreens.register(Exposure.MenuTypes.DARKROOM.get(), DarkroomScreen::new);
+                MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
 
                 ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"),
                         (pStack, pLevel, pEntity, pSeed) -> {

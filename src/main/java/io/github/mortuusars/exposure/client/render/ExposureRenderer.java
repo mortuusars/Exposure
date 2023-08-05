@@ -23,8 +23,14 @@ public class ExposureRenderer implements AutoCloseable {
     private final Map<String, ExposureRenderer.ExposureInstance> negativeExposures = new HashMap<>();
 
     public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
+                       PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height,
+                       int r, int g, int b, int a) {
+        getOrCreateMapInstance(id, exposureData, negative).draw(poseStack, bufferSource, packedLight, width, height, r, g, b, a);
+    }
+
+    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
                        PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height) {
-        getOrCreateMapInstance(id, exposureData, negative).draw(poseStack, bufferSource, packedLight, width, height);
+        render(id, exposureData, negative, poseStack, bufferSource, packedLight, width, height, 255, 255, 255, 255);
     }
 
     public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
@@ -130,7 +136,7 @@ public class ExposureRenderer implements AutoCloseable {
             this.texture.upload();
         }
 
-        void draw(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height) {
+        void draw(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height, int r, int g, int b, int a) {
             if (this.requiresUpload) {
                 this.updateTexture();
                 this.requiresUpload = false;
@@ -138,10 +144,10 @@ public class ExposureRenderer implements AutoCloseable {
 
             Matrix4f matrix4f = poseStack.last().pose();
             VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
-            vertexconsumer.vertex(matrix4f, 0, height, 0).color(255, 255, 255, 255).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, width, height, 0).color(255, 255, 255, 255).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, width, 0, 0).color(255, 255, 255, 255).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, 0, 0, 0).color(255, 255, 255, 255).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, 0, height, 0).color(r, g, b, a).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, width, height, 0).color(r, g, b, a).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, width, 0, 0).color(r, g, b, a).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, 0, 0, 0).color(r, g, b, a).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
         }
 
         public void close() {

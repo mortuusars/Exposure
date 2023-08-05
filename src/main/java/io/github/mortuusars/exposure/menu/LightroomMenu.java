@@ -2,13 +2,11 @@ package io.github.mortuusars.exposure.menu;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
+import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposureFrame;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
-import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
-import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -25,30 +23,26 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Objects;
 
-public class DarkroomMenu extends AbstractContainerMenu {
+public class LightroomMenu extends AbstractContainerMenu {
     public static final int PRINT_BUTTON_ID = 0;
     public static final int PREVIOUS_FRAME_BUTTON_ID = 1;
     public static final int NEXT_FRAME_BUTTON_ID = 2;
 
-    private final DarkroomBlockEntity darkroomBlockEntity;
+    private final LightroomBlockEntity lightroomBlockEntity;
 
     private final ContainerData data;
-    public DarkroomMenu(int containerId, final Inventory playerInventory, final DarkroomBlockEntity blockEntity, ContainerData containerData) {
-        super(Exposure.MenuTypes.DARKROOM.get(), containerId);
-        this.darkroomBlockEntity = blockEntity;
+    public LightroomMenu(int containerId, final Inventory playerInventory, final LightroomBlockEntity blockEntity, ContainerData containerData) {
+        super(Exposure.MenuTypes.LIGHTROOM.get(), containerId);
+        this.lightroomBlockEntity = blockEntity;
         this.data = containerData;
 
         IItemHandler itemHandler = blockEntity.getInventory();
         {
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.FILM_SLOT, 14, 47));
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.CYAN_DYE_SLOT, 8, 96));
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.MAGENTA_DYE_SLOT, 26, 96));
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.YELLOW_DYE_SLOT, 44, 96));
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.BLACK_DYE_SLOT, 62, 96));
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.PAPER_SLOT, 81, 96));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.FILM_SLOT, 17, 89));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 35, 89));
 
             // OUTPUT
-            this.addSlot(new SlotItemHandler(itemHandler, DarkroomBlockEntity.RESULT_SLOT, 152, 96) {
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.RESULT_SLOT, 134, 89) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     return false;
@@ -73,9 +67,9 @@ public class DarkroomMenu extends AbstractContainerMenu {
         this.addDataSlots(data);
     }
 
-    public static DarkroomMenu fromBuffer(int containerID, Inventory playerInventory, FriendlyByteBuf buffer) {
-        return new DarkroomMenu(containerID, playerInventory, getBlockEntity(playerInventory, buffer),
-                new SimpleContainerData(DarkroomBlockEntity.CONTAINER_DATA_SIZE));
+    public static LightroomMenu fromBuffer(int containerID, Inventory playerInventory, FriendlyByteBuf buffer) {
+        return new LightroomMenu(containerID, playerInventory, getBlockEntity(playerInventory, buffer),
+                new SimpleContainerData(LightroomBlockEntity.CONTAINER_DATA_SIZE));
     }
 
     public ContainerData getData() {
@@ -87,28 +81,29 @@ public class DarkroomMenu extends AbstractContainerMenu {
         Preconditions.checkState(!player.level.isClientSide, "This should be server-side only.");
 
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
-            ItemStack filmStack = darkroomBlockEntity.getItem(DarkroomBlockEntity.FILM_SLOT);
+            ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
             if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem filmItem) {
                 List<ExposureFrame> exposedFrames = filmItem.getExposedFrames(filmStack);
                 if (exposedFrames.size() == 0)
                     return true;
 
-                int currentFrame = data.get(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
+                int currentFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
                 currentFrame = currentFrame + (buttonId == NEXT_FRAME_BUTTON_ID ? 1 : -1);
                 currentFrame = Mth.clamp(currentFrame, 0, exposedFrames.size() - 1);
-                data.set(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID, currentFrame);
+                data.set(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID, currentFrame);
                 return true;
             }
         }
 
         if (buttonId == PRINT_BUTTON_ID) {
-            ItemStack filmStack = darkroomBlockEntity.getItem(DarkroomBlockEntity.FILM_SLOT);
-            if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem) {
+            ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
+            ItemStack paperStack = lightroomBlockEntity.getItem(LightroomBlockEntity.PAPER_SLOT);
+            if (!filmStack.isEmpty() && !paperStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem) {
                 List<ExposureFrame> exposedFrames = developedFilmItem.getExposedFrames(filmStack);
                 if (exposedFrames.size() == 0)
                     return true;
 
-                int currentFrame = data.get(DarkroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
+                int currentFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
                 if (currentFrame >= 0 && currentFrame < exposedFrames.size()) {
                     ExposureFrame exposureFrame = exposedFrames.get(currentFrame);
                     PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
@@ -117,7 +112,7 @@ public class DarkroomMenu extends AbstractContainerMenu {
                     exposureFrame.save(photographStack.getOrCreateTag());
                     photographItem.setId(photographStack, exposureFrame.id);
 
-                    ItemStack resultStack = darkroomBlockEntity.getItem(DarkroomBlockEntity.RESULT_SLOT);
+                    ItemStack resultStack = lightroomBlockEntity.getItem(LightroomBlockEntity.RESULT_SLOT);
                     if (resultStack.isEmpty())
                         resultStack = photographStack;
                     else if (resultStack.getItem() instanceof PhotographItem existingPhotographItem) {
@@ -135,8 +130,9 @@ public class DarkroomMenu extends AbstractContainerMenu {
                         return true;
                     }
 
-                    darkroomBlockEntity.setItem(DarkroomBlockEntity.RESULT_SLOT, resultStack);
+                    lightroomBlockEntity.setItem(LightroomBlockEntity.RESULT_SLOT, resultStack);
 
+                    paperStack.shrink(1);
                     player.level.playSound(null, player, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
                 }
             }
@@ -152,8 +148,8 @@ public class DarkroomMenu extends AbstractContainerMenu {
         Slot slot = slots.get(index);
         ItemStack clickedStack = slot.getItem();
 
-        if (index < DarkroomBlockEntity.SLOTS) {
-            if (!moveItemStackTo(clickedStack, DarkroomBlockEntity.SLOTS, slots.size(), true))
+        if (index < LightroomBlockEntity.SLOTS) {
+            if (!moveItemStackTo(clickedStack, LightroomBlockEntity.SLOTS, slots.size(), true))
                 return ItemStack.EMPTY;
 
             // BEs inventory onContentsChanged is not fired when removing agreement by shift clicking.
@@ -163,7 +159,7 @@ public class DarkroomMenu extends AbstractContainerMenu {
 //                blockEntity.setItem(DeliveryTableBlockEntity.AGREEMENT_SLOT, slot.getItem());
         }
         else if (index < slots.size()) {
-            if (!moveItemStackTo(clickedStack, 0, DarkroomBlockEntity.SLOTS, false))
+            if (!moveItemStackTo(clickedStack, 0, LightroomBlockEntity.SLOTS, false))
                 return ItemStack.EMPTY;
         }
 
@@ -172,14 +168,14 @@ public class DarkroomMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return darkroomBlockEntity.stillValid(player);
+        return lightroomBlockEntity.stillValid(player);
     }
 
-    private static DarkroomBlockEntity getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
+    private static LightroomBlockEntity getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
         final BlockEntity blockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
-        if (blockEntityAtPos instanceof DarkroomBlockEntity blockEntity)
+        if (blockEntityAtPos instanceof LightroomBlockEntity blockEntity)
             return blockEntity;
         throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);
     }

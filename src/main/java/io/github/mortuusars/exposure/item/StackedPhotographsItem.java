@@ -122,7 +122,7 @@ public class StackedPhotographsItem extends Item {
 
     @Override
     public boolean overrideStackedOnOther(ItemStack stack, Slot slot, ClickAction action, Player player) {
-        if (action != ClickAction.SECONDARY || getPhotographsCount(stack) == 0)
+        if (action != ClickAction.SECONDARY || getPhotographsCount(stack) == 0 || !slot.mayPlace(new ItemStack(Exposure.Items.PHOTOGRAPH.get())))
             return false;
 
         ItemStack slotItem = slot.getItem();
@@ -152,7 +152,7 @@ public class StackedPhotographsItem extends Item {
 
     @Override
     public boolean overrideOtherStackedOnMe(ItemStack stack, ItemStack other, Slot slot, ClickAction action, Player player, SlotAccess access) {
-        if (action != ClickAction.SECONDARY)
+        if (action != ClickAction.SECONDARY || !slot.mayPlace(new ItemStack(Exposure.Items.PHOTOGRAPH.get())))
             return false;
 
         if (getPhotographsCount(stack) > 0 && other.isEmpty()) {

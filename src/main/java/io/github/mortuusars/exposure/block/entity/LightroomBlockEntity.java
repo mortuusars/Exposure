@@ -2,9 +2,8 @@ package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
-import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.menu.DarkroomMenu;
+import io.github.mortuusars.exposure.menu.LightroomMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -32,7 +31,7 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class LightroomBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
     public static final int SLOTS = 7;
     public static final int FILM_SLOT = 0;
     public static final int CYAN_DYE_SLOT = 1;
@@ -52,17 +51,17 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
     protected final ContainerData containerData = new ContainerData() {
         public int get(int id) {
             return switch (id) {
-                case CONTAINER_DATA_PROGRESS_ID -> DarkroomBlockEntity.this.progress;
-                case CONTAINER_DATA_CURRENT_FRAME_ID -> DarkroomBlockEntity.this.currentFrame;
+                case CONTAINER_DATA_PROGRESS_ID -> LightroomBlockEntity.this.progress;
+                case CONTAINER_DATA_CURRENT_FRAME_ID -> LightroomBlockEntity.this.currentFrame;
                 default -> 0;
             };
         }
 
         public void set(int id, int value) {
             if (id == CONTAINER_DATA_PROGRESS_ID)
-                DarkroomBlockEntity.this.progress = value;
+                LightroomBlockEntity.this.progress = value;
             else if (id == CONTAINER_DATA_CURRENT_FRAME_ID)
-                DarkroomBlockEntity.this.currentFrame = value;
+                LightroomBlockEntity.this.currentFrame = value;
         }
 
         public int getCount() {
@@ -75,8 +74,8 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
     protected int currentFrame = 0;
     protected int progress = 0;
 
-    public DarkroomBlockEntity(BlockPos pos, BlockState blockState) {
-        super(Exposure.BlockEntityTypes.DARKROOM.get(), pos, blockState);
+    public LightroomBlockEntity(BlockPos pos, BlockState blockState) {
+        super(Exposure.BlockEntityTypes.LIGHTROOM.get(), pos, blockState);
         this.inventory = createItemHandler(SLOTS);
         this.inventoryHandler = LazyOptional.of(() -> inventory);
 //        SidedInvWrapper.create(this, Direction.DOWN);
@@ -94,7 +93,7 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState, T blockEntity) {
-        if (blockEntity instanceof DarkroomBlockEntity darkroomBlockEntity) {
+        if (blockEntity instanceof LightroomBlockEntity lightroomBlockEntity) {
 
         }
     }
@@ -175,7 +174,7 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
     }
 
     @Override
-    public int @NotNull [] getSlotsForFace(Direction face) {
+    public int @NotNull [] getSlotsForFace(@NotNull Direction face) {
         if (face == Direction.DOWN)
             return OUTPUT_SLOTS;
         return INPUT_SLOTS;
@@ -265,12 +264,12 @@ public class DarkroomBlockEntity extends BlockEntity implements WorldlyContainer
 
     @Override
     public @NotNull Component getDisplayName() {
-        return Component.translatable("block.exposure.darkroom");
+        return Component.translatable("block.exposure.lightroom");
     }
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
-        return new DarkroomMenu(containerId, playerInventory, this, containerData);
+    public AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
+        return new LightroomMenu(containerId, playerInventory, this, containerData);
     }
 }

@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
-import io.github.mortuusars.exposure.block.DarkroomBlock;
-import io.github.mortuusars.exposure.block.entity.DarkroomBlockEntity;
+import io.github.mortuusars.exposure.block.LightroomBlock;
+import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.infrastructure.Camera;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.infrastructure.ClientCameraHolder;
@@ -15,7 +15,7 @@ import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.item.*;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
-import io.github.mortuusars.exposure.menu.DarkroomMenu;
+import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
@@ -96,8 +96,8 @@ public class Exposure {
     public static class Blocks {
         private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ID);
 
-        public static final RegistryObject<DarkroomBlock> DARKROOM = BLOCKS.register("darkroom",
-                () -> new DarkroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
+        public static final RegistryObject<LightroomBlock> LIGHTROOM = BLOCKS.register("lightroom",
+                () -> new LightroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
                         .color(MaterialColor.COLOR_BROWN)));
     }
 
@@ -106,8 +106,8 @@ public class Exposure {
         private static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
                 DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, ID);
 
-        public static final RegistryObject<BlockEntityType<DarkroomBlockEntity>> DARKROOM = BLOCK_ENTITY_TYPES.register("darkroom",
-                () -> BlockEntityType.Builder.of(DarkroomBlockEntity::new, Blocks.DARKROOM.get()).build(null));
+        public static final RegistryObject<BlockEntityType<LightroomBlockEntity>> LIGHTROOM = BLOCK_ENTITY_TYPES.register("lightroom",
+                () -> BlockEntityType.Builder.of(LightroomBlockEntity::new, Blocks.LIGHTROOM.get()).build(null));
     }
 
     public static class Items {
@@ -148,8 +148,8 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final RegistryObject<BlockItem> DARKROOM = ITEMS.register("darkroom",
-                () -> new BlockItem(Blocks.DARKROOM.get(), new Item.Properties()
+        public static final RegistryObject<BlockItem> LIGHTROOM = ITEMS.register("lightroom",
+                () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()
                         .tab(CreativeModeTab.TAB_DECORATIONS)));
     }
 
@@ -159,8 +159,8 @@ public class Exposure {
         public static final RegistryObject<MenuType<CameraAttachmentsMenu>> CAMERA = MENU_TYPES
                 .register("camera", () -> IForgeMenuType.create(CameraAttachmentsMenu::fromBuffer));
 
-        public static final RegistryObject<MenuType<DarkroomMenu>> DARKROOM = MENU_TYPES
-                .register("darkroom", () -> IForgeMenuType.create(DarkroomMenu::fromBuffer));
+        public static final RegistryObject<MenuType<LightroomMenu>> LIGHTROOM = MENU_TYPES
+                .register("lightroom", () -> IForgeMenuType.create(LightroomMenu::fromBuffer));
     }
 
     public static class RecipeSerializers {
