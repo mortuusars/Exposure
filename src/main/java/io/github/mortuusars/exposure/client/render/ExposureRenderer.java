@@ -99,6 +99,7 @@ public class ExposureRenderer implements AutoCloseable {
             this.requiresUpload |= flag;
         }
 
+        @SuppressWarnings("unused")
         public void forceUpload() {
             this.requiresUpload = true;
         }
@@ -112,19 +113,15 @@ public class ExposureRenderer implements AutoCloseable {
                     int bgr = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
 
                     if (negative) {
-                        // Invert:
-                        bgr = bgr ^ 0x00FFFFFF;
-
-                        // Calculating transparency. Closer to white - more transparent:
                         int blue = bgr >> 16 & 0xFF;
                         int green = bgr >> 8 & 0xFF;
                         int red = bgr & 0xFF;
-                        // Fast approximation of perceived luminosity: (https://stackoverflow.com/a/596241)
-                        int luma = Mth.clamp(((red << 1) + red + (green << 2) + blue) >> 3, 0, 255);
-                        // Shift closer to opaque side, to increase visibility of an image:
-                        luma = (int) Mth.clamp(luma * luma * luma / 255f / 255f, 0, 255);
-                        // Cut ends to not have completely transparent or completely black pixels:
-                        int opacity = Mth.clamp(255 - luma, 30, 225);
+                        int brightness = (blue + green + red) / 3;
+
+                        // Invert:
+                        bgr = bgr ^ 0x00FFFFFF;
+
+                        int opacity = (int)Mth.clamp(brightness * 1.25f, 0, 255);
 
                         bgr = (bgr & 0x00FFFFFF) | (opacity << 24);
                     }

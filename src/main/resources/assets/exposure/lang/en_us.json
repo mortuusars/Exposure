@@ -24,6 +24,10 @@
   "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Shutter Speed",
 
+  "gui.exposure.lightroom.previous_frame": "Previous",
+  "gui.exposure.lightroom.current_frame": "Frame: %s",
+  "gui.exposure.lightroom.next_frame": "Next",
+
   "command.exposure.shader.removed": "Shader removed",
 
   "subtitle.exposure.camera.viewfinder_open": "Camera Viewfinder opens",
@@ -31,5 +35,6 @@
   "subtitle.exposure.camera.shutter": "Camera Shutter clangs",
   "subtitle.exposure.camera.film_advance": "Film rolls to the next frame",
   "subtitle.exposure.camera.button_click": "Button clicks",
-  "subtitle.exposure.photograph.rustle" : "Photograph rustles"
+  "subtitle.exposure.photograph.rustle" : "Photograph rustles",
+  "gui.exposure.lightroom.print": "Print"
 }

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
@@ -38,6 +38,7 @@ public class FilmRollItem extends Item implements IFilmItem {
         this.barColor = barColor;
     }
 
+    @Override
     public FilmType getType() {
         return filmType;
     }
@@ -73,20 +74,30 @@ public class FilmRollItem extends Item implements IFilmItem {
                 stack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() : 0;
     }
 
-    public List<ExposureFrame> getExposedFrames(ItemStack filmStack) {
+    @Override
+    public List<ExposedFrame> getExposedFrames(ItemStack filmStack) {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
             return Collections.emptyList();
 
-        List<ExposureFrame> frames = new ArrayList<>();
+        List<ExposedFrame> frames = new ArrayList<>();
 
         for (Tag frameTag : filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND)) {
-            frames.add(ExposureFrame.load((CompoundTag) frameTag));
+            frames.add(ExposedFrame.load((CompoundTag) frameTag));
         }
 
         return frames;
     }
 
-    public void addFrame(ItemStack filmStack, ExposureFrame frame) {
+    @Override
+    public boolean hasExposedFrame(ItemStack filmStack, int index) {
+        if (index < 0 || !filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
+            return false;
+
+        ListTag list = filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND);
+        return index < list.size();
+    }
+
+    public void addFrame(ItemStack filmStack, ExposedFrame frame) {
         CompoundTag tag = filmStack.getOrCreateTag();
 
         if (!tag.contains(FRAMES_TAG, Tag.TAG_LIST)) {

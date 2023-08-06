@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.menu;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
@@ -20,6 +20,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -29,8 +30,10 @@ public class LightroomMenu extends AbstractContainerMenu {
     public static final int NEXT_FRAME_BUTTON_ID = 2;
 
     private final LightroomBlockEntity lightroomBlockEntity;
-
     private final ContainerData data;
+
+    private List<ExposedFrame> frames = Collections.emptyList();
+
     public LightroomMenu(int containerId, final Inventory playerInventory, final LightroomBlockEntity blockEntity, ContainerData containerData) {
         super(Exposure.MenuTypes.LIGHTROOM.get(), containerId);
         this.lightroomBlockEntity = blockEntity;
@@ -38,30 +41,36 @@ public class LightroomMenu extends AbstractContainerMenu {
 
         IItemHandler itemHandler = blockEntity.getInventory();
         {
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.FILM_SLOT, 17, 89));
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 35, 89));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.FILM_SLOT, 17, 90) {
+                @Override
+                public void setChanged() {
+                    super.setChanged();
+                    frames = getItem().getItem() instanceof DevelopedFilmItem developedFilm ?
+                            developedFilm.getExposedFrames(getItem()) : Collections.emptyList();
+                }
+            });
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 35, 90));
 
             // OUTPUT
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.RESULT_SLOT, 134, 89) {
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.RESULT_SLOT, 134, 90) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     return false;
                 }
             });
-
         }
 
         // Player inventory slots
         for(int row = 0; row < 3; ++row) {
             for(int column = 0; column < 9; ++column) {
-                this.addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, 128 + row * 18));
+                this.addSlot(new Slot(playerInventory, column + row * 9 + 9, 8 + column * 18, 127 + row * 18));
             }
         }
 
         // Player hotbar slots
         // Hotbar should go after main inventory for Shift+Click to work properly.
         for(int index = 0; index < 9; ++index) {
-            this.addSlot(new Slot(playerInventory, index, 8 + index * 18, 186));
+            this.addSlot(new Slot(playerInventory, index, 8 + index * 18, 185));
         }
 
         this.addDataSlots(data);
@@ -76,6 +85,14 @@ public class LightroomMenu extends AbstractContainerMenu {
         return data;
     }
 
+    public List<ExposedFrame> getExposedFrames() {
+        return frames;
+    }
+
+    public int getCurrentFrame() {
+        return data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
+    }
+
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
         Preconditions.checkState(!player.level.isClientSide, "This should be server-side only.");
@@ -83,7 +100,7 @@ public class LightroomMenu extends AbstractContainerMenu {
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
             if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem filmItem) {
-                List<ExposureFrame> exposedFrames = filmItem.getExposedFrames(filmStack);
+                List<ExposedFrame> exposedFrames = filmItem.getExposedFrames(filmStack);
                 if (exposedFrames.size() == 0)
                     return true;
 
@@ -96,47 +113,7 @@ public class LightroomMenu extends AbstractContainerMenu {
         }
 
         if (buttonId == PRINT_BUTTON_ID) {
-            ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
-            ItemStack paperStack = lightroomBlockEntity.getItem(LightroomBlockEntity.PAPER_SLOT);
-            if (!filmStack.isEmpty() && !paperStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem) {
-                List<ExposureFrame> exposedFrames = developedFilmItem.getExposedFrames(filmStack);
-                if (exposedFrames.size() == 0)
-                    return true;
-
-                int currentFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
-                if (currentFrame >= 0 && currentFrame < exposedFrames.size()) {
-                    ExposureFrame exposureFrame = exposedFrames.get(currentFrame);
-                    PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
-                    ItemStack photographStack = new ItemStack(photographItem);
-
-                    exposureFrame.save(photographStack.getOrCreateTag());
-                    photographItem.setId(photographStack, exposureFrame.id);
-
-                    ItemStack resultStack = lightroomBlockEntity.getItem(LightroomBlockEntity.RESULT_SLOT);
-                    if (resultStack.isEmpty())
-                        resultStack = photographStack;
-                    else if (resultStack.getItem() instanceof PhotographItem existingPhotographItem) {
-                        StackedPhotographsItem stackedPhotographsItem = Exposure.Items.STACKED_PHOTOGRAPHS.get();
-                        ItemStack newStackedPhotographs = new ItemStack(stackedPhotographsItem);
-                        stackedPhotographsItem.addPhotographOnTop(newStackedPhotographs, resultStack);
-                        stackedPhotographsItem.addPhotographOnTop(newStackedPhotographs, photographStack);
-                        resultStack = newStackedPhotographs;
-                    }
-                    else if (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
-                        stackedPhotographsItem.addPhotographOnTop(resultStack, photographStack);
-                    }
-                    else {
-                        Exposure.LOGGER.error("Unexpected item in result slot: " + resultStack);
-                        return true;
-                    }
-
-                    lightroomBlockEntity.setItem(LightroomBlockEntity.RESULT_SLOT, resultStack);
-
-                    paperStack.shrink(1);
-                    player.level.playSound(null, player, SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
-                }
-            }
-
+            lightroomBlockEntity.startPrintingProcess();
             return true;
         }
 
@@ -178,5 +155,9 @@ public class LightroomMenu extends AbstractContainerMenu {
         if (blockEntityAtPos instanceof LightroomBlockEntity blockEntity)
             return blockEntity;
         throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);
+    }
+
+    public boolean isPrinting() {
+        return data.get(LightroomBlockEntity.CONTAINER_DATA_PRINT_TIME_ID) > 0;
     }
 }

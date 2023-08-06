@@ -1,10 +1,11 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -37,17 +38,26 @@ public class DevelopedFilmItem extends Item implements IFilmItem {
     }
 
     @Override
-    public List<ExposureFrame> getExposedFrames(ItemStack filmStack) {
+    public List<ExposedFrame> getExposedFrames(ItemStack filmStack) {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
             return Collections.emptyList();
 
-        List<ExposureFrame> frames = new ArrayList<>();
+        List<ExposedFrame> frames = new ArrayList<>();
 
         for (Tag frameTag : filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND)) {
-            frames.add(ExposureFrame.load((CompoundTag) frameTag));
+            frames.add(ExposedFrame.load((CompoundTag) frameTag));
         }
 
         return frames;
+    }
+
+    @Override
+    public boolean hasExposedFrame(ItemStack filmStack, int index) {
+        if (index < 0 || !filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
+            return false;
+
+        ListTag list = filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND);
+        return index < list.size();
     }
 
     protected int getExposedFramesCount(ItemStack stack) {

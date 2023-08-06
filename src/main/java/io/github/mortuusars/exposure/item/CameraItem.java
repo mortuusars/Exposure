@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
-import io.github.mortuusars.exposure.camera.ExposureFrame;
+import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.CompositionGuides;
 import io.github.mortuusars.exposure.camera.component.FocalRange;
@@ -152,7 +152,7 @@ public class CameraItem extends Item {
             CaptureProperties captureProperties = createCaptureProperties(player, camera);
             ExposureCapture.enqueueCapture(captureProperties);
 
-            ExposureFrame exposureFrame = createExposureFrame(player, captureProperties, camera.getCamera(), EntitiesInFrame.get(player));
+            ExposedFrame exposureFrame = createExposureFrame(player, captureProperties, camera.getCamera(), EntitiesInFrame.get(player));
 
             ItemAndStack<FilmRollItem> film = getFilm(camera.getStack()).orElseThrow();
             film.getItem().addFrame(film.getStack(), exposureFrame);
@@ -163,10 +163,10 @@ public class CameraItem extends Item {
         }
     }
 
-    protected ExposureFrame createExposureFrame(Player player, CaptureProperties captureProperties, ItemAndStack<CameraItem> camera, List<Entity> entitiesInFrame) {
+    protected ExposedFrame createExposureFrame(Player player, CaptureProperties captureProperties, ItemAndStack<CameraItem> camera, List<Entity> entitiesInFrame) {
         Vec3 shotPosition = player.position().add(0, player.getEyeY(), 0);
 
-        List<ExposureFrame.EntityInfo> entitiesData = new ArrayList<>();
+        List<ExposedFrame.EntityInfo> entitiesData = new ArrayList<>();
         for (Entity entity : EntitiesInFrame.get(player)) {
             ResourceLocation entityTypeKey = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
             CompoundTag tag = new CompoundTag();
@@ -176,13 +176,13 @@ public class CameraItem extends Item {
             pos.add(DoubleTag.valueOf(entity.getZ()));
             tag.put("Pos", pos);
             tag = addAdditionalEntityInFrameData(tag, player, entity, captureProperties, camera);
-            entitiesData.add(new ExposureFrame.EntityInfo(entityTypeKey, tag));
+            entitiesData.add(new ExposedFrame.EntityInfo(entityTypeKey, tag));
         }
 
         ResourceLocation dimension = player.level.dimension().location();
         ResourceLocation biome = player.level.getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location).orElse(null);
 
-        return new ExposureFrame(captureProperties.id, player.getScoreboardName(), Util.getFilenameFormattedDateTime(),
+        return new ExposedFrame(captureProperties.id, player.getScoreboardName(), Util.getFilenameFormattedDateTime(),
                 shotPosition, dimension, biome, entitiesData);
     }
 

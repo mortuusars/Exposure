@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.camera;
 
 import io.github.mortuusars.exposure.Exposure;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.ListTag;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ExposureFrame {
+public class ExposedFrame {
     public String id;
     public String shooterName;
     public String timestamp;
@@ -25,10 +24,10 @@ public class ExposureFrame {
     public ResourceLocation biome;
     public List<EntityInfo> entitiesInFrame;
 
-    public static final ExposureFrame EMPTY = new ExposureFrame("", "", "", Vec3.ZERO, null, null, Collections.emptyList());
+    public static final ExposedFrame EMPTY = new ExposedFrame("", "", "", Vec3.ZERO, null, null, Collections.emptyList());
 
-    public ExposureFrame(String id, String shooterName, String timestamp, Vec3 shotPosition, @Nullable ResourceLocation dimension,
-                         @Nullable ResourceLocation biome, List<EntityInfo> entitiesInFrame) {
+    public ExposedFrame(String id, String shooterName, String timestamp, Vec3 shotPosition, @Nullable ResourceLocation dimension,
+                        @Nullable ResourceLocation biome, List<EntityInfo> entitiesInFrame) {
         this.id = id;
         this.shooterName = shooterName;
         this.timestamp = timestamp;
@@ -72,7 +71,7 @@ public class ExposureFrame {
         return tag;
     }
 
-    public static ExposureFrame load(CompoundTag tag) {
+    public static ExposedFrame load(CompoundTag tag) {
         String id = tag.getString("Id");
         if (id.length() == 0) {
             Exposure.LOGGER.error("Cannot load exposure frame: id is not valid. Tag: " + tag);
@@ -108,7 +107,7 @@ public class ExposureFrame {
             entitiesInFrame.add(EntityInfo.fromTag(((CompoundTag) entityInfoTag)));
         }
 
-        return new ExposureFrame(id, shooterName, timestamp, pos, dimension, biome, entitiesInFrame);
+        return new ExposedFrame(id, shooterName, timestamp, pos, dimension, biome, entitiesInFrame);
     }
 
     public static class EntityInfo {

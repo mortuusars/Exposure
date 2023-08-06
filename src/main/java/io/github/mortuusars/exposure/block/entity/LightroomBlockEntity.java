@@ -1,15 +1,20 @@
 package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -22,7 +27,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -31,27 +35,27 @@ import net.minecraftforge.items.ItemStackHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class LightroomBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
-    public static final int SLOTS = 7;
+    public static final int SLOTS = 3;
     public static final int FILM_SLOT = 0;
-    public static final int CYAN_DYE_SLOT = 1;
-    public static final int MAGENTA_DYE_SLOT = 2;
-    public static final int YELLOW_DYE_SLOT = 3;
-    public static final int BLACK_DYE_SLOT = 4;
-    public static final int PAPER_SLOT = 5;
-    public static final int RESULT_SLOT = 6;
+    public static final int PAPER_SLOT = 1;
+    public static final int RESULT_SLOT = 2;
 
-    public static final int[] INPUT_SLOTS = new int[] { 0, 1, 2, 3, 4, 5 };
-    public static final int[] OUTPUT_SLOTS = new int[] { 6 };
+    public static final int[] INPUT_SLOTS = new int[] { 0, 1 };
+    public static final int[] OUTPUT_SLOTS = new int[] { 2 };
 
-    public static final int CONTAINER_DATA_SIZE = 2;
+    public static final int CONTAINER_DATA_SIZE = 3;
     public static final int CONTAINER_DATA_PROGRESS_ID = 0;
-    public static final int CONTAINER_DATA_CURRENT_FRAME_ID = 1;
+    public static final int CONTAINER_DATA_PRINT_TIME_ID = 1;
+    public static final int CONTAINER_DATA_CURRENT_FRAME_ID = 2;
 
     protected final ContainerData containerData = new ContainerData() {
         public int get(int id) {
             return switch (id) {
                 case CONTAINER_DATA_PROGRESS_ID -> LightroomBlockEntity.this.progress;
+                case CONTAINER_DATA_PRINT_TIME_ID -> LightroomBlockEntity.this.printTime;
                 case CONTAINER_DATA_CURRENT_FRAME_ID -> LightroomBlockEntity.this.currentFrame;
                 default -> 0;
             };
@@ -60,6 +64,8 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
         public void set(int id, int value) {
             if (id == CONTAINER_DATA_PROGRESS_ID)
                 LightroomBlockEntity.this.progress = value;
+            else if (id == CONTAINER_DATA_PRINT_TIME_ID)
+                LightroomBlockEntity.this.printTime = value;
             else if (id == CONTAINER_DATA_CURRENT_FRAME_ID)
                 LightroomBlockEntity.this.currentFrame = value;
         }
@@ -73,6 +79,7 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
     private final LazyOptional<IItemHandler> inventoryHandler;
     protected int currentFrame = 0;
     protected int progress = 0;
+    protected int printTime = 0;
 
     public LightroomBlockEntity(BlockPos pos, BlockState blockState) {
         super(Exposure.BlockEntityTypes.LIGHTROOM.get(), pos, blockState);
@@ -83,19 +90,99 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
 
     public static boolean isItemValidForSlot(int slot, ItemStack stack) {
         if (slot == FILM_SLOT) return stack.getItem() instanceof DevelopedFilmItem;
-        else if (slot == CYAN_DYE_SLOT) return stack.is(Tags.Items.DYES_CYAN);
-        else if (slot == MAGENTA_DYE_SLOT) return stack.is(Tags.Items.DYES_MAGENTA);
-        else if (slot == YELLOW_DYE_SLOT) return stack.is(Tags.Items.DYES_YELLOW);
-        else if (slot == BLACK_DYE_SLOT) return stack.is(Tags.Items.DYES_BLACK);
         else if (slot == PAPER_SLOT) return stack.is(Items.PAPER);
         else if (slot == RESULT_SLOT) return stack.getItem() instanceof PhotographItem;
         return false;
     }
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState, T blockEntity) {
-        if (blockEntity instanceof LightroomBlockEntity lightroomBlockEntity) {
+        if (blockEntity instanceof LightroomBlockEntity lightroomBlockEntity)
+            lightroomBlockEntity.tick();
+    }
 
+    private void tick() {
+        if (printTime > 0 && canPrint()) {
+            if (progress >= printTime) {
+                tryPrint();
+                stopPrintingProcess();
+            }
+            else
+                progress++;
         }
+        else {
+            stopPrintingProcess();
+        }
+    }
+
+    public void startPrintingProcess() {
+        //TODO: Color film prints longer
+        printTime = 20;
+    }
+
+    public void stopPrintingProcess() {
+        progress = 0;
+        printTime = 0;
+    }
+
+    public boolean isPrinting() {
+        return printTime > 0;
+    }
+
+    public boolean canPrint() {
+        if (getItem(PAPER_SLOT).isEmpty())
+            return false;
+
+        ItemStack filmStack = getItem(FILM_SLOT);
+        if (!(filmStack.getItem() instanceof DevelopedFilmItem developedFilm) || !developedFilm.hasExposedFrame(filmStack, currentFrame))
+            return false;
+
+        ItemStack resultStack = getItem(RESULT_SLOT);
+        return resultStack.isEmpty() || resultStack.getItem() instanceof PhotographItem
+                || (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem
+                    && stackedPhotographsItem.canAddPhotograph(resultStack));
+    }
+
+    public boolean tryPrint() {
+        if (!canPrint())
+            return false;
+
+        ItemAndStack<DevelopedFilmItem> film = new ItemAndStack<>(getItem(FILM_SLOT));
+        List<ExposedFrame> frames = film.getItem().getExposedFrames(film.getStack());
+        if (currentFrame >= frames.size())
+            return false;
+
+        ExposedFrame exposureFrame = frames.get(currentFrame);
+
+        PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
+        ItemStack photographStack = new ItemStack(photographItem);
+        exposureFrame.save(photographStack.getOrCreateTag());
+        photographItem.setId(photographStack, exposureFrame.id);
+
+        ItemStack resultStack = getItem(RESULT_SLOT);
+        if (resultStack.isEmpty())
+            resultStack = photographStack;
+        else if (resultStack.getItem() instanceof PhotographItem) {
+            StackedPhotographsItem stackedPhotographsItem = Exposure.Items.STACKED_PHOTOGRAPHS.get();
+            ItemStack newStackedPhotographs = new ItemStack(stackedPhotographsItem);
+            stackedPhotographsItem.addPhotographOnTop(newStackedPhotographs, resultStack);
+            stackedPhotographsItem.addPhotographOnTop(newStackedPhotographs, photographStack);
+            resultStack = newStackedPhotographs;
+        }
+        else if (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
+            stackedPhotographsItem.addPhotographOnTop(resultStack, photographStack);
+        }
+        else {
+            Exposure.LOGGER.error("Unexpected item in result slot: " + resultStack);
+            return false;
+        }
+
+        setItem(RESULT_SLOT, resultStack);
+        getItem(PAPER_SLOT).shrink(1);
+
+        if (level != null)
+            level.playSound(null, getBlockPos(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
+
+        return true;
     }
 
 
@@ -231,7 +318,8 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("Inventory", this.inventory.serializeNBT());
-        tag.putInt("Progress", progress);
+        if (progress > 0)
+            tag.putInt("Progress", progress);
     }
 
     @Override
