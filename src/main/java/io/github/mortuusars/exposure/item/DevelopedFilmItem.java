@@ -23,8 +23,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class DevelopedFilmItem extends Item implements IFilmItem {
-    public static final String FRAMES_TAG = "Frames";
-
     private final FilmType type;
 
     public DevelopedFilmItem(FilmType type, Properties properties) {
@@ -35,34 +33,6 @@ public class DevelopedFilmItem extends Item implements IFilmItem {
     @Override
     public FilmType getType() {
         return type;
-    }
-
-    @Override
-    public List<ExposedFrame> getExposedFrames(ItemStack filmStack) {
-        if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
-            return Collections.emptyList();
-
-        List<ExposedFrame> frames = new ArrayList<>();
-
-        for (Tag frameTag : filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND)) {
-            frames.add(ExposedFrame.load((CompoundTag) frameTag));
-        }
-
-        return frames;
-    }
-
-    @Override
-    public boolean hasExposedFrame(ItemStack filmStack, int index) {
-        if (index < 0 || !filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
-            return false;
-
-        ListTag list = filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND);
-        return index < list.size();
-    }
-
-    protected int getExposedFramesCount(ItemStack stack) {
-        return stack.hasTag() && stack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST) ?
-                stack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() : 0;
     }
 
     @Override

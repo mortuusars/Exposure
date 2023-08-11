@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.ClientCameraHolder;
 import io.github.mortuusars.exposure.camera.infrastructure.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.item.*;
@@ -53,7 +53,8 @@ public class Exposure {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public Exposure() {
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         Blocks.BLOCKS.register(modEventBus);
@@ -119,12 +120,12 @@ public class Exposure {
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<FilmRollItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
-                () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, 16, 320, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
+                () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, 320, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<FilmRollItem> COLOR_FILM = ITEMS.register("color_film",
-                () -> new FilmRollItem(FilmType.COLOR, 16, 320, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
+                () -> new FilmRollItem(FilmType.COLOR, 320, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.storage.saver.ExposureFileSaver;
@@ -85,7 +85,7 @@ public class ClientPacketsHandler {
 
                 List<IExposureSaver> savers = new ArrayList<>();
                 savers.add(new ExposureStorageSaver());
-                if (ClientConfig.EXPOSURE_SAVE_ON_EVERY_CAPTURE.get())
+                if (Config.Client.EXPOSURE_SAVE_ON_EVERY_CAPTURE.get())
                     savers.add(ExposureFileSaver.withDefaultFolders());
 
                 ExposureCapture.processAndSaveImage(image, new CaptureProperties(finalId, size, 1, 0,

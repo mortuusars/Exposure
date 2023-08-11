@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.storage.saver;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.material.MaterialColor;
@@ -27,7 +27,7 @@ public class ExposureFileSaver implements IExposureSaver {
     }
 
     public static ExposureFileSaver withDefaultFolders() {
-        return new ExposureFileSaver(ClientConfig.EXPOSURE_SAVE_PATH.get(), ClientConfig.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get());
+        return new ExposureFileSaver(Config.Client.EXPOSURE_SAVE_PATH.get(), Config.Client.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get());
     }
 
     public void save(String id, byte[] materialColorPixels, int width, int height) {

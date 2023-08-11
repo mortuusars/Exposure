@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,13 +9,12 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
-import java.io.ObjectInputFilter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EntitiesInFrame {
     public static List<Entity> get(Player player) {
-        float currentFov = ViewfinderRenderer.getCurrentFov() / ClientConfig.VIEWFINDER_CROP_FACTOR.get().floatValue();
+        float currentFov = ViewfinderRenderer.getCurrentFov() / Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
         float currentFocalLength = Fov.fovToFocalLength(currentFov);
 
         List<Entity> entities = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),
@@ -48,7 +47,7 @@ public class EntitiesInFrame {
                 size = 0.1;
 
             double sizeModifier = (size - 1.0) * 0.6d + 1.0;
-            double modifiedDistance = (distanceInBlocks / sizeModifier) / ClientConfig.VIEWFINDER_CROP_FACTOR.get().floatValue();
+            double modifiedDistance = (distanceInBlocks / sizeModifier) / Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
 
             if (modifiedDistance > currentFocalLength)
                 continue; // Too far to be in frame

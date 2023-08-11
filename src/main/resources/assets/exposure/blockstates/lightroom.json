@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "exposure:block/lightroom",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "exposure:block/lightroom"
+    },
+    "facing=south": {
+      "model": "exposure:block/lightroom",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "exposure:block/lightroom",
+      "y": 270
+    }
+  }
+}

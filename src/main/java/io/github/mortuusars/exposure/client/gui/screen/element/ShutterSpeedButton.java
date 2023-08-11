@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -17,7 +17,6 @@ import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
@@ -89,8 +88,8 @@ public class ShutterSpeedButton extends ImageButton {
         int textWidth = font.width(text);
         int xPos = 18 + (19 - textWidth) / 2;
 
-        font.draw(poseStack, text, x + xPos, y + 5, ClientConfig.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 4, ClientConfig.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 5, Config.Client.getSecondaryFontColor());
+        font.draw(poseStack, text, x + xPos, y + 4, Config.Client.getMainFontColor());
     }
 
     @Override

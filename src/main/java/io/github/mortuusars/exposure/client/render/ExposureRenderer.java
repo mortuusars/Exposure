@@ -117,11 +117,14 @@ public class ExposureRenderer implements AutoCloseable {
                         int green = bgr >> 8 & 0xFF;
                         int red = bgr & 0xFF;
                         int brightness = (blue + green + red) / 3;
+//                        brightness = (int) (255 - Math.pow(255 - brightness, 3));
+//                        brightness = brightness * brightness * brightness / 255 / 255;
+//                        brightness = Mth.clamp(brightness/* * brightness / 255*/, 0, 255);
 
                         // Invert:
                         bgr = bgr ^ 0x00FFFFFF;
 
-                        int opacity = (int)Mth.clamp(brightness * 1.25f, 0, 255);
+                        int opacity = (int)Mth.clamp(brightness * 1.5f, 0, 255);
 
                         bgr = (bgr & 0x00FFFFFF) | (opacity << 24);
                     }

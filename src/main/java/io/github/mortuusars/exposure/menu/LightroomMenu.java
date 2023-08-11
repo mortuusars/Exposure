@@ -113,7 +113,7 @@ public class LightroomMenu extends AbstractContainerMenu {
         }
 
         if (buttonId == PRINT_BUTTON_ID) {
-            lightroomBlockEntity.startPrintingProcess();
+            lightroomBlockEntity.startPrintingProcess(false);
             return true;
         }
 

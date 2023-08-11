@@ -14,7 +14,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
 import io.github.mortuusars.exposure.camera.infrastructure.Shutter;
 import io.github.mortuusars.exposure.camera.modifier.ExposureModifiers;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.SyncCameraServerboundPacket;
@@ -221,7 +221,7 @@ public class CameraItem extends Item {
         Preconditions.checkState(!camera.isEmpty(), "Camera cannot be empty.");
         String id = getExposureId(player, player.level);
 
-        float cropFactor = ClientConfig.VIEWFINDER_CROP_FACTOR.get().floatValue();
+        float cropFactor = Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
 
         int frameSize = getFilm(camera.getStack()).map(f -> f.getItem().getFrameSize(f.getStack())).orElseThrow();
 

@@ -21,19 +21,15 @@ import java.util.Collections;
 import java.util.List;
 
 public class FilmRollItem extends Item implements IFilmItem {
-    public static final String FRAMES_TAG = "Frames";
-    public static final String FRAME_COUNT_TAG = "FrameCount";
     public static final String FRAME_SIZE_TAG = "FrameSize";
 
     private final FilmType filmType;
     private final int defaultFrameSize;
-    private final int defaultFrameCount;
     private final int barColor;
 
-    public FilmRollItem(FilmType filmType, int defaultFrameCount, int defaultFrameSize, int barColor, Properties properties) {
+    public FilmRollItem(FilmType filmType, int defaultFrameSize, int barColor, Properties properties) {
         super(properties);
         this.filmType = filmType;
-        this.defaultFrameCount = defaultFrameCount;
         this.defaultFrameSize = defaultFrameSize;
         this.barColor = barColor;
     }
@@ -41,13 +37,6 @@ public class FilmRollItem extends Item implements IFilmItem {
     @Override
     public FilmType getType() {
         return filmType;
-    }
-
-    public int getFrameCount(ItemStack filmStack) {
-        if (filmStack.getTag() != null && filmStack.getOrCreateTag().contains(FRAME_COUNT_TAG, Tag.TAG_INT))
-            return filmStack.getOrCreateTag().getInt(FRAME_COUNT_TAG);
-        else
-            return defaultFrameCount;
     }
 
     public int getFrameSize(ItemStack filmStack) {
@@ -69,55 +58,27 @@ public class FilmRollItem extends Item implements IFilmItem {
         return barColor;
     }
 
-    protected int getExposedFramesCount(ItemStack stack) {
-        return stack.hasTag() && stack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST) ?
-                stack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() : 0;
-    }
-
-    @Override
-    public List<ExposedFrame> getExposedFrames(ItemStack filmStack) {
-        if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
-            return Collections.emptyList();
-
-        List<ExposedFrame> frames = new ArrayList<>();
-
-        for (Tag frameTag : filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND)) {
-            frames.add(ExposedFrame.load((CompoundTag) frameTag));
-        }
-
-        return frames;
-    }
-
-    @Override
-    public boolean hasExposedFrame(ItemStack filmStack, int index) {
-        if (index < 0 || !filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
-            return false;
-
-        ListTag list = filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND);
-        return index < list.size();
-    }
-
     public void addFrame(ItemStack filmStack, ExposedFrame frame) {
         CompoundTag tag = filmStack.getOrCreateTag();
 
-        if (!tag.contains(FRAMES_TAG, Tag.TAG_LIST)) {
-            tag.put(FRAMES_TAG, new ListTag());
+        if (!tag.contains("Frames", Tag.TAG_LIST)) {
+            tag.put("Frames", new ListTag());
         }
 
-        ListTag listTag = tag.getList(FRAMES_TAG, Tag.TAG_COMPOUND);
+        ListTag listTag = tag.getList("Frames", Tag.TAG_COMPOUND);
 
         if (listTag.size() >= getFrameCount(filmStack))
             throw new IllegalStateException("Cannot add more frames than film could fit. Size: " + listTag.size());
 
         listTag.add(frame.save(new CompoundTag()));
-        tag.put(FRAMES_TAG, listTag);
+        tag.put("Frames", listTag);
     }
 
     public boolean canAddFrame(ItemStack filmStack) {
-        if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains(FRAMES_TAG, Tag.TAG_LIST))
+        if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains("Frames", Tag.TAG_LIST))
             return true;
 
-        return filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND).size() < getFrameCount(filmStack);
+        return filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND).size() < getFrameCount(filmStack);
     }
 
     public ItemAndStack<DevelopedFilmItem> develop(ItemStack filmStack) {
@@ -125,10 +86,10 @@ public class FilmRollItem extends Item implements IFilmItem {
                 : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get();
 
         ListTag framesTag = filmStack.getTag() != null ?
-                filmStack.getOrCreateTag().getList(FRAMES_TAG, Tag.TAG_COMPOUND) : new ListTag();
+                filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND) : new ListTag();
 
         ItemStack developedItemStack = new ItemStack(developedItem);
-        developedItemStack.getOrCreateTag().put(FRAMES_TAG, framesTag);
+        developedItemStack.getOrCreateTag().put("Frames", framesTag);
         return new ItemAndStack<>(developedItemStack);
     }
 

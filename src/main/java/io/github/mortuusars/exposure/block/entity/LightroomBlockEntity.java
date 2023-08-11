@@ -1,7 +1,10 @@
 package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.block.LightroomBlock;
 import io.github.mortuusars.exposure.camera.ExposedFrame;
+import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
@@ -9,14 +12,14 @@ import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.WorldlyContainer;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -25,8 +28,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
@@ -37,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class LightroomBlockEntity extends BlockEntity implements WorldlyContainer, MenuProvider {
+public class LightroomBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int SLOTS = 3;
     public static final int FILM_SLOT = 0;
     public static final int PAPER_SLOT = 1;
@@ -80,19 +85,13 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
     protected int currentFrame = 0;
     protected int progress = 0;
     protected int printTime = 0;
+    protected boolean advanceFrame;
 
     public LightroomBlockEntity(BlockPos pos, BlockState blockState) {
         super(Exposure.BlockEntityTypes.LIGHTROOM.get(), pos, blockState);
         this.inventory = createItemHandler(SLOTS);
         this.inventoryHandler = LazyOptional.of(() -> inventory);
 //        SidedInvWrapper.create(this, Direction.DOWN);
-    }
-
-    public static boolean isItemValidForSlot(int slot, ItemStack stack) {
-        if (slot == FILM_SLOT) return stack.getItem() instanceof DevelopedFilmItem;
-        else if (slot == PAPER_SLOT) return stack.is(Items.PAPER);
-        else if (slot == RESULT_SLOT) return stack.getItem() instanceof PhotographItem;
-        return false;
     }
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState, T blockEntity) {
@@ -103,7 +102,18 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
     private void tick() {
         if (printTime > 0 && canPrint()) {
             if (progress >= printTime) {
-                tryPrint();
+                if (tryPrint()) {
+                    if (advanceFrame) {
+                        ItemStack filmStack = getItem(FILM_SLOT);
+                        if (filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem) {
+                            int exposedFramesCount = developedFilmItem.getExposedFramesCount(filmStack);
+                            if (currentFrame >= exposedFramesCount - 1)
+                                ejectFilm();
+                            else
+                                currentFrame++;
+                        }
+                    }
+                }
                 stopPrintingProcess();
             }
             else
@@ -114,14 +124,42 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
         }
     }
 
-    public void startPrintingProcess() {
-        //TODO: Color film prints longer
-        printTime = 20;
+    private void ejectFilm() {
+        if (level == null || level.isClientSide || getItem(FILM_SLOT).isEmpty())
+            return;
+
+        BlockPos pos = getBlockPos();
+        Direction facing = level.getBlockState(pos).getValue(LightroomBlock.FACING);
+        Vec3i normal = facing.getNormal();
+        Vec3 point = Vec3.atCenterOf(pos).add(normal.getX() * 0.75f, normal.getY() * 0.75f, normal.getZ() * 0.75f);
+        ItemEntity itemEntity = new ItemEntity(level, point.x, point.y, point.z, removeItem(FILM_SLOT, 1));
+        itemEntity.setDeltaMovement(normal.getX() * 0.05f, normal.getY() * 0.05f + 0.15f, normal.getZ() * 0.05f);
+        itemEntity.setDefaultPickUpDelay();
+        level.addFreshEntity(itemEntity);
+    }
+
+    public int getCurrentFrame() {
+        return currentFrame;
+    }
+
+    public void startPrintingProcess(boolean advanceFrame) {
+        if (canPrint()) {
+            ItemStack filmStack = getItem(FILM_SLOT);
+            if (filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem) {
+                printTime = developedFilmItem.getType() == FilmType.COLOR ?
+                        Config.Common.LIGHTROOM_COLOR_FILM_PRINT_TIME.get() :
+                        Config.Common.LIGHTROOM_BW_FILM_PRINT_TIME.get();
+                this.advanceFrame = advanceFrame;
+            }
+        }
     }
 
     public void stopPrintingProcess() {
         progress = 0;
         printTime = 0;
+        advanceFrame = false;
+        if (level != null)
+            level.setBlock(getBlockPos(), level.getBlockState(getBlockPos()).setValue(LightroomBlock.LIT, false), Block.UPDATE_CLIENTS);
     }
 
     public boolean isPrinting() {
@@ -180,13 +218,23 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
         getItem(PAPER_SLOT).shrink(1);
 
         if (level != null)
-            level.playSound(null, getBlockPos(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 1f, 1f);
+            level.playSound(null, getBlockPos(), Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 1f, 1f);
 
         return true;
     }
 
 
     // Container
+
+    @Override
+    protected @NotNull Component getDefaultName() {
+        return Component.translatable("block.exposure.lightroom");
+    }
+
+    @Override
+    protected @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory) {
+        return new LightroomMenu(containerId, playerInventory, this, containerData);
+    }
 
     protected @NotNull ItemStackHandler createItemHandler(int slots) {
         return new ItemStackHandler(slots) {
@@ -206,6 +254,13 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
                 inventoryContentsChanged(slot);
             }
         };
+    }
+
+    public static boolean isItemValidForSlot(int slot, ItemStack stack) {
+        if (slot == FILM_SLOT) return stack.getItem() instanceof DevelopedFilmItem;
+        else if (slot == PAPER_SLOT) return stack.is(Items.PAPER);
+        else if (slot == RESULT_SLOT) return stack.getItem() instanceof PhotographItem;
+        return false;
     }
 
     private void inventoryContentsChanged(int slot) {
@@ -311,15 +366,24 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         this.inventory.deserializeNBT(tag.getCompound("Inventory"));
+        this.currentFrame = tag.getInt("CurrentFrame");
         this.progress = tag.getInt("Progress");
+        this.printTime = tag.getInt("PrintTime");
+        this.advanceFrame = tag.getBoolean("AdvanceFrame");
     }
 
     @Override
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("Inventory", this.inventory.serializeNBT());
+        if (currentFrame > 0)
+            tag.putInt("CurrentFrame", currentFrame);
         if (progress > 0)
             tag.putInt("Progress", progress);
+        if (printTime > 0)
+            tag.putInt("PrintTime", printTime);
+        if (advanceFrame)
+            tag.putBoolean("AdvanceFrame", true);
     }
 
     @Override
@@ -348,16 +412,5 @@ public class LightroomBlockEntity extends BlockEntity implements WorldlyContaine
     public void onDataPacket(Connection connection, ClientboundBlockEntityDataPacket packet) {
         if (packet.getTag() != null)
             load(packet.getTag());
-    }
-
-    @Override
-    public @NotNull Component getDisplayName() {
-        return Component.translatable("block.exposure.lightroom");
-    }
-
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
-        return new LightroomMenu(containerId, playerInventory, this, containerData);
     }
 }

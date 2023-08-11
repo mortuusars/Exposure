@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.client.gui.screen.element;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -54,8 +54,8 @@ public class FocalLengthButton extends ImageButton {
         int textWidth = font.width(text);
         int xPos = 14 + (29 - textWidth) / 2;
 
-        font.draw(poseStack, text, x + xPos, y + 5, ClientConfig.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 4, ClientConfig.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 5, Config.Client.getSecondaryFontColor());
+        font.draw(poseStack, text, x + xPos, y + 4, Config.Client.getMainFontColor());
     }
 
     @Override

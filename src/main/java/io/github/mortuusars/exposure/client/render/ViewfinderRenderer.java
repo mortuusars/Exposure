@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.camera.component.FocalRange;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
-import io.github.mortuusars.exposure.config.ClientConfig;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.CameraType;
@@ -77,7 +77,7 @@ public class ViewfinderRenderer {
         Preconditions.checkState(!Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player).isEmpty(),
                 "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
 
-        int color = ClientConfig.getBackgroundColor();
+        int color = Config.Client.getBackgroundColor();
         int width = minecraft.getWindow().getGuiScaledWidth();
         int height = minecraft.getWindow().getGuiScaledHeight();
 
@@ -159,7 +159,7 @@ public class ViewfinderRenderer {
             // Icons
             if (camera.getItem().getFilm(camera.getStack()).isEmpty() && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
                 RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/misc/no_film_icon.png"));
-                float cropFactor = ClientConfig.VIEWFINDER_CROP_FACTOR.get().floatValue();
+                float cropFactor = Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
 
                 float fromEdge = (opening.height - (opening.height / (cropFactor))) / 2f;
                 GuiComponent.blit(poseStack, (int) (opening.x + (opening.width / 2) - 8),
@@ -221,7 +221,7 @@ public class ViewfinderRenderer {
         if (!shouldRender())
             return sensitivity;
 
-        double modifier = Mth.clamp(1f - (ClientConfig.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get() * ((defaultFov - currentFov) / 5f)), 0.01, 2f);
+        double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get() * ((defaultFov - currentFov) / 5f)), 0.01, 2f);
         return sensitivity * modifier;
     }
 
