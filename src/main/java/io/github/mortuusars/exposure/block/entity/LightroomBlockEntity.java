@@ -265,7 +265,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
     public static boolean isItemValidForSlot(int slot, ItemStack stack) {
         if (slot == FILM_SLOT) return stack.getItem() instanceof DevelopedFilmItem;
-        else if (slot == PAPER_SLOT) return stack.is(Items.PAPER);
+        else if (slot == PAPER_SLOT) return stack.is(Exposure.Tags.Items.PHOTO_PAPERS);
         else if (slot == RESULT_SLOT) return stack.getItem() instanceof PhotographItem;
         return false;
     }

@@ -21,6 +21,8 @@ import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -193,6 +195,14 @@ public class Exposure {
             Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
             String path = category + "." + key;
             return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path), 16f));
+        }
+    }
+
+    public static class Tags {
+        public static class Items {
+            public static final TagKey<Item> FILM_ROLLS = ItemTags.create(Exposure.resource("film_rolls"));
+            public static final TagKey<Item> DEVELOPED_FILMS = ItemTags.create(Exposure.resource("developed_films"));
+            public static final TagKey<Item> PHOTO_PAPERS = ItemTags.create(Exposure.resource("photo_papers"));
         }
     }
 }
