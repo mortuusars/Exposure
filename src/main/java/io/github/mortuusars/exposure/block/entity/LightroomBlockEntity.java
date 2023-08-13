@@ -36,7 +36,9 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,7 +83,8 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     };
 
     protected final ItemStackHandler inventory;
-    private final LazyOptional<IItemHandler> inventoryHandler;
+    protected final LazyOptional<IItemHandler> inventoryHandler;
+    protected LazyOptional<IItemHandlerModifiable>[] inventoryHandlers;
     protected int currentFrame = 0;
     protected int progress = 0;
     protected int printTime = 0;
@@ -91,7 +94,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         super(Exposure.BlockEntityTypes.LIGHTROOM.get(), pos, blockState);
         this.inventory = createItemHandler(SLOTS);
         this.inventoryHandler = LazyOptional.of(() -> inventory);
-//        SidedInvWrapper.create(this, Direction.DOWN);
+        inventoryHandlers = SidedInvWrapper.create(this, Direction.DOWN);
     }
 
     public static <T extends BlockEntity> void serverTick(Level level, BlockPos blockPos, BlockState blockState, T blockEntity) {
@@ -136,6 +139,8 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         itemEntity.setDeltaMovement(normal.getX() * 0.05f, normal.getY() * 0.05f + 0.15f, normal.getZ() * 0.05f);
         itemEntity.setDefaultPickUpDelay();
         level.addFreshEntity(itemEntity);
+
+        //TODO: Eject sound.
     }
 
     public int getCurrentFrame() {
@@ -321,7 +326,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     public int @NotNull [] getSlotsForFace(@NotNull Direction face) {
         if (face == Direction.DOWN)
             return OUTPUT_SLOTS;
-        return INPUT_SLOTS;
+        return new int[0];
     }
 
     @Override
@@ -351,9 +356,23 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     @Override
     public <T> LazyOptional<T> getCapability(@NotNull Capability<T> capability, @Nullable Direction side) {
         if (capability == ForgeCapabilities.ITEM_HANDLER)
-            return this.inventoryHandler.cast();
+            return side == Direction.DOWN ? inventoryHandlers[0].cast() : this.inventoryHandler.cast();
 
         return super.getCapability(capability, side);
+    }
+
+    @Override
+    public void invalidateCaps() {
+        super.invalidateCaps();
+        for (LazyOptional<IItemHandlerModifiable> inventoryHandler : inventoryHandlers) {
+            inventoryHandler.invalidate();
+        }
+    }
+
+    @Override
+    public void reviveCaps() {
+        super.reviveCaps();
+        inventoryHandlers = net.minecraftforge.items.wrapper.SidedInvWrapper.create(this, Direction.DOWN, Direction.UP, Direction.NORTH);
     }
 
     @Override
