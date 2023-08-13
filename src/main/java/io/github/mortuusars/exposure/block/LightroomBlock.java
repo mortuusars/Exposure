@@ -15,6 +15,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -126,20 +127,16 @@ public class LightroomBlock extends Block implements EntityBlock {
     @Override
     public void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean pIsMoving) {
         if (!level.isClientSide) {
-            boolean isLit = state.getValue(LIT);
-
-            for (Direction direction : Direction.values()) {
-                BlockPos relative = pos.relative(direction);
-                if (relative.equals(fromPos) && level.getSignal(relative, direction) > 0
-                        && level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
-                    lightroomBlockEntity.startPrintingProcess(true);
-                    level.setBlock(pos, state.cycle(LIT), Block.UPDATE_CLIENTS);
-                    return;
+            if (!state.getValue(LIT)) {
+                for (Direction direction : Direction.values()) {
+                    BlockPos relative = pos.relative(direction);
+                    if (relative.equals(fromPos) && level.getSignal(relative, direction) > 0
+                            && level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
+                        lightroomBlockEntity.startPrintingProcess(true);
+                        return;
+                    }
                 }
             }
-
-            if (isLit)
-                level.setBlock(pos, state.cycle(LIT), Block.UPDATE_CLIENTS);
         }
     }
 

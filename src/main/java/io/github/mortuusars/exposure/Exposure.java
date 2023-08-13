@@ -99,7 +99,8 @@ public class Exposure {
 
         public static final RegistryObject<LightroomBlock> LIGHTROOM = BLOCKS.register("lightroom",
                 () -> new LightroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
-                        .color(MaterialColor.COLOR_BROWN)));
+                        .color(MaterialColor.COLOR_BROWN)
+                        .lightLevel(state -> 15)));
     }
 
     @SuppressWarnings("DataFlowIssue")

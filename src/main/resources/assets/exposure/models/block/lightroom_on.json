@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "bottom": "exposure:block/lightroom_bottom",
+    "front": "exposure:block/lightroom_front_on",
+    "side": "exposure:block/lightroom_side",
+    "top": "exposure:block/lightroom_top"
+  }
+}

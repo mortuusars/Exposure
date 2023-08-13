@@ -150,6 +150,8 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
                         Config.Common.LIGHTROOM_COLOR_FILM_PRINT_TIME.get() :
                         Config.Common.LIGHTROOM_BW_FILM_PRINT_TIME.get();
                 this.advanceFrame = advanceFrame;
+                if (level != null)
+                    level.setBlock(getBlockPos(), level.getBlockState(getBlockPos()).setValue(LightroomBlock.LIT, true), Block.UPDATE_CLIENTS);
             }
         }
     }
