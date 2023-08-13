@@ -11,6 +11,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.Potions;
@@ -84,6 +85,16 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .define('G', Tags.Items.NUGGETS_GOLD)
                 .define('K', Items.DRIED_KELP)
                 .unlockedBy("has_camera", has(Exposure.Items.CAMERA.get()))
+                .save(recipeConsumer);
+
+        ShapedRecipeBuilder.shaped(Exposure.Items.LIGHTROOM.get())
+                .pattern("LT ")
+                .pattern("PP ")
+                .pattern("PP ")
+                .define('L', Items.LANTERN)
+                .define('T', Items.REDSTONE_TORCH)
+                .define('P', ItemTags.PLANKS)
+                .unlockedBy("has_developed_film", has(Exposure.Tags.Items.DEVELOPED_FILMS))
                 .save(recipeConsumer);
     }
 
