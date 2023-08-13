@@ -18,10 +18,10 @@ public class Config {
 
             LIGHTROOM_BW_FILM_PRINT_TIME = builder
                     .comment("Time in ticks to print black and white photograph.")
-                    .defineInRange("BlackAndWhitePrintTime", 80, 1, Integer.MAX_VALUE);
+                    .defineInRange("BlackAndWhitePrintTime", 100, 1, Integer.MAX_VALUE);
             LIGHTROOM_COLOR_FILM_PRINT_TIME = builder
                     .comment("Time in ticks to print color photograph.")
-                    .defineInRange("ColorPrintTime", 200, 1, Integer.MAX_VALUE);
+                    .defineInRange("ColorPrintTime", 300, 1, Integer.MAX_VALUE);
 
             builder.pop();
 
