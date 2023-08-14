@@ -64,7 +64,13 @@ public class ClientEvents {
         public static void textureStitch(TextureStitchEvent.Pre event) {
             if (event.getAtlas().location() == InventoryMenu.BLOCK_ATLAS) {
                 event.addSprite(Exposure.resource("gui/misc/photograph_paper"));
+                event.addSprite(Exposure.resource("gui/misc/paper"));
             }
+        }
+
+        @SubscribeEvent
+        public static void registerModels(ModelEvent.RegisterAdditional event) {
+            event.register(Exposure.resource("block/photograph"));
         }
 
         @SubscribeEvent

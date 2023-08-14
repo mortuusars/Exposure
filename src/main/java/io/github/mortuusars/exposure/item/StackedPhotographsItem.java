@@ -209,7 +209,7 @@ public class StackedPhotographsItem extends Item {
         Player player = context.getPlayer();
         ItemStack itemInHand = context.getItemInHand();
 
-        if (itemInHand.getItem() != this)
+        if (itemInHand.getItem() != this || getPhotographsCount(itemInHand) == 0)
             return InteractionResult.FAIL;
 
         ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(itemInHand);
@@ -227,11 +227,18 @@ public class StackedPhotographsItem extends Item {
                 level.addFreshEntity(photographEntity);
             }
 
-            int photographsCount = getPhotographsCount(itemInHand);
-            if (photographsCount == 0)
-                itemInHand.shrink(1);
-            else if (photographsCount == 1)
-                player.setItemInHand(context.getHand(), removeTopPhotograph(itemInHand).getStack());
+            if (!player.isCreative()) {
+                int photographsCount = getPhotographsCount(itemInHand);
+                if (photographsCount == 0)
+                    itemInHand.shrink(1);
+                else if (photographsCount == 1)
+                    player.setItemInHand(context.getHand(), removeTopPhotograph(itemInHand).getStack());
+            }
+            else {
+                // Because in creative you don't get photograph back when breaking Photograph entity,
+                // we don't remove placed photograph from the stack.
+                addPhotographOnTop(itemInHand, topPhotograph.getStack());
+            }
 
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
