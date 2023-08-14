@@ -7,7 +7,10 @@ import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
+import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
+import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
@@ -20,6 +23,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -54,6 +58,18 @@ public class ClientEvents {
                             return 0f;
                         });
             });
+        }
+
+        @SubscribeEvent
+        public static void textureStitch(TextureStitchEvent.Pre event) {
+            if (event.getAtlas().location() == InventoryMenu.BLOCK_ATLAS) {
+                event.addSprite(Exposure.resource("gui/misc/photograph_paper"));
+            }
+        }
+
+        @SubscribeEvent
+        public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(Exposure.EntityTypes.PHOTOGRAPH.get(), PhotographEntityRenderer::new);
         }
 
         @SubscribeEvent

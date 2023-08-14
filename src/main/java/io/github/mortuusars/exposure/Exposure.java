@@ -11,6 +11,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.item.*;
@@ -24,6 +25,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -62,6 +66,7 @@ public class Exposure {
         Blocks.BLOCKS.register(modEventBus);
         BlockEntityTypes.BLOCK_ENTITY_TYPES.register(modEventBus);
         Items.ITEMS.register(modEventBus);
+        EntityTypes.ENTITY_TYPES.register(modEventBus);
         MenuTypes.MENU_TYPES.register(modEventBus);
         RecipeSerializers.RECIPE_SERIALIZERS.register(modEventBus);
         SoundEvents.SOUNDS.register(modEventBus);
@@ -157,6 +162,16 @@ public class Exposure {
                         .tab(CreativeModeTab.TAB_DECORATIONS)));
     }
 
+    public static class EntityTypes {
+        private static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ID);
+        public static final RegistryObject<EntityType<PhotographEntity>> PHOTOGRAPH = ENTITY_TYPES
+                .register("photograph", () -> EntityType.Builder.<PhotographEntity>of(PhotographEntity::new, MobCategory.MISC)
+                        .sized(0.5F, 0.5F)
+                        .clientTrackingRange(10)
+                        .updateInterval(Integer.MAX_VALUE)
+                        .build("photograph"));
+    }
+
     public static class MenuTypes {
         private static final DeferredRegister<MenuType<?>> MENU_TYPES = DeferredRegister.create(ForgeRegistries.MENU_TYPES, ID);
 
@@ -188,6 +203,8 @@ public class Exposure {
         public static final RegistryObject<SoundEvent> LENS_RING_CLICK = register("item", "camera.lens_ring_click");
         public static final RegistryObject<SoundEvent> FILTER_PLACE = register("item", "camera.filter_place");
 
+        public static final RegistryObject<SoundEvent> PHOTOGRAPH_PLACE = register("item", "photograph.place");
+        public static final RegistryObject<SoundEvent> PHOTOGRAPH_BREAK = register("item", "photograph.break");
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_RUSTLE = register("item", "photograph.rustle");
 
         private static RegistryObject<SoundEvent> register(String category, String key) {

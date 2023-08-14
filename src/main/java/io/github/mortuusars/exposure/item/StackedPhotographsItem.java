@@ -4,11 +4,15 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
@@ -17,7 +21,9 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -193,6 +199,46 @@ public class StackedPhotographsItem extends Item {
         }
 
         return false;
+    }
+
+    @Override
+    public @NotNull InteractionResult useOn(UseOnContext context) {
+        BlockPos clickedPos = context.getClickedPos();
+        Direction direction = context.getClickedFace();
+        BlockPos resultPos = clickedPos.relative(direction);
+        Player player = context.getPlayer();
+        ItemStack itemInHand = context.getItemInHand();
+
+        if (itemInHand.getItem() != this)
+            return InteractionResult.FAIL;
+
+        ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(itemInHand);
+
+        if (player == null || player.level.isOutsideBuildHeight(resultPos) || !player.mayUseItemAt(resultPos, direction, itemInHand))
+            return InteractionResult.FAIL;
+
+        Level level = context.getLevel();
+        PhotographEntity photographEntity = new PhotographEntity(level, resultPos, direction, topPhotograph.getStack().copy());
+
+        if (photographEntity.survives()) {
+            if (!level.isClientSide) {
+                photographEntity.playPlacementSound();
+                level.gameEvent(player, GameEvent.ENTITY_PLACE, photographEntity.position());
+                level.addFreshEntity(photographEntity);
+            }
+
+            int photographsCount = getPhotographsCount(itemInHand);
+            if (photographsCount == 0)
+                itemInHand.shrink(1);
+            else if (photographsCount == 1)
+                player.setItemInHand(context.getHand(), removeTopPhotograph(itemInHand).getStack());
+
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        else {
+            addPhotographOnTop(itemInHand, topPhotograph.getStack());
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
     }
 
     @Override
