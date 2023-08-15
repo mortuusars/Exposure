@@ -22,27 +22,58 @@ public class ExposureRenderer implements AutoCloseable {
     private final Map<String, ExposureRenderer.ExposureInstance> exposures = new HashMap<>();
     private final Map<String, ExposureRenderer.ExposureInstance> negativeExposures = new HashMap<>();
 
-    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
-                       PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height,
-                       int r, int g, int b, int a) {
-        getOrCreateMapInstance(id, exposureData, negative).draw(poseStack, bufferSource, packedLight, width, height, r, g, b, a);
+    // Regular:
+
+    public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
+                       float minX, float minY, float maxX, float maxY,
+                       float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
+        render(id, exposureData, false, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
     }
 
-    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
-                       PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height) {
-        render(id, exposureData, negative, poseStack, bufferSource, packedLight, width, height, 255, 255, 255, 255);
-    }
-
-    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
-                       PoseStack poseStack, int packedLight, float width, float height) {
+    public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack,
+                       float minX, float minY, float maxX, float maxY,
+                       float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        render(id, exposureData, negative, poseStack, bufferSource, packedLight, width, height);
+        render(id, exposureData, false, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
         bufferSource.endBatch();
     }
 
-    public void render(String id, @NotNull ExposureSavedData exposureData, boolean negative,
-                       PoseStack poseStack, float width, float height) {
-        render(id, exposureData, negative, poseStack, LightTexture.FULL_BRIGHT, width, height);
+    public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
+                       float width, float height, int packedLight, int r, int g, int b, int a) {
+        render(id, exposureData, false, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+    }
+
+    public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack,
+                       float width, float height, int packedLight, int r, int g, int b, int a) {
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        render(id, exposureData, false, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+        bufferSource.endBatch();
+    }
+
+    // Negative:
+
+    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
+                       float minX, float minY, float maxX, float maxY,
+                       float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
+        render(id, exposureData, true, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
+    }
+
+    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
+                       float width, float height, int packedLight, int r, int g, int b, int a) {
+        render(id, exposureData, true, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+    }
+
+    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack,
+                       float width, float height, int packedLight, int r, int g, int b, int a) {
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        render(id, exposureData, true, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+        bufferSource.endBatch();
+    }
+
+    private void render(String id, @NotNull ExposureSavedData exposureData, boolean negative, PoseStack poseStack, MultiBufferSource bufferSource,
+                        float minX, float minY, float maxX, float maxY,
+                        float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
+        getOrCreateMapInstance(id, exposureData, negative).draw(poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
     }
 
     private ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative) {
@@ -137,6 +168,22 @@ public class ExposureRenderer implements AutoCloseable {
         }
 
         void draw(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height, int r, int g, int b, int a) {
+            draw(poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+//            if (this.requiresUpload) {
+//                this.updateTexture();
+//                this.requiresUpload = false;
+//            }
+//
+//            Matrix4f matrix4f = poseStack.last().pose();
+//            VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
+//            vertexconsumer.vertex(matrix4f, 0, height, 0).color(r, g, b, a).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
+//            vertexconsumer.vertex(matrix4f, width, height, 0).color(r, g, b, a).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
+//            vertexconsumer.vertex(matrix4f, width, 0, 0).color(r, g, b, a).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
+//            vertexconsumer.vertex(matrix4f, 0, 0, 0).color(r, g, b, a).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
+        }
+
+        void draw(PoseStack poseStack, MultiBufferSource bufferSource, float minX, float minY, float maxX, float maxY,
+                  float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
             if (this.requiresUpload) {
                 this.updateTexture();
                 this.requiresUpload = false;
@@ -144,10 +191,10 @@ public class ExposureRenderer implements AutoCloseable {
 
             Matrix4f matrix4f = poseStack.last().pose();
             VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
-            vertexconsumer.vertex(matrix4f, 0, height, 0).color(r, g, b, a).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, width, height, 0).color(r, g, b, a).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, width, 0, 0).color(r, g, b, a).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
-            vertexconsumer.vertex(matrix4f, 0, 0, 0).color(r, g, b, a).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, minX, maxY, 0).color(r, g, b, a).uv(minU, maxV).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, maxX, maxY, 0).color(r, g, b, a).uv(maxU, maxV).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, maxX, minY, 0).color(r, g, b, a).uv(maxU, minV).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, minX, minY, 0).color(r, g, b, a).uv(minU, minV).uv2(packedLight).endVertex();
         }
 
         public void close() {

@@ -1,93 +1,81 @@
 package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class PhotographRenderer {
     public static final int SIZE = 256;
-    public static final ResourceLocation PHOTOGRAPH_PAPER_TEXTURE = Exposure.resource("textures/gui/misc/photograph_paper.png");
-    public static void render(Either<String, ResourceLocation> photograph, PoseStack poseStack, int packedLight) {
-        photograph
-                .ifLeft(id -> renderExposure(id, poseStack, packedLight))
-                .ifRight(resource -> renderTexture(resource, poseStack, packedLight));
+    public static final ResourceLocation PHOTOGRAPH_TEXTURE = Exposure.resource("textures/block/photograph.png");
+
+    public static void render(Either<String, ResourceLocation> idOrTexture, PoseStack poseStack, MultiBufferSource bufferSource,
+                              float minX, float minY, float maxX, float maxY,
+                              float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
+        idOrTexture.ifLeft(id -> Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
+                        ExposureClient.getExposureRenderer().render(id, exposureData, poseStack, bufferSource,
+                                minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a)))
+                   .ifRight(resource -> renderTexture(resource, poseStack, bufferSource,
+                           minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a));
     }
 
-    public static void render(Either<String, ResourceLocation> photograph, MultiBufferSource bufferSource, PoseStack poseStack, int packedLight) {
-        photograph
-                .ifLeft(id -> Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
-                        ExposureClient.getExposureRenderer().render(id, exposureData, false, poseStack, bufferSource, packedLight, SIZE, SIZE)))
-                .ifRight(resource -> renderTexture(resource, poseStack, packedLight));
+    public static void render(Either<String, ResourceLocation> idOrTexture, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        render(idOrTexture, poseStack, bufferSource, 0, 0, SIZE, SIZE, 0, 0, 1, 1, packedLight, 255, 255, 255, 255);
     }
 
-    public static void render(Either<String, ResourceLocation> photograph, PoseStack poseStack) {
-        render(photograph, poseStack, LightTexture.FULL_BRIGHT);
-    }
-
-    public static void renderOnPaper(Either<String, ResourceLocation> photograph, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public static void renderOnPaper(Either<String, ResourceLocation> idOrTexture, PoseStack poseStack,
+                                     MultiBufferSource bufferSource, int packedLight, int r, int g, int b, int a) {
         poseStack.pushPose();
 
-        renderTexture(PHOTOGRAPH_PAPER_TEXTURE, poseStack, bufferSource, packedLight);
+        renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
+                0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
+                packedLight, r, g, b, a);
 
-        float offset = SIZE * 0.03f;
-        poseStack.translate(offset, offset, 0);
-        poseStack.scale(0.94f, 0.94f, 0.94f);
-        render(photograph, bufferSource, poseStack, packedLight);
+        // Backside:
+        poseStack.pushPose();
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
+        poseStack.translate(-SIZE, 0, -0.5);
+        renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
+                0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 1, 0, 0, 1,
+                packedLight,
+                ((int) Mth.clamp(r * 0.85f, 0, 255)),
+                ((int) Mth.clamp(g * 0.85f, 0, 255)),
+                ((int) Mth.clamp(b * 0.85f, 0, 255)), a);
+        poseStack.popPose();
+
+        float offset = SIZE * 0.05f;
+        poseStack.translate(offset, offset, 0.2);
+        poseStack.scale(0.90f, 0.90f, 0.90f);
+        render(idOrTexture, poseStack, bufferSource, 0, 0, SIZE, SIZE, 0, 0, 1, 1, packedLight, r, g, b, a);
         poseStack.popPose();
     }
 
-    public static void renderOnPaper(Either<String, ResourceLocation> photograph, PoseStack poseStack) {
-//        renderOnPaper(photograph, poseStack, LightTexture.FULL_BRIGHT);
+    public static void renderOnPaper(Either<String, ResourceLocation> idOrTexture, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        renderOnPaper(idOrTexture, poseStack, bufferSource, packedLight, 255, 255, 255, 255);
     }
 
-    public static void renderExposure(String id, PoseStack poseStack, int packedLight) {
-        Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
-                ExposureClient.getExposureRenderer().render(id, exposureData, false, poseStack, packedLight, SIZE, SIZE));
-    }
-
-    public static void renderNegativeExposure(String id, PoseStack poseStack, int packedLight) {
-        Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
-                ExposureClient.getExposureRenderer().render(id, exposureData, true, poseStack, packedLight, SIZE, SIZE));
-    }
-
-    public static void renderTexture(ResourceLocation resource, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public static void renderTexture(ResourceLocation resource, PoseStack poseStack, MultiBufferSource bufferSource,
+                                     float minX, float minY, float maxX, float maxY,
+                                     float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
         RenderSystem.setShaderTexture(0, resource);
+        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
         RenderSystem.disableBlend();
         RenderSystem.disableDepthTest();
-        drawTextureQuad(poseStack, 0, 0, SIZE, SIZE, 0, 0, 0, 1, 1, bufferSource, packedLight);
-    }
 
-    public static void renderTexture(ResourceLocation resource, PoseStack poseStack, int packedLight) {
-//        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-//        renderTexture(resource, poseStack, bufferSource, packedLight);
-//        bufferSource.endBatch();
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void drawTextureQuad(PoseStack poseStack, float minX, float minY, float maxX, float maxY, float blitOffset,
-                                        float minU, float minV, float maxU, float maxV, MultiBufferSource bufferSource, int packedLight) {
         Matrix4f matrix = poseStack.last().pose();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-//        VertexConsumer buffer = bufferSource.getBuffer(RenderType.cutout());
-
-        VertexConsumer buffer = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(RenderType.cutout());
-
-//        BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
-//        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.vertex(matrix, minX, maxY, blitOffset).color(255,255,255,255).uv(minU, maxV).uv2(packedLight).endVertex();
-        buffer.vertex(matrix, maxX, maxY, blitOffset).color(255,255,255,255).uv(maxU, maxV).uv2(packedLight).endVertex();
-        buffer.vertex(matrix, maxX, minY, blitOffset).color(255,255,255,255).uv(maxU, minV).uv2(packedLight).endVertex();
-        buffer.vertex(matrix, minX, minY, blitOffset).color(255,255,255,255).uv(minU, minV).uv2(packedLight).endVertex();
-//        BufferUploader.drawWithShader(bufferbuilder.end());
+        VertexConsumer bufferBuilder = bufferSource.getBuffer(RenderType.text(resource));
+        bufferBuilder.vertex(matrix, minX, maxY, 0).color(r,g,b,a).uv(minU, maxV).uv2(packedLight).endVertex();
+        bufferBuilder.vertex(matrix, maxX, maxY, 0).color(r,g,b,a).uv(maxU, maxV).uv2(packedLight).endVertex();
+        bufferBuilder.vertex(matrix, maxX, minY, 0).color(r,g,b,a).uv(maxU, minV).uv2(packedLight).endVertex();
+        bufferBuilder.vertex(matrix, minX, minY, 0).color(r,g,b,a).uv(minU, minV).uv2(packedLight).endVertex();
     }
 }

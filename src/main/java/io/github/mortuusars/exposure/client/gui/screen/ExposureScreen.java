@@ -72,10 +72,10 @@ public class ExposureScreen extends Screen {
         poseStack.translate(PhotographRenderer.SIZE / -2d, PhotographRenderer.SIZE / -2d, 0);
 
         fill(poseStack, -8, -8, PhotographRenderer.SIZE + 8, PhotographRenderer.SIZE + 8, 0xFFDDDDDD);
-        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
-            ExposureClient.getExposureRenderer().render(exposureId, exposureData, false, poseStack,
-                    LightTexture.FULL_BRIGHT, PhotographRenderer.SIZE, PhotographRenderer.SIZE);
-        });
+//        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
+//            ExposureClient.getExposureRenderer().render(exposureId, exposureData, false, poseStack,
+//                    LightTexture.FULL_BRIGHT, PhotographRenderer.SIZE, PhotographRenderer.SIZE);
+//        });
 
         poseStack.popPose();
     }

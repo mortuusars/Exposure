@@ -60,14 +60,14 @@ public class ItemFramePhotographRenderer {
 
         float scale = 1f / size;
         float pixelScale = scale / 16f;
-        // 1px border around a photograph:
         scale -= pixelScale * 6;
 
         poseStack.pushPose();
         poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, 10);
-        PhotographRenderer.render(idOrResource, poseStack, packedLight);
+
+        PhotographRenderer.render(idOrResource, poseStack, event.getMultiBufferSource(), packedLight);
         poseStack.popPose();
 
         event.setCanceled(true);

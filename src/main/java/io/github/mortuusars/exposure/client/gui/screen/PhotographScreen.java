@@ -3,24 +3,21 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Either;
+import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Optional;
 
 public class PhotographScreen extends Screen {
     private final List<ItemAndStack<PhotographItem>> photographs;
@@ -74,7 +71,9 @@ public class PhotographScreen extends Screen {
 
         ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
         photograph.getItem().getIdOrResource(photograph.getStack()).ifPresent(idOrResource -> {
-            PhotographRenderer.renderOnPaper(idOrResource, poseStack);
+            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+            PhotographRenderer.renderOnPaper(idOrResource, poseStack, bufferSource, LightTexture.FULL_BRIGHT);
+            bufferSource.endBatch();
         });
 
         poseStack.popPose();
