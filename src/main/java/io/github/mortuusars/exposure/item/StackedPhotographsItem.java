@@ -117,8 +117,7 @@ public class StackedPhotographsItem extends Item {
             return Optional.empty();
 
         ItemAndStack<PhotographItem> topPhotograph = photographs.get(0);
-        return topPhotograph.getItem().getIdOrResource(topPhotograph.getStack())
-                .map(idOrResource -> new PhotographTooltip(idOrResource, photographs.size()));
+        return Optional.of(new PhotographTooltip(topPhotograph.getItem().getidOrTexture(topPhotograph.getStack()), photographs.size()));
     }
 
     @Override
@@ -239,13 +238,12 @@ public class StackedPhotographsItem extends Item {
                 // we don't remove placed photograph from the stack.
                 addPhotographOnTop(itemInHand, topPhotograph.getStack());
             }
-
-            return InteractionResult.sidedSuccess(level.isClientSide);
         }
         else {
             addPhotographOnTop(itemInHand, topPhotograph.getStack());
-            return InteractionResult.sidedSuccess(level.isClientSide);
         }
+
+        return InteractionResult.sidedSuccess(level.isClientSide);
     }
 
     @Override

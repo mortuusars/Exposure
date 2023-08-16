@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -169,17 +168,6 @@ public class ExposureRenderer implements AutoCloseable {
 
         void draw(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float width, float height, int r, int g, int b, int a) {
             draw(poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
-//            if (this.requiresUpload) {
-//                this.updateTexture();
-//                this.requiresUpload = false;
-//            }
-//
-//            Matrix4f matrix4f = poseStack.last().pose();
-//            VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
-//            vertexconsumer.vertex(matrix4f, 0, height, 0).color(r, g, b, a).uv(0.0F, 1.0F).uv2(packedLight).endVertex();
-//            vertexconsumer.vertex(matrix4f, width, height, 0).color(r, g, b, a).uv(1.0F, 1.0F).uv2(packedLight).endVertex();
-//            vertexconsumer.vertex(matrix4f, width, 0, 0).color(r, g, b, a).uv(1.0F, 0.0F).uv2(packedLight).endVertex();
-//            vertexconsumer.vertex(matrix4f, 0, 0, 0).color(r, g, b, a).uv(0.0F, 0.0F).uv2(packedLight).endVertex();
         }
 
         void draw(PoseStack poseStack, MultiBufferSource bufferSource, float minX, float minY, float maxX, float maxY,

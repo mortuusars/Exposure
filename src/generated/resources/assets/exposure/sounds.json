@@ -55,6 +55,18 @@
     ],
     "subtitle": "subtitle.exposure.camera.viewfinder_open"
   },
+  "item.photograph.break": {
+    "sounds": [
+      "exposure:item/photograph/place"
+    ],
+    "subtitle": "subtitle.exposure.photograph.break"
+  },
+  "item.photograph.place": {
+    "sounds": [
+      "exposure:item/photograph/place"
+    ],
+    "subtitle": "subtitle.exposure.photograph.place"
+  },
   "item.photograph.rustle": {
     "sounds": [
       "exposure:item/photograph/rustle1",

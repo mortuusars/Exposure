@@ -46,6 +46,12 @@ public class SoundsProvider extends SoundDefinitionsProvider {
         add(Exposure.SoundEvents.FILTER_PLACE.get(), definition()
                 .with(sound(Exposure.ID + ":item/camera/filter_place")));
 
+        add(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), definition()
+                .subtitle("subtitle.exposure.photograph.place")
+                .with(sound(Exposure.ID + ":item/photograph/place")));
+        add(Exposure.SoundEvents.PHOTOGRAPH_BREAK.get(), definition()
+                .subtitle("subtitle.exposure.photograph.break")
+                .with(sound(Exposure.ID + ":item/photograph/place")));
         add(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), definition()
                 .subtitle("subtitle.exposure.photograph.rustle")
                 .with(multiple(2, Exposure.ID + ":item/photograph/rustle", 1f, 1)));

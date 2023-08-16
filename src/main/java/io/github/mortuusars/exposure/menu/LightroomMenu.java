@@ -5,15 +5,14 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
-import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.*;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.inventory.SimpleContainerData;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
@@ -124,23 +123,24 @@ public class LightroomMenu extends AbstractContainerMenu {
     public @NotNull ItemStack quickMoveStack(@NotNull Player player, int index) {
         Slot slot = slots.get(index);
         ItemStack clickedStack = slot.getItem();
+        ItemStack returnedStack = clickedStack.copy();
 
         if (index < LightroomBlockEntity.SLOTS) {
             if (!moveItemStackTo(clickedStack, LightroomBlockEntity.SLOTS, slots.size(), true))
                 return ItemStack.EMPTY;
-
-            // BEs inventory onContentsChanged is not fired when removing agreement by shift clicking.
-            // So we force update the slot.
-            // This is needed to update agreement-related stuff. (Blockstate was not updating properly to reflect the removal).
-//            if (index == DeliveryTableBlockEntity.AGREEMENT_SLOT)
-//                blockEntity.setItem(DeliveryTableBlockEntity.AGREEMENT_SLOT, slot.getItem());
         }
         else if (index < slots.size()) {
             if (!moveItemStackTo(clickedStack, 0, LightroomBlockEntity.SLOTS, false))
                 return ItemStack.EMPTY;
         }
 
-        return ItemStack.EMPTY;
+        if (clickedStack.isEmpty()) {
+            slot.set(ItemStack.EMPTY);
+        } else {
+            slot.setChanged();
+        }
+
+        return returnedStack;
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.render.PhotographRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
@@ -14,8 +15,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -70,11 +73,11 @@ public class PhotographScreen extends Screen {
         poseStack.translate(phWidth / -2d, phHeight / -2d, 0);
 
         ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
-        photograph.getItem().getIdOrResource(photograph.getStack()).ifPresent(idOrResource -> {
-            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-            PhotographRenderer.renderOnPaper(idOrResource, poseStack, bufferSource, LightTexture.FULL_BRIGHT);
-            bufferSource.endBatch();
-        });
+
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getidOrTexture(photograph.getStack());
+        PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
+        bufferSource.endBatch();
 
         poseStack.popPose();
     }

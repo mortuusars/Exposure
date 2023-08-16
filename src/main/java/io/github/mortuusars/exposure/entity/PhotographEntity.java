@@ -1,9 +1,9 @@
 package io.github.mortuusars.exposure.entity;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +12,7 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -37,6 +38,9 @@ import javax.annotation.Nullable;
 public class PhotographEntity extends HangingEntity {
     protected static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(PhotographEntity.class, EntityDataSerializers.ITEM_STACK);
     protected static final EntityDataAccessor<Integer> DATA_ROTATION = SynchedEntityData.defineId(PhotographEntity.class, EntityDataSerializers.INT);
+
+    @Nullable
+    private Either<String, ResourceLocation> idOrTexture;
 
     public PhotographEntity(EntityType<? extends PhotographEntity> entityType, Level level) {
         super(entityType, level);
@@ -73,7 +77,7 @@ public class PhotographEntity extends HangingEntity {
         return new ClientboundAddEntityPacket(this, this.direction.get3DDataValue(), this.getPos());
     }
 
-    public void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         if (!this.getItem().isEmpty()) {
             tag.put("Item", this.getItem().save(new CompoundTag()));
@@ -87,7 +91,7 @@ public class PhotographEntity extends HangingEntity {
     /**
      * (abstract) Protected helper method to read subclass entity data from NBT.
      */
-    public void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         CompoundTag compoundtag = tag.getCompound("Item");
         if (!compoundtag.isEmpty()) {
@@ -105,6 +109,10 @@ public class PhotographEntity extends HangingEntity {
 
 
     // Properties:
+
+    public @Nullable Either<String, ResourceLocation> getIdOrTexture() {
+        return idOrTexture;
+    }
 
     @Override
     protected float getEyeHeight(@NotNull Pose pose, @NotNull EntityDimensions dimensions) {
@@ -200,6 +208,9 @@ public class PhotographEntity extends HangingEntity {
     protected void onItemChanged(ItemStack itemStack) {
         if (!itemStack.isEmpty()) {
             itemStack.setEntityRepresentation(this);
+            if (itemStack.getItem() instanceof PhotographItem photographItem) {
+                idOrTexture = photographItem.getidOrTexture(itemStack);
+            }
         }
 
         this.recalculateBoundingBox();
@@ -219,17 +230,15 @@ public class PhotographEntity extends HangingEntity {
         if (!isInvisible() && itemInHand.canPerformAction(ToolActions.SHEARS_CARVE)) {
             if (!level.isClientSide) {
                 setInvisible(true);
-                itemInHand.hurtAndBreak(1, player, (p_29822_) -> {
-                    p_29822_.broadcastBreakEvent(hand);
-                });
-                playSound(SoundEvents.SHEEP_SHEAR);
+                itemInHand.hurtAndBreak(1, player, (pl) -> pl.broadcastBreakEvent(hand));
+                playSound(SoundEvents.SHEEP_SHEAR, 1f, level.getRandom().nextFloat() * 0.2f + 0.9f);
             }
 
             return InteractionResult.SUCCESS;
         }
 
         if (!level.isClientSide) {
-            this.playSound(getRotateSound(), 1.0F, 1.0F);
+            this.playSound(getRotateSound(), 1.0F, level.getRandom().nextFloat() * 0.2f + 0.9f);
             this.setRotation(getRotation() + 1);
         }
 
@@ -254,7 +263,7 @@ public class PhotographEntity extends HangingEntity {
 
     @Override
     public void dropItem(@Nullable Entity breaker) {
-        this.playSound(this.getBreakSound(), 1.0F, 1.0F);
+        this.playSound(this.getBreakSound(), 1.0F, level.getRandom().nextFloat() * 0.3f + 0.6f);
 
         if ((breaker instanceof Player player && player.isCreative()))
             return;
@@ -265,7 +274,7 @@ public class PhotographEntity extends HangingEntity {
 
     @Override
     public void playPlacementSound() {
-        this.playSound(this.getPlaceSound(), 1.0F, 1.0F);
+        this.playSound(this.getPlaceSound(), 1.0F, level.getRandom().nextFloat() * 0.3f + 0.9f);
     }
 
     public SoundEvent getPlaceSound() {

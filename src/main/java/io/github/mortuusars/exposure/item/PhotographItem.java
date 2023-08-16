@@ -7,7 +7,6 @@ import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.util.ItemAndStack;
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.ListTag;
@@ -15,12 +14,10 @@ import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ClickAction;
@@ -28,10 +25,12 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,19 +42,19 @@ public class PhotographItem extends Item {
         super(properties);
     }
 
-    public Optional<Either<String, ResourceLocation>> getIdOrResource(ItemStack stack) {
+    public @Nullable Either<String, ResourceLocation> getidOrTexture(ItemStack stack) {
         if (stack.getTag() == null)
-            return Optional.empty();
+            return null;
 
         String id = stack.getTag().getString("Id");
         if (id.length() > 0)
-            return Optional.of(Either.left(id));
+            return Either.left(id);
 
         String resource = stack.getTag().getString("Resource");
         if (resource.length() > 0)
-            return Optional.of(Either.right(new ResourceLocation(resource)));
+            return Either.right(new ResourceLocation(resource));
 
-        return Optional.empty();
+        return null;
     }
 
     public List<Component> getNote(ItemStack stack) {
@@ -97,7 +96,12 @@ public class PhotographItem extends Item {
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
-        return getIdOrResource(stack).map(PhotographTooltip::new);
+        return Optional.of(new PhotographTooltip(getidOrTexture(stack)));
+    }
+
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
+
     }
 
     @Override
@@ -131,20 +135,12 @@ public class PhotographItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemInHand = player.getItemInHand(hand);
 
-        getIdOrResource(itemInHand).ifPresentOrElse(idOrResource -> {
-            if (level.isClientSide)
-                ClientGUI.showPhotographScreen(List.of(new ItemAndStack<>(itemInHand)));
-        },
-        () -> {
-            if (level.isClientSide) {
-                player.displayClientMessage(Component.translatable("item.exposure.photograph.message.no_data")
-                        .withStyle(ChatFormatting.RED), true);
-                player.playSound(SoundEvents.BOOK_PAGE_TURN, 1f, 0.65f);
-                Exposure.LOGGER.error("Cannot show an image: no Id or Resource was found. - " + itemInHand);
-            }
-        });
+        if (getidOrTexture(itemInHand) == null)
+            Exposure.LOGGER.warn("No Id or Resource is defined. - " + itemInHand);
 
-        player.getCooldowns().addCooldown(this, 10);
+        if (level.isClientSide)
+            ClientGUI.showPhotographScreen(List.of(new ItemAndStack<>(itemInHand)));
+
         return InteractionResultHolder.success(itemInHand);
     }
 

@@ -14,19 +14,21 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PhotographTooltip implements ClientTooltipComponent, TooltipComponent {
     public static final int SIZE = 72;
-    private final Either<String, ResourceLocation> photograph;
+    @Nullable
+    private final Either<String, ResourceLocation> idOrTexture;
     private final int photographs;
 
-    public PhotographTooltip(Either<String, ResourceLocation> photograph, int photographs) {
-        this.photograph = photograph;
+    public PhotographTooltip(@Nullable Either<String, ResourceLocation> idOrTexture, int photographs) {
+        this.idOrTexture = idOrTexture;
         this.photographs = photographs;
     }
 
-    public PhotographTooltip(Either<String, ResourceLocation> photograph) {
-        this.photograph = photograph;
+    public PhotographTooltip(@Nullable Either<String, ResourceLocation> idOrTexture) {
+        this.idOrTexture = idOrTexture;
         this.photographs = 1;
     }
 
@@ -68,7 +70,7 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
             poseStack.popPose();
         }
 
-        PhotographRenderer.renderOnPaper(photograph, poseStack, bufferSource, LightTexture.FULL_BRIGHT);
+        PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
         bufferSource.endBatch();
 
 
