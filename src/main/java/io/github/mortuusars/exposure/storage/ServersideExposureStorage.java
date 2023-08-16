@@ -5,14 +5,10 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class ServersideExposureStorage implements IExposureStorage {
     private static final String EXPOSURE_DIR = "exposures";
-
-//    private static final Map<String, byte[]> exposurePartsHolder = new HashMap<>();
 
     public ServersideExposureStorage() {
         createStorageDirectory();
@@ -52,17 +48,4 @@ public class ServersideExposureStorage implements IExposureStorage {
 
     @Override
     public void clear() { }
-
-    //    public void receiveExposurePart(String id, int width, int height, int offset, byte[] partBytes) {
-//        byte[] exposureBytes = exposurePartsHolder.compute(id, (key, data) ->
-//                data == null ? new byte[width * height] : data);
-//
-//        System.arraycopy(partBytes, 0, exposureBytes, offset, partBytes.length);
-//        exposurePartsHolder.put(id, exposureBytes);
-//
-//        if (offset + partBytes.length >= exposureBytes.length) {
-//            put(id, new ExposureSavedData(width, height, exposureBytes));
-//            exposurePartsHolder.remove(id);
-//        }
-//    }
 }

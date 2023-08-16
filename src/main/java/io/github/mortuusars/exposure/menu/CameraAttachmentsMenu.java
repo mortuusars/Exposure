@@ -5,7 +5,6 @@ import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.inventory.CameraItemStackHandler;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
-import io.github.mortuusars.exposure.util.OnePerPlayerSoundsClient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;

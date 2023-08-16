@@ -1,16 +1,8 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import net.minecraft.ChatFormatting;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -18,8 +10,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class DevelopedFilmItem extends Item implements IFilmItem {
@@ -35,15 +25,15 @@ public class DevelopedFilmItem extends Item implements IFilmItem {
         return type;
     }
 
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack film = player.getItemInHand(hand);
-
-        if (level.isClientSide && getExposedFramesCount(film) > 0)
-            ClientGUI.showExposureViewScreen(film);
-
-        return InteractionResultHolder.success(film);
-    }
+//    @Override
+//    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+//        ItemStack film = player.getItemInHand(hand);
+//
+//        if (level.isClientSide && getExposedFramesCount(film) > 0)
+//            ClientGUI.showExposureViewScreen(film);
+//
+//        return InteractionResultHolder.success(film);
+//    }
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {

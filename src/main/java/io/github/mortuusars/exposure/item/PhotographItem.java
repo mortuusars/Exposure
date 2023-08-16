@@ -139,7 +139,7 @@ public class PhotographItem extends Item {
             Exposure.LOGGER.warn("No Id or Resource is defined. - " + itemInHand);
 
         if (level.isClientSide)
-            ClientGUI.showPhotographScreen(List.of(new ItemAndStack<>(itemInHand)));
+            ClientGUI.openPhotographScreen(List.of(new ItemAndStack<>(itemInHand)));
 
         return InteractionResultHolder.success(itemInHand);
     }

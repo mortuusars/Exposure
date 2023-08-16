@@ -17,30 +17,12 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import net.minecraft.world.item.crafting.ShapelessRecipe;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 public class FilmDevelopingRecipe extends ShapelessRecipe {
     public FilmDevelopingRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
         super(id, group, result, ingredients);
     }
-
-//    @Override
-//    public boolean matches(CraftingContainer container, Level level) {
-//        boolean hasFilmRoll = false;
-//
-//        for (int i = 0; i < container.getContainerSize(); i++) {
-//            if (hasFilmRoll && container.getItem(i).getItem() instanceof FilmRollItem)
-//                return false;
-//            if (container.getItem(i).getItem() instanceof FilmRollItem)
-//                hasFilmRoll = true;
-//        }
-//
-//        if (hasFilmRoll)
-//            return super.matches(container, level);
-//
-//        return false;
-//    }
 
     @Override
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingContainer container) {

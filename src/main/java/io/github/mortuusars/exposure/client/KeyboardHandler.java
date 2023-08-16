@@ -33,7 +33,7 @@ public class KeyboardHandler {
 
         if (Minecraft.getInstance().options.keySprint.matches(key, scanCode) &&
             !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
-            ClientGUI.showViewfinderConfigScreen();
+            ClientGUI.openViewfinderConfigScreen();
             return true;
         }
 

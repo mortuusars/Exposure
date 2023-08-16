@@ -4,8 +4,6 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Clearable;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 
 public class Shutter {
     private final Map<Player, OpenShutter> openShutters = new HashMap<>();

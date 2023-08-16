@@ -25,64 +25,6 @@ public class RGBToMapColorConverter {
         return bytes;
     }
 
-//    public static byte[] ditherWithMapColors(BufferedImage image) {
-//        int width = image.getWidth();
-//        int height = image.getHeight();
-//        int[][] pixels = convertToPixelArray(image);
-//        MaterialColor[] mapColors = Arrays.stream(getMaterialColors()).filter(Objects::nonNull).toArray(MaterialColor[]::new);
-//
-//        byte[] bytes = new byte[width * height];
-//
-//        for (int x = 0; x < width; x++) {
-//            for (int y = 0; y < height; y++) {
-//                Color imageColor = new Color(pixels[y][x], false);
-//                int i = nearestColor(mapColors, imageColor);
-//                byte b = (byte) floydDither(mapColors, pixels, x, y, imageColor);
-//                bytes[x + y * width] = b;
-//            }
-//        }
-//
-//        return bytes;
-//    }
-//    private static int floydDither(MaterialColor[] mapColors, int[][] pixels, int x, int y, Color imageColor) {
-//        int colorIndex = nearestColor(mapColors, imageColor);
-//        Color palletedColor = mapColorToRGBColor(mapColors, colorIndex);
-//        FloydDither.NegatableColor error = new FloydDither.NegatableColor(imageColor.getRed() - palletedColor.getRed(),
-//                imageColor.getGreen() - palletedColor.getGreen(), imageColor.getBlue() - palletedColor.getBlue());
-//        if (pixels[0].length > x + 1) {
-//            Color pixelColor = new Color(pixels[y][x + 1], true);
-//            pixels[y][x + 1] = applyError(pixelColor, error, 7.0 / 16.0);
-//        }
-//        if (pixels.length > y + 1) {
-//            if (x > 0) {
-//                Color pixelColor = new Color(pixels[y + 1][x - 1], true);
-//                pixels[y + 1][x - 1] = applyError(pixelColor, error, 3.0 / 16.0);
-//            }
-//            Color pixelColor = new Color(pixels[y + 1][x], true);
-//            pixels[y + 1][x] = applyError(pixelColor, error, 5.0 / 16.0);
-//            if (pixels[0].length > x + 1) {
-//                pixelColor = new Color(pixels[y + 1][x + 1], true);
-//                pixels[y + 1][x + 1] = applyError(pixelColor, error, 1.0 / 16.0);
-//            }
-//        }
-//
-//        return colorIndex;
-//    }
-//
-//    private static int applyError(Color pixelColor, FloydDither.NegatableColor error, double quantConst) {
-//        int pR = Mth.clamp(pixelColor.getRed() + (int) ((double) error.r * quantConst), 0, 255);
-//        int pG = Mth.clamp(pixelColor.getGreen() + (int) ((double) error.g * quantConst), 0, 255);
-//        int pB = Mth.clamp(pixelColor.getBlue() + (int) ((double) error.b * quantConst), 0, 255);
-//        return new Color(pR, pG, pB, pixelColor.getAlpha()).getRGB();
-//    }
-
-//    private static Color mapColorToRGBColor(MaterialColor[] colors, int color) {
-//        Color mcColor = new Color(colors[color >> 2].col);
-//        double[] mcColorVec = { mcColor.getRed(), mcColor.getGreen(), mcColor.getBlue() };
-//        double coeff = shadeCoeffs[color & 3];
-//        return new Color((int) (mcColorVec[0] * coeff), (int) (mcColorVec[1] * coeff), (int) (mcColorVec[2] * coeff));
-//    }
-
     public static MaterialColor[] getMaterialColors(){
         MaterialColor[] colors = new MaterialColor[64];
         for (int i = 0; i<= 63; i++){
@@ -91,7 +33,7 @@ public class RGBToMapColorConverter {
         return colors;
     }
 
-    private static final double shadeCoeffs[] = { 0.71, 0.86, 1.0, 0.53 };
+    private static final double[] shadeCoeffs = { 0.71, 0.86, 1.0, 0.53 };
 
     private static double[] applyShade(double[] color, int ind) {
         double coeff = shadeCoeffs[ind];

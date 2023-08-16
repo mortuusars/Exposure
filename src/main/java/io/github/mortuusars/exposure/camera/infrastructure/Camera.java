@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.util.CameraInHand;
-import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;

@@ -253,7 +253,7 @@ public class StackedPhotographsItem extends Item {
         List<ItemAndStack<PhotographItem>> photographs = getPhotographs(itemInHand);
         if (photographs.size() > 0) {
             if (level.isClientSide)
-                ClientGUI.showPhotographScreen(photographs);
+                ClientGUI.openPhotographScreen(photographs);
 
             player.getCooldowns().addCooldown(this, 10);
         }

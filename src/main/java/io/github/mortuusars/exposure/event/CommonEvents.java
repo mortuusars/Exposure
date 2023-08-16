@@ -41,11 +41,13 @@ public class CommonEvents {
         @SubscribeEvent
         public static void entityInteract(PlayerInteractEvent.EntityInteractSpecific event) {
             Player player = event.getEntity();
-            if (Exposure.getCamera().isActive(player)) { // TODO: Config whether to block entity interact
+
+            // Interacting with entity when trying to shoot is annoying
+            if (Exposure.getCamera().isActive(player)) {
                 event.setCanceled(true);
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-                camera.getItem().use(player.level, player, camera.getHand());
+                camera.getStack().use(player.level, player, camera.getHand());
             }
         }
     }

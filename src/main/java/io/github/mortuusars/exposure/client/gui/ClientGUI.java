@@ -11,15 +11,15 @@ import net.minecraft.world.item.ItemStack;
 import java.util.List;
 
 public class ClientGUI {
-    public static void showExposureViewScreen(ItemStack film) {
+    public static void openExposureViewScreen(ItemStack film) {
         Minecraft.getInstance().setScreen(new ExposureScreen(film));
     }
 
-    public static void showPhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
+    public static void openPhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
         Minecraft.getInstance().setScreen(new PhotographScreen(photographs));
     }
 
-    public static void showViewfinderConfigScreen() {
+    public static void openViewfinderConfigScreen() {
         Minecraft.getInstance().setScreen(new ViewfinderControlsScreen());
     }
 }

@@ -4,7 +4,6 @@ import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Minecart;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientCamera extends Camera {

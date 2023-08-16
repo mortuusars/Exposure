@@ -25,7 +25,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerData;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
@@ -50,7 +49,6 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int PAPER_SLOT = 1;
     public static final int RESULT_SLOT = 2;
 
-    public static final int[] INPUT_SLOTS = new int[] { 0, 1 };
     public static final int[] OUTPUT_SLOTS = new int[] { 2 };
 
     public static final int CONTAINER_DATA_SIZE = 3;
@@ -102,7 +100,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             lightroomBlockEntity.tick();
     }
 
-    private void tick() {
+    protected void tick() {
         if (printTime > 0 && canPrint()) {
             if (progress >= printTime) {
                 if (tryPrint()) {
@@ -127,7 +125,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         }
     }
 
-    private void ejectFilm() {
+    protected void ejectFilm() {
         if (level == null || level.isClientSide || getItem(FILM_SLOT).isEmpty())
             return;
 
@@ -270,7 +268,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         return false;
     }
 
-    private void inventoryContentsChanged(int slot) {
+    protected void inventoryContentsChanged(int slot) {
         if (slot == FILM_SLOT) {
             currentFrame = 0;
         }

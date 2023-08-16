@@ -26,59 +26,59 @@ public class ExposureRenderer implements AutoCloseable {
     public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
                        float minX, float minY, float maxX, float maxY,
                        float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
-        render(id, exposureData, false, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
+        render(id, exposureData, false, false, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
     }
 
     public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack,
                        float minX, float minY, float maxX, float maxY,
                        float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        render(id, exposureData, false, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
+        render(id, exposureData, false, false, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
         bufferSource.endBatch();
     }
 
     public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
                        float width, float height, int packedLight, int r, int g, int b, int a) {
-        render(id, exposureData, false, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+        render(id, exposureData, false, false, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
     }
 
     public void render(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack,
                        float width, float height, int packedLight, int r, int g, int b, int a) {
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        render(id, exposureData, false, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+        render(id, exposureData, false, false, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
         bufferSource.endBatch();
     }
 
     // Negative:
 
-    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
+    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, boolean simulateFilm, PoseStack poseStack, MultiBufferSource bufferSource,
                        float minX, float minY, float maxX, float maxY,
                        float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
-        render(id, exposureData, true, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
+        render(id, exposureData, true, simulateFilm, poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
     }
 
-    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack, MultiBufferSource bufferSource,
+    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, boolean simulateFilm, PoseStack poseStack, MultiBufferSource bufferSource,
                        float width, float height, int packedLight, int r, int g, int b, int a) {
-        render(id, exposureData, true, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+        render(id, exposureData, true, simulateFilm, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
     }
 
-    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, PoseStack poseStack,
+    public void renderNegative(String id, @NotNull ExposureSavedData exposureData, boolean simulateFilm, PoseStack poseStack,
                        float width, float height, int packedLight, int r, int g, int b, int a) {
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        render(id, exposureData, true, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
+        render(id, exposureData, true, simulateFilm, poseStack, bufferSource, 0, 0, width, height, 0, 0, 1, 1, packedLight, r, g, b, a);
         bufferSource.endBatch();
     }
 
-    private void render(String id, @NotNull ExposureSavedData exposureData, boolean negative, PoseStack poseStack, MultiBufferSource bufferSource,
+    private void render(String id, @NotNull ExposureSavedData exposureData, boolean negative, boolean simulateFilm, PoseStack poseStack, MultiBufferSource bufferSource,
                         float minX, float minY, float maxX, float maxY,
                         float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
-        getOrCreateMapInstance(id, exposureData, negative).draw(poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
+        getOrCreateMapInstance(id, exposureData, negative, simulateFilm).draw(poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
     }
 
-    private ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative) {
+    private ExposureRenderer.ExposureInstance getOrCreateMapInstance(String id, ExposureSavedData exposureData, boolean negative, boolean simulateFilm) {
         return (negative ? negativeExposures : exposures).compute(id, (expId, expData) -> {
             if (expData == null) {
-                return new ExposureInstance(expId, exposureData, negative);
+                return new ExposureInstance(expId, exposureData, negative, simulateFilm);
             } else {
                 expData.replaceExposureData(exposureData);
                 return expData;
@@ -107,15 +107,17 @@ public class ExposureRenderer implements AutoCloseable {
 
     static class ExposureInstance implements AutoCloseable {
         private final boolean negative;
+        private final boolean simulateFilm;
         private final RenderType renderType;
         private ExposureSavedData exposureData;
         private DynamicTexture texture;
         private boolean requiresUpload = true;
 
-        ExposureInstance(String id, ExposureSavedData data, boolean negative) {
+        ExposureInstance(String id, ExposureSavedData data, boolean negative, boolean simulateFilm) {
             this.exposureData = data;
             this.texture = new DynamicTexture(data.getWidth(), data.getHeight(), true);
             this.negative = negative;
+            this.simulateFilm = simulateFilm;
             ResourceLocation resourcelocation = Minecraft.getInstance().textureManager
                     .register("exposure/" + id.toLowerCase() + (negative ? "negative" : ""), this.texture);
             this.renderType = RenderType.text(resourcelocation);
@@ -140,26 +142,25 @@ public class ExposureRenderer implements AutoCloseable {
 
             for(int y = 0; y < exposureData.getHeight(); y++) {
                 for(int x = 0; x < exposureData.getWidth(); x++) {
-                    int bgr = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
+                    int BGR = MaterialColor.getColorFromPackedId(this.exposureData.getPixel(x, y));
 
                     if (negative) {
-                        int blue = bgr >> 16 & 0xFF;
-                        int green = bgr >> 8 & 0xFF;
-                        int red = bgr & 0xFF;
-                        int brightness = (blue + green + red) / 3;
-//                        brightness = (int) (255 - Math.pow(255 - brightness, 3));
-//                        brightness = brightness * brightness * brightness / 255 / 255;
-//                        brightness = Mth.clamp(brightness/* * brightness / 255*/, 0, 255);
+                        int blue = BGR >> 16 & 0xFF;
+                        int green = BGR >> 8 & 0xFF;
+                        int red = BGR & 0xFF;
 
                         // Invert:
-                        bgr = bgr ^ 0x00FFFFFF;
+                        BGR = BGR ^ 0x00FFFFFF;
 
-                        int opacity = (int)Mth.clamp(brightness * 1.5f, 0, 255);
-
-                        bgr = (bgr & 0x00FFFFFF) | (opacity << 24);
+                        // Modify opacity to make lighter colors transparent, like in real film.
+                        if (simulateFilm) {
+                            int brightness = (blue + green + red) / 3;
+                            int opacity = (int)Mth.clamp(brightness * 1.5f, 0, 255);
+                            BGR = (BGR & 0x00FFFFFF) | (opacity << 24);
+                        }
                     }
 
-                    this.texture.getPixels().setPixelRGBA(x, y, bgr); // Texture is in BGR format
+                    this.texture.getPixels().setPixelRGBA(x, y, BGR); // Texture is in BGR format
                 }
             }
 

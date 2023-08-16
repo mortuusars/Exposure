@@ -76,7 +76,7 @@ public class FloydDither {
         return colors;
     }
 
-    private static final double shadeCoeffs[] = { 0.71, 0.86, 1.0, 0.53 };
+    private static final double[] shadeCoeffs = { 0.71, 0.86, 1.0, 0.53 };
 
     private static double[] applyShade(double[] color, int ind) {
         double coeff = shadeCoeffs[ind];

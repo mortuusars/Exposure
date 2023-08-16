@@ -53,7 +53,10 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         printButton = new Button(leftPos + 61, topPos + 87, FRAME_SIZE, 20, Component.translatable("gui.exposure.lightroom.print"),
-                pButton -> Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, LightroomMenu.PRINT_BUTTON_ID));
+                pButton -> {
+                    if (Minecraft.getInstance().gameMode != null)
+                        Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, LightroomMenu.PRINT_BUTTON_ID);
+                });
         addRenderableWidget(printButton);
     }
 
@@ -169,11 +172,11 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
             if (colorFilm)
-                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 180, 130, 110,
                         Mth.clamp((int)Math.ceil(alpha * 255), 0, 255));
             else
-                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 255, 255, 255,
                         Mth.clamp((int)Math.ceil(alpha * 255), 0, 255));
             bufferSource.endBatch();
