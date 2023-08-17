@@ -1,16 +1,19 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
-import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.client.gui.screen.element.CompositionGuideButton;
 import io.github.mortuusars.exposure.client.gui.screen.element.FocalLengthButton;
 import io.github.mortuusars.exposure.client.gui.screen.element.FrameCounterButton;
 import io.github.mortuusars.exposure.client.gui.screen.element.ShutterSpeedButton;
+import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
 import io.github.mortuusars.exposure.util.CameraInHand;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
@@ -20,6 +23,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public class ViewfinderControlsScreen extends Screen {
     public static final ResourceLocation OVERLAY_TEXTURE = Exposure.resource("textures/gui/viewfinder_controls_overlay.png");
@@ -51,6 +56,7 @@ public class ViewfinderControlsScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+        refreshMovementKeysToKeepPlayerMoving();
 
         leftPos = (width - 256) / 2;
         topPos = Math.round(ViewfinderRenderer.opening.y + ViewfinderRenderer.opening.height - 256);
@@ -74,6 +80,23 @@ public class ViewfinderControlsScreen extends Screen {
 
         addRenderableWidget(new CompositionGuideButton(this,leftPos + 179, topPos + 237,
                 20, 19, WIDGETS_TEXTURE));
+    }
+
+    /**
+     * When screen is opened - all keys are released. If we do not refresh them - player would stop moving (if they had).
+     */
+    private void refreshMovementKeysToKeepPlayerMoving() {
+        Options opt = Minecraft.getInstance().options;
+        long windowId = Minecraft.getInstance().getWindow().getWindow();
+        Consumer<KeyMapping> update = keyMapping -> keyMapping.setDown(InputConstants.isKeyDown(windowId, keyMapping.getKey().getValue()));
+
+        update.accept(opt.keyUp);
+        update.accept(opt.keyDown);
+        update.accept(opt.keyLeft);
+        update.accept(opt.keyRight);
+        update.accept(opt.keyShift);
+        update.accept(opt.keyJump);
+        update.accept(opt.keySprint);
     }
 
     @Override
@@ -128,11 +151,11 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (Minecraft.getInstance().options.keySprint.matches(keyCode, scanCode)) {
+        if (Minecraft.getInstance().options.keyShift.matches(keyCode, scanCode)) {
             if (level.getGameTime() - openedAtTimestamp >= 5)
                 this.onClose();
 
-            return true;
+            return false;
         }
 
         return super.keyReleased(keyCode, scanCode, modifiers);

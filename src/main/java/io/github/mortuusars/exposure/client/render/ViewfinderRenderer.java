@@ -206,14 +206,13 @@ public class ViewfinderRenderer {
         RenderSystem.disableBlend();
     }
 
-    private static void bobView(PoseStack pMatrixStack, float pPartialTicks) {
+    public static void bobView(PoseStack pMatrixStack, float pPartialTicks) {
         if (Minecraft.getInstance().getCameraEntity() instanceof Player pl) {
             float f = pl.walkDist - pl.walkDistO;
             float f1 = -(pl.walkDist + f * pPartialTicks);
             float f2 = Mth.lerp(pPartialTicks, pl.oBob, pl.bob);
             pMatrixStack.translate((Mth.sin(f1 * (float)Math.PI) * f2 * 16F), (-Math.abs(Mth.cos(f1 * (float)Math.PI) * f2 * 32F)), 0.0D);
             pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float)Math.PI) * f2 * 3.0F));
-            pMatrixStack.mulPose(Vector3f.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float)Math.PI - 0.2F) * f2) * 5.0F));
         }
     }
 
