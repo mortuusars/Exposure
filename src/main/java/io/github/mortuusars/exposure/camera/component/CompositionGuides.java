@@ -11,8 +11,10 @@ public class CompositionGuides {
 
     public static final CompositionGuide NONE = register(new CompositionGuide("none",
             Exposure.resource("textures/gui/misc/composition_guide/none.png")));
-    public static final CompositionGuide CROSS = register(new CompositionGuide("cross",
-            Exposure.resource("textures/gui/misc/composition_guide/cross.png")));
+    public static final CompositionGuide CROSSHAIR = register(new CompositionGuide("crosshair",
+            Exposure.resource("textures/gui/misc/composition_guide/crosshair.png")));
+    public static final CompositionGuide QUADS = register(new CompositionGuide("quads",
+            Exposure.resource("textures/gui/misc/composition_guide/quads.png")));
     public static final CompositionGuide RULE_OF_THIRDS = register(new CompositionGuide("rule_of_thirds",
             Exposure.resource("textures/gui/misc/composition_guide/rule_of_thirds.png")));
 
@@ -31,6 +33,11 @@ public class CompositionGuides {
 
     public static CompositionGuide register(CompositionGuide guide) {
         GUIDES.add(guide);
+        return guide;
+    }
+
+    public static CompositionGuide register(CompositionGuide guide, int index) {
+        GUIDES.add(index, guide);
         return guide;
     }
 }

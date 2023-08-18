@@ -33,7 +33,7 @@ public class CompositionGuideButton extends ImageButton {
     private long lastChangeTime;
 
     public CompositionGuideButton(Screen screen, int x, int y, int width, int height, ResourceLocation texture) {
-        super(x, y, width, height, 118, 0, height, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
+        super(x, y, width, height, 49, 0, height, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
         this.screen = screen;
         this.texture = texture;
         guides = CompositionGuides.getGuides();
@@ -55,30 +55,21 @@ public class CompositionGuideButton extends ImageButton {
                 Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.15f + 0.93f, 0.9f));
     }
 
-
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (this.visible) {
-            this.isHovered = mouseX >= this.x + 3 && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
-            this.renderButton(poseStack, mouseX, mouseY, partialTick);
-        }
-    }
-
     @Override
     public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, texture);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        int offset = this.getYImage(this.isHoveredOrFocused());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
+        int offset = this.getYImage(this.isHoveredOrFocused());
 
         // Button
-        blit(poseStack, x, y, 118, height  * (offset - 1), width, height);
+        blit(poseStack, x, y, 49, height  * (offset - 1), width, height);
         // Icon
-        blit(poseStack, x + 3, y + 1, 15, 100 + currentGuideIndex * 13, 15, 13);
+        blit(poseStack, x, y + 4, 0, 36 + currentGuideIndex * 14, 15, 14);
 
         this.renderBg(poseStack, minecraft, mouseX, mouseY);
     }

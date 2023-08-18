@@ -15,6 +15,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -27,8 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 public class ViewfinderControlsScreen extends Screen {
-    public static final ResourceLocation OVERLAY_TEXTURE = Exposure.resource("textures/gui/viewfinder_controls_overlay.png");
-    public static final ResourceLocation WIDGETS_TEXTURE = Exposure.resource("textures/gui/viewfinder_controls_widgets.png");
+    public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/viewfinder_camera_controls.png");
 
     private final Player player;
     private final ClientLevel level;
@@ -65,21 +65,37 @@ public class ViewfinderControlsScreen extends Screen {
         if (camera.isEmpty())
             throw new IllegalStateException("Active Camera cannot be empty here.");
 
-        int leftSideButtonPos = 18;
+        int sideButtonsWidth = 48;
+        int buttonWidth = 15;
 
-        addRenderableOnly(new FocalLengthButton(this,leftPos + leftSideButtonPos, topPos + 237, 49, 19,
-                WIDGETS_TEXTURE));
+        int elementX = leftPos + 128 - (sideButtonsWidth + 1 + buttonWidth + 1 + sideButtonsWidth) / 2;
+        int elementY = topPos + 238;
 
-        leftSideButtonPos += 49 - 2;
+//        int leftSideButtonPos = 18;
 
-        addRenderableOnly(new FrameCounterButton(this,leftPos + leftSideButtonPos, topPos + 237, 49, 19,
-                WIDGETS_TEXTURE));
+        FocalLengthButton focalLengthButton = new FocalLengthButton(this, elementX, elementY, 48, 18, TEXTURE);
+        addRenderableOnly(focalLengthButton);
+        elementX += focalLengthButton.getWidth();
 
-        addRenderableWidget(new ShutterSpeedButton(this,leftPos + 197, topPos + 237,
-                41, 19, WIDGETS_TEXTURE));
+        ImageButton separator1 = new ImageButton(elementX, elementY, 1, 18, 48, 0, TEXTURE, pButton -> {});
+        addRenderableOnly(separator1);
+        elementX += separator1.getWidth();
 
-        addRenderableWidget(new CompositionGuideButton(this,leftPos + 179, topPos + 237,
-                20, 19, WIDGETS_TEXTURE));
+        CompositionGuideButton compositionGuideButton = new CompositionGuideButton(this, elementX, elementY, 15, 18, TEXTURE);
+        addRenderableWidget(compositionGuideButton);
+        elementX += compositionGuideButton.getWidth();
+
+        ImageButton separator2 = new ImageButton(elementX, elementY, 1, 18, 48, 0, TEXTURE, pButton -> {});
+        addRenderableOnly(separator2);
+        elementX += separator2.getWidth();
+
+        FrameCounterButton frameCounterButton = new FrameCounterButton(this, elementX, elementY, 48, 18, TEXTURE);
+        addRenderableOnly(frameCounterButton);
+        elementX += frameCounterButton.getWidth();
+
+
+        ShutterSpeedButton shutterSpeedButton = new ShutterSpeedButton(this, leftPos + 94, topPos + 226, 69, 12, TEXTURE);
+        addRenderableWidget(shutterSpeedButton);
     }
 
     /**
@@ -116,12 +132,12 @@ public class ViewfinderControlsScreen extends Screen {
         }
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, OVERLAY_TEXTURE);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-        blit(poseStack, leftPos, topPos, 0, 0, 256, 256);
+//        blit(poseStack, leftPos, topPos, 0, 0, 256, 256);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
         for(Widget widget : this.renderables) {

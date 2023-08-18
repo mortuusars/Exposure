@@ -21,17 +21,9 @@ public class FocalLengthButton extends ImageButton {
     private final ResourceLocation texture;
 
     public FocalLengthButton(Screen screen, int x, int y, int width, int height, ResourceLocation texture) {
-        super(x, y, width, height, 0, 0, 0, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
+        super(x, y, width, height, 0, 0, height, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
         this.screen = screen;
         this.texture = texture;
-    }
-
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (this.visible) {
-            this.isHovered = mouseX >= this.x + 1 && mouseY >= this.y && mouseX < this.x + this.width - 2 && mouseY < this.y + this.height;
-            this.renderButton(poseStack, mouseX, mouseY, partialTick);
-        }
     }
 
     @Override
@@ -45,17 +37,17 @@ public class FocalLengthButton extends ImageButton {
         RenderSystem.enableDepthTest();
 
         // Button
-        blit(poseStack, x, y, 0, 0, width, height);
+        blit(poseStack, x, y, 0, isHoveredOrFocused() ? 18 : 0, width, height);
 
         int focalLength = Math.round(Fov.fovToFocalLength(ViewfinderRenderer.getCurrentFov()));
 
         Font font = minecraft.font;
         MutableComponent text = Component.translatable("gui.exposure.viewfinder.focal_length", focalLength);
         int textWidth = font.width(text);
-        int xPos = 14 + (29 - textWidth) / 2;
+        int xPos = 17 + (29 - textWidth) / 2;
 
-        font.draw(poseStack, text, x + xPos, y + 5, Config.Client.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 4, Config.Client.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 8, Config.Client.getSecondaryFontColor());
+        font.draw(poseStack, text, x + xPos, y + 7, Config.Client.getMainFontColor());
     }
 
     @Override

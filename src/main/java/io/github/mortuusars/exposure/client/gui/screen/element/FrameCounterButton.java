@@ -12,25 +12,21 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Optional;
 
 public class FrameCounterButton extends ImageButton {
     private final Screen screen;
     private final ResourceLocation texture;
 
     public FrameCounterButton(Screen screen, int x, int y, int width, int height, ResourceLocation texture) {
-        super(x, y, width, height, 0, 0, 0, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
+        super(x, y, width, height, 64, 0, height, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
         this.screen = screen;
         this.texture = texture;
-    }
-
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (this.visible) {
-            this.isHovered = mouseX >= this.x + 1 && mouseY >= this.y && mouseX < this.x + this.width - 2 && mouseY < this.y + this.height;
-            this.renderButton(poseStack, mouseX, mouseY, partialTick);
-        }
     }
 
     @Override
@@ -44,7 +40,7 @@ public class FrameCounterButton extends ImageButton {
         RenderSystem.enableDepthTest();
 
         // Button
-        blit(poseStack, x, y, 49, 0, width, height);
+        blit(poseStack, x, y, 64, isHoveredOrFocused() ? 18 : 0, width, height);
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
 
@@ -56,14 +52,15 @@ public class FrameCounterButton extends ImageButton {
 
         Font font = minecraft.font;
         int textWidth = font.width(text);
-        int xPos = 16 + (27 - textWidth) / 2;
+        int xPos = 15 + (27 - textWidth) / 2;
 
-        font.draw(poseStack, text, x + xPos, y + 5, Config.Client.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 4, Config.Client.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 8, Config.Client.getSecondaryFontColor());
+        font.draw(poseStack, text, x + xPos, y + 7, Config.Client.getMainFontColor());
     }
 
     @Override
     public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
-        screen.renderTooltip(poseStack, Component.translatable("gui.exposure.viewfinder.film_frame_counter.tooltip"), mouseX, mouseY);
+        screen.renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.viewfinder.film_frame_counter.tooltip"),
+                Component.translatable("gui.exposure.viewfinder.film_frame_counter.tooltip.no_film").withStyle(Style.EMPTY.withColor(0xdd6357))), Optional.empty(), mouseX, mouseY);
     }
 }

@@ -55,8 +55,8 @@ public class Config {
                     .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes. Default: 0.048")
                     .defineInRange("ZoomSensitivityModifier", 0.048, 0.0, 1.0);
             VIEWFINDER_BACKGROUND_COLOR = builder.define("BackgroundColorHex", "FA1F1D1B");
-            VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF5A5552");
-            VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FFB7AFAB");
+            VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF2B2622");
+            VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FF7A736C");
             builder.pop();
 
             builder.push("ExposureFileSaving");
