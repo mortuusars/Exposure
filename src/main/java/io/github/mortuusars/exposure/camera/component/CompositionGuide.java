@@ -8,19 +8,13 @@ import net.minecraft.resources.ResourceLocation;
 @SuppressWarnings("ClassCanBeRecord")
 public class CompositionGuide {
     private final String id;
-    private final ResourceLocation texture;
 
-    public CompositionGuide(String id, ResourceLocation texture) {
+    public CompositionGuide(String id) {
         this.id = id;
-        this.texture = texture;
     }
 
     public String getId() {
         return id;
-    }
-
-    public ResourceLocation getTexture() {
-        return texture;
     }
 
     public Component translate() {

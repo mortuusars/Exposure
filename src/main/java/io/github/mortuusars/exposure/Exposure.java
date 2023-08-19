@@ -27,7 +27,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -200,7 +199,8 @@ public class Exposure {
         public static final RegistryObject<SoundEvent> SHUTTER_TICKING = register("item", "camera.shutter_ticking");
         public static final RegistryObject<SoundEvent> FILM_ADVANCE = register("item", "camera.film_advance");
         public static final RegistryObject<SoundEvent> CAMERA_BUTTON_CLICK = register("item", "camera.button_click");
-        public static final RegistryObject<SoundEvent> LENS_RING_CLICK = register("item", "camera.lens_ring_click");
+        public static final RegistryObject<SoundEvent> CAMERA_DIAL_CLICK = register("item", "camera.dial_click");
+        public static final RegistryObject<SoundEvent> CAMERA_LENS_RING_CLICK = register("item", "camera.lens_ring_click");
         public static final RegistryObject<SoundEvent> FILTER_PLACE = register("item", "camera.filter_place");
 
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_PLACE = register("item", "photograph.place");

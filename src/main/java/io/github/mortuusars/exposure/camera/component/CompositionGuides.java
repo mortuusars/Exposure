@@ -9,14 +9,10 @@ import java.util.List;
 public class CompositionGuides {
     private static final List<CompositionGuide> GUIDES = new ArrayList<>();
 
-    public static final CompositionGuide NONE = register(new CompositionGuide("none",
-            Exposure.resource("textures/gui/misc/composition_guide/none.png")));
-    public static final CompositionGuide CROSSHAIR = register(new CompositionGuide("crosshair",
-            Exposure.resource("textures/gui/misc/composition_guide/crosshair.png")));
-    public static final CompositionGuide QUADS = register(new CompositionGuide("quads",
-            Exposure.resource("textures/gui/misc/composition_guide/quads.png")));
-    public static final CompositionGuide RULE_OF_THIRDS = register(new CompositionGuide("rule_of_thirds",
-            Exposure.resource("textures/gui/misc/composition_guide/rule_of_thirds.png")));
+    public static final CompositionGuide NONE = register(new CompositionGuide("none"));
+    public static final CompositionGuide CROSSHAIR = register(new CompositionGuide("crosshair"));
+    public static final CompositionGuide QUADS = register(new CompositionGuide("quads"));
+    public static final CompositionGuide RULE_OF_THIRDS = register(new CompositionGuide("rule_of_thirds"));
 
     public static List<CompositionGuide> getGuides() {
         return ImmutableList.copyOf(GUIDES);

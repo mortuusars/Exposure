@@ -37,7 +37,9 @@
   "subtitle.exposure.camera.viewfinder_close": "Camera Viewfinder closes",
   "subtitle.exposure.camera.shutter": "Camera Shutter clangs",
   "subtitle.exposure.camera.film_advance": "Film rolls to the next frame",
-  "subtitle.exposure.camera.button_click": "Button clicks",
+  "subtitle.exposure.camera.button_click": "Camera button clicks",
+  "subtitle.exposure.camera.dial_click": "Camera dial rotates",
+
   "subtitle.exposure.photograph.placed" : "Photograph placed",
   "subtitle.exposure.photograph.break" : "Photograph broken",
   "subtitle.exposure.photograph.rustle" : "Photograph rustles"

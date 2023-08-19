@@ -28,7 +28,7 @@ import net.minecraftforge.client.event.ViewportEvent;
 import java.awt.geom.Rectangle2D;
 
 public class ViewfinderRenderer {
-    private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/misc/viewfinder.png");
+    private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/viewfinder/viewfinder.png");
     private static final PoseStack POSE_STACK = new PoseStack();
 
     public static Rectangle2D.Float opening;
@@ -142,7 +142,8 @@ public class ViewfinderRenderer {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
             CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-            RenderSystem.setShaderTexture(0, camera.getItem().getCompositionGuide(camera.getStack()).getTexture());
+            RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/composition_guide/" +
+                    camera.getItem().getCompositionGuide(camera.getStack()).getId() + ".png"));
 
             tesselator = Tesselator.getInstance();
             bufferbuilder = tesselator.getBuilder();
@@ -158,7 +159,7 @@ public class ViewfinderRenderer {
 
             // Icons
             if (camera.getItem().getFilm(camera.getStack()).isEmpty() && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
-                RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/misc/no_film_icon.png"));
+                RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/no_film_icon.png"));
                 float cropFactor = Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
 
                 float fromEdge = (opening.height - (opening.height / (cropFactor))) / 2f;
@@ -282,7 +283,7 @@ public class ViewfinderRenderer {
                 Fov.focalLengthToFov(focalRange.min()));
 
         if (Math.abs(prevFov - fov) > 0.01f)
-            player.playSound(Exposure.SoundEvents.LENS_RING_CLICK.get());
+            player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get());
 
         targetFov = fov;
         SynchronizedCameraInHandActions.setZoom(Fov.fovToFocalLength(fov));

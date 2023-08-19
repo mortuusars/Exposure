@@ -5,6 +5,12 @@
     ],
     "subtitle": "subtitle.exposure.camera.button_click"
   },
+  "item.camera.dial_click": {
+    "sounds": [
+      "exposure:item/camera/dial_click"
+    ],
+    "subtitle": "subtitle.exposure.camera.dial_click"
+  },
   "item.camera.film_advance": {
     "sounds": [
       "exposure:item/camera/film_advance1",

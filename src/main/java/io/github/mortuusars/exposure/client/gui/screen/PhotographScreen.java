@@ -142,7 +142,7 @@ public class PhotographScreen extends Screen {
 
         if (prevIndex != currentIndex && minecraft != null && minecraft.player != null) {
             lastCycledAt = Util.getMillis();
-            minecraft.player.playSound(Exposure.SoundEvents.LENS_RING_CLICK.get(), 0.8f,
+            minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 0.8f,
                     minecraft.player.level.getRandom().nextFloat() * 0.2f + (backwards ? 0.9f : 1.1f));
         }
     }

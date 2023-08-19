@@ -9,10 +9,7 @@ import io.github.mortuusars.exposure.camera.component.CompositionGuides;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
@@ -24,22 +21,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class CompositionGuideButton extends ImageButton {
-    private final Screen screen;
-    private final ResourceLocation texture;
+public class CompositionGuideButton extends CycleButton {
     private final List<CompositionGuide> guides;
-    private int currentGuideIndex = 0;
 
-    private long lastChangeTime;
-
-    public CompositionGuideButton(Screen screen, int x, int y, int width, int height, ResourceLocation texture) {
-        super(x, y, width, height, 49, 0, height, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
-        this.screen = screen;
-        this.texture = texture;
+    public CompositionGuideButton(Screen screen, int x, int y, int width, int height, int u, int v,  ResourceLocation texture) {
+        super(screen, x, y, width, height, u, v, height, texture);
         guides = CompositionGuides.getGuides();
+
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());
+
+        int currentGuideIndex = 0;
 
         for (int i = 0; i < guides.size(); i++) {
             if (guides.get(i).getId().equals(guide.getId())) {
@@ -47,31 +40,23 @@ public class CompositionGuideButton extends ImageButton {
                 break;
             }
         }
+
+        setupButtonElements(guides.size(), currentGuideIndex);
     }
 
     @Override
     public void playDownSound(SoundManager handler) {
         handler.play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get(),
-                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.15f + 0.93f, 0.9f));
+                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.15f + 0.93f, 0.7f));
     }
 
     @Override
     public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        Minecraft minecraft = Minecraft.getInstance();
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, texture);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        int offset = this.getYImage(this.isHoveredOrFocused());
+        super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
-        // Button
-        blit(poseStack, x, y, 49, height  * (offset - 1), width, height);
         // Icon
-        blit(poseStack, x, y + 4, 0, 36 + currentGuideIndex * 14, 15, 14);
-
-        this.renderBg(poseStack, minecraft, mouseX, mouseY);
+        RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/composition_guide/" + guides.get(index).getId() + ".png"));
+        blit(poseStack, x, y + 4, 0, 0, 0, 15, 14, 15, 14);
     }
 
     @Override
@@ -82,48 +67,12 @@ public class CompositionGuideButton extends ImageButton {
 
     @Override
     public @NotNull Component getMessage() {
-        return guides.get(currentGuideIndex).translate();
+        return guides.get(index).translate();
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isHovered) {
-            cycleGuide(button == 1);
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (System.currentTimeMillis() - lastChangeTime > 40)
-            cycleGuide(delta < 0d);
-        return true;
-    }
-
-    @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        boolean pressed = super.keyPressed(pKeyCode, pScanCode, pModifiers);
-
-        if (pressed)
-            cycleGuide(Screen.hasShiftDown());
-
-        return pressed;
-    }
-
-    private void cycleGuide(boolean reverse) {
-        currentGuideIndex += reverse ? -1 : 1;
-        if (currentGuideIndex < 0)
-            currentGuideIndex = guides.size() - 1;
-        else if (currentGuideIndex >= guides.size())
-            currentGuideIndex = 0;
-
+    protected void onCycle() {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
-        if (!camera.isEmpty()) {
-            SynchronizedCameraInHandActions.setCompositionGuide(guides.get(currentGuideIndex));
-            this.playDownSound(Minecraft.getInstance().getSoundManager());
-            lastChangeTime = System.currentTimeMillis();
-        }
+        if (!camera.isEmpty()) SynchronizedCameraInHandActions.setCompositionGuide(guides.get(index));
     }
 }

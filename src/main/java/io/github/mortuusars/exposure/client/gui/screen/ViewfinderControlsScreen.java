@@ -28,14 +28,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.function.Consumer;
 
 public class ViewfinderControlsScreen extends Screen {
-    public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/viewfinder_camera_controls.png");
+    public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/viewfinder/viewfinder_camera_controls.png");
 
     private final Player player;
     private final ClientLevel level;
     private final long openedAtTimestamp;
-
-    private int leftPos;
-    private int topPos;
 
     public ViewfinderControlsScreen() {
         super(Component.empty());
@@ -46,6 +43,7 @@ public class ViewfinderControlsScreen extends Screen {
         openedAtTimestamp = level.getGameTime();
 
         passEvents = true;
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -58,8 +56,8 @@ public class ViewfinderControlsScreen extends Screen {
         super.init();
         refreshMovementKeysToKeepPlayerMoving();
 
-        leftPos = (width - 256) / 2;
-        topPos = Math.round(ViewfinderRenderer.opening.y + ViewfinderRenderer.opening.height - 256);
+        int leftPos = (width - 256) / 2;
+        int topPos = Math.round(ViewfinderRenderer.opening.y + ViewfinderRenderer.opening.height - 256);
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
         if (camera.isEmpty())
@@ -71,30 +69,26 @@ public class ViewfinderControlsScreen extends Screen {
         int elementX = leftPos + 128 - (sideButtonsWidth + 1 + buttonWidth + 1 + sideButtonsWidth) / 2;
         int elementY = topPos + 238;
 
-//        int leftSideButtonPos = 18;
-
-        FocalLengthButton focalLengthButton = new FocalLengthButton(this, elementX, elementY, 48, 18, TEXTURE);
+        FocalLengthButton focalLengthButton = new FocalLengthButton(this, elementX, elementY, 48, 18, 0, 0, TEXTURE);
         addRenderableOnly(focalLengthButton);
         elementX += focalLengthButton.getWidth();
 
-        ImageButton separator1 = new ImageButton(elementX, elementY, 1, 18, 48, 0, TEXTURE, pButton -> {});
+        ImageButton separator1 = new ImageButton(elementX, elementY, 1, 18, 111, 0, TEXTURE, pButton -> {});
         addRenderableOnly(separator1);
         elementX += separator1.getWidth();
 
-        CompositionGuideButton compositionGuideButton = new CompositionGuideButton(this, elementX, elementY, 15, 18, TEXTURE);
+        CompositionGuideButton compositionGuideButton = new CompositionGuideButton(this, elementX, elementY, 15, 18, 48, 0, TEXTURE);
         addRenderableWidget(compositionGuideButton);
         elementX += compositionGuideButton.getWidth();
 
-        ImageButton separator2 = new ImageButton(elementX, elementY, 1, 18, 48, 0, TEXTURE, pButton -> {});
+        ImageButton separator2 = new ImageButton(elementX, elementY, 1, 18, 111, 0, TEXTURE, pButton -> {});
         addRenderableOnly(separator2);
         elementX += separator2.getWidth();
 
-        FrameCounterButton frameCounterButton = new FrameCounterButton(this, elementX, elementY, 48, 18, TEXTURE);
+        FrameCounterButton frameCounterButton = new FrameCounterButton(this, elementX, elementY, 48, 18, 63, 0, TEXTURE);
         addRenderableOnly(frameCounterButton);
-        elementX += frameCounterButton.getWidth();
 
-
-        ShutterSpeedButton shutterSpeedButton = new ShutterSpeedButton(this, leftPos + 94, topPos + 226, 69, 12, TEXTURE);
+        ShutterSpeedButton shutterSpeedButton = new ShutterSpeedButton(this, leftPos + 94, topPos + 226, 69, 12, 112, 0, TEXTURE);
         addRenderableWidget(shutterSpeedButton);
     }
 

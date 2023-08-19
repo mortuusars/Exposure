@@ -247,7 +247,7 @@ public class CameraItem extends Item {
         player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
                 player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1.1f : 1.25f));
 
-        if (shutter.shutterSpeed().getMilliseconds() > 50) // More than 1/30
+        if (shutter.shutterSpeed().getMilliseconds() > 500) // More than 1/2
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
     }
 
