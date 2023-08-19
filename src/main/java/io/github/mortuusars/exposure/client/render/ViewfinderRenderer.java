@@ -44,6 +44,11 @@ public class ViewfinderRenderer {
     private static float targetFov = -1;
     public static boolean fovRestored;
 
+    private static float xRot = 0f;
+    private static float yRot = 0f;
+    private static float xRot0 = 0f;
+    private static float yRot0 = 0f;
+
     public static float getCurrentFov() {
         return currentFov;
     }
@@ -51,6 +56,12 @@ public class ViewfinderRenderer {
     public static void setup() {
         minecraft = Minecraft.getInstance();
         player = minecraft.player;
+        assert player != null;
+
+        xRot = player.getXRot();
+        yRot = player.getYRot();
+        xRot0 = xRot;
+        yRot0 = yRot;
 
         Preconditions.checkState(player != null, "Player should not be null");
 
@@ -74,7 +85,8 @@ public class ViewfinderRenderer {
     }
 
     public static void render() {
-        Preconditions.checkState(!Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player).isEmpty(),
+        LocalPlayer player = Minecraft.getInstance().player;
+        Preconditions.checkState(player != null && !Exposure.getCamera().getCameraInHand(player).isEmpty(),
                 "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
 
         int color = Config.Client.getBackgroundColor();
@@ -83,7 +95,16 @@ public class ViewfinderRenderer {
 
         scale = Mth.lerp(0.5f * minecraft.getDeltaFrameTime(), scale, 1f);
         float openingSize = Math.min(width, height);
-        opening = new Rectangle2D.Float((width - openingSize) / 2f, (height - openingSize) / 2f, openingSize, openingSize);
+
+        float delta = 0.75f * minecraft.getDeltaFrameTime();
+        xRot0 = Mth.lerp(delta, xRot0, xRot);
+        yRot0 = Mth.lerp(delta, yRot0, yRot);
+        xRot = player.getXRot();
+        yRot = player.getYRot();
+        float xDelay = xRot - xRot0;
+        float yDelay = yRot - yRot0;
+
+        opening = new Rectangle2D.Float((width - openingSize) / 2f - yDelay, (height - openingSize) / 2f - xDelay, openingSize, openingSize);
 
         if (!minecraft.options.hideGui) {
             RenderSystem.enableBlend();
@@ -112,7 +133,7 @@ public class ViewfinderRenderer {
             drawRect(poseStack, -999, opening.y + opening.height, width + 999, height + 999, color);
 
             // Shutter
-            if (Exposure.getCamera().getShutter().isOpen(player))
+            if (Exposure.getCamera().getShutter().isOpen(ViewfinderRenderer.player))
                 drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, 0xfa1f1d1b);
 
             // Opening Texture
@@ -141,7 +162,7 @@ public class ViewfinderRenderer {
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
 
-            CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+            CameraInHand camera = Exposure.getCamera().getCameraInHand(ViewfinderRenderer.player);
             RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/composition_guide/" +
                     camera.getItem().getCompositionGuide(camera.getStack()).getId() + ".png"));
 
