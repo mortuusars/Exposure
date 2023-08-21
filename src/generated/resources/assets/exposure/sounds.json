@@ -23,6 +23,12 @@
       "exposure:item/camera/filter_place"
     ]
   },
+  "item.camera.flash": {
+    "sounds": [
+      "exposure:item/camera/flash"
+    ],
+    "subtitle": "subtitle.exposure.camera.flash"
+  },
   "item.camera.lens_ring_click": {
     "sounds": [
       "exposure:item/camera/lens_ring1",

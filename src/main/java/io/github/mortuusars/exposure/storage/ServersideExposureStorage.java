@@ -5,13 +5,14 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Optional;
 
 public class ServersideExposureStorage implements IExposureStorage {
     private static final String EXPOSURE_DIR = "exposures";
 
     public ServersideExposureStorage() {
-        createStorageDirectory();
     }
 
     @Override
@@ -28,7 +29,10 @@ public class ServersideExposureStorage implements IExposureStorage {
     @Override
     public void put(String id, ExposureSavedData data) {
         data.setDirty();
-        ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().set(getSaveId(id), data);
+        if (createStorageDirectory())
+            ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage().set(getSaveId(id), data);
+        else
+            Exposure.LOGGER.error("Exposure is not saved.");
     }
 
     private String getSaveId(String id) {
@@ -37,8 +41,9 @@ public class ServersideExposureStorage implements IExposureStorage {
 
     private boolean createStorageDirectory() {
         try {
-            File file = ServerLifecycleHooks.getCurrentServer().getWorldPath(LevelResource.ROOT).resolve("data/" + EXPOSURE_DIR).toFile();
-            return file.mkdirs();
+            Path path = ServerLifecycleHooks.getCurrentServer().getWorldPath(LevelResource.ROOT).resolve("data/" + EXPOSURE_DIR);
+            path.toFile().mkdirs();
+            return Files.exists(path);
         }
         catch (Exception e) {
             Exposure.LOGGER.error("Failed to create exposure storage directory: " + e);

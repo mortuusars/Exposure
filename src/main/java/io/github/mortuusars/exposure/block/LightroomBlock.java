@@ -88,7 +88,7 @@ public class LightroomBlock extends Block implements EntityBlock {
             int exposedFrames = developedFilmItem.getExposedFramesCount(filmStack);
             int currentFrame = lightroomBlockEntity.getCurrentFrame();
 
-            return Mth.floor((float)currentFrame / exposedFrames * 14.0F) + 1;
+            return Mth.floor((currentFrame + 1f) / exposedFrames * 14.0F) + 1;
         }
         else
             return 0;

@@ -11,14 +11,16 @@ public class CaptureProperties {
     public final int size;
     public final float cropFactor;
     public final float brightnessStops;
+    public final boolean flash;
     public final List<IExposureModifier> modifiers;
     public final List<IExposureSaver> savers;
 
-    public CaptureProperties(String id, int size, float cropFactor, float brightnessStops, List<IExposureModifier> modifiers, List<IExposureSaver> savers) {
+    public CaptureProperties(String id, int size, float cropFactor, float brightnessStops, boolean flash, List<IExposureModifier> modifiers, List<IExposureSaver> savers) {
         this.id = id;
         this.size = size;
         this.cropFactor = cropFactor;
         this.brightnessStops = brightnessStops;
+        this.flash = flash;
         this.modifiers = modifiers;
         this.savers = savers;
     }

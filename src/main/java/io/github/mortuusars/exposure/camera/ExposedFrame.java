@@ -22,18 +22,20 @@ public class ExposedFrame {
     public ResourceLocation dimension;
     @Nullable
     public ResourceLocation biome;
+    public boolean flash;
     public List<EntityInfo> entitiesInFrame;
 
-    public static final ExposedFrame EMPTY = new ExposedFrame("", "", "", Vec3.ZERO, null, null, Collections.emptyList());
+    public static final ExposedFrame EMPTY = new ExposedFrame("", "", "", Vec3.ZERO, null, null, false, Collections.emptyList());
 
     public ExposedFrame(String id, String shooterName, String timestamp, Vec3 shotPosition, @Nullable ResourceLocation dimension,
-                        @Nullable ResourceLocation biome, List<EntityInfo> entitiesInFrame) {
+                        @Nullable ResourceLocation biome, boolean flash, List<EntityInfo> entitiesInFrame) {
         this.id = id;
         this.shooterName = shooterName;
         this.timestamp = timestamp;
         this.shotPosition = shotPosition;
         this.dimension = dimension;
         this.biome = biome;
+        this.flash = flash;
         this.entitiesInFrame = entitiesInFrame;
     }
 
@@ -59,6 +61,9 @@ public class ExposedFrame {
 
         if (biome != null)
             tag.putString("Biome", biome.toString());
+
+        if (flash)
+            tag.putBoolean("Flash", true);
 
         if (entitiesInFrame.size() > 0) {
             ListTag entities = new ListTag();
@@ -101,13 +106,15 @@ public class ExposedFrame {
             }
         }
 
+        boolean flash = tag.getBoolean("Flash");
+
         ListTag entities = tag.getList("Entities", Tag.TAG_COMPOUND);
         List<EntityInfo> entitiesInFrame = new ArrayList<>();
         for (Tag entityInfoTag : entities) {
             entitiesInFrame.add(EntityInfo.fromTag(((CompoundTag) entityInfoTag)));
         }
 
-        return new ExposedFrame(id, shooterName, timestamp, pos, dimension, biome, entitiesInFrame);
+        return new ExposedFrame(id, shooterName, timestamp, pos, dimension, biome, flash, entitiesInFrame);
     }
 
     public static class EntityInfo {

@@ -2,8 +2,10 @@ package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
+import io.github.mortuusars.exposure.camera.component.FlashMode;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.network.packet.CameraSetCompositionGuideServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.CameraSetFlashModeServerboundPacket;
 import io.github.mortuusars.exposure.network.packet.CameraSetShutterSpeedServerboundPacket;
 import io.github.mortuusars.exposure.network.packet.CameraSetZoomServerboundPacket;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -26,6 +28,14 @@ public class SynchronizedCameraInHandActions {
         if (!camera.isEmpty()) {
             camera.getItem().setCompositionGuide(camera.getStack(), guide);
             CameraSetCompositionGuideServerboundPacket.send(guide);
+        }
+    }
+
+    public static void setFlashMode(FlashMode flashMode) {
+        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        if (!camera.isEmpty()) {
+            camera.getItem().setFlashMode(camera.getStack(), flashMode);
+            CameraSetFlashModeServerboundPacket.send(flashMode);
         }
     }
 

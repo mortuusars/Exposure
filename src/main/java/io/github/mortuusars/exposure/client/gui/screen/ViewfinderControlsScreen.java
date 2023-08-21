@@ -5,11 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
-import io.github.mortuusars.exposure.client.gui.screen.element.CompositionGuideButton;
-import io.github.mortuusars.exposure.client.gui.screen.element.FocalLengthButton;
-import io.github.mortuusars.exposure.client.gui.screen.element.FrameCounterButton;
-import io.github.mortuusars.exposure.client.gui.screen.element.ShutterSpeedButton;
+import io.github.mortuusars.exposure.client.gui.screen.element.*;
 import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -63,10 +61,12 @@ public class ViewfinderControlsScreen extends Screen {
         if (camera.isEmpty())
             throw new IllegalStateException("Active Camera cannot be empty here.");
 
+        boolean hasFlashAttached = camera.getItem().getAttachment(camera.getStack(), CameraItem.FLASH_ATTACHMENT).isPresent();
+
         int sideButtonsWidth = 48;
         int buttonWidth = 15;
 
-        int elementX = leftPos + 128 - (sideButtonsWidth + 1 + buttonWidth + 1 + sideButtonsWidth) / 2;
+        int elementX = leftPos + 128 - (sideButtonsWidth + 1 + buttonWidth + 1 + (hasFlashAttached ? buttonWidth + 1 : 0) + sideButtonsWidth) / 2;
         int elementY = topPos + 238;
 
         FocalLengthButton focalLengthButton = new FocalLengthButton(this, elementX, elementY, 48, 18, 0, 0, TEXTURE);
@@ -84,6 +84,16 @@ public class ViewfinderControlsScreen extends Screen {
         ImageButton separator2 = new ImageButton(elementX, elementY, 1, 18, 111, 0, TEXTURE, pButton -> {});
         addRenderableOnly(separator2);
         elementX += separator2.getWidth();
+
+        if (hasFlashAttached) {
+            FlashModeButton flashModeButton = new FlashModeButton(this, elementX, elementY, 15, 18, 48, 0, TEXTURE);
+            addRenderableWidget(flashModeButton);
+            elementX += flashModeButton.getWidth();
+
+            ImageButton separator3 = new ImageButton(elementX, elementY, 1, 18, 111, 0, TEXTURE, pButton -> {});
+            addRenderableOnly(separator3);
+            elementX += separator3.getWidth();
+        }
 
         FrameCounterButton frameCounterButton = new FrameCounterButton(this, elementX, elementY, 48, 18, 63, 0, TEXTURE);
         addRenderableOnly(frameCounterButton);
@@ -115,6 +125,9 @@ public class ViewfinderControlsScreen extends Screen {
             this.onClose();
             return;
         }
+
+        if (Minecraft.getInstance().options.hideGui)
+            return;
 
         poseStack.pushPose();
 
@@ -151,7 +164,8 @@ public class ViewfinderControlsScreen extends Screen {
         if (!handled && button == 1) {
             CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
             if (!camera.isEmpty()) {
-                camera.getItem().useCamera(player, camera.getHand());
+                Minecraft.getInstance().gameMode.useItem(player, camera.getHand());
+//                camera.getItem().useCamera(player, camera.getHand());
                 handled = true;
             }
         }

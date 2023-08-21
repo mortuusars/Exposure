@@ -73,6 +73,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
                 LightroomBlockEntity.this.printTime = value;
             else if (id == CONTAINER_DATA_CURRENT_FRAME_ID)
                 LightroomBlockEntity.this.currentFrame = value;
+            setChanged();
         }
 
         public int getCount() {

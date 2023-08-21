@@ -41,13 +41,28 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
                 public void set(@NotNull ItemStack stack) {
                     super.set(stack);
                     if (!stack.isEmpty() && playerInventory.player.getLevel().isClientSide)
-                        OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS, 0.9f, 1f);
+                        OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILM_ADVANCE.get(),
+                                SoundSource.PLAYERS, 0.9f, 1f);
                 }
             });
             attachmentSlots++;
         }
+
+        if (attachmentTypes.contains(CameraItem.FLASH_ATTACHMENT)) {
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FLASH_ATTACHMENT.slot(), 147, 15) {
+                @Override
+                public void set(@NotNull ItemStack stack) {
+                    super.set(stack);
+                    if (playerInventory.player.getLevel().isClientSide)
+                        OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get(),
+                                SoundSource.PLAYERS, stack.isEmpty() ? 0.6f : 0.8f, stack.isEmpty() ? 1.2f : 0.8f);
+                }
+            });
+            attachmentSlots++;
+        }
+
         if (attachmentTypes.contains(CameraItem.LENS_ATTACHMENT)) {
-            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 147, 53) {
+            addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 147, 43) {
                 @Override
                 public void set(@NotNull ItemStack stack) {
                     super.set(stack);
@@ -76,7 +91,6 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
         //Player Inventory
         for (int row = 0; row < 3; row++) {
             for (int column = 0; column < 9; column++) {
-                //TODO: Check for current camera slot to avoid duping
                 addSlot(new Slot(playerInventory, (column + row * 9) + 9, column * 18 + 8, 103 + row * 18));
             }
         }

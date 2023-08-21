@@ -2,7 +2,9 @@ package io.github.mortuusars.exposure;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.block.LightroomBlock;
+import io.github.mortuusars.exposure.block.entity.FlashBlockEntity;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.infrastructure.Camera;
 import io.github.mortuusars.exposure.camera.ExposureCapture;
@@ -107,6 +109,15 @@ public class Exposure {
                 () -> new LightroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
                         .color(MaterialColor.COLOR_BROWN)
                         .lightLevel(state -> 15)));
+
+        public static final RegistryObject<FlashBlock> FLASH = BLOCKS.register("flash",
+                () -> new FlashBlock(BlockBehaviour.Properties.of(Material.AIR)
+                        .strength(-1.0F, 3600000.8F)
+                        .noLootTable()
+                        .color(MaterialColor.NONE)
+                        .noOcclusion()
+                        .noCollission()
+                        .lightLevel(state -> 15)));
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -116,6 +127,8 @@ public class Exposure {
 
         public static final RegistryObject<BlockEntityType<LightroomBlockEntity>> LIGHTROOM = BLOCK_ENTITY_TYPES.register("lightroom",
                 () -> BlockEntityType.Builder.of(LightroomBlockEntity::new, Blocks.LIGHTROOM.get()).build(null));
+        public static final RegistryObject<BlockEntityType<FlashBlockEntity>> FLASH = BLOCK_ENTITY_TYPES.register("flash",
+                () -> BlockEntityType.Builder.of(FlashBlockEntity::new, Blocks.FLASH.get()).build(null));
     }
 
     public static class Items {
@@ -202,6 +215,7 @@ public class Exposure {
         public static final RegistryObject<SoundEvent> CAMERA_DIAL_CLICK = register("item", "camera.dial_click");
         public static final RegistryObject<SoundEvent> CAMERA_LENS_RING_CLICK = register("item", "camera.lens_ring_click");
         public static final RegistryObject<SoundEvent> FILTER_PLACE = register("item", "camera.filter_place");
+        public static final RegistryObject<SoundEvent> FLASH = register("item", "camera.flash");
 
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_PLACE = register("item", "photograph.place");
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_BREAK = register("item", "photograph.break");

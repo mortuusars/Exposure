@@ -28,6 +28,7 @@ public class Packets {
 
         CameraSetZoomServerboundPacket.register(CHANNEL, id++);
         CameraSetCompositionGuideServerboundPacket.register(CHANNEL, id++);
+        CameraSetFlashModeServerboundPacket.register(CHANNEL, id++);
         CameraSetShutterSpeedServerboundPacket.register(CHANNEL, id++);
         SyncCameraServerboundPacket.register(CHANNEL, id++);
         QueryExposureDataServerboundPacket.register(CHANNEL, id++);

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Queue;
 
 @OnlyIn(Dist.CLIENT)
@@ -33,6 +34,7 @@ public class ExposureCapture {
     private static int captureDelay;
     private static boolean hideGuiBeforeCapture;
     private static CameraType cameraTypeBeforeCapture;
+    private static long startCurrentCaptureTick = -1;
 
     public static float getModifiedBrightness(float originalBrightness) {
         return originalBrightness + additionalBrightness;
@@ -55,6 +57,7 @@ public class ExposureCapture {
         currentCapture = properties;
         hideGuiBeforeCapture = Minecraft.getInstance().options.hideGui;
         cameraTypeBeforeCapture = Minecraft.getInstance().options.getCameraType();
+        startCurrentCaptureTick = Objects.requireNonNull(Minecraft.getInstance().level).getGameTime();
 
         Minecraft.getInstance().options.hideGui = true;
         Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
@@ -76,6 +79,9 @@ public class ExposureCapture {
         if (!event.phase.equals(TickEvent.Phase.END) || !capturing || currentCapture == null)
             return;
 
+        if (currentCapture.flash && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() - startCurrentCaptureTick < 3)
+            captureDelay = Math.max(captureDelay, 1);
+
         if (captureDelay > 0) {
             captureDelay--;
 
@@ -87,6 +93,10 @@ public class ExposureCapture {
         }
 
         NativeImage screenshot = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
+
+        for (IExposureModifier modifier : currentCapture.modifiers) {
+            modifier.afterScreenshotTaken(currentCapture, screenshot);
+        }
 
         Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;
         Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);

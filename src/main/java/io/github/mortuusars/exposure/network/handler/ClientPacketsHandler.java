@@ -59,7 +59,7 @@ public class ClientPacketsHandler {
             size = Math.min(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight());
 
         ExposureCapture.enqueueCapture(new CaptureProperties(Util.getFilenameFormattedDateTime(), size, 1f,
-                0f, Collections.emptyList(), List.of(ExposureFileSaver.withDefaultFolders())));
+                0f, false, Collections.emptyList(), List.of(ExposureFileSaver.withDefaultFolders())));
     }
 
     public static void loadExposure(String id, String path, int size, boolean dither) {
@@ -88,8 +88,8 @@ public class ClientPacketsHandler {
                 if (Config.Client.EXPOSURE_SAVE_ON_EVERY_CAPTURE.get())
                     savers.add(ExposureFileSaver.withDefaultFolders());
 
-                ExposureCapture.processAndSaveImage(image, new CaptureProperties(finalId, size, 1, 0,
-                        Collections.emptyList(), savers), dither);
+                ExposureCapture.processAndSaveImage(image, new CaptureProperties(finalId, size, 1,
+                    0, false, Collections.emptyList(), savers), dither);
                 Exposure.LOGGER.info("Loaded exposure from file '" + path + "' with id: '" + finalId + "'.");
             } catch (IOException e) {
                 Exposure.LOGGER.error("Cannot load exposure:" + e);

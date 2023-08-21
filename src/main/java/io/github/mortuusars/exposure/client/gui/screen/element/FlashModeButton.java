@@ -3,9 +3,9 @@ package io.github.mortuusars.exposure.client.gui.screen.element;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
-import io.github.mortuusars.exposure.camera.component.CompositionGuides;
+import io.github.mortuusars.exposure.camera.component.FlashMode;
+import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -17,31 +17,32 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class CompositionGuideButton extends CycleButton {
-    private final List<CompositionGuide> guides;
+public class FlashModeButton extends CycleButton {
 
-    public CompositionGuideButton(Screen screen, int x, int y, int width, int height, int u, int v,  ResourceLocation texture) {
+    private final List<FlashMode> flashModes;
+
+    public FlashModeButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
         super(screen, x, y, width, height, u, v, height, texture);
-        guides = CompositionGuides.getGuides();
-
+        flashModes = Arrays.stream(FlashMode.values()).toList();
 
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
-        CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());
+        FlashMode guide = camera.getItem().getFlashMode(camera.getStack());
 
         int currentGuideIndex = 0;
 
-        for (int i = 0; i < guides.size(); i++) {
-            if (guides.get(i).getId().equals(guide.getId())) {
+        for (int i = 0; i < flashModes.size(); i++) {
+            if (flashModes.get(i).getId().equals(guide.getId())) {
                 currentGuideIndex = i;
                 break;
             }
         }
 
-        setupButtonElements(guides.size(), currentGuideIndex);
+        setupButtonElements(flashModes.size(), currentGuideIndex);
     }
 
     @Override
@@ -55,25 +56,25 @@ public class CompositionGuideButton extends CycleButton {
         super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         // Icon
-        RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/composition_guide/" + guides.get(index).getId() + ".png"));
+        RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/flash_mode/" + flashModes.get(index).getId() + ".png"));
         blit(poseStack, x, y + 4, 0, 0, 0, 15, 14, 15, 14);
     }
 
     @Override
     public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
-        screen.renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.viewfinder.composition_guide.tooltip"),
+        screen.renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.viewfinder.flash_mode.tooltip"),
                 ((MutableComponent) getMessage()).withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
     }
 
     @Override
     public @NotNull Component getMessage() {
-        return guides.get(index).translate();
+        return flashModes.get(index).translate();
     }
 
     @Override
     protected void onCycle() {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         if (!camera.isEmpty())
-            SynchronizedCameraInHandActions.setCompositionGuide(guides.get(index));
+            SynchronizedCameraInHandActions.setFlashMode(flashModes.get(index));
     }
 }

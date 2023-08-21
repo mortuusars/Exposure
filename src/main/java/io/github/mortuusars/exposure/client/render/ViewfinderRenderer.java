@@ -13,6 +13,7 @@ import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
+import io.github.mortuusars.exposure.util.GuiUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
@@ -96,15 +97,8 @@ public class ViewfinderRenderer {
         scale = Mth.lerp(0.5f * minecraft.getDeltaFrameTime(), scale, 1f);
         float openingSize = Math.min(width, height);
 
-        float delta = 0.75f * minecraft.getDeltaFrameTime();
-        xRot0 = Mth.lerp(delta, xRot0, xRot);
-        yRot0 = Mth.lerp(delta, yRot0, yRot);
-        xRot = player.getXRot();
-        yRot = player.getYRot();
-        float xDelay = xRot - xRot0;
-        float yDelay = yRot - yRot0;
 
-        opening = new Rectangle2D.Float((width - openingSize) / 2f - yDelay, (height - openingSize) / 2f - xDelay, openingSize, openingSize);
+        opening = new Rectangle2D.Float((width - openingSize) / 2f, (height - openingSize) / 2f, openingSize, openingSize);
 
         if (!minecraft.options.hideGui) {
             RenderSystem.enableBlend();
@@ -113,11 +107,19 @@ public class ViewfinderRenderer {
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
+            float delta = 0.75f * minecraft.getDeltaFrameTime();
+            xRot0 = Mth.lerp(delta, xRot0, xRot);
+            yRot0 = Mth.lerp(delta, yRot0, yRot);
+            xRot = player.getXRot();
+            yRot = player.getYRot();
+            float xDelay = xRot - xRot0;
+            float yDelay = yRot - yRot0;
+
             PoseStack poseStack = POSE_STACK;
             poseStack.pushPose();
             poseStack.translate(width / 2f, height / 2f, 0);
             poseStack.scale(scale, scale, scale);
-            poseStack.translate(-width / 2f, -height / 2f, 0);
+            poseStack.translate(-width / 2f - yDelay, -height / 2f - xDelay, 0);
 
             if (Minecraft.getInstance().options.bobView().get())
                 bobView(poseStack, Minecraft.getInstance().getPartialTick());
@@ -180,13 +182,12 @@ public class ViewfinderRenderer {
 
             // Icons
             if (camera.getItem().getFilm(camera.getStack()).isEmpty() && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
-                RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/no_film_icon.png"));
+                RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/no_film.png"));
                 float cropFactor = Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
 
                 float fromEdge = (opening.height - (opening.height / (cropFactor))) / 2f;
-                GuiComponent.blit(poseStack, (int) (opening.x + (opening.width / 2) - 8),
-                        (int) (opening.y + opening.height - ((fromEdge / 2 + 8))),
-                        0, 0, 16, 16, 16,16);
+                GuiUtil.blit(poseStack, (opening.x + (opening.width / 2) - 12), (opening.y + opening.height - ((fromEdge / 2 + 10))),
+                        24, 19, 0, 0, 24, 19, 100);
             }
 
             poseStack.popPose();

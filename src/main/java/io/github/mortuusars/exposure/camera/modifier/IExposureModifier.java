@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.camera.modifier;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
 
 import java.awt.*;
@@ -27,6 +28,11 @@ public interface IExposureModifier {
      * Called on every delay tick (before taking a shot). If something needs to be done continuously before a shot.
      */
     default void onSetupDelayTick(CaptureProperties properties, int ticksLeft) {}
+
+    /**
+     * Called after screenshot has been taken and before any processing of the image.
+     */
+    default void afterScreenshotTaken(CaptureProperties currentCapture, NativeImage screenshot) { }
 
     /**
      * Modifies a single pixel. Will be called for every pixel in the image.

@@ -19,7 +19,12 @@
   "gui.exposure.composition_guide.quads": "Quads",
   "gui.exposure.composition_guide.rule_of_thirds": "Rule of Thirds",
 
+  "gui.exposure.flash_mode.off": "Off",
+  "gui.exposure.flash_mode.on": "On",
+  "gui.exposure.flash_mode.auto": "Auto",
+
   "gui.exposure.viewfinder.composition_guide.tooltip": "Composition Guide",
+  "gui.exposure.viewfinder.flash_mode.tooltip": "Flash Mode",
   "gui.exposure.viewfinder.focal_length": "%smm",
   "gui.exposure.viewfinder.film_frame_counter.tooltip": "Film Frames",
   "gui.exposure.viewfinder.film_frame_counter.tooltip.no_film": "No Film",
@@ -33,12 +38,13 @@
 
   "command.exposure.shader.removed": "Shader removed",
 
-  "subtitle.exposure.camera.viewfinder_open": "Camera Viewfinder opens",
-  "subtitle.exposure.camera.viewfinder_close": "Camera Viewfinder closes",
-  "subtitle.exposure.camera.shutter": "Camera Shutter clangs",
+  "subtitle.exposure.camera.viewfinder_open": "Camera viewfinder opens",
+  "subtitle.exposure.camera.viewfinder_close": "Camera viewfinder closes",
+  "subtitle.exposure.camera.shutter": "Camera shutter clangs",
   "subtitle.exposure.camera.film_advance": "Film rolls to the next frame",
   "subtitle.exposure.camera.button_click": "Camera button clicks",
   "subtitle.exposure.camera.dial_click": "Camera dial rotates",
+  "subtitle.exposure.camera.flash": "Camera flash puffs",
 
   "subtitle.exposure.photograph.placed" : "Photograph placed",
   "subtitle.exposure.photograph.break" : "Photograph broken",
