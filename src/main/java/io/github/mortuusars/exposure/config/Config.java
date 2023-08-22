@@ -32,6 +32,9 @@ public class Config {
     public static class Client {
         public static final ForgeConfigSpec SPEC;
 
+        // CAPTURE
+        public static final ForgeConfigSpec.IntValue FLASH_CAPTURE_DELAY_TICKS;
+
         // VIEWFINDER
         public static final ForgeConfigSpec.DoubleValue VIEWFINDER_CROP_FACTOR;
         public static final ForgeConfigSpec.DoubleValue VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER;
@@ -65,26 +68,30 @@ public class Config {
             EXPOSURE_SAVE_ON_EVERY_CAPTURE = builder.define("SaveOnEveryCapture", true); //TODO: remove before release
             builder.pop();
 
+            builder.push("Capture");
+            FLASH_CAPTURE_DELAY_TICKS = builder
+                    .comment("Delay in ticks before capturing an image when shooting with flash." +
+                            "\nIf you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
+                    .defineInRange("FlashCaptureDelayTicks", 3, 1, 6);
+            builder.pop();
+
             SPEC = builder.build();
         }
 
         public static int getBackgroundColor() {
-            String value = VIEWFINDER_BACKGROUND_COLOR.get();
-            value = value.replace("#", "");
-            return new Color((int)Long.parseLong(value, 16), true).getRGB();
+            return getColorFromHex(VIEWFINDER_BACKGROUND_COLOR.get());
         }
 
         public static int getMainFontColor() {
-            String value = VIEWFINDER_FONT_MAIN_COLOR.get();
-            value = value.replace("#", "");
-            return new Color((int)Long.parseLong(value, 16), true).getRGB();
+            return getColorFromHex(VIEWFINDER_FONT_MAIN_COLOR.get());
         }
 
         public static int getSecondaryFontColor() {
-            String value = VIEWFINDER_FONT_SECONDARY_COLOR.get();
-            value = value.replace("#", "");
-            return new Color((int)Long.parseLong(value, 16), true).getRGB();
+            return getColorFromHex(VIEWFINDER_FONT_SECONDARY_COLOR.get());
         }
 
+        private static int getColorFromHex(String hexColor) {
+            return new Color((int)Long.parseLong(hexColor.replace("#", ""), 16), true).getRGB();
+        }
     }
 }

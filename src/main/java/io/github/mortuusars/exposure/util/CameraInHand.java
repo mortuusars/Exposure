@@ -5,6 +5,7 @@ import io.github.mortuusars.exposure.item.CameraItem;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class CameraInHand {
@@ -19,7 +20,7 @@ public class CameraInHand {
         this.hand = hand;
     }
 
-    public CameraInHand(Player player) {
+    public CameraInHand(@NotNull Player player) {
         for (InteractionHand hand : InteractionHand.values()) {
             ItemStack itemInHand = player.getItemInHand(hand);
             if (itemInHand.getItem() instanceof CameraItem) {

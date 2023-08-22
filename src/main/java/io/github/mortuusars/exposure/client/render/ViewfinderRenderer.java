@@ -16,7 +16,6 @@ import io.github.mortuusars.exposure.util.Fov;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
@@ -49,6 +48,7 @@ public class ViewfinderRenderer {
     private static float yRot = 0f;
     private static float xRot0 = 0f;
     private static float yRot0 = 0f;
+    private static int backgroundColor;
 
     public static float getCurrentFov() {
         return currentFov;
@@ -58,6 +58,8 @@ public class ViewfinderRenderer {
         minecraft = Minecraft.getInstance();
         player = minecraft.player;
         assert player != null;
+
+        backgroundColor = Config.Client.getBackgroundColor();
 
         xRot = player.getXRot();
         yRot = player.getYRot();
@@ -90,7 +92,6 @@ public class ViewfinderRenderer {
         Preconditions.checkState(player != null && !Exposure.getCamera().getCameraInHand(player).isEmpty(),
                 "Viewfinder overlay should not be rendered when player doesn't hold a camera.");
 
-        int color = Config.Client.getBackgroundColor();
         int width = minecraft.getWindow().getGuiScaledWidth();
         int height = minecraft.getWindow().getGuiScaledHeight();
 
@@ -126,13 +127,13 @@ public class ViewfinderRenderer {
 
             // -999 to cover all screen when poseStack is scaled down.
             // Left
-            drawRect(poseStack, -999, opening.y, opening.x, opening.y + opening.height, color);
+            drawRect(poseStack, -999, opening.y, opening.x, opening.y + opening.height, backgroundColor);
             // Right
-            drawRect(poseStack, opening.x + opening.width, opening.y, width + 999, opening.y + opening.height, color);
+            drawRect(poseStack, opening.x + opening.width, opening.y, width + 999, opening.y + opening.height, backgroundColor);
             // Top
-            drawRect(poseStack, -999, -999, width + 999, opening.y, color);
+            drawRect(poseStack, -999, -999, width + 999, opening.y, backgroundColor);
             // Bottom
-            drawRect(poseStack, -999, opening.y + opening.height, width + 999, height + 999, color);
+            drawRect(poseStack, -999, opening.y + opening.height, width + 999, height + 999, backgroundColor);
 
             // Shutter
             if (Exposure.getCamera().getShutter().isOpen(ViewfinderRenderer.player))

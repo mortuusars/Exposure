@@ -20,11 +20,15 @@ import java.util.Optional;
 
 public class FrameCounterButton extends ImageButton {
     private final Screen screen;
+    private final int secondaryFontColor;
+    private final int mainFontColor;
 
     public FrameCounterButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
         super(x, y, width, height, u, v, height, texture, 256, 256, button -> {
         }, Button.NO_TOOLTIP, Component.empty());
         this.screen = screen;
+        secondaryFontColor = Config.Client.getSecondaryFontColor();
+        mainFontColor = Config.Client.getMainFontColor();
     }
 
     @Override
@@ -43,8 +47,8 @@ public class FrameCounterButton extends ImageButton {
         int textWidth = font.width(text);
         int xPos = 15 + (27 - textWidth) / 2;
 
-        font.draw(poseStack, text, x + xPos, y + 8, Config.Client.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 7, Config.Client.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 8, secondaryFontColor);
+        font.draw(poseStack, text, x + xPos, y + 7, mainFontColor);
     }
 
     @Override

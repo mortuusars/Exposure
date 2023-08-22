@@ -5,11 +5,14 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.modifier.IExposureModifier;
 import io.github.mortuusars.exposure.camera.processing.FloydDither;
 import io.github.mortuusars.exposure.camera.processing.RGBToMapColorConverter;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.storage.saver.IExposureSaver;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -30,7 +33,6 @@ public class ExposureCapture {
     @Nullable
     private static CaptureProperties currentCapture;
     private static boolean capturing;
-    private static boolean processing;
     private static int captureDelay;
     private static boolean hideGuiBeforeCapture;
     private static CameraType cameraTypeBeforeCapture;
@@ -42,10 +44,6 @@ public class ExposureCapture {
 
     public static boolean isCapturing() {
         return capturing;
-    }
-
-    public static boolean isProcessing() {
-        return processing;
     }
 
     public static void enqueueCapture(CaptureProperties properties) {
@@ -79,8 +77,10 @@ public class ExposureCapture {
         if (!event.phase.equals(TickEvent.Phase.END) || !capturing || currentCapture == null)
             return;
 
-        if (currentCapture.flash && Minecraft.getInstance().level != null && Minecraft.getInstance().level.getGameTime() - startCurrentCaptureTick < 3)
+        if (currentCapture.flash && Minecraft.getInstance().level != null
+                && Minecraft.getInstance().level.getGameTime() - startCurrentCaptureTick < Config.Client.FLASH_CAPTURE_DELAY_TICKS.get()) {
             captureDelay = Math.max(captureDelay, 1);
+        }
 
         if (captureDelay > 0) {
             captureDelay--;
@@ -100,6 +100,13 @@ public class ExposureCapture {
 
         Minecraft.getInstance().options.hideGui = hideGuiBeforeCapture;
         Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
+
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null) {
+            CameraInHand cameraInHand = new CameraInHand(player);
+            if (!cameraInHand.isEmpty())
+                cameraInHand.getItem().onShotTakenClientside(player, cameraInHand, currentCapture);
+        }
 
         processAndSaveImageThreaded(screenshot, currentCapture, true);
 
@@ -133,8 +140,6 @@ public class ExposureCapture {
             Exposure.LOGGER.error(e.toString());
         }
         finally {
-            processing = false;
-
             for (IExposureModifier modifier : properties.modifiers) {
                 modifier.end(properties);
             }

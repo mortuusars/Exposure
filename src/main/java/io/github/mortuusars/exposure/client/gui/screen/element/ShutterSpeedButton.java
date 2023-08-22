@@ -23,6 +23,8 @@ import java.util.Objects;
 public class ShutterSpeedButton extends CycleButton {
     private final Screen screen;
     private final List<ShutterSpeed> shutterSpeeds;
+    private final int secondaryFontColor;
+    private final int mainFontColor;
 
     public ShutterSpeedButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
         super(screen, x, y, width, height, u, v, height, texture);
@@ -45,6 +47,8 @@ public class ShutterSpeedButton extends CycleButton {
         }
 
         setupButtonElements(shutterSpeeds.size(), currentShutterSpeedIndex);
+        secondaryFontColor = Config.Client.getSecondaryFontColor();
+        mainFontColor = Config.Client.getMainFontColor();
     }
 
     @Override
@@ -67,8 +71,8 @@ public class ShutterSpeedButton extends CycleButton {
         int textWidth = font.width(text);
         int xPos = 35 - (textWidth / 2);
 
-        font.draw(poseStack, text, x + xPos, y + 4, Config.Client.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 3, Config.Client.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 4, secondaryFontColor);
+        font.draw(poseStack, text, x + xPos, y + 3, mainFontColor);
     }
 
     @Override

@@ -17,11 +17,15 @@ import org.jetbrains.annotations.NotNull;
 public class FocalLengthButton extends ImageButton {
     private final Screen screen;
     private final ResourceLocation texture;
+    private final int secondaryFontColor;
+    private final int mainFontColor;
 
     public FocalLengthButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
         super(x, y, width, height, u, v, height, texture, 256, 256, button -> {}, Button.NO_TOOLTIP, Component.empty());
         this.screen = screen;
         this.texture = texture;
+        secondaryFontColor = Config.Client.getSecondaryFontColor();
+        mainFontColor = Config.Client.getMainFontColor();
     }
 
     @Override
@@ -35,8 +39,8 @@ public class FocalLengthButton extends ImageButton {
         int textWidth = font.width(text);
         int xPos = 17 + (29 - textWidth) / 2;
 
-        font.draw(poseStack, text, x + xPos, y + 8, Config.Client.getSecondaryFontColor());
-        font.draw(poseStack, text, x + xPos, y + 7, Config.Client.getMainFontColor());
+        font.draw(poseStack, text, x + xPos, y + 8, secondaryFontColor);
+        font.draw(poseStack, text, x + xPos, y + 7, mainFontColor);
     }
 
     @Override
