@@ -355,20 +355,23 @@ public class CameraItem extends Item {
      * This method is called after we take a screenshot (or immediately if not capturing but should show effects). Otherwise, due to the delays (flash, etc) - particles would be captured as well.
      */
     public void onShotTakenClientside(@NotNull Player player, CameraInHand cameraInHand, CaptureProperties properties) {
+        Preconditions.checkState(player.getLevel().isClientSide, "This methods should only be called client-side.");
         if (properties.flash) {
             Level level = player.getLevel();
             Vec3 pos = player.position();
             Vec3 lookAngle = player.getLookAngle();
             pos = pos.add(0, 1, 0).add(lookAngle.multiply(0.8f, 0.8f, 0.8f));
 
-            level.addParticle(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 0, 0, 0);
+//            level.addParticle(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 0, 0, 0);
             RandomSource r = level.getRandom();
             for (int i = 0; i < 3; i++) {
                 level.addParticle(ParticleTypes.END_ROD,
-                        pos.x + r.nextFloat() * 0.8f - 0.4f,
-                        pos.y + r.nextFloat() * 0.8f + 0.2f,
-                        pos.z + r.nextFloat() * 0.8f - 0.4f,
-                        lookAngle.x * 0.1f, lookAngle.y * 0.1f, lookAngle.z * 0.1f);
+                        pos.x + r.nextFloat() - 0.5f,
+                        pos.y + r.nextFloat() + 0.15f,
+                        pos.z + r.nextFloat() - 0.5f,
+                        lookAngle.x * 0.025f + r.nextFloat() * 0.025f,
+                        lookAngle.y * 0.025f + r.nextFloat() * 0.025f,
+                        lookAngle.z * 0.025f + r.nextFloat() * 0.025f);
             }
         }
     }
