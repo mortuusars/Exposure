@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.camera.modifier;
 
-import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.CaptureProperties;
+import io.github.mortuusars.exposure.camera.ExposureCapture;
 import net.minecraft.util.Mth;
 
 import java.awt.*;
@@ -23,25 +23,29 @@ public record BrightnessModifier(String id) implements IExposureModifier {
     @Override
     public Color modifyPixel(CaptureProperties properties, int red, int green, int blue) {
         float stopsDif = properties.brightnessStops;
+        if (stopsDif == 0f)
+            return new Color(red, green, blue);
 
-        // Shorter Shutter Speeds have less impact on the brightness:
-        if (stopsDif < 0f)
-            stopsDif *= 0.75f;
+        float brightness = 1f + (stopsDif * (stopsDif < 0 ? 0.2f : 0.35f));
 
-        float brightness = 1f + stopsDif * 0.35f;
+        // We simulate the bright light by not modifying all pixels equally.
+        // Bright parts modified more when overexposed and less if underexposed.
+        // (the effect is slightly stronger when underexposing)
+        float lightness = (red + green + blue) / 765f; // from 0.0 to 1.0
+        float bias = stopsDif < 0 ? (1f - lightness) * 0.6f + 0.4f : lightness * 0.4f + 0.6f;
 
-        float r = red * brightness;
-        float g = green * brightness;
-        float b = blue * brightness;
+        float r = Mth.lerp(bias, red, red * brightness);
+        float g = Mth.lerp(bias, green, green * brightness);
+        float b = Mth.lerp(bias, blue, blue * brightness);
 
+        // Above values is not clamped at 255 purposely.
+        // Excess is redistributed to other channels. As a result - color gets less saturated, which gives more natural color.
         int[] rdst = redistribute(r, g, b);
 
-        r = Mth.clamp(Math.round(r), 0, 255);
-        g = Mth.clamp(Math.round(g), 0, 255);
-        b = Mth.clamp(Math.round(b), 0, 255);
-
-        // Two regular and redistributed values that are averaged together seem to give better result:
-        return new Color(Mth.clamp((int)((r + rdst[0]) / 2), 0, 255),
+        // BUT, it does not look perfect (idk, maybe because of dithering), so we blend them together.
+        // This makes transitions smoother, subtler. Which looks good imo.
+        return new Color(
+                Mth.clamp((int)((r + rdst[0]) / 2), 0, 255),
                 Mth.clamp((int)((g + rdst[1]) / 2), 0, 255),
                 Mth.clamp((int)((b + rdst[2]) / 2), 0, 255));
     }
@@ -50,7 +54,6 @@ public record BrightnessModifier(String id) implements IExposureModifier {
     public void teardown(CaptureProperties properties) {
         ExposureCapture.additionalBrightness = 0f;
     }
-
 
     /**
      * Redistributes excess (> 255) values to other channels.

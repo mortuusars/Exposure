@@ -311,6 +311,7 @@ public class CameraItem extends Item {
         float cropFactor = Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
 
         float brightnessStops = getShutterSpeed(camera.getStack()).getStopsDifference(getDefaultShutterSpeed(camera.getStack()));
+
         return new CaptureProperties(id, frameSize, cropFactor, brightnessStops, flash, getExposureModifiers(player, camera),
                 List.of(new ExposureStorageSaver(), ExposureFileSaver.withDefaultFolders()));
     }
@@ -362,7 +363,6 @@ public class CameraItem extends Item {
             Vec3 lookAngle = player.getLookAngle();
             pos = pos.add(0, 1, 0).add(lookAngle.multiply(0.8f, 0.8f, 0.8f));
 
-//            level.addParticle(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 0, 0, 0);
             RandomSource r = level.getRandom();
             for (int i = 0; i < 3; i++) {
                 level.addParticle(ParticleTypes.END_ROD,
