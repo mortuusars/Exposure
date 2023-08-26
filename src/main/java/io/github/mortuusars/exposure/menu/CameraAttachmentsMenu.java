@@ -44,6 +44,11 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
                         OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILM_ADVANCE.get(),
                                 SoundSource.PLAYERS, 0.9f, 1f);
                 }
+
+                @Override
+                public int getMaxStackSize() {
+                    return 1;
+                }
             });
             attachmentSlots++;
         }
@@ -52,10 +57,17 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FLASH_ATTACHMENT.slot(), 147, 15) {
                 @Override
                 public void set(@NotNull ItemStack stack) {
+                    ItemStack previousItem = getItem();
                     super.set(stack);
-                    if (playerInventory.player.getLevel().isClientSide)
+                    if (playerInventory.player.getLevel().isClientSide && !previousItem.equals(getItem())) {
                         OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get(),
-                                SoundSource.PLAYERS, stack.isEmpty() ? 0.6f : 0.8f, stack.isEmpty() ? 1.2f : 0.8f);
+                                SoundSource.PLAYERS, getItem().isEmpty() ? 0.6f : 0.8f, getItem().isEmpty() ? 1.2f : 0.8f);
+                    }
+                }
+
+                @Override
+                public int getMaxStackSize() {
+                    return 1;
                 }
             });
             attachmentSlots++;
@@ -70,6 +82,11 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
                         OnePerPlayerSounds.play(playerInventory.player, stack.isEmpty() ?
                                 SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE, SoundSource.PLAYERS, 0.9f, 1f);
                 }
+
+                @Override
+                public int getMaxStackSize() {
+                    return 1;
+                }
             });
             attachmentSlots++;
         }
@@ -77,10 +94,19 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILTER_ATTACHMENT.slot(), 147, 71) {
                 @Override
                 public void set(@NotNull ItemStack stack) {
+                    ItemStack previousItem = getItem();
                     super.set(stack);
-                    if (!stack.isEmpty() && playerInventory.player.getLevel().isClientSide)
-                        OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILTER_PLACE.get(), SoundSource.PLAYERS, 0.8f,
-                                playerInventory.player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+                    if (playerInventory.player.getLevel().isClientSide && !previousItem.equals(getItem())) {
+                        if (previousItem.isEmpty()) {
+                            OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILTER_PLACE.get(), SoundSource.PLAYERS, 0.8f,
+                                    playerInventory.player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+                        }
+                    }
+                }
+
+                @Override
+                public int getMaxStackSize() {
+                    return 1;
                 }
             });
             attachmentSlots++;

@@ -18,6 +18,11 @@ public class CameraItemStackHandler extends ItemStackHandler {
     }
 
     @Override
+    public int getSlotLimit(int slot) {
+        return 1;
+    }
+
+    @Override
     public boolean isItemValid(int slot, @NotNull ItemStack stack) {
         return camera.getItem().getAttachmentTypeForSlot(camera.getStack(), slot)
                 .map(type -> type.stackValidator().test(stack))
