@@ -29,7 +29,7 @@ public class EntitiesInFrame {
         List<Entity> entitiesInFrame = new ArrayList<>();
 
         for (Entity entity : entities) {
-            if (entitiesInFrame.size() >= 16)
+            if (entitiesInFrame.size() >= 12)
                 break;
 
             // Valid angles form a circle instead of square.

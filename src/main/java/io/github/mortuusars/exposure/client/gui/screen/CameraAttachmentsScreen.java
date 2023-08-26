@@ -47,6 +47,8 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttac
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         this.blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
         Slot filmSlot = menu.slots.get(CameraItem.FILM_ATTACHMENT.slot());
@@ -86,17 +88,15 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttac
                     b = Mth.clamp((rgb  & 0xFF) / 255f, 0f, 1f);
                 }
             }
-
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
             RenderSystem.setShaderColor(r, g, b, 1f);
             if (!filterSlot.getItem().is(Items.GLASS_PANE))
                 this.blit(poseStack, leftPos + x, topPos + y, 55, 185, 15, 23); // Opaque part
             this.blit(poseStack, leftPos + x, topPos + y, 70, 185, 15, 23); // Glares
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.disableBlend();
         }
         else
             this.blit(poseStack, leftPos + filterSlot.x - 1, topPos + filterSlot.y - 1, 238, 54, 18, 18);
+
+        RenderSystem.disableBlend();
     }
 }

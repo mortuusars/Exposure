@@ -25,10 +25,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.resources.ResourceKey;
@@ -182,24 +179,22 @@ public class CameraItem extends Item {
         if (getAttachment(camera.getStack(), FLASH_ATTACHMENT).isEmpty())
             return false;
 
-        FlashMode flashMode = getFlashMode(camera.getStack());
+        return switch (getFlashMode(camera.getStack())) {
+            case OFF -> false;
+            case ON -> true;
+            case AUTO -> {
+                Level level = player.getLevel();
 
-        if (flashMode == FlashMode.ON)
-            return true;
-        else if (flashMode == FlashMode.AUTO) {
-            Level level = player.getLevel();
+                level.updateSkyBrightness(); // This updates 'getSkyDarken' on the client. Without it always returns 0.
+                int skyBrightness = level.getBrightness(LightLayer.SKY, player.blockPosition());
+                int blockBrightness = level.getBrightness(LightLayer.BLOCK, player.blockPosition());
+                int lightLevel = skyBrightness < 15 ?
+                        Math.max(blockBrightness, (int) (skyBrightness * ((15 - level.getSkyDarken()) / 15f))) :
+                        Math.max(blockBrightness, 15 - level.getSkyDarken());
 
-            level.updateSkyBrightness(); // This updates 'getSkyDarken' on the client. Without it always returns 0.
-            int skyBrightness = level.getBrightness(LightLayer.SKY, player.blockPosition());
-            int blockBrightness = level.getBrightness(LightLayer.BLOCK, player.blockPosition());
-            int lightLevel = skyBrightness < 15 ?
-                    Math.max(blockBrightness, (int) (skyBrightness * ((15 - level.getSkyDarken()) / 15f))) :
-                    Math.max(blockBrightness, 15 - level.getSkyDarken());
-
-            return lightLevel < 8;
-        }
-
-        return false;
+                yield lightLevel < 8;
+            }
+        };
     }
 
     public boolean tryUseFlash(Player player, CameraInHand camera) {
@@ -249,16 +244,14 @@ public class CameraItem extends Item {
     }
 
     protected ExposedFrame createExposureFrame(Player player, CaptureProperties captureProperties, ItemAndStack<CameraItem> camera, List<Entity> entitiesInFrame) {
-        Vec3 shotPosition = player.position().add(0, player.getEyeY(), 0);
-
         List<ExposedFrame.EntityInfo> entitiesData = new ArrayList<>();
         for (Entity entity : EntitiesInFrame.get(player)) {
             ResourceLocation entityTypeKey = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
             CompoundTag tag = new CompoundTag();
             ListTag pos = new ListTag();
-            pos.add(DoubleTag.valueOf(entity.getX()));
-            pos.add(DoubleTag.valueOf(entity.getY()));
-            pos.add(DoubleTag.valueOf(entity.getZ()));
+            pos.add(IntTag.valueOf((int) entity.getX()));
+            pos.add(IntTag.valueOf((int) entity.getY()));
+            pos.add(IntTag.valueOf((int) entity.getZ()));
             tag.put("Pos", pos);
             tag = addAdditionalEntityInFrameData(tag, player, entity, captureProperties, camera);
             entitiesData.add(new ExposedFrame.EntityInfo(entityTypeKey, tag));
@@ -269,7 +262,7 @@ public class CameraItem extends Item {
                 .orElse(null);
 
         return new ExposedFrame(captureProperties.id, player.getScoreboardName(), Util.getFilenameFormattedDateTime(),
-                shotPosition, dimension, biome, captureProperties.flash, entitiesData);
+                player.blockPosition(), dimension, biome, captureProperties.flash, entitiesData);
     }
 
     protected CompoundTag addAdditionalEntityInFrameData(CompoundTag tag, Player player, Entity entityInFrame, CaptureProperties captureProperties, ItemAndStack<CameraItem> camera) {

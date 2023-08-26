@@ -1,12 +1,9 @@
 package io.github.mortuusars.exposure.camera;
 
 import io.github.mortuusars.exposure.Exposure;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -15,9 +12,9 @@ import java.util.List;
 
 public class ExposedFrame {
     public String id;
-    public String shooterName;
+    public String photographer;
     public String timestamp;
-    public Vec3 shotPosition;
+    public BlockPos shotPosition;
     @Nullable
     public ResourceLocation dimension;
     @Nullable
@@ -25,12 +22,12 @@ public class ExposedFrame {
     public boolean flash;
     public List<EntityInfo> entitiesInFrame;
 
-    public static final ExposedFrame EMPTY = new ExposedFrame("", "", "", Vec3.ZERO, null, null, false, Collections.emptyList());
+    public static final ExposedFrame EMPTY = new ExposedFrame("", "", "", BlockPos.ZERO, null, null, false, Collections.emptyList());
 
-    public ExposedFrame(String id, String shooterName, String timestamp, Vec3 shotPosition, @Nullable ResourceLocation dimension,
+    public ExposedFrame(String id, String photographer, String timestamp, BlockPos shotPosition, @Nullable ResourceLocation dimension,
                         @Nullable ResourceLocation biome, boolean flash, List<EntityInfo> entitiesInFrame) {
         this.id = id;
-        this.shooterName = shooterName;
+        this.photographer = photographer;
         this.timestamp = timestamp;
         this.shotPosition = shotPosition;
         this.dimension = dimension;
@@ -42,17 +39,17 @@ public class ExposedFrame {
     public CompoundTag save(CompoundTag tag) {
         tag.putString("Id", id);
 
-        if (shooterName.length() > 0)
-            tag.putString("ShooterName", shooterName);
+        if (photographer.length() > 0)
+            tag.putString("Photographer", photographer);
 
         if (timestamp.length() > 0)
             tag.putString("Timestamp", timestamp);
 
-        if (!shotPosition.equals(Vec3.ZERO)) {
+        if (!shotPosition.equals(BlockPos.ZERO)) {
             ListTag pos = new ListTag();
-            pos.add(DoubleTag.valueOf(shotPosition.x));
-            pos.add(DoubleTag.valueOf(shotPosition.y));
-            pos.add(DoubleTag.valueOf(shotPosition.z));
+            pos.add(IntTag.valueOf(shotPosition.getX()));
+            pos.add(IntTag.valueOf(shotPosition.getY()));
+            pos.add(IntTag.valueOf(shotPosition.getZ()));
             tag.put("Pos", pos);
         }
 
@@ -69,6 +66,9 @@ public class ExposedFrame {
             ListTag entities = new ListTag();
             for (EntityInfo entityInfo : entitiesInFrame) {
                 entities.add(entityInfo.save(new CompoundTag()));
+                // Duplicate entity id as a separate field in the tag.
+                // Can then be used by FTBQuests nbt matching (it's hard to match from a list), for example.
+                tag.putBoolean(entityInfo.typeId.toString(), true);
             }
             tag.put("Entities", entities);
         }
@@ -83,12 +83,13 @@ public class ExposedFrame {
             return EMPTY;
         }
 
-        String shooterName = tag.getString("ShooterName");
+        String shooterName = tag.getString("Photographer");
         String timestamp = tag.getString("Timestamp");
 
-        ListTag posTag = tag.getList("Pos", Tag.TAG_DOUBLE);
-        Vec3 pos = posTag.size() == 3 ? new Vec3(posTag.getDouble(0), posTag.getDouble(1), posTag.getDouble(2))
-                : Vec3.ZERO;
+        ListTag posTag = tag.getList("Pos", Tag.TAG_INT);
+        BlockPos pos = posTag.size() == 3 ?
+                new BlockPos(posTag.getInt(0), posTag.getInt(1), posTag.getInt(2))
+                : BlockPos.ZERO;
 
         ResourceLocation dimension = null;
         if (tag.contains("Dimension", Tag.TAG_STRING)) {
