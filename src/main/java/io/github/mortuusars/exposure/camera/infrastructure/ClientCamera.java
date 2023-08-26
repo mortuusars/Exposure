@@ -27,6 +27,9 @@ public class ClientCamera extends Camera {
     @Override
     public @Nullable InteractionHand deactivate(Player player) {
         player.stopUsingItem();
+        if (player.equals(Minecraft.getInstance().player))
+            ViewfinderRenderer.teardown();
+
         return super.deactivate(player);
     }
 }

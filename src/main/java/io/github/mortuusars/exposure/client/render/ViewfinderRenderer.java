@@ -11,6 +11,7 @@ import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
 import io.github.mortuusars.exposure.util.GuiUtil;
@@ -18,14 +19,23 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ViewportEvent;
+import net.minecraftforge.common.Tags;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.geom.Rectangle2D;
+import java.util.Optional;
 
 public class ViewfinderRenderer {
     private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/viewfinder/viewfinder.png");
@@ -54,6 +64,9 @@ public class ViewfinderRenderer {
         return currentFov;
     }
 
+    @Nullable
+    private static String previousEffect;
+
     public static void setup() {
         minecraft = Minecraft.getInstance();
         player = minecraft.player;
@@ -75,7 +88,37 @@ public class ViewfinderRenderer {
         targetFov = Fov.focalLengthToFov( Mth.clamp(camera.getItem().getZoom(camera.getStack()), focalRange.min(), focalRange.max()));
         fovRestored = false;
         scale = 0.5f;
-        //TODO: Filter shader effect. Store previous. Restore when exited viewfinder.
+
+        Optional<ItemStack> attachment = camera.getItem().getAttachment(camera.getStack(), CameraItem.FILTER_ATTACHMENT);
+        attachment.ifPresent(stack -> {
+            @Nullable String shader = null;
+            if (stack.is(Items.GLASS_PANE))
+                shader = "contrast";
+            else if (stack.is(Tags.Items.GLASS_PANES)) {
+                ResourceLocation itemLocation = ForgeRegistries.ITEMS.getKey(stack.getItem());
+                if (itemLocation != null && itemLocation.getPath().contains("_stained_glass_pane")) {
+                    String colorString = itemLocation.getPath().replace("_stained_glass_pane", "");
+                    shader = colorString + "_tint";
+                }
+            }
+
+            if (shader != null) {
+                PostChain effect = Minecraft.getInstance().gameRenderer.currentEffect();
+                if (effect != null)
+                    previousEffect = effect.getName();
+
+                Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure", "shaders/post/" + shader + ".json"));
+            }
+        });
+    }
+
+    public static void teardown() {
+        Minecraft.getInstance().gameRenderer.shutdownEffect();
+
+        if (previousEffect != null) {
+            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation(previousEffect));
+            previousEffect = null;
+        }
     }
 
     public static float getScale() {

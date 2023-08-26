@@ -4,30 +4,14 @@
   ],
   "passes": [
     {
-      "name": "color_convolve",
+      "name": "exposure:processor",
       "intarget": "minecraft:main",
       "outtarget": "swap",
       "uniforms": [
-        {
-          "name": "RedMatrix",
-          "values": [ 1.0, 0.0, 0.0 ]
-        },
-        {
-          "name": "GreenMatrix",
-          "values": [ 0.0, 1.0, 0.0 ]
-        },
-        {
-          "name": "BlueMatrix",
-          "values": [ 0.0, 0.0, 1.0 ]
-        },
-        {
-          "name": "Saturation",
-          "values": [ 1.0 ]
-        },
-        {
-          "name": "Offset",
-          "values": [ 0.0, 0.0, 0.0 ]
-        }
+        { "name": "Mul", "values": [ 1.1, 0.6, 0.6 ] },
+        { "name": "Add", "values": [ 0.05, 0.02, 0.02 ] },
+        { "name": "Contrast", "values": [ 1.1 ] },
+        { "name": "Saturation", "values": [ 0.9 ] }
       ]
     },
     {
