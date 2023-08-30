@@ -6,12 +6,12 @@ import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.block.LightroomBlock;
 import io.github.mortuusars.exposure.block.entity.FlashBlockEntity;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
+import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.infrastructure.Camera;
-import io.github.mortuusars.exposure.camera.ExposureCapture;
 import io.github.mortuusars.exposure.camera.infrastructure.ClientCameraHolder;
 import io.github.mortuusars.exposure.camera.infrastructure.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.event.ClientEvents;
@@ -59,6 +59,9 @@ public class Exposure {
     public static final String ID = "exposure";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static final int DEFAULT_FILM_SIZE = 320;
+    public static final float CROP_FACTOR = 1.142857f;
+
     public Exposure() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
@@ -81,7 +84,7 @@ public class Exposure {
 
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onComputeFovEvent);
             MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onMouseScrollEvent);
-            MinecraftForge.EVENT_BUS.addListener(ExposureCapture::onRenderTick);
+            MinecraftForge.EVENT_BUS.addListener(CaptureManager::onRenderTick);
         });
     }
 
@@ -140,12 +143,12 @@ public class Exposure {
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<FilmRollItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
-                () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, 320, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
+                () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, DEFAULT_FILM_SIZE, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final RegistryObject<FilmRollItem> COLOR_FILM = ITEMS.register("color_film",
-                () -> new FilmRollItem(FilmType.COLOR, 320, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
+                () -> new FilmRollItem(FilmType.COLOR, DEFAULT_FILM_SIZE, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
                         .stacksTo(16)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 

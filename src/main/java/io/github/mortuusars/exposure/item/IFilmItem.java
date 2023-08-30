@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.camera.ExposedFrame;
+import io.github.mortuusars.exposure.camera.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -37,14 +37,14 @@ public interface IFilmItem {
                 stack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND).size() : 0;
     }
 
-    default List<ExposedFrame> getExposedFrames(ItemStack filmStack) {
+    default List<FrameData> getExposedFrames(ItemStack filmStack) {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains("Frames", Tag.TAG_LIST))
             return Collections.emptyList();
 
-        List<ExposedFrame> frames = new ArrayList<>();
+        List<FrameData> frames = new ArrayList<>();
 
         for (Tag frameTag : filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND)) {
-            frames.add(ExposedFrame.load((CompoundTag) frameTag));
+            frames.add(FrameData.load((CompoundTag) frameTag));
         }
 
         return frames;

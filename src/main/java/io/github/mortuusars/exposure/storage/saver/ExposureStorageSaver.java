@@ -9,6 +9,6 @@ public class ExposureStorageSaver implements IExposureSaver {
         ExposureSavedData exposureSavedData =
                 new ExposureSavedData(width, height, materialColorPixels);
 
-        ExposureStorage.storeClientsideAndSendToServer(id, exposureSavedData);
+        ExposureStorage.storeOnClientAndSendToServer(id, exposureSavedData);
     }
 }

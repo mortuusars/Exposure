@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.ExposedFrame;
-import io.github.mortuusars.exposure.client.render.PhotographRenderer;
+import io.github.mortuusars.exposure.camera.FrameData;
+import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import io.github.mortuusars.exposure.item.IFilmItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ExposureScreen extends Screen {
-    private List<ExposedFrame> exposureFrames = new ArrayList<>();
+    private List<FrameData> exposureFrames = new ArrayList<>();
     private int currentExposureIndex = -1;
 
     public ExposureScreen(ItemStack film) {
@@ -28,7 +28,7 @@ public class ExposureScreen extends Screen {
             return;
         }
 
-        List<ExposedFrame> frames = filmItem.getExposedFrames(film)
+        List<FrameData> frames = filmItem.getExposedFrames(film)
                 .stream()
                 .filter(frame -> !StringUtil.isNullOrEmpty(frame.id))
                 .toList();

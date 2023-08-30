@@ -9,6 +9,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import java.util.Objects;
 
 public class ShutterSpeed {
+    public static final ShutterSpeed DEFAULT = new ShutterSpeed("60");
+
     private final String text;
     private final float valueMilliseconds;
 
@@ -47,7 +49,7 @@ public class ShutterSpeed {
         return tag;
     }
 
-    public static ShutterSpeed loadOrDefault(CompoundTag tag, ShutterSpeed defaultShutterSpeed) {
+    public static ShutterSpeed loadOrDefault(CompoundTag tag) {
         try {
             if (tag.contains("ShutterSpeed", Tag.TAG_STRING)) {
                 String shutterSpeed = tag.getString("ShutterSpeed");
@@ -58,7 +60,7 @@ public class ShutterSpeed {
             Exposure.LOGGER.error("Cannot load a shutter speed from tag: " + e);
         }
 
-        return defaultShutterSpeed;
+        return DEFAULT;
     }
     
     public void toBuffer(FriendlyByteBuf buffer) {

@@ -3,9 +3,7 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.ExposedFrame;
 import io.github.mortuusars.exposure.item.CameraItem;
-import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -18,8 +16,6 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.List;
 
 public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttachmentsMenu> {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/camera_attachments.png");

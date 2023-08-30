@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.client.gui.screen.element.*;
-import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.KeyMapping;

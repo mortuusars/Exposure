@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.Minecraft;

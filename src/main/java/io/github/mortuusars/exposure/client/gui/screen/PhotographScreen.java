@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.render.PhotographRenderer;
+import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.Util;

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.LightroomBlock;
-import io.github.mortuusars.exposure.camera.ExposedFrame;
+import io.github.mortuusars.exposure.camera.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
@@ -191,11 +191,11 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             return false;
 
         ItemAndStack<DevelopedFilmItem> film = new ItemAndStack<>(getItem(FILM_SLOT));
-        List<ExposedFrame> frames = film.getItem().getExposedFrames(film.getStack());
+        List<FrameData> frames = film.getItem().getExposedFrames(film.getStack());
         if (currentFrame >= frames.size())
             return false;
 
-        ExposedFrame exposureFrame = frames.get(currentFrame);
+        FrameData exposureFrame = frames.get(currentFrame);
 
         PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
         ItemStack photographStack = new ItemStack(photographItem);

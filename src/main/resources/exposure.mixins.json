@@ -8,7 +8,7 @@
   ],
   "client": [
     "DrawViewfinderOverlayMixin",
-    "ExposureLightMixin",
+    "ExposureLightTextureMixin",
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
     "ToggleKeyMappingMixin",

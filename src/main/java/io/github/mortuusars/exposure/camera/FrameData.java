@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ExposedFrame {
+public class FrameData {
     public String id;
     public String photographer;
     public String timestamp;
@@ -22,10 +22,10 @@ public class ExposedFrame {
     public boolean flash;
     public List<EntityInfo> entitiesInFrame;
 
-    public static final ExposedFrame EMPTY = new ExposedFrame("", "", "", BlockPos.ZERO, null, null, false, Collections.emptyList());
+    public static final FrameData EMPTY = new FrameData("", "", "", BlockPos.ZERO, null, null, false, Collections.emptyList());
 
-    public ExposedFrame(String id, String photographer, String timestamp, BlockPos shotPosition, @Nullable ResourceLocation dimension,
-                        @Nullable ResourceLocation biome, boolean flash, List<EntityInfo> entitiesInFrame) {
+    public FrameData(String id, String photographer, String timestamp, BlockPos shotPosition, @Nullable ResourceLocation dimension,
+                     @Nullable ResourceLocation biome, boolean flash, List<EntityInfo> entitiesInFrame) {
         this.id = id;
         this.photographer = photographer;
         this.timestamp = timestamp;
@@ -76,7 +76,7 @@ public class ExposedFrame {
         return tag;
     }
 
-    public static ExposedFrame load(CompoundTag tag) {
+    public static FrameData load(CompoundTag tag) {
         String id = tag.getString("Id");
         if (id.length() == 0) {
             Exposure.LOGGER.error("Cannot load exposure frame: id is not valid. Tag: " + tag);
@@ -115,7 +115,7 @@ public class ExposedFrame {
             entitiesInFrame.add(EntityInfo.fromTag(((CompoundTag) entityInfoTag)));
         }
 
-        return new ExposedFrame(id, shooterName, timestamp, pos, dimension, biome, flash, entitiesInFrame);
+        return new FrameData(id, shooterName, timestamp, pos, dimension, biome, flash, entitiesInFrame);
     }
 
     public static class EntityInfo {

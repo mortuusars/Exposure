@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.client.render.ViewfinderRenderer;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.world.entity.Entity;
@@ -13,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntitiesInFrame {
-    public static List<Entity> get(Player player) {
-        float currentFov = ViewfinderRenderer.getCurrentFov() / Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
+    public static List<Entity> get(Player player, int limit) {
+        float currentFov = ViewfinderRenderer.getCurrentFov() / Exposure.CROP_FACTOR;
         float currentFocalLength = Fov.fovToFocalLength(currentFov);
 
         List<Entity> entities = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),
@@ -29,7 +30,7 @@ public class EntitiesInFrame {
         List<Entity> entitiesInFrame = new ArrayList<>();
 
         for (Entity entity : entities) {
-            if (entitiesInFrame.size() >= 12)
+            if (entitiesInFrame.size() >= limit)
                 break;
 
             // Valid angles form a circle instead of square.
@@ -47,7 +48,7 @@ public class EntitiesInFrame {
                 size = 0.1;
 
             double sizeModifier = (size - 1.0) * 0.6d + 1.0;
-            double modifiedDistance = (distanceInBlocks / sizeModifier) / Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
+            double modifiedDistance = (distanceInBlocks / sizeModifier) / Exposure.CROP_FACTOR;
 
             if (modifiedDistance > currentFocalLength)
                 continue; // Too far to be in frame

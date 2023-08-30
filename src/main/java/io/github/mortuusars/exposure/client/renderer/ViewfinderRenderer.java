@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.render;
+package io.github.mortuusars.exposure.client.renderer;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -21,11 +21,9 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.client.event.InputEvent;
@@ -163,20 +161,31 @@ public class ViewfinderRenderer {
             poseStack.pushPose();
             poseStack.translate(width / 2f, height / 2f, 0);
             poseStack.scale(scale, scale, scale);
+
+            float attackAnim = Minecraft.getInstance().player.getAttackAnim(Minecraft.getInstance().getPartialTick());
+            if (attackAnim > 0.5f)
+                attackAnim = 1f - attackAnim;
+
+            poseStack.scale(1f - attackAnim * 0.4f, 1f - attackAnim * 0.6f, 1f - attackAnim * 0.4f);
+            poseStack.translate(width / 16f * attackAnim, width / 5f * attackAnim, attackAnim * -100);
+            poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(attackAnim, 0, 10)));
+            poseStack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(attackAnim, 0, 100)));
+
             poseStack.translate(-width / 2f - yDelay, -height / 2f - xDelay, 0);
+
 
             if (Minecraft.getInstance().options.bobView().get())
                 bobView(poseStack, Minecraft.getInstance().getPartialTick());
 
-            // -999 to cover all screen when poseStack is scaled down.
+            // -9999 to cover all screen when poseStack is scaled down.
             // Left
-            drawRect(poseStack, -999, opening.y, opening.x, opening.y + opening.height, backgroundColor);
+            drawRect(poseStack, -9999, opening.y, opening.x, opening.y + opening.height, backgroundColor);
             // Right
-            drawRect(poseStack, opening.x + opening.width, opening.y, width + 999, opening.y + opening.height, backgroundColor);
+            drawRect(poseStack, opening.x + opening.width, opening.y, width + 9999, opening.y + opening.height, backgroundColor);
             // Top
-            drawRect(poseStack, -999, -999, width + 999, opening.y, backgroundColor);
+            drawRect(poseStack, -9999, -9999, width + 9999, opening.y, backgroundColor);
             // Bottom
-            drawRect(poseStack, -999, opening.y + opening.height, width + 999, height + 999, backgroundColor);
+            drawRect(poseStack, -9999, opening.y + opening.height, width + 9999, height + 9999, backgroundColor);
 
             // Shutter
             if (Exposure.getCamera().getShutter().isOpen(ViewfinderRenderer.player))
@@ -227,7 +236,7 @@ public class ViewfinderRenderer {
             // Icons
             if (camera.getItem().getFilm(camera.getStack()).isEmpty() && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
                 RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/no_film.png"));
-                float cropFactor = Config.Client.VIEWFINDER_CROP_FACTOR.get().floatValue();
+                float cropFactor = Exposure.CROP_FACTOR;
 
                 float fromEdge = (opening.height - (opening.height / (cropFactor))) / 2f;
                 GuiUtil.blit(poseStack, (opening.x + (opening.width / 2) - 12), (opening.y + opening.height - ((fromEdge / 2 + 10))),

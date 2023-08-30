@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.client.gui.component;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
-import io.github.mortuusars.exposure.client.render.PhotographRenderer;
+import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;

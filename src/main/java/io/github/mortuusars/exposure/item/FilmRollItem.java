@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.ExposedFrame;
+import io.github.mortuusars.exposure.camera.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
@@ -56,7 +56,7 @@ public class FilmRollItem extends Item implements IFilmItem {
         return barColor;
     }
 
-    public void addFrame(ItemStack filmStack, ExposedFrame frame) {
+    public void addFrame(ItemStack filmStack, FrameData frame) {
         CompoundTag tag = filmStack.getOrCreateTag();
 
         if (!tag.contains("Frames", Tag.TAG_LIST)) {

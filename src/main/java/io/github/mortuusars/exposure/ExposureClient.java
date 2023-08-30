@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure;
 
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.client.renderer.ExposureRenderer;
 
 public class ExposureClient {
     private static final ExposureRenderer exposureRenderer = new ExposureRenderer();

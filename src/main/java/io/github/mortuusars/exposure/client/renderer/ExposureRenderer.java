@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.render;
+package io.github.mortuusars.exposure.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;

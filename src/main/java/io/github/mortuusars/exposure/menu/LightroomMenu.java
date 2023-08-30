@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.menu;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.camera.ExposedFrame;
+import io.github.mortuusars.exposure.camera.FrameData;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
@@ -31,7 +31,7 @@ public class LightroomMenu extends AbstractContainerMenu {
     private final LightroomBlockEntity lightroomBlockEntity;
     private final ContainerData data;
 
-    private List<ExposedFrame> frames = Collections.emptyList();
+    private List<FrameData> frames = Collections.emptyList();
 
     public LightroomMenu(int containerId, final Inventory playerInventory, final LightroomBlockEntity blockEntity, ContainerData containerData) {
         super(Exposure.MenuTypes.LIGHTROOM.get(), containerId);
@@ -84,7 +84,7 @@ public class LightroomMenu extends AbstractContainerMenu {
         return data;
     }
 
-    public List<ExposedFrame> getExposedFrames() {
+    public List<FrameData> getExposedFrames() {
         return frames;
     }
 
@@ -99,13 +99,13 @@ public class LightroomMenu extends AbstractContainerMenu {
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
             if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem filmItem) {
-                List<ExposedFrame> exposedFrames = filmItem.getExposedFrames(filmStack);
-                if (exposedFrames.size() == 0)
+                List<FrameData> frameData = filmItem.getExposedFrames(filmStack);
+                if (frameData.size() == 0)
                     return true;
 
                 int currentFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
                 currentFrame = currentFrame + (buttonId == NEXT_FRAME_BUTTON_ID ? 1 : -1);
-                currentFrame = Mth.clamp(currentFrame, 0, exposedFrames.size() - 1);
+                currentFrame = Mth.clamp(currentFrame, 0, frameData.size() - 1);
                 data.set(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID, currentFrame);
                 return true;
             }

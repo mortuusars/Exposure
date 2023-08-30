@@ -8,7 +8,7 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.camera.ExposedFrame;
+import io.github.mortuusars.exposure.camera.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
@@ -94,7 +94,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             blit(poseStack, leftPos + 76, topPos + 89, 176, 0, width + 1, 17);
         }
 
-        List<ExposedFrame> frames = menu.getExposedFrames();
+        List<FrameData> frames = menu.getExposedFrames();
 
         if (frames.size() == 0) {
             RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
@@ -103,9 +103,9 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         }
 
         int currentFrame = menu.getCurrentFrame();
-        @Nullable ExposedFrame leftFrame = currentFrame - 1 >= 0 && currentFrame - 1 < frames.size() ? frames.get(currentFrame - 1) : null;
-        @Nullable ExposedFrame centerFrame = currentFrame >= 0 && currentFrame < frames.size() ? frames.get(currentFrame) : null;
-        @Nullable ExposedFrame rightFrame = currentFrame + 1 >= 0 && currentFrame + 1 < frames.size() ? frames.get(currentFrame + 1) : null;
+        @Nullable FrameData leftFrame = currentFrame - 1 >= 0 && currentFrame - 1 < frames.size() ? frames.get(currentFrame - 1) : null;
+        @Nullable FrameData centerFrame = currentFrame >= 0 && currentFrame < frames.size() ? frames.get(currentFrame) : null;
+        @Nullable FrameData rightFrame = currentFrame + 1 >= 0 && currentFrame + 1 < frames.size() ? frames.get(currentFrame + 1) : null;
 
         RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
         boolean colorFilm = menu.getSlot(LightroomBlockEntity.FILM_SLOT).getItem().getItem() instanceof DevelopedFilmItem developedFilmItem &&
@@ -145,24 +145,24 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     private boolean isOverLeftFrame(int mouseX, int mouseY) {
-        List<ExposedFrame> frames = menu.getExposedFrames();
+        List<FrameData> frames = menu.getExposedFrames();
         int currentFrame = menu.getCurrentFrame();
         return currentFrame - 1 >= 0 && currentFrame - 1 < frames.size() && isHovering(6, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private boolean isOverCenterFrame(int mouseX, int mouseY) {
-        List<ExposedFrame> frames = menu.getExposedFrames();
+        List<FrameData> frames = menu.getExposedFrames();
         int currentFrame = menu.getCurrentFrame();
         return currentFrame >= 0 && currentFrame < frames.size() && isHovering(61, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private boolean isOverRightFrame(int mouseX, int mouseY) {
-        List<ExposedFrame> frames = menu.getExposedFrames();
+        List<FrameData> frames = menu.getExposedFrames();
         int currentFrame = menu.getCurrentFrame();
         return currentFrame + 1 >= 0 && currentFrame + 1 < frames.size() && isHovering(116, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
-    private void renderFrame(@Nullable ExposedFrame frame, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
+    private void renderFrame(@Nullable FrameData frame, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
         if (frame == null)
             return;
 

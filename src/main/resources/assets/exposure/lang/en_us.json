@@ -37,6 +37,8 @@
   "gui.exposure.lightroom.print": "PRINT",
 
   "command.exposure.shader.removed": "Shader removed",
+  "command.exposure.load_from_file.success": "Exposure '%s' has been loaded.",
+  "command.exposure.load_from_file.failure": "Cannot load exposure. See logs for more more information.",
 
   "subtitle.exposure.camera.viewfinder_open": "Camera viewfinder opens",
   "subtitle.exposure.camera.viewfinder_close": "Camera viewfinder closes",

@@ -36,7 +36,6 @@ public class Config {
         public static final ForgeConfigSpec.IntValue FLASH_CAPTURE_DELAY_TICKS;
 
         // VIEWFINDER
-        public static final ForgeConfigSpec.DoubleValue VIEWFINDER_CROP_FACTOR;
         public static final ForgeConfigSpec.DoubleValue VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER;
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_BACKGROUND_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_MAIN_COLOR;
@@ -51,9 +50,6 @@ public class Config {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
             builder.push("ViewfinderUI");
-            VIEWFINDER_CROP_FACTOR = builder
-                    .comment("Size of the texture relative to the size of the opening. Default: 256 / (256 - 16*2) = 1.142857")
-                    .defineInRange("CropFactor", 1.142857, 1.0, 10.0);
             VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER = builder
                     .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes. Default: 0.048")
                     .defineInRange("ZoomSensitivityModifier", 0.048, 0.0, 1.0);

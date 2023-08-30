@@ -38,7 +38,7 @@ public class ShutterSpeedButton extends CycleButton {
 
         ShutterSpeed shutterSpeed = camera.getItem().getShutterSpeed(camera.getStack());
         if (!shutterSpeeds.contains(shutterSpeed))
-            shutterSpeed = camera.getItem().getDefaultShutterSpeed(camera.getStack());
+            shutterSpeed = ShutterSpeed.DEFAULT;
 
         int currentShutterSpeedIndex = 0;
         for (int i = 0; i < shutterSpeeds.size(); i++) {
@@ -64,7 +64,7 @@ public class ShutterSpeedButton extends CycleButton {
         CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
         ShutterSpeed shutterSpeed = camera.getItem().getShutterSpeed(camera.getStack());
         String text = shutterSpeed.toString();
-        if (shutterSpeed.equals(camera.getItem().getDefaultShutterSpeed(camera.getStack())))
+        if (shutterSpeed.equals(ShutterSpeed.DEFAULT))
             text = text + "•";
 
         Font font = Minecraft.getInstance().font;
