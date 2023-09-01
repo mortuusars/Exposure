@@ -38,12 +38,12 @@ public interface ICaptureComponent {
     /**
      * Called for every game tick while it's on a delay (before taking a shot). This method is guaranteed to be called at least once.
      */
-    default void setupTicks(Capture capture, int delayTicksLeft) { }
+    default void onDelayTick(Capture capture, int delayTicksLeft) { }
 
     /**
      * Called on every RENDER tick while it's on a delay (before taking a shot). This method is guaranteed to be called at least once.
      */
-    default void setupFrames(Capture capture, int delayFramesLeft) { }
+    default void onDelayFrame(Capture capture, int delayFramesLeft) { }
 
     /**
      * Called after screenshot has been taken and before any processing of the image.

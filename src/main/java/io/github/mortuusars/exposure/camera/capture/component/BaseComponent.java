@@ -23,7 +23,7 @@ public class BaseComponent implements ICaptureComponent {
     }
 
     @Override
-    public void setupFrames(Capture capture, int delayFramesLeft) {
+    public void onDelayFrame(Capture capture, int delayFramesLeft) {
         if (delayFramesLeft == 0) { // Right before capturing
             Minecraft mc = Minecraft.getInstance();
             guiHidden = mc.options.hideGui;

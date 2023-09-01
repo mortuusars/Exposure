@@ -12,6 +12,7 @@ import io.github.mortuusars.exposure.camera.component.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
 import io.github.mortuusars.exposure.camera.infrastructure.Shutter;
+import io.github.mortuusars.exposure.client.GammaModifier;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.SyncCameraServerboundPacket;
@@ -116,13 +117,13 @@ public class CameraItem extends Item {
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         if (context.getPlayer() != null)
             useCamera(context.getPlayer(), context.getHand());
-        return InteractionResult.SUCCESS;
+        return InteractionResult.FAIL; // To not play attack animation.
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         useCamera(player, usedHand);
-        return super.use(level, player, usedHand);
+        return InteractionResultHolder.fail(player.getItemInHand(usedHand)); // To not play attack animation.
     }
 
     public void useCamera(Player player, InteractionHand hand) {
@@ -170,7 +171,8 @@ public class CameraItem extends Item {
 
                 // Update camera serverside:
                 Packets.sendToServer(new SyncCameraServerboundPacket(camera.getStack(), hand));
-            } else {
+            }
+            else if (flashHasFired) {
                 spawnClientsideFlashEffects(player, camera);
             }
         }

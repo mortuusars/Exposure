@@ -167,7 +167,7 @@ public class ViewfinderRenderer {
                 attackAnim = 1f - attackAnim;
 
             poseStack.scale(1f - attackAnim * 0.4f, 1f - attackAnim * 0.6f, 1f - attackAnim * 0.4f);
-            poseStack.translate(width / 16f * attackAnim, width / 5f * attackAnim, attackAnim * -100);
+            poseStack.translate(width / 16f * attackAnim, width / 5f * attackAnim, 0);
             poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(attackAnim, 0, 10)));
             poseStack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(attackAnim, 0, 100)));
 
@@ -234,13 +234,15 @@ public class ViewfinderRenderer {
             tesselator.end();
 
             // Icons
-            if (camera.getItem().getFilm(camera.getStack()).isEmpty() && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
+            if (!(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)
+                    && (camera.getItem().getFilm(camera.getStack()).isEmpty() || camera.getItem().getFilm(camera.getStack())
+                        .map(flm -> flm.getItem().canAddFrame(flm.getStack())).orElse(false))) {
                 RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/no_film.png"));
                 float cropFactor = Exposure.CROP_FACTOR;
 
                 float fromEdge = (opening.height - (opening.height / (cropFactor))) / 2f;
                 GuiUtil.blit(poseStack, (opening.x + (opening.width / 2) - 12), (opening.y + opening.height - ((fromEdge / 2 + 10))),
-                        24, 19, 0, 0, 24, 19, 100);
+                        24, 19, 0, 0, 24, 19, 0);
             }
 
             poseStack.popPose();

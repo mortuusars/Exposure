@@ -105,8 +105,8 @@ public class Capture {
 
         if (currentTick == captureTick && framesDelay <= 0) {
             for (ICaptureComponent modifier : components) {
-                modifier.setupTicks(this, 0);
-                modifier.setupFrames(this, 0);
+                modifier.onDelayTick(this, 0);
+                modifier.onDelayFrame(this, 0);
             }
         }
 
@@ -122,12 +122,12 @@ public class Capture {
                 ticksDelay--;
 
                 for (ICaptureComponent modifier : components) {
-                    modifier.setupTicks(this, ticksDelay);
+                    modifier.onDelayTick(this, ticksDelay);
                 }
 
                 if (ticksDelay == 0 && framesDelay == 0) {
                     for (ICaptureComponent modifier : components) {
-                        modifier.setupFrames(this, 0);
+                        modifier.onDelayFrame(this, 0);
                     }
                 }
             }
@@ -139,7 +139,7 @@ public class Capture {
             framesDelay--;
 
             for (ICaptureComponent modifier : components) {
-                modifier.setupFrames(this, framesDelay);
+                modifier.onDelayFrame(this, framesDelay);
             }
 
             return;

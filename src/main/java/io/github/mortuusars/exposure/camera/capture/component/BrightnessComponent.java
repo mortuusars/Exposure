@@ -23,12 +23,12 @@ public class BrightnessComponent implements ICaptureComponent {
     @Override
     public int getFramesDelay(Capture capture) {
         // Changing the gamma is not applied instantly for some reason. Delay of 1 seem to fix it.
-        return brightnessStops > 0 ? 1 : 0;
+        return 1 /*brightnessStops > 0 ? 1 : 0*/;
     }
 
     @Override
-    public void setupFrames(Capture capture, int delayFramesLeft) {
-        if (brightnessStops >= 0.89f && delayFramesLeft <= 1)
+    public void onDelayFrame(Capture capture, int delayFramesLeft) {
+        if (delayFramesLeft <= 1)
             GammaModifier.setAdditionalBrightness(0.0075f * brightnessStops);
     }
 
