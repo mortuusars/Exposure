@@ -165,14 +165,12 @@ public class ViewfinderRenderer {
             float attackAnim = Minecraft.getInstance().player.getAttackAnim(Minecraft.getInstance().getPartialTick());
             if (attackAnim > 0.5f)
                 attackAnim = 1f - attackAnim;
-
             poseStack.scale(1f - attackAnim * 0.4f, 1f - attackAnim * 0.6f, 1f - attackAnim * 0.4f);
             poseStack.translate(width / 16f * attackAnim, width / 5f * attackAnim, 0);
             poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(attackAnim, 0, 10)));
             poseStack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(attackAnim, 0, 100)));
 
             poseStack.translate(-width / 2f - yDelay, -height / 2f - xDelay, 0);
-
 
             if (Minecraft.getInstance().options.bobView().get())
                 bobView(poseStack, Minecraft.getInstance().getPartialTick());

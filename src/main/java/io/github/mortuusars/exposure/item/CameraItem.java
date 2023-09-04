@@ -252,10 +252,11 @@ public class CameraItem extends Item {
             entitiesData.add(createEntityInFrameInfo(entity, player, cameraStack, capture));
         }
 
+        long dayTimeTicks = player.getLevel().getDayTime();
         ResourceLocation dimension = player.level.dimension().location();
         ResourceLocation biome = player.level.getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location).orElse(null);
 
-        return new FrameData(exposureId, player.getScoreboardName(), Util.getFilenameFormattedDateTime(),
+        return new FrameData(exposureId, player.getScoreboardName(), Util.getFilenameFormattedDateTime(), dayTimeTicks,
                 player.blockPosition(), dimension, biome, flash, entitiesData);
     }
 

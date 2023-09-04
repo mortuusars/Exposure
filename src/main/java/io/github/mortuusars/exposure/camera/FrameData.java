@@ -14,6 +14,7 @@ public class FrameData {
     public String id;
     public String photographer;
     public String timestamp;
+    public long dayTimeTicks;
     public BlockPos shotPosition;
     @Nullable
     public ResourceLocation dimension;
@@ -22,13 +23,15 @@ public class FrameData {
     public boolean flash;
     public List<EntityInfo> entitiesInFrame;
 
-    public static final FrameData EMPTY = new FrameData("", "", "", BlockPos.ZERO, null, null, false, Collections.emptyList());
+    public static final FrameData EMPTY = new FrameData("", "", "", -1, BlockPos.ZERO,
+            null, null, false, Collections.emptyList());
 
-    public FrameData(String id, String photographer, String timestamp, BlockPos shotPosition, @Nullable ResourceLocation dimension,
+    public FrameData(String id, String photographer, String timestamp, long dayTimeTicks, BlockPos shotPosition, @Nullable ResourceLocation dimension,
                      @Nullable ResourceLocation biome, boolean flash, List<EntityInfo> entitiesInFrame) {
         this.id = id;
         this.photographer = photographer;
         this.timestamp = timestamp;
+        this.dayTimeTicks = dayTimeTicks;
         this.shotPosition = shotPosition;
         this.dimension = dimension;
         this.biome = biome;
@@ -44,6 +47,9 @@ public class FrameData {
 
         if (timestamp.length() > 0)
             tag.putString("Timestamp", timestamp);
+
+        if (dayTimeTicks >= 0)
+            tag.putLong("DayTime", dayTimeTicks);
 
         if (!shotPosition.equals(BlockPos.ZERO)) {
             ListTag pos = new ListTag();
@@ -85,6 +91,7 @@ public class FrameData {
 
         String shooterName = tag.getString("Photographer");
         String timestamp = tag.getString("Timestamp");
+        long dayTime = tag.getLong("DayTime");
 
         ListTag posTag = tag.getList("Pos", Tag.TAG_INT);
         BlockPos pos = posTag.size() == 3 ?
@@ -115,7 +122,7 @@ public class FrameData {
             entitiesInFrame.add(EntityInfo.fromTag(((CompoundTag) entityInfoTag)));
         }
 
-        return new FrameData(id, shooterName, timestamp, pos, dimension, biome, flash, entitiesInFrame);
+        return new FrameData(id, shooterName, timestamp, dayTime, pos, dimension, biome, flash, entitiesInFrame);
     }
 
     public static class EntityInfo {
