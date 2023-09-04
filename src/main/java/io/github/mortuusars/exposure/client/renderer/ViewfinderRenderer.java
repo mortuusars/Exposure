@@ -25,14 +25,13 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.geom.Rectangle2D;
+import java.util.Objects;
 import java.util.Optional;
 
 public class ViewfinderRenderer {
@@ -89,24 +88,12 @@ public class ViewfinderRenderer {
 
         Optional<ItemStack> attachment = camera.getItem().getAttachment(camera.getStack(), CameraItem.FILTER_ATTACHMENT);
         attachment.ifPresent(stack -> {
-            @Nullable String shader = null;
-            if (stack.is(Items.GLASS_PANE))
-                shader = "contrast";
-            else if (stack.is(Tags.Items.GLASS_PANES)) {
-                ResourceLocation itemLocation = ForgeRegistries.ITEMS.getKey(stack.getItem());
-                if (itemLocation != null && itemLocation.getPath().contains("_stained_glass_pane")) {
-                    String colorString = itemLocation.getPath().replace("_stained_glass_pane", "");
-                    shader = colorString + "_tint";
-                }
-            }
+            PostChain effect = Minecraft.getInstance().gameRenderer.currentEffect();
+            if (effect != null)
+                previousEffect = effect.getName();
 
-            if (shader != null) {
-                PostChain effect = Minecraft.getInstance().gameRenderer.currentEffect();
-                if (effect != null)
-                    previousEffect = effect.getName();
-
-                Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure", "shaders/post/" + shader + ".json"));
-            }
+            String itemName = Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(stack.getItem())).getPath();
+            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure", "shaders/post/" + itemName + ".json"));
         });
     }
 

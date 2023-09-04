@@ -237,6 +237,7 @@ public class Exposure {
             public static final TagKey<Item> FILM_ROLLS = ItemTags.create(Exposure.resource("film_rolls"));
             public static final TagKey<Item> DEVELOPED_FILMS = ItemTags.create(Exposure.resource("developed_films"));
             public static final TagKey<Item> PHOTO_PAPERS = ItemTags.create(Exposure.resource("photo_papers"));
+            public static final TagKey<Item> FILTERS = ItemTags.create(Exposure.resource("filters"));
         }
     }
 }
