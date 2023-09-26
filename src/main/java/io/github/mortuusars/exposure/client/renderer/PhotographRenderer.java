@@ -54,9 +54,9 @@ public class PhotographRenderer {
 
         if (idOrTexture != null)  {
             poseStack.pushPose();
-            float offset = SIZE * 0.05f;
+            float offset = SIZE * 0.078125f;
             poseStack.translate(offset, offset, 0.2);
-            poseStack.scale(0.90f, 0.90f, 0.90f);
+            poseStack.scale(0.84375f, 0.84375f, 0.84375f);
             render(idOrTexture, poseStack, bufferSource, 0, 0, SIZE, SIZE, 0, 0, 1, 1, packedLight, r, g, b, a);
             poseStack.popPose();
         }

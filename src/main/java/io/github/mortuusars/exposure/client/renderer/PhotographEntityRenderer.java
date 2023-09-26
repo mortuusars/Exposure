@@ -42,9 +42,9 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
         poseStack.scale(scale, scale, -scale);
 
         int brightness = switch (entity.getDirection()) {
-            case DOWN -> 215;
+            case DOWN -> 210;
             case UP -> 255;
-            default -> 238;
+            default -> 235;
         };
 
         Either<String, ResourceLocation> idOrTexture = entity.getIdOrTexture();

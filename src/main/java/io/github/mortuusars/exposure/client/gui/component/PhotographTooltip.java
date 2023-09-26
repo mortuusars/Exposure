@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.client.gui.component;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -49,7 +50,7 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
         poseStack.pushPose();
         poseStack.translate(mouseX, mouseY, blitOffset);
         float scale = SIZE / (float) PhotographRenderer.SIZE;
-        float nextPhotographOffset = 0.03f;
+        float nextPhotographOffset = 0.046875f;
         scale *= 1f - (additionalPhotographs * nextPhotographOffset);
         poseStack.scale(scale, scale, 1f);
 
@@ -58,10 +59,16 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
         // Rendering paper bottom to top:
         for (int i = additionalPhotographs; i > 0; i--) {
             float posOffset = PhotographRenderer.SIZE * (nextPhotographOffset * i);
-            int brightness = Mth.clamp((int)((1f - (0.25f * i)) * 255), 0, 255);
+            int brightness = Mth.clamp((int)((1f - (0.2f * i)) * 255), 0, 255);
+
+            float rotateOffset = PhotographRenderer.SIZE / 2f;
 
             poseStack.pushPose();
             poseStack.translate(posOffset, posOffset, 0);
+
+            poseStack.translate(rotateOffset, rotateOffset, 0);
+            poseStack.mulPose(Vector3f.ZP.rotationDegrees(i * 90 + 90));
+            poseStack.translate(-rotateOffset, -rotateOffset, 0);
 
             PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack,
                     bufferSource, 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
