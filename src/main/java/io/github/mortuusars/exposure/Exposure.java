@@ -62,6 +62,8 @@ public class Exposure {
     public static final int DEFAULT_FILM_SIZE = 320;
     public static final float CROP_FACTOR = 1.142857f;
 
+    public static final String EXPOSURES_FOLDER_NAME = "exposures";
+
     public Exposure() {
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);

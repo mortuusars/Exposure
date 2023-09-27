@@ -26,7 +26,7 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     public static FileSaveComponent withDefaultFolders(String exposureId) {
-        return new FileSaveComponent(exposureId, Config.Client.EXPOSURE_SAVE_PATH.get(), Config.Client.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get());
+        return new FileSaveComponent(exposureId, Exposure.EXPOSURES_FOLDER_NAME, Config.Client.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get());
     }
 
     @Override
