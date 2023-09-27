@@ -11,6 +11,7 @@
     "ExposureLightTextureMixin",
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
+    "PhotographInHandRendererMixin",
     "ToggleKeyMappingMixin",
     "ViewfinderSensitivityMixin"
   ],

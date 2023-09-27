@@ -117,7 +117,7 @@ public class StackedPhotographsItem extends Item {
             return Optional.empty();
 
         ItemAndStack<PhotographItem> topPhotograph = photographs.get(0);
-        return Optional.of(new PhotographTooltip(topPhotograph.getItem().getidOrTexture(topPhotograph.getStack()), photographs.size()));
+        return Optional.of(new PhotographTooltip(topPhotograph.getItem().getIdOrTexture(topPhotograph.getStack()), photographs.size()));
     }
 
     @Override

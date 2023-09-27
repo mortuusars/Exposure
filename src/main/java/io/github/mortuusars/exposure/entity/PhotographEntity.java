@@ -209,7 +209,7 @@ public class PhotographEntity extends HangingEntity {
         if (!itemStack.isEmpty()) {
             itemStack.setEntityRepresentation(this);
             if (itemStack.getItem() instanceof PhotographItem photographItem) {
-                idOrTexture = photographItem.getidOrTexture(itemStack);
+                idOrTexture = photographItem.getIdOrTexture(itemStack);
             }
         }
 

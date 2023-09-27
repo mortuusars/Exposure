@@ -19,7 +19,7 @@ public class ItemFramePhotographRenderer {
         if (!(itemStack.getItem() instanceof PhotographItem photographItem))
             return;
 
-        @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getidOrTexture(itemStack);
+        @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(itemStack);
         if (idOrTexture == null)
             return;
 

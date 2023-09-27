@@ -42,7 +42,7 @@ public class PhotographItem extends Item {
         super(properties);
     }
 
-    public @Nullable Either<String, ResourceLocation> getidOrTexture(ItemStack stack) {
+    public @Nullable Either<String, ResourceLocation> getIdOrTexture(ItemStack stack) {
         if (stack.getTag() == null)
             return null;
 
@@ -96,7 +96,7 @@ public class PhotographItem extends Item {
 
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
-        return Optional.of(new PhotographTooltip(getidOrTexture(stack)));
+        return Optional.of(new PhotographTooltip(getIdOrTexture(stack)));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class PhotographItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemInHand = player.getItemInHand(hand);
 
-        if (getidOrTexture(itemInHand) == null)
+        if (getIdOrTexture(itemInHand) == null)
             Exposure.LOGGER.warn("No Id or Resource is defined. - " + itemInHand);
 
         if (level.isClientSide)

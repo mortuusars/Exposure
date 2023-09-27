@@ -75,7 +75,7 @@ public class PhotographScreen extends Screen {
         ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getidOrTexture(photograph.getStack());
+        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
         PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
         bufferSource.endBatch();
 
