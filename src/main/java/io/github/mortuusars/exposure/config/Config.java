@@ -46,6 +46,9 @@ public class Config {
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_LEVEL_SUBFOLDER;
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_ON_EVERY_CAPTURE;
 
+        // MISC
+        public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
+
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
@@ -69,6 +72,12 @@ public class Config {
                     .comment("Delay in ticks before capturing an image when shooting with flash." +
                             "\nIf you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
                     .defineInRange("FlashCaptureDelayTicks", 3, 1, 6);
+            builder.pop();
+
+            builder.push("Misc");
+            PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR = builder
+                    .comment("Crosshair will not get in the way when holding a photograph.")
+                    .define("PhotographInHandHideCrosshair", true);
             builder.pop();
 
             SPEC = builder.build();

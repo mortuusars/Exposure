@@ -9,6 +9,7 @@
   "client": [
     "DrawViewfinderOverlayMixin",
     "ExposureLightTextureMixin",
+    "HideCrosshairMixin",
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
     "PhotographInHandRendererMixin",

@@ -50,7 +50,7 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
         poseStack.pushPose();
         poseStack.translate(mouseX, mouseY, blitOffset);
         float scale = SIZE / (float) PhotographRenderer.SIZE;
-        float nextPhotographOffset = 0.046875f;
+        float nextPhotographOffset = 0.03125f;
         scale *= 1f - (additionalPhotographs * nextPhotographOffset);
         poseStack.scale(scale, scale, 1f);
 
