@@ -28,16 +28,16 @@ public abstract class Camera {
 
     public void activate(Player player, InteractionHand hand) {
         activeCameras.put(player, hand);
-//        player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), SoundSource.PLAYERS, 0.35f,
-//                player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), SoundSource.PLAYERS, 0.35f,
+                player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
     }
 
     public @Nullable InteractionHand deactivate(Player player) {
         player.stopUsingItem();
         @Nullable InteractionHand hand = activeCameras.remove(player);
         if (hand != null) {
-//            player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), SoundSource.PLAYERS, 0.35f,
-//                    player.getLevel().getRandom().nextFloat() * 0.2f + 0.85f);
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), SoundSource.PLAYERS, 0.35f,
+                    player.getLevel().getRandom().nextFloat() * 0.2f + 0.85f);
         }
         return hand;
     }
