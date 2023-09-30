@@ -16,9 +16,14 @@ public class ItemTagsProvider extends net.minecraft.data.tags.ItemTagsProvider {
 
     @Override
     protected void addTags() {
-        tag(Exposure.Tags.Items.PHOTO_PAPERS).add(Items.PAPER);
         tag(Exposure.Tags.Items.FILM_ROLLS).add(Exposure.Items.BLACK_AND_WHITE_FILM.get(), Exposure.Items.COLOR_FILM.get());
-        tag(Exposure.Tags.Items.DEVELOPED_FILMS).add(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get(), Exposure.Items.DEVELOPED_COLOR_FILM.get());
+        tag(Exposure.Tags.Items.DEVELOPED_FILM_ROLLS).add(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get(), Exposure.Items.DEVELOPED_COLOR_FILM.get());
+
+        tag(Exposure.Tags.Items.CYAN_PRINTING_DYES).add(Items.CYAN_DYE);
+        tag(Exposure.Tags.Items.MAGENTA_PRINTING_DYES).add(Items.MAGENTA_DYE);
+        tag(Exposure.Tags.Items.YELLOW_PRINTING_DYES).add(Items.YELLOW_DYE);
+        tag(Exposure.Tags.Items.BLACK_PRINTING_DYES).add(Items.BLACK_DYE);
+        tag(Exposure.Tags.Items.PHOTO_PAPERS).add(Items.PAPER);
     }
 
     private void optionalTags(TagAppender<Item> tag, String namespace, String... items) {

@@ -61,8 +61,10 @@ public class Config {
             builder.pop();
 
             builder.push("ExposureFileSaving");
-            EXPOSURE_SAVE_LEVEL_SUBFOLDER = builder.define("PutInLevelSubfolder", true);
-            EXPOSURE_SAVE_ON_EVERY_CAPTURE = builder.define("SaveOnEveryCapture", true); //TODO: remove before release
+            EXPOSURE_SAVE_LEVEL_SUBFOLDER = builder
+                    .define("LevelNameSubfolder", true);
+            EXPOSURE_SAVE_ON_EVERY_CAPTURE = builder
+                    .define("SaveOnEveryCapture", true); //TODO: remove before release
             builder.pop();
 
             builder.push("Capture");

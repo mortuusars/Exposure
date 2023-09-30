@@ -44,12 +44,16 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class LightroomBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
-    public static final int SLOTS = 3;
+    public static final int SLOTS = 7;
     public static final int FILM_SLOT = 0;
-    public static final int PAPER_SLOT = 1;
-    public static final int RESULT_SLOT = 2;
+    public static final int CYAN_SLOT = 1;
+    public static final int MAGENTA_SLOT = 2;
+    public static final int YELLOW_SLOT = 3;
+    public static final int BLACK_SLOT = 4;
+    public static final int PAPER_SLOT = 5;
+    public static final int RESULT_SLOT = 6;
 
-    public static final int[] OUTPUT_SLOTS = new int[] { 2 };
+    public static final int[] OUTPUT_SLOTS = new int[] { 6 };
 
     public static final int CONTAINER_DATA_SIZE = 3;
     public static final int CONTAINER_DATA_PROGRESS_ID = 0;
@@ -180,10 +184,24 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         if (!(filmStack.getItem() instanceof DevelopedFilmItem developedFilm) || !developedFilm.hasExposedFrame(filmStack, currentFrame))
             return false;
 
+        if (!hasDyesForPrint(developedFilm.getType()))
+            return false;
+
         ItemStack resultStack = getItem(RESULT_SLOT);
         return resultStack.isEmpty() || resultStack.getItem() instanceof PhotographItem
                 || (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem
                     && stackedPhotographsItem.canAddPhotograph(resultStack));
+    }
+
+    public boolean hasDyesForPrint(FilmType type) {
+        if (type == FilmType.COLOR)
+            return !getItem(CYAN_SLOT).isEmpty() && !getItem(MAGENTA_SLOT).isEmpty() && !getItem(YELLOW_SLOT).isEmpty() && !getItem(BLACK_SLOT).isEmpty();
+
+        if (type == FilmType.BLACK_AND_WHITE)
+            return !getItem(BLACK_SLOT).isEmpty();
+
+        Exposure.LOGGER.info("Don't know what dyes needed for the film type: <" + type + ">");
+        return false;
     }
 
     public boolean tryPrint() {
@@ -221,6 +239,14 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         }
 
         setItem(RESULT_SLOT, resultStack);
+
+        if (film.getItem().getType() == FilmType.COLOR) {
+            getItem(CYAN_SLOT).shrink(1);
+            getItem(MAGENTA_SLOT).shrink(1);
+            getItem(YELLOW_SLOT).shrink(1);
+        }
+        getItem(BLACK_SLOT).shrink(1);
+
         getItem(PAPER_SLOT).shrink(1);
 
         if (level != null)
@@ -264,6 +290,10 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
     public static boolean isItemValidForSlot(int slot, ItemStack stack) {
         if (slot == FILM_SLOT) return stack.getItem() instanceof DevelopedFilmItem;
+        else if (slot == CYAN_SLOT) return stack.is(Exposure.Tags.Items.CYAN_PRINTING_DYES);
+        else if (slot == MAGENTA_SLOT) return stack.is(Exposure.Tags.Items.MAGENTA_PRINTING_DYES);
+        else if (slot == YELLOW_SLOT) return stack.is(Exposure.Tags.Items.YELLOW_PRINTING_DYES);
+        else if (slot == BLACK_SLOT) return stack.is(Exposure.Tags.Items.BLACK_PRINTING_DYES);
         else if (slot == PAPER_SLOT) return stack.is(Exposure.Tags.Items.PHOTO_PAPERS);
         else if (slot == RESULT_SLOT) return stack.getItem() instanceof PhotographItem;
         return false;

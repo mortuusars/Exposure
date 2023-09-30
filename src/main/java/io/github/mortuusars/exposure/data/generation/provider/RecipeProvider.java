@@ -41,7 +41,7 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
 
         recipeConsumer.accept(new FilmDevelopingFinishedRecipe(bwRecipeId,
                 Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get(), 1, "",
-                List.of(Ingredient.of(Exposure.Items.BLACK_AND_WHITE_FILM.get()), potionIngredient(Potions.WATER), Ingredient.of(Items.FERMENTED_SPIDER_EYE)), bwAdvancementBuilder,
+                List.of(Ingredient.of(Exposure.Items.BLACK_AND_WHITE_FILM.get()), potionIngredient(Potions.WATER)), bwAdvancementBuilder,
                 new ResourceLocation(bwRecipeId.getNamespace(), "recipes/" +
                         Objects.requireNonNull(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get()
                                 .getItemCategory()).getRecipeFolderName() + "/" + bwRecipeId.getPath())
@@ -62,6 +62,32 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
                         Objects.requireNonNull(Exposure.Items.DEVELOPED_COLOR_FILM.get()
                                 .getItemCategory()).getRecipeFolderName() + "/" + colorRecipeId.getPath())
         ));
+
+        ShapedRecipeBuilder.shaped(Exposure.Items.CAMERA.get())
+                .pattern("LIB")
+                .pattern("IGI")
+                .pattern("NIN")
+                .define('N', Tags.Items.NUGGETS_IRON)
+                .define('I', Tags.Items.INGOTS_IRON)
+                .define('G', Tags.Items.GLASS_PANES_COLORLESS)
+                .define('L', Items.LEVER)
+                .define('B', ItemTags.BUTTONS)
+                .group("camera")
+                .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+                .save(recipeConsumer);
+
+//        ShapedRecipeBuilder.shaped(Exposure.Items.CAMERA.get())
+//                .pattern("BIL")
+//                .pattern("IGI")
+//                .pattern("NIN")
+//                .define('N', Tags.Items.NUGGETS_IRON)
+//                .define('I', Tags.Items.INGOTS_IRON)
+//                .define('G', Tags.Items.GLASS_PANES_COLORLESS)
+//                .define('L', Items.LEVER)
+//                .define('B', ItemTags.BUTTONS)
+//                .group("camera")
+//                .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
+//                .save(recipeConsumer, "camera_inverted");
 
         ShapedRecipeBuilder.shaped(Exposure.Items.BLACK_AND_WHITE_FILM.get())
                 .pattern("NBB")
@@ -94,7 +120,7 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .define('L', Items.LANTERN)
                 .define('T', Items.REDSTONE_TORCH)
                 .define('P', ItemTags.PLANKS)
-                .unlockedBy("has_developed_film", has(Exposure.Tags.Items.DEVELOPED_FILMS))
+                .unlockedBy("has_developed_film", has(Exposure.Tags.Items.DEVELOPED_FILM_ROLLS))
                 .save(recipeConsumer);
     }
 

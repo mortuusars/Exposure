@@ -1,11 +1,13 @@
-// 1.19.2	2023-08-13T15:30:12.3271168	Recipes
-d871ce8e6670e03a490390df9ab44375809f3985 data/exposure/advancements/recipes/decorations/lightroom.json
+// 1.19.2	2023-09-30T03:58:14.5691146	Recipes
+30c4472532cc45dc76e1812b99a1ca71a244f0dd data/exposure/advancements/recipes/decorations/lightroom.json
 e2d4c43ea177ac107a9889973037d622b5da10a8 data/exposure/advancements/recipes/tools/black_and_white_film.json
+e77254d095027403e7cd57a0abe1b406032222f2 data/exposure/advancements/recipes/tools/camera.json
 37be1e004adaaa56c1eaf3cbd895aa2493689a37 data/exposure/advancements/recipes/tools/color_film.json
 81d366d73ad03d3efc8a1923437745d6ef8e0054 data/exposure/advancements/recipes/tools/developing_black_and_white_film.json
 a1e3e5bcc93161ef838b4b92ab91264b39b50fc7 data/exposure/advancements/recipes/tools/developing_color_film.json
 f77b7f1a90854bf845315c19754fa58697e3cccb data/exposure/recipes/black_and_white_film.json
+58510f695c3a2a5bf6f3d8e6ab68eb92be338673 data/exposure/recipes/camera.json
 467cb76310ffdf6e9b7dbd014ed20a57ad1690b3 data/exposure/recipes/color_film.json
-bbed28ac22c96b6c380fda527114cb1e1802528d data/exposure/recipes/developing_black_and_white_film.json
+83e9769c54340c2651770c990469974bd6442b82 data/exposure/recipes/developing_black_and_white_film.json
 4b642057185a70c2719657b5923b96c47d72694b data/exposure/recipes/developing_color_film.json
 b41321dd384daa4636dd83d4b9c1c74fa102c8a5 data/exposure/recipes/lightroom.json

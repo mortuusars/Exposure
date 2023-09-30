@@ -40,7 +40,7 @@ public class LightroomMenu extends AbstractContainerMenu {
 
         IItemHandler itemHandler = blockEntity.getInventory();
         {
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.FILM_SLOT, 17, 90) {
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.FILM_SLOT, -20, 42) {
                 @Override
                 public void setChanged() {
                     super.setChanged();
@@ -48,10 +48,16 @@ public class LightroomMenu extends AbstractContainerMenu {
                             developedFilm.getExposedFrames(getItem()) : Collections.emptyList();
                 }
             });
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 35, 90));
+
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.CYAN_SLOT, 8, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.MAGENTA_SLOT, 26, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.YELLOW_SLOT, 44, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.BLACK_SLOT, 62, 92));
+
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 96, 92));
 
             // OUTPUT
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.RESULT_SLOT, 134, 90) {
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.RESULT_SLOT, 148, 92) {
                 @Override
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     return false;
@@ -78,6 +84,10 @@ public class LightroomMenu extends AbstractContainerMenu {
     public static LightroomMenu fromBuffer(int containerID, Inventory playerInventory, FriendlyByteBuf buffer) {
         return new LightroomMenu(containerID, playerInventory, getBlockEntity(playerInventory, buffer),
                 new SimpleContainerData(LightroomBlockEntity.CONTAINER_DATA_SIZE));
+    }
+
+    public LightroomBlockEntity getBlockEntity() {
+        return lightroomBlockEntity;
     }
 
     public ContainerData getData() {

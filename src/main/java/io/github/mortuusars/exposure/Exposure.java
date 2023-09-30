@@ -237,7 +237,11 @@ public class Exposure {
     public static class Tags {
         public static class Items {
             public static final TagKey<Item> FILM_ROLLS = ItemTags.create(Exposure.resource("film_rolls"));
-            public static final TagKey<Item> DEVELOPED_FILMS = ItemTags.create(Exposure.resource("developed_films"));
+            public static final TagKey<Item> DEVELOPED_FILM_ROLLS = ItemTags.create(Exposure.resource("developed_film_rolls"));
+            public static final TagKey<Item> CYAN_PRINTING_DYES = ItemTags.create(Exposure.resource("cyan_printing_dyes"));
+            public static final TagKey<Item> MAGENTA_PRINTING_DYES = ItemTags.create(Exposure.resource("magenta_printing_dyes"));
+            public static final TagKey<Item> YELLOW_PRINTING_DYES = ItemTags.create(Exposure.resource("yellow_printing_dyes"));
+            public static final TagKey<Item> BLACK_PRINTING_DYES = ItemTags.create(Exposure.resource("black_printing_dyes"));
             public static final TagKey<Item> PHOTO_PAPERS = ItemTags.create(Exposure.resource("photo_papers"));
             public static final TagKey<Item> FILTERS = ItemTags.create(Exposure.resource("filters"));
         }

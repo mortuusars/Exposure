@@ -17,6 +17,7 @@ import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -52,11 +53,14 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
-        printButton = new Button(leftPos + 61, topPos + 87, FRAME_SIZE, 20, Component.translatable("gui.exposure.lightroom.print"),
+        printButton = new ImageButton(leftPos + 117, topPos + 89, 22, 22, 176, 17, 22, MAIN_TEXTURE, 256, 256,
                 pButton -> {
                     if (Minecraft.getInstance().gameMode != null)
                         Minecraft.getInstance().gameMode.handleInventoryButtonClick(menu.containerId, LightroomMenu.PRINT_BUTTON_ID);
-                });
+                }, (button, poseStack, mouseX, mouseY) -> {
+                    if (button.visible && button.isActive())
+                        renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.print"), mouseX, mouseY);
+                }, Component.empty());
         addRenderableWidget(printButton);
     }
 
@@ -71,13 +75,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     private boolean canPressPrintButton() {
-        ItemStack outputSlotItemStack = menu.getSlot(LightroomBlockEntity.RESULT_SLOT).getItem();
-        boolean canPlaceInOutputSlot = outputSlotItemStack.isEmpty() || outputSlotItemStack.getItem() instanceof PhotographItem
-                || (outputSlotItemStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem
-                    && stackedPhotographsItem.canAddPhotograph(outputSlotItemStack));
-        boolean hasPaper = !menu.getSlot(LightroomBlockEntity.PAPER_SLOT).getItem().isEmpty();
-        boolean hasExposedFrames = menu.getExposedFrames().size() > 0;
-        return hasPaper && hasExposedFrames && canPlaceInOutputSlot;
+        return menu.getBlockEntity().canPrint();
     }
 
     @Override
@@ -86,12 +84,30 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.setShaderTexture(0, MAIN_TEXTURE);
         blit(poseStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        blit(poseStack, leftPos - 27, topPos + 34, 0, 208, 28, 31);
+
+        boolean colorFilm = menu.getSlot(LightroomBlockEntity.FILM_SLOT).getItem().getItem() instanceof DevelopedFilmItem developedFilmItem &&
+                developedFilmItem.getType() == FilmType.COLOR;
+
+        // PLACEHOLDER ICONS
+        if (!menu.slots.get(LightroomBlockEntity.FILM_SLOT).hasItem())
+            blit(poseStack, leftPos - 21, topPos + 41, 238, 0, 18, 18);
+        if (!menu.slots.get(LightroomBlockEntity.CYAN_SLOT).hasItem())
+            blit(poseStack, leftPos + 7, topPos + 91, 238, 36, 18, 18);
+        if (!menu.slots.get(LightroomBlockEntity.MAGENTA_SLOT).hasItem())
+            blit(poseStack, leftPos + 25, topPos + 91, 238, 54, 18, 18);
+        if (!menu.slots.get(LightroomBlockEntity.YELLOW_SLOT).hasItem())
+            blit(poseStack, leftPos + 43, topPos + 91, 238, 72, 18, 18);
+        if (!menu.slots.get(LightroomBlockEntity.BLACK_SLOT).hasItem())
+            blit(poseStack, leftPos + 61, topPos + 91, 238, 90, 18, 18);
+        if (!menu.slots.get(LightroomBlockEntity.PAPER_SLOT).hasItem())
+            blit(poseStack, leftPos + 95, topPos + 91, 238, 18, 18, 18);
 
         if (menu.isPrinting()) {
             int progress = menu.getData().get(LightroomBlockEntity.CONTAINER_DATA_PROGRESS_ID);
             int time = menu.getData().get(LightroomBlockEntity.CONTAINER_DATA_PRINT_TIME_ID);
             int width = progress != 0 && time != 0 ? progress * 24 / time : 0;
-            blit(poseStack, leftPos + 76, topPos + 89, 176, 0, width + 1, 17);
+            blit(poseStack, leftPos + 116, topPos + 91, 176, 0, width + 1, 17);
         }
 
         List<FrameData> frames = menu.getExposedFrames();
@@ -108,8 +124,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         @Nullable FrameData rightFrame = currentFrame + 1 >= 0 && currentFrame + 1 < frames.size() ? frames.get(currentFrame + 1) : null;
 
         RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
-        boolean colorFilm = menu.getSlot(LightroomBlockEntity.FILM_SLOT).getItem().getItem() instanceof DevelopedFilmItem developedFilmItem &&
-                    developedFilmItem.getType() == FilmType.COLOR;
+
         if (colorFilm)
             RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 1.0F);
         // Left film part
@@ -179,6 +194,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
                 ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 255, 255, 255,
                         Mth.clamp((int)Math.ceil(alpha * 255), 0, 255));
+
             bufferSource.endBatch();
 
             poseStack.popPose();

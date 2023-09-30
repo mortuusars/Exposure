@@ -12,9 +12,6 @@ import java.util.Optional;
 public class ServersideExposureStorage implements IExposureStorage {
     private static final String EXPOSURE_DIR = "exposures";
 
-    public ServersideExposureStorage() {
-    }
-
     @Override
     public Optional<ExposureSavedData> getOrQuery(String id) {
         ExposureSavedData loadedExposureData = ServerLifecycleHooks.getCurrentServer().overworld().getDataStorage()

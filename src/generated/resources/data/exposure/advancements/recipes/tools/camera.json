@@ -1,11 +1,11 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_developed_film": {
+    "has_iron": {
       "conditions": {
         "items": [
           {
-            "tag": "exposure:developed_film_rolls"
+            "tag": "forge:ingots/iron"
           }
         ]
       },
@@ -13,20 +13,20 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "exposure:lightroom"
+        "recipe": "exposure:camera"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
   },
   "requirements": [
     [
-      "has_developed_film",
+      "has_iron",
       "has_the_recipe"
     ]
   ],
   "rewards": {
     "recipes": [
-      "exposure:lightroom"
+      "exposure:camera"
     ]
   }
 }
