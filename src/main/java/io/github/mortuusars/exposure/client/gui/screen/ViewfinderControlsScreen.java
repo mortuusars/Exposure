@@ -5,8 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.client.gui.screen.element.*;
-import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.KeyMapping;
@@ -55,9 +56,9 @@ public class ViewfinderControlsScreen extends Screen {
         refreshMovementKeysToKeepPlayerMoving();
 
         int leftPos = (width - 256) / 2;
-        int topPos = Math.round(ViewfinderRenderer.opening.y + ViewfinderRenderer.opening.height - 256);
+        int topPos = Math.round(ViewfinderOverlay.opening.y + ViewfinderOverlay.opening.height - 256);
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (camera.isEmpty())
             throw new IllegalStateException("Active Camera cannot be empty here.");
 
@@ -121,17 +122,17 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (!ViewfinderRenderer.shouldRender()) {
+        if (!ViewfinderClient.isOpen()) {
             this.onClose();
             return;
         }
 
-        if (Minecraft.getInstance().options.hideGui)
-            return;
+//        if (Minecraft.getInstance().options.hideGui)
+//            return;
 
         poseStack.pushPose();
 
-        float viewfinderScale = ViewfinderRenderer.getScale();
+        float viewfinderScale = ViewfinderOverlay.getScale();
         if (viewfinderScale != 1.0f) {
             poseStack.translate(width / 2f, height / 2f, 0);
             poseStack.scale(viewfinderScale, viewfinderScale, viewfinderScale);
@@ -162,7 +163,7 @@ public class ViewfinderControlsScreen extends Screen {
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
 
         if (!handled && button == 1) {
-            CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+            CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
             if (!camera.isEmpty()) {
                 Minecraft.getInstance().gameMode.useItem(player, camera.getHand());
 //                camera.getItem().useCamera(player, camera.getHand());
@@ -188,7 +189,7 @@ public class ViewfinderControlsScreen extends Screen {
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
         if (!super.mouseScrolled(mouseX, mouseY, delta)) {
-            ViewfinderRenderer.zoom(delta > 0d ? ZoomDirection.IN : ZoomDirection.OUT, true);
+            ViewfinderClient.zoom(delta > 0d ? ZoomDirection.IN : ZoomDirection.OUT, true);
             return true;
         }
 

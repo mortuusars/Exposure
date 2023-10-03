@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.menu;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.camera.FrameData;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;

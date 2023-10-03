@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.camera.capture.converter;
 
 import io.github.mortuusars.exposure.camera.capture.Capture;
-import io.github.mortuusars.exposure.camera.processing.FloydDither;
+import io.github.mortuusars.exposure.camera.capture.processing.FloydDither;
 
 import java.awt.image.BufferedImage;
 

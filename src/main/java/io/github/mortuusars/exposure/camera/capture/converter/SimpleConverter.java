@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.camera.capture.converter;
 
 import io.github.mortuusars.exposure.camera.capture.Capture;
-import io.github.mortuusars.exposure.camera.processing.RGBToMapColorConverter;
+import io.github.mortuusars.exposure.camera.capture.processing.RGBToMapColorConverter;
 
 import java.awt.image.BufferedImage;
 

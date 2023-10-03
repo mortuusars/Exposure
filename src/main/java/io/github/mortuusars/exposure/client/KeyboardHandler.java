@@ -1,12 +1,9 @@
 package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.Camera;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
-import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
-import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -22,9 +19,7 @@ public class KeyboardHandler {
                         viewfinderControlsScreen.onClose();
                 }
                 else {
-                    Exposure.getCamera().deactivate(player);
-                    CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-                    Packets.sendToServer(new UpdateActiveCameraPacket(player.getUUID(), false, camera.getHand()));
+                    Camera.deactivate(player, true);
                 }
             }
             return true;

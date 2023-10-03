@@ -3,7 +3,6 @@ package io.github.mortuusars.exposure.client.gui.screen.element;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.FlashMode;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -30,7 +29,7 @@ public class FlashModeButton extends CycleButton {
         super(screen, x, y, width, height, u, v, height, texture);
         flashModes = Arrays.stream(FlashMode.values()).toList();
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         FlashMode guide = camera.getItem().getFlashMode(camera.getStack());
 
         int currentGuideIndex = 0;
@@ -73,7 +72,7 @@ public class FlashModeButton extends CycleButton {
 
     @Override
     protected void onCycle() {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty())
             SynchronizedCameraInHandActions.setFlashMode(flashModes.get(index));
     }

@@ -29,7 +29,7 @@ public class CompositionGuideButton extends CycleButton {
         guides = CompositionGuides.getGuides();
 
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());
 
         int currentGuideIndex = 0;
@@ -72,7 +72,7 @@ public class CompositionGuideButton extends CycleButton {
 
     @Override
     protected void onCycle() {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty())
             SynchronizedCameraInHandActions.setCompositionGuide(guides.get(index));
     }

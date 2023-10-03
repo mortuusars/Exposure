@@ -3,7 +3,6 @@ package io.github.mortuusars.exposure.network;
 
 import io.github.mortuusars.exposure.network.packet.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
@@ -23,8 +22,9 @@ public class Packets {
             PROTOCOL_VERSION::equals);
 
     public static void register() {
-        UpdateActiveCameraPacket.register(CHANNEL, id++);
         ExposureDataPartPacket.register(CHANNEL, id++);
+
+        DeactivateCameraServerboundPacket.register(CHANNEL, id++);
 
         CameraSetZoomServerboundPacket.register(CHANNEL, id++);
         CameraSetCompositionGuideServerboundPacket.register(CHANNEL, id++);

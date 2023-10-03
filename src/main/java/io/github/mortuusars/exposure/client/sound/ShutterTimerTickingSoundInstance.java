@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.sound;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
@@ -26,11 +27,12 @@ public class ShutterTimerTickingSoundInstance extends AbstractTickableSoundInsta
 
     @Override
     public void tick() {
-        if (Exposure.getCamera().getCameraInHand(player).isEmpty() || !Exposure.getCamera().getShutter().isOpen(player))
-            this.stop();
-
         this.x = player.getX();
         this.y = player.getY();
         this.z = player.getZ();
+
+        CameraInHand cameraInHand = new CameraInHand(player);
+        if (cameraInHand.isEmpty() || !cameraInHand.getItem().isShutterOpen(cameraInHand.getStack(), player.getLevel()))
+            this.stop();
     }
 }

@@ -1,8 +1,8 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
-import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,7 +15,9 @@ import java.util.List;
 
 public class EntitiesInFrame {
     public static List<Entity> get(Player player, int limit) {
-        float currentFov = ViewfinderRenderer.getCurrentFov() / Exposure.CROP_FACTOR;
+        //TODO: Use current fov
+//        float currentFov = ViewfinderOverlay.getCurrentFov() / Exposure.CROP_FACTOR;
+        float currentFov = ViewfinderClient.getTargetFov() / Exposure.CROP_FACTOR;
         float currentFocalLength = Fov.fovToFocalLength(currentFov);
 
         List<Entity> entities = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),

@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.FlashMode;
 import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
@@ -16,7 +15,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 @OnlyIn(Dist.CLIENT)
 public class SynchronizedCameraInHandActions {
     public static void setZoom(float focalLength) {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setZoom(camera.getStack(), focalLength);
             CameraSetZoomServerboundPacket.send(focalLength);
@@ -24,7 +23,7 @@ public class SynchronizedCameraInHandActions {
     }
 
     public static void setCompositionGuide(CompositionGuide guide) {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setCompositionGuide(camera.getStack(), guide);
             CameraSetCompositionGuideServerboundPacket.send(guide);
@@ -32,7 +31,7 @@ public class SynchronizedCameraInHandActions {
     }
 
     public static void setFlashMode(FlashMode flashMode) {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setFlashMode(camera.getStack(), flashMode);
             CameraSetFlashModeServerboundPacket.send(flashMode);
@@ -40,7 +39,7 @@ public class SynchronizedCameraInHandActions {
     }
 
     public static void setShutterSpeed(ShutterSpeed shutterSpeed) {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setShutterSpeed(camera.getStack(), shutterSpeed);
             CameraSetShutterSpeedServerboundPacket.send(shutterSpeed);

@@ -1,17 +1,20 @@
 package io.github.mortuusars.exposure.event;
 
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.command.ExposureCommands;
 import io.github.mortuusars.exposure.command.ShaderCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
+import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
+import io.github.mortuusars.exposure.util.ScheduledTasks;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -35,7 +38,17 @@ public class CommonEvents {
 
         @SubscribeEvent
         public static void playerTick(TickEvent.PlayerTickEvent event) {
-            Exposure.getCamera().tick(event.player);
+            // Refresh active camera
+            if (CameraInHand.isActive(event.player)) {
+                CameraInHand camera = CameraInHand.ofPlayer(event.player);
+                camera.getItem().setActive(event.player, camera.getStack(), true);
+            }
+        }
+
+        @SubscribeEvent
+        public static void levelTick(TickEvent.LevelTickEvent event) {
+            if (event.phase == TickEvent.Phase.END)
+                ScheduledTasks.tick(event);
         }
 
         @SubscribeEvent
@@ -43,12 +56,19 @@ public class CommonEvents {
             Player player = event.getEntity();
 
             // Interacting with entity when trying to shoot is annoying
-            if (Exposure.getCamera().isActive(player)) {
+            if (CameraInHand.isActive(player)) {
                 event.setCanceled(true);
                 event.setCancellationResult(InteractionResult.SUCCESS);
-                CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+                CameraInHand camera = CameraInHand.ofPlayer(player);
                 camera.getStack().use(player.level, player, camera.getHand());
             }
+        }
+
+        @SubscribeEvent
+        public static void onItemToss(ItemTossEvent event) {
+            ItemStack itemStack = event.getEntity().getItem();
+            if (itemStack.getItem() instanceof CameraItem cameraItem)
+                cameraItem.setActive(event.getPlayer(), itemStack, false);
         }
     }
 }

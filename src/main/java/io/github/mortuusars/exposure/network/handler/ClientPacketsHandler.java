@@ -11,7 +11,6 @@ import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringConverter;
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleConverter;
 import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
-import io.github.mortuusars.exposure.network.packet.UpdateActiveCameraPacket;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -19,12 +18,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.network.NetworkEvent;
 
-import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -33,17 +29,6 @@ import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientPacketsHandler {
-    public static void updateActiveCamera(NetworkEvent.Context context, UpdateActiveCameraPacket packet) {
-        if (Minecraft.getInstance().level == null) return;
-        @Nullable Player player = Minecraft.getInstance().level.getPlayerByUUID(packet.playerID());
-        if (player == null) return;
-
-        if (packet.isActive())
-            Exposure.getCamera().activate(player, packet.hand());
-        else
-            Exposure.getCamera().deactivate(player);
-    }
-
     public static void applyShader(ApplyShaderClientboundPacket packet) {
         Minecraft mc = Minecraft.getInstance();
         if (packet.shaderLocation().getPath().equals("none")) {

@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.menu;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.inventory.CameraItemStackHandler;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
 import net.minecraft.network.FriendlyByteBuf;
@@ -28,6 +29,7 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
         super(Exposure.MenuTypes.CAMERA.get(), containerId);
         this.camera = new ItemAndStack<>(cameraStack);
         List<CameraItem.AttachmentType> attachmentTypes = camera.getItem().getAttachmentTypes(camera.getStack());
+        // doesn't work when multiple cameras
         this.slotMatchingItem = playerInventory.findSlotMatchingItem(cameraStack);
 
 
@@ -154,7 +156,7 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return !Exposure.getCamera().isActive(player) && player.getInventory().getItem(slotMatchingItem).getItem() instanceof CameraItem;
+        return !CameraInHand.isActive(player) && player.getInventory().getSelected().getItem() instanceof CameraItem;
     }
 
     public static CameraAttachmentsMenu fromBuffer(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {

@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.camera.FrameData;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
