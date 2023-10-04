@@ -65,6 +65,8 @@ public class ViewfinderOverlay {
             return;
 
         CameraInHand camera = CameraInHand.ofPlayer(minecraft.player);
+        if (camera.isEmpty())
+            return;
 
         RenderSystem.enableBlend();
         RenderSystem.disableDepthTest();

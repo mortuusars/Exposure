@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.event;
 
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.command.ExposureCommands;
 import io.github.mortuusars.exposure.command.ShaderCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
@@ -43,6 +44,8 @@ public class CommonEvents {
                 CameraInHand camera = CameraInHand.ofPlayer(event.player);
                 camera.getItem().setActive(event.player, camera.getStack(), true);
             }
+            else if (ViewfinderClient.isOpen())
+                ViewfinderClient.close(event.player);
         }
 
         @SubscribeEvent

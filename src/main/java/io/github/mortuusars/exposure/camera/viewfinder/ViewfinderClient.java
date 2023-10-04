@@ -77,6 +77,10 @@ public class ViewfinderClient {
         }
     }
 
+    public static void tick() {
+
+    }
+
     public static FocalRange getFocalRange() {
         return focalRange;
     }
