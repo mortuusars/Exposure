@@ -77,16 +77,12 @@ public class ViewfinderClient {
         }
     }
 
-    public static void tick() {
-
-    }
-
     public static FocalRange getFocalRange() {
         return focalRange;
     }
 
-    public static double getTargetFov() {
-        return targetFov;
+    public static double getCurrentFov() {
+        return currentFov;
     }
 
     public static void zoom(ZoomDirection direction, boolean precise) {

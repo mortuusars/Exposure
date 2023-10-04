@@ -31,7 +31,6 @@ public class ViewfinderOverlay {
     private static int backgroundColor;
 
     private static float scale = 1f;
-    public static boolean fovRestored;
 
     private static Float xRot = null;
     private static Float yRot = null;
@@ -43,8 +42,6 @@ public class ViewfinderOverlay {
         player = minecraft.player;
 
         backgroundColor = Config.Client.getBackgroundColor();
-
-        fovRestored = false;
         scale = 0.5f;
     }
 

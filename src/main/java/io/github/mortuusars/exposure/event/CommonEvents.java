@@ -44,7 +44,7 @@ public class CommonEvents {
                 CameraInHand camera = CameraInHand.ofPlayer(event.player);
                 camera.getItem().setActive(event.player, camera.getStack(), true);
             }
-            else if (ViewfinderClient.isOpen())
+            else if (event.player.getLevel().isClientSide && ViewfinderClient.isOpen())
                 ViewfinderClient.close(event.player);
         }
 
