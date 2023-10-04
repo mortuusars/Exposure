@@ -35,7 +35,7 @@ public class FocalLengthButton extends ImageButton {
 
         //TODO: Use current fov
 //        int focalLength = Math.round(Fov.fovToFocalLength(ViewfinderOverlay.getCurrentFov()));
-        int focalLength = Math.round(Fov.fovToFocalLength(ViewfinderClient.getTargetFov()));
+        int focalLength = (int)Math.round(Fov.fovToFocalLength(ViewfinderClient.getTargetFov()));
 
         Font font = Minecraft.getInstance().font;
         MutableComponent text = Component.translatable("gui.exposure.viewfinder.focal_length", focalLength);

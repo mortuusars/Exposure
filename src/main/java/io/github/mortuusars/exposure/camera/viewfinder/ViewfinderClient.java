@@ -31,8 +31,8 @@ public class ViewfinderClient {
 
     private static Supplier<ItemAndStack<CameraItem>> camera;
     private static FocalRange focalRange = FocalRange.FULL;
-    private static float targetFov = 90f;
-    private static float currentFov = targetFov;
+    private static double targetFov = 90f;
+    private static double currentFov = targetFov;
 
     @Nullable
     private static String previousShaderEffect;
@@ -81,22 +81,21 @@ public class ViewfinderClient {
         return focalRange;
     }
 
-    public static float getTargetFov() {
+    public static double getTargetFov() {
         return targetFov;
     }
 
     public static void zoom(ZoomDirection direction, boolean precise) {
-        float step = 8f * (1f - Mth.clamp((focalRange.min() - currentFov) / focalRange.min(), 0.3f, 1f));
-        float inertia = Math.abs((targetFov - currentFov)) * 0.8f;
-        float change = step + inertia;
+        double step = 8f * (1f - Mth.clamp((focalRange.min() - currentFov) / focalRange.min(), 0.3f, 1f));
+        double inertia = Math.abs((targetFov - currentFov)) * 0.8f;
+        double change = step + inertia;
 
         if (precise)
             change *= 0.25f;
 
+        double prevFov = targetFov;
 
-        float prevFov = targetFov;
-
-        float fov = Mth.clamp(targetFov + (direction == ZoomDirection.IN ? -change : +change),
+        double fov = Mth.clamp(targetFov + (direction == ZoomDirection.IN ? -change : +change),
                 Fov.focalLengthToFov(focalRange.max()),
                 Fov.focalLengthToFov(focalRange.min()));
 
@@ -126,44 +125,19 @@ public class ViewfinderClient {
 
         @SubscribeEvent
         public static void computeFOV(ViewportEvent.ComputeFov event) {
-            if (!event.usedConfiguredFov() || !isOpen())
+            if (!event.usedConfiguredFov())
                 return;
 
-            currentFov = (float)Mth.lerp(Math.min(1.0, 0.5 * Minecraft.getInstance().getDeltaFrameTime()), currentFov, targetFov);
+            if (isOpen())
+                currentFov = Mth.lerp(Math.min(0.5f * Minecraft.getInstance().getDeltaFrameTime(), 0.5f), currentFov, targetFov);
+            else if (Math.abs(currentFov - event.getFOV()) > 0.00001)
+                currentFov = Mth.lerp(Math.min(0.75f * Minecraft.getInstance().getDeltaFrameTime(), 0.75f), currentFov, event.getFOV());
+            else {
+                currentFov = event.getFOV();
+                return;
+            }
 
             event.setFOV(currentFov);
-
-
-//            if (event.usedConfiguredFov()) {
-//                defaultFov = (float) fov;
-//                if (targetFov == -1)
-//                    targetFov = defaultFov;
-//                if (currentFov == -1)
-//                    currentFov = defaultFov;
-//            }
-//
-//            if (shouldRender()) {
-//                currentFov = Mth.lerp(Math.min(0.25f * minecraft.getDeltaFrameTime(), 1f), currentFov, targetFov);
-//            } else if (!fovRestored) {
-//                currentFov = Mth.lerp(Math.min(0.5f * minecraft.getDeltaFrameTime(), 1f), currentFov, defaultFov);
-//
-//                if (Math.abs(currentFov - defaultFov) < 0.0001d) {
-//                    fovRestored = true;
-//
-//                    LocalPlayer player = minecraft.player;
-//                    if (player != null && event.usedConfiguredFov()) {
-//                        // Item in hand snaps weirdly when fov is changing to normal.
-//                        // So we render hand only after fov is restored and play equip animation to smoothly show a hand.
-//                        minecraft.gameRenderer.itemInHandRenderer.itemUsed(player.getItemInHand(InteractionHand.MAIN_HAND).isEmpty()
-//                                ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND);
-//                    }
-//                }
-//            } else {
-//                currentFov = defaultFov;
-//                return;
-//            }
-//
-//            event.setFOV(currentFov);
         }
     }
 }

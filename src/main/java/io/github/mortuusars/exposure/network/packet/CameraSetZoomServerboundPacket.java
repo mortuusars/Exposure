@@ -12,7 +12,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record CameraSetZoomServerboundPacket(float focalLength) {
+public record CameraSetZoomServerboundPacket(double focalLength) {
     public static void register(SimpleChannel channel, int id) {
         channel.messageBuilder(CameraSetZoomServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CameraSetZoomServerboundPacket::toBuffer)
@@ -21,16 +21,16 @@ public record CameraSetZoomServerboundPacket(float focalLength) {
                 .add();
     }
 
-    public static void send(float focalLength) {
+    public static void send(double focalLength) {
         Packets.sendToServer(new CameraSetZoomServerboundPacket(focalLength));
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
-        buffer.writeFloat(focalLength);
+        buffer.writeDouble(focalLength);
     }
 
     public static CameraSetZoomServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new CameraSetZoomServerboundPacket(buffer.readFloat());
+        return new CameraSetZoomServerboundPacket(buffer.readDouble());
     }
 
     @SuppressWarnings("UnusedReturnValue")

@@ -14,7 +14,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class SynchronizedCameraInHandActions {
-    public static void setZoom(float focalLength) {
+    public static void setZoom(double focalLength) {
         CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             camera.getItem().setZoom(camera.getStack(), focalLength);

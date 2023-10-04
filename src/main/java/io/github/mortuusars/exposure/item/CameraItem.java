@@ -3,16 +3,15 @@ package io.github.mortuusars.exposure.item;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.FlashBlock;
-import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.capture.component.*;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringConverter;
 import io.github.mortuusars.exposure.camera.component.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.SyncCameraServerboundPacket;
@@ -499,8 +498,8 @@ public class CameraItem extends Item {
         return cameraStack.hasTag() ? cameraStack.getOrCreateTag().getFloat("Zoom") : getFocalRange(cameraStack).min();
     }
 
-    public void setZoom(ItemStack cameraStack, float focalLength) {
-        cameraStack.getOrCreateTag().putFloat("Zoom", focalLength);
+    public void setZoom(ItemStack cameraStack, double focalLength) {
+        cameraStack.getOrCreateTag().putDouble("Zoom", focalLength);
     }
 
     public CompositionGuide getCompositionGuide(ItemStack cameraStack) {

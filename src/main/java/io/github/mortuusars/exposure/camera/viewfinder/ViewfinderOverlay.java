@@ -56,7 +56,7 @@ public class ViewfinderOverlay {
         int width = minecraft.getWindow().getGuiScaledWidth();
         int height = minecraft.getWindow().getGuiScaledHeight();
 
-        scale = Mth.lerp(Math.min(0.5f * minecraft.getDeltaFrameTime(), 1f), scale, 1f);
+        scale = Mth.lerp(Math.min(0.5f * minecraft.getDeltaFrameTime(), 0.5f), scale, 1f);
         float openingSize = Math.min(width, height);
 
         opening = new Rectangle2D.Float((width - openingSize) / 2f, (height - openingSize) / 2f, openingSize, openingSize);
@@ -78,7 +78,7 @@ public class ViewfinderOverlay {
             xRot0 = xRot;
             yRot0 = yRot;
         }
-        float delta = 0.75f * minecraft.getDeltaFrameTime();
+        float delta = Math.min(0.75f * minecraft.getDeltaFrameTime(), 0.75f);
         xRot0 = Mth.lerp(delta, xRot0, xRot);
         yRot0 = Mth.lerp(delta, yRot0, yRot);
         xRot = player.getXRot();
@@ -129,7 +129,7 @@ public class ViewfinderOverlay {
         // Guide
         RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/composition_guide/" +
                 camera.getItem().getCompositionGuide(camera.getStack()).getId() + ".png"));
-        GuiUtil.blit(poseStack, opening.x, opening.y, opening.width, opening.height, 0, 0, 256, 256, -1);
+        GuiUtil.blit(poseStack, opening.x, opening.x + opening.width, opening.y, opening.y + opening.height, -1f, 0f, 1f, 0f, 1f);
 
         // Icons
         if (!(minecraft.screen instanceof ViewfinderControlsScreen)) {

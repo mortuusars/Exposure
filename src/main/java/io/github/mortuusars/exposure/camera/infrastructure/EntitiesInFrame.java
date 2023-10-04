@@ -17,8 +17,8 @@ public class EntitiesInFrame {
     public static List<Entity> get(Player player, int limit) {
         //TODO: Use current fov
 //        float currentFov = ViewfinderOverlay.getCurrentFov() / Exposure.CROP_FACTOR;
-        float currentFov = ViewfinderClient.getTargetFov() / Exposure.CROP_FACTOR;
-        float currentFocalLength = Fov.fovToFocalLength(currentFov);
+        double currentFov = ViewfinderClient.getTargetFov() / Exposure.CROP_FACTOR;
+        double currentFocalLength = Fov.fovToFocalLength(currentFov);
 
         List<Entity> entities = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),
                 entity -> entity instanceof LivingEntity);
