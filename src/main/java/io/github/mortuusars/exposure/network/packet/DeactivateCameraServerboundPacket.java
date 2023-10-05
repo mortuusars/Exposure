@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.network.packet;
 
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CameraHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -36,7 +36,7 @@ public record DeactivateCameraServerboundPacket(UUID playerUUID) {
         if (player == null)
             throw new IllegalStateException("Cannot handle the packet: Player was null");
 
-        Camera.deactivate(player, false);
+        CameraHelper.deactivate(player, false);
 
         return true;
     }

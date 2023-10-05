@@ -129,9 +129,9 @@ public class ViewfinderClient {
                 return;
 
             if (isOpen())
-                currentFov = Mth.lerp(Math.min(0.5f * Minecraft.getInstance().getDeltaFrameTime(), 0.5f), currentFov, targetFov);
+                currentFov = Mth.lerp(Math.min(0.6f * Minecraft.getInstance().getDeltaFrameTime(), 0.6f), currentFov, targetFov);
             else if (Math.abs(currentFov - event.getFOV()) > 0.00001)
-                currentFov = Mth.lerp(Math.min(0.75f * Minecraft.getInstance().getDeltaFrameTime(), 0.75f), currentFov, event.getFOV());
+                currentFov = Mth.lerp(Math.min(0.8f * Minecraft.getInstance().getDeltaFrameTime(), 0.8f), currentFov, event.getFOV());
             else {
                 currentFov = event.getFOV();
                 return;

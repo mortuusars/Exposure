@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,8 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EntitiesInFrame {
-    public static List<Entity> get(Player player, int limit) {
-        double currentFov = ViewfinderClient.getCurrentFov() / Exposure.CROP_FACTOR;
+    public static List<Entity> get(Player player, double fov, int limit) {
+        double currentFov = fov / Exposure.CROP_FACTOR;
         double currentFocalLength = Fov.fovToFocalLength(currentFov);
 
         List<Entity> entities = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),
@@ -34,7 +33,7 @@ public class EntitiesInFrame {
 
             // Valid angles form a circle instead of square.
             // Due to this, entities in the corners of a frame are not considered "in frame".
-            // I haven't found a good way to fix this.
+            // I'm too dumb at maths to fix this.
             double relativeAngleDegrees = getRelativeAngle(player, entity);
             if (relativeAngleDegrees > currentFov / 2f)
                 continue; // Not in frame
@@ -46,7 +45,7 @@ public class EntitiesInFrame {
             if (Double.isNaN(size) || size == 0.0)
                 size = 0.1;
 
-            double sizeModifier = (size - 1.0) * 0.6d + 1.0;
+            double sizeModifier = (size - 1.0) * 0.6 + 1.0;
             double modifiedDistance = (distanceInBlocks / sizeModifier) / Exposure.CROP_FACTOR;
 
             if (modifiedDistance > currentFocalLength)

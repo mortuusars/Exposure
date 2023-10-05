@@ -7,7 +7,7 @@ import io.github.mortuusars.exposure.network.packet.DeactivateCameraServerboundP
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-public class Camera {
+public class CameraHelper {
     public static void deactivate(Player player, boolean sendToServer) {
         for (ItemStack stack : player.getInventory().items) {
             if (stack.getItem() instanceof CameraItem cameraItem)

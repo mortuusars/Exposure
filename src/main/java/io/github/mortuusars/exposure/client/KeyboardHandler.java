@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CameraHelper;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import net.minecraft.client.Minecraft;
@@ -19,7 +19,7 @@ public class KeyboardHandler {
                         viewfinderControlsScreen.onClose();
                 }
                 else {
-                    Camera.deactivate(player, true);
+                    CameraHelper.deactivate(player, true);
                 }
             }
             return true;

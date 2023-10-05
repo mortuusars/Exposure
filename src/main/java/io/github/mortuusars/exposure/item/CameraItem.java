@@ -222,7 +222,7 @@ public class CameraItem extends Item {
                 Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
                 CaptureManager.enqueue(capture);
 
-                List<Entity> entitiesInFrame = EntitiesInFrame.get(player, 12);
+                List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
                 FrameData frameData = createFrameData(player, cameraStack, exposureId, capture, flashHasFired, entitiesInFrame);
 
                 ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();

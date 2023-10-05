@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.event;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.camera.Camera;
+import io.github.mortuusars.exposure.camera.CameraHelper;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
@@ -10,7 +10,6 @@ import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.renderer.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.renderer.PhotographEntityRenderer;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -95,7 +94,7 @@ public class ClientEvents {
             if (isLookingThroughViewfinder() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null)
-                    Camera.deactivate(player, true);
+                    CameraHelper.deactivate(player, true);
             }
         }
 
