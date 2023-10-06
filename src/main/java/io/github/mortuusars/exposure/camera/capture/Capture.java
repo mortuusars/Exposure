@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.camera.capture;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.component.ICaptureComponent;
@@ -48,6 +49,7 @@ public class Capture {
     }
 
     public Capture size(int size) {
+        Preconditions.checkArgument(size > 0, "'size' cannot be less or equal to 0.");
         this.size = size;
         return this;
     }
@@ -57,6 +59,7 @@ public class Capture {
     }
 
     public Capture cropFactor(float cropFactor) {
+        Preconditions.checkArgument(cropFactor != 0, "'cropFactor' cannot be 0.");
         this.cropFactor = cropFactor;
         return this;
     }
@@ -90,7 +93,7 @@ public class Capture {
         return this;
     }
 
-    public Capture initialize() {
+    public void initialize() {
         for (ICaptureComponent modifier : components) {
             ticksDelay = Math.max(ticksDelay, modifier.getTicksDelay(this));
             framesDelay = Math.max(framesDelay, modifier.getFramesDelay(this));
@@ -109,8 +112,6 @@ public class Capture {
                 modifier.onDelayFrame(this, 0);
             }
         }
-
-        return this;
     }
 
     public void tick() {
@@ -179,8 +180,12 @@ public class Capture {
         } catch (Exception e) {
             Exposure.LOGGER.error(e.toString());
         } finally {
-            for (ICaptureComponent component : components) {
-                component.end(this);
+            try {
+                for (ICaptureComponent component : components) {
+                    component.end(this);
+                }
+            } catch (Exception e) {
+                Exposure.LOGGER.error(e.toString());
             }
         }
     }
@@ -199,29 +204,32 @@ public class Capture {
         sourceXStart += crop / 2;
         sourceYStart += crop / 2;
 
-        int size = this.size;
+        int size = getSize();
 
         BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
 
-        for (int x = 0; x < size; x++) {
-            float sourceX = sourceSize * (x / (float) size);
-            int sx = Mth.clamp((int) sourceX + sourceXStart, sourceXStart, sourceXStart + sourceSize);
+        try (sourceImage) {
+            for (int x = 0; x < size; x++) {
+                float sourceX = sourceSize * (x / (float) size);
+                int sx = Mth.clamp((int) sourceX + sourceXStart, sourceXStart, sourceXStart + sourceSize);
 
-            for (int y = 0; y < size; y++) {
-                float sourceY = sourceSize * (y / (float) size);
-                int sy = Mth.clamp((int) sourceY + sourceYStart, sourceYStart, sourceYStart + sourceSize);
+                for (int y = 0; y < size; y++) {
+                    float sourceY = sourceSize * (y / (float) size);
+                    int sy = Mth.clamp((int) sourceY + sourceYStart, sourceYStart, sourceYStart + sourceSize);
 
-                int rgba = ColorUtils.BGRtoRGB(sourceImage.getPixelRGBA(sx, sy)); // Mojang decided to return BGR in getPixelRGBA method.
-                Color pixel = new Color(rgba, false);
+                    int rgba = ColorUtils.BGRtoRGB(sourceImage.getPixelRGBA(sx, sy)); // Mojang decided to return BGR in getPixelRGBA method.
+                    Color pixel = new Color(rgba, false);
 
-                for (ICaptureComponent component : components) {
-                    pixel = component.modifyPixel(this, pixel.getRed(), pixel.getGreen(), pixel.getBlue());
+                    for (ICaptureComponent component : components) {
+                        pixel = component.modifyPixel(this, pixel.getRed(), pixel.getGreen(), pixel.getBlue());
+                    }
+
+                    bufferedImage.setRGB(x, y, 0xFF << 24 | pixel.getRed() << 16 | pixel.getGreen() << 8 | pixel.getBlue());
                 }
-
-                bufferedImage.setRGB(x, y, 0xFF << 24 | pixel.getRed() << 16 | pixel.getGreen() << 8 | pixel.getBlue());
             }
+        } catch (Exception e) {
+            Exposure.LOGGER.error("Failed to create an image: " + e);
         }
-        sourceImage.close();
 
         return bufferedImage;
     }

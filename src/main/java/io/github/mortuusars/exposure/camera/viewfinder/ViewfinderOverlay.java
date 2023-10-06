@@ -50,8 +50,8 @@ public class ViewfinderOverlay {
     }
 
     public static void render() {
-        int width = minecraft.getWindow().getGuiScaledWidth();
-        int height = minecraft.getWindow().getGuiScaledHeight();
+        final int width = minecraft.getWindow().getGuiScaledWidth();
+        final int height = minecraft.getWindow().getGuiScaledHeight();
 
         scale = Mth.lerp(Math.min(0.5f * minecraft.getDeltaFrameTime(), 0.5f), scale, 1f);
         float openingSize = Math.min(width, height);
@@ -180,13 +180,13 @@ public class ViewfinderOverlay {
         RenderSystem.disableBlend();
     }
 
-    public static void bobView(PoseStack pMatrixStack, float pPartialTicks) {
+    public static void bobView(PoseStack poseStack, float partialTicks) {
         if (minecraft.getCameraEntity() instanceof Player pl) {
             float f = pl.walkDist - pl.walkDistO;
-            float f1 = -(pl.walkDist + f * pPartialTicks);
-            float f2 = Mth.lerp(pPartialTicks, pl.oBob, pl.bob);
-            pMatrixStack.translate((Mth.sin(f1 * (float) Math.PI) * f2 * 16F), (-Math.abs(Mth.cos(f1 * (float) Math.PI) * f2 * 32F)), 0.0D);
-            pMatrixStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float) Math.PI) * f2 * 3.0F));
+            float f1 = -(pl.walkDist + f * partialTicks);
+            float f2 = Mth.lerp(partialTicks, pl.oBob, pl.bob);
+            poseStack.translate((Mth.sin(f1 * (float) Math.PI) * f2 * 16F), (-Math.abs(Mth.cos(f1 * (float) Math.PI) * f2 * 32F)), 0.0D);
+            poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float) Math.PI) * f2 * 3.0F));
         }
     }
 }

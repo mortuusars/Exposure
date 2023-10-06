@@ -27,6 +27,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public class ViewfinderClient {
+    public static final float ZOOM_STEP = 8f;
+    public static final float ZOOM_PRECISE_MODIFIER = 0.25f;
     private static boolean isOpen;
 
     private static Supplier<ItemAndStack<CameraItem>> camera;
@@ -86,12 +88,12 @@ public class ViewfinderClient {
     }
 
     public static void zoom(ZoomDirection direction, boolean precise) {
-        double step = 8f * (1f - Mth.clamp((focalRange.min() - currentFov) / focalRange.min(), 0.3f, 1f));
-        double inertia = Math.abs((targetFov - currentFov)) * 0.8f;
+        double step = ZOOM_STEP * (1f - Mth.clamp((focalRange.min() - currentFov) / focalRange.min(), 0.3f, 1f));
+        double inertia = Math.abs(targetFov - currentFov) * 0.8f;
         double change = step + inertia;
 
         if (precise)
-            change *= 0.25f;
+            change *= ZOOM_PRECISE_MODIFIER;
 
         double prevFov = targetFov;
 
@@ -110,7 +112,8 @@ public class ViewfinderClient {
         if (!isOpen())
             return sensitivity;
 
-        double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get() * ((Minecraft.getInstance().options.fov().get() - currentFov) / 5f)), 0.01, 2f);
+        double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get()
+                * ((Minecraft.getInstance().options.fov().get() - currentFov) / 5f)), 0.01, 2f);
         return sensitivity * modifier;
     }
 
