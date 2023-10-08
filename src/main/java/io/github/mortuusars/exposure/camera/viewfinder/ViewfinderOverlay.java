@@ -22,7 +22,7 @@ import java.util.Optional;
 
 public class ViewfinderOverlay {
     private static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/viewfinder/viewfinder.png");
-    public static Rectangle2D.Float opening;
+    public static Rectangle2D.Float opening = new Rectangle2D.Float(0, 0, 0, 0);
 
     private static final PoseStack POSE_STACK = new PoseStack();
     private static Minecraft minecraft = Minecraft.getInstance();
@@ -143,6 +143,9 @@ public class ViewfinderOverlay {
         }
 
         poseStack.popPose();
+
+        Minecraft.getInstance().font.draw(poseStack, "Shutter: " + (camera.getStack().getOrCreateTag().getBoolean("ShutterOpen") ? "OPEN" : "CLOSED"), 5, 5, 0xFFFFFFFF);
+        Minecraft.getInstance().font.draw(poseStack, String.valueOf(camera.getStack().getOrCreateTag().getLong("ShutterCloseTimestamp")), 5, 14, 0xFFFFFFFF);
     }
 
     public static void drawRect(PoseStack poseStack, float minX, float minY, float maxX, float maxY, int color) {

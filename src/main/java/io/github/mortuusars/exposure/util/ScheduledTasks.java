@@ -65,7 +65,7 @@ public class ScheduledTasks {
 
     public static class Task {
         private int delayTicks;
-        private Runnable task;
+        private final Runnable task;
         public Task(int delayTicks, Runnable task) {
             this.delayTicks = delayTicks;
             this.task = task;

@@ -45,6 +45,9 @@ public class ViewfinderClient {
 
     public static void open(Player player, Supplier<ItemAndStack<CameraItem>> cameraSupplier) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
+        if (player != Minecraft.getInstance().player)
+            return;
+
         camera = cameraSupplier;
 
         ItemAndStack<CameraItem> camera = ViewfinderClient.camera.get();
@@ -69,6 +72,9 @@ public class ViewfinderClient {
 
     public static void close(Player player) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
+        if (player != Minecraft.getInstance().player)
+            return;
+
         isOpen = false;
         targetFov = Minecraft.getInstance().options.fov().get();
 

@@ -48,8 +48,16 @@ public class CommonEvents {
                 ViewfinderClient.close(event.player);
         }
 
+        // IDK why but LevelTickEvent is fired 3 times on the server per 1 on the client.
+        // So the solution is to use specific events. This seems to work properly.
         @SubscribeEvent
-        public static void levelTick(TickEvent.LevelTickEvent event) {
+        public static void serverTick(TickEvent.ServerTickEvent event) {
+            if (event.phase == TickEvent.Phase.END)
+                ScheduledTasks.tick(event);
+        }
+
+        @SubscribeEvent
+        public static void clientTick(TickEvent.ClientTickEvent event) {
             if (event.phase == TickEvent.Phase.END)
                 ScheduledTasks.tick(event);
         }

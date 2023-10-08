@@ -115,13 +115,13 @@ public class CameraItem extends Item {
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         if (context.getPlayer() != null)
             useCamera(context.getPlayer(), context.getHand());
-        return InteractionResult.FAIL; // To not play attack animation.
+        return InteractionResult.CONSUME; // To not play attack animation.
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         useCamera(player, usedHand);
-        return InteractionResultHolder.fail(player.getItemInHand(usedHand)); // To not play attack animation.
+        return InteractionResultHolder.consume(player.getItemInHand(usedHand)); // To not play attack animation.
     }
 
     public boolean isActive(Player player, ItemStack stack) {
@@ -155,8 +155,7 @@ public class CameraItem extends Item {
 
     public boolean isShutterOpen(ItemStack stack, Level level) {
         return stack.getTag() != null
-            && stack.getTag().getBoolean("ShutterOpen")
-            && stack.getTag().getLong("ShutterCloseTimestamp") > level.getGameTime();
+            && (stack.getTag().getBoolean("ShutterOpen")/* && level.getGameTime() - stack.getTag().getLong("ShutterCloseTimestamp") < 5*/);
     }
 
     public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed) {
@@ -212,6 +211,7 @@ public class CameraItem extends Item {
                 () -> {
                     closeShutter(player, cameraStack, shutterSpeed);
                     onShutterClosed(player, shutterSpeed, canAddFrame);
+                    player.getCooldowns().addCooldown(this, 2);
                 }));
 
         player.getCooldowns().addCooldown(this, flashHasFired ? 15 : 4);
@@ -228,13 +228,13 @@ public class CameraItem extends Item {
                 ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
                 film.getItem().addFrame(film.getStack(), frameData);
                 setFilm(cameraStack, film.getStack());
+
+                // Update camera serverside:
+                Packets.sendToServer(new SyncCameraServerboundPacket(cameraStack, hand));
             }
             else if (flashHasFired) {
                 spawnClientsideFlashEffects(player, cameraStack);
             }
-
-            // Update camera serverside:
-            Packets.sendToServer(new SyncCameraServerboundPacket(cameraStack, hand));
         }
     }
 
