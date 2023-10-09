@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.util;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.item.CameraItem;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -27,21 +26,25 @@ public class CameraInHand {
             if (itemInHand.getItem() instanceof CameraItem) {
                 this.camera = new ItemAndStack<>(itemInHand);
                 this.hand = hand;
+                return;
             }
         }
     }
 
-    public static boolean isActive(Player player) {
-        if (player == null)
-            return false;
+    public static @Nullable InteractionHand getActiveHand(Player player) {
+        Preconditions.checkArgument(player != null, "Player should not be null.");
 
         for (InteractionHand hand : InteractionHand.values()) {
             ItemStack itemInHand = player.getItemInHand(hand);
             if (itemInHand.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(player, itemInHand))
-                return true;
+                return hand;
         }
 
-        return false;
+        return null;
+    }
+
+    public static boolean isActive(Player player) {
+        return getActiveHand(player) != null;
     }
 
     public static CameraInHand ofPlayer(Player player) {

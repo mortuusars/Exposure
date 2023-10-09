@@ -19,7 +19,7 @@ public class KeyboardHandler {
                         viewfinderControlsScreen.onClose();
                 }
                 else {
-                    CameraHelper.deactivate(player, true);
+                    CameraHelper.deactivateAll(player, true);
                 }
             }
             return true;

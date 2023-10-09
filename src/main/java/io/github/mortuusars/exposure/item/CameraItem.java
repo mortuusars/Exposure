@@ -155,7 +155,8 @@ public class CameraItem extends Item {
 
     public boolean isShutterOpen(ItemStack stack, Level level) {
         return stack.getTag() != null
-            && (stack.getTag().getBoolean("ShutterOpen")/* && level.getGameTime() - stack.getTag().getLong("ShutterCloseTimestamp") < 5*/);
+            && stack.getTag().getBoolean("ShutterOpen")
+                && stack.getTag().getLong("ShutterCloseTimestamp") > level.getGameTime();
     }
 
     public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed) {
@@ -188,8 +189,8 @@ public class CameraItem extends Item {
             else {
                 activate(player, cameraStack);
 
-                if (player.getLevel().isClientSide)
-                    ViewfinderClient.open(player, () -> new ItemAndStack<>(player.getItemInHand(hand)));
+                if (level.isClientSide)
+                    ViewfinderClient.open(player);
             }
 
             player.getCooldowns().addCooldown(this, 4);
@@ -211,7 +212,7 @@ public class CameraItem extends Item {
                 () -> {
                     closeShutter(player, cameraStack, shutterSpeed);
                     onShutterClosed(player, shutterSpeed, canAddFrame);
-                    player.getCooldowns().addCooldown(this, 2);
+                    player.getCooldowns().addCooldown(this, 1);
                 }));
 
         player.getCooldowns().addCooldown(this, flashHasFired ? 15 : 4);

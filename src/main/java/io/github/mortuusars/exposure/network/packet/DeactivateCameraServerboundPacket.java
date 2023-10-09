@@ -36,7 +36,7 @@ public record DeactivateCameraServerboundPacket(UUID playerUUID) {
         if (player == null)
             throw new IllegalStateException("Cannot handle the packet: Player was null");
 
-        CameraHelper.deactivate(player, false);
+        CameraHelper.deactivateAll(player, false);
 
         return true;
     }

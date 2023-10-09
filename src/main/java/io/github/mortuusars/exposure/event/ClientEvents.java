@@ -37,8 +37,7 @@ public class ClientEvents {
                         (pStack, pLevel, pEntity, pSeed) -> {
                             if (pEntity instanceof Player player) {
                                 CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-                                if (!camera.isEmpty() && CameraInHand.isActive(player)
-                                        && player.getItemInHand(camera.getHand()).equals(pStack)) {
+                                if (!camera.isEmpty() && camera.getItem().isActive(player, pStack)) {
                                     return 0.1f;
                                 }
                             }
@@ -94,7 +93,7 @@ public class ClientEvents {
             if (isLookingThroughViewfinder() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null)
-                    CameraHelper.deactivate(player, true);
+                    CameraHelper.deactivateAll(player, true);
             }
         }
 

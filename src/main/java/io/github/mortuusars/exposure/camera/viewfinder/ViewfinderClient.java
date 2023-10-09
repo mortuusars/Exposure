@@ -8,6 +8,7 @@ import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
@@ -31,7 +32,6 @@ public class ViewfinderClient {
     public static final float ZOOM_PRECISE_MODIFIER = 0.25f;
     private static boolean isOpen;
 
-    private static Supplier<ItemAndStack<CameraItem>> camera;
     private static FocalRange focalRange = FocalRange.FULL;
     private static double targetFov = 90f;
     private static double currentFov = targetFov;
@@ -43,14 +43,12 @@ public class ViewfinderClient {
         return isOpen;
     }
 
-    public static void open(Player player, Supplier<ItemAndStack<CameraItem>> cameraSupplier) {
+    public static void open(Player player) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
         if (player != Minecraft.getInstance().player)
             return;
 
-        camera = cameraSupplier;
-
-        ItemAndStack<CameraItem> camera = ViewfinderClient.camera.get();
+        CameraInHand camera = CameraInHand.ofPlayer(player);
 
         focalRange = camera.getItem().getFocalRange(camera.getStack());
         targetFov = Fov.focalLengthToFov(Mth.clamp(camera.getItem().getZoom(camera.getStack()), focalRange.min(), focalRange.max()));
