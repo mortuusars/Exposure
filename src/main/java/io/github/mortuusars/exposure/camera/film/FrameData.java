@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.camera;
+package io.github.mortuusars.exposure.camera.film;
 
 import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.core.BlockPos;

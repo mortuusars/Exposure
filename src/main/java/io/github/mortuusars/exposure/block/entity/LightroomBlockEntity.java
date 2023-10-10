@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.LightroomBlock;
-import io.github.mortuusars.exposure.camera.FrameData;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;

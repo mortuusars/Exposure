@@ -1,8 +1,6 @@
 package io.github.mortuusars.exposure.network.packet;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.component.CompositionGuide;
 import io.github.mortuusars.exposure.camera.component.FlashMode;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -42,7 +40,7 @@ public record CameraSetFlashModeServerboundPacket(FlashMode flashMode) {
         @Nullable ServerPlayer player = context.getSender();
         Preconditions.checkState(player != null, "Cannot handle packet: Player was null");
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+        CameraInHand camera = CameraInHand.ofPlayer(player);
         if (!camera.isEmpty()) {
             camera.getItem().setFlashMode(camera.getStack(), flashMode);
         }

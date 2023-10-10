@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.FrameData;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;

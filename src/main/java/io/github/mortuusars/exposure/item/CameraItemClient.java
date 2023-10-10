@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.world.InteractionHand;
@@ -20,7 +21,7 @@ public class CameraItemClient implements IClientItemExtensions {
 
     @Override
     public HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
-        if (entityLiving instanceof Player player && Exposure.getCamera().isActive(player))
+        if (entityLiving instanceof Player player && CameraInHand.isActive(player))
             return CAMERA_ARM_POSE;
         else
             return HumanoidModel.ArmPose.ITEM;

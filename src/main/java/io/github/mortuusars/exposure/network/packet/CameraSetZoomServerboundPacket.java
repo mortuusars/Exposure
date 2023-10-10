@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.network.packet;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,7 +12,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record CameraSetZoomServerboundPacket(float focalLength) {
+public record CameraSetZoomServerboundPacket(double focalLength) {
     public static void register(SimpleChannel channel, int id) {
         channel.messageBuilder(CameraSetZoomServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(CameraSetZoomServerboundPacket::toBuffer)
@@ -22,16 +21,16 @@ public record CameraSetZoomServerboundPacket(float focalLength) {
                 .add();
     }
 
-    public static void send(float focalLength) {
+    public static void send(double focalLength) {
         Packets.sendToServer(new CameraSetZoomServerboundPacket(focalLength));
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
-        buffer.writeFloat(focalLength);
+        buffer.writeDouble(focalLength);
     }
 
     public static CameraSetZoomServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new CameraSetZoomServerboundPacket(buffer.readFloat());
+        return new CameraSetZoomServerboundPacket(buffer.readDouble());
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -40,7 +39,7 @@ public record CameraSetZoomServerboundPacket(float focalLength) {
         @Nullable ServerPlayer player = context.getSender();
         Preconditions.checkState(player != null, "Cannot handle packet: Player was null");
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
+        CameraInHand camera = CameraInHand.ofPlayer(player);
         if (!camera.isEmpty()) {
             camera.getItem().setZoom(camera.getStack(), focalLength);
         }

@@ -7,11 +7,9 @@ import io.github.mortuusars.exposure.block.LightroomBlock;
 import io.github.mortuusars.exposure.block.entity.FlashBlockEntity;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
-import io.github.mortuusars.exposure.camera.infrastructure.Camera;
-import io.github.mortuusars.exposure.camera.infrastructure.ClientCameraHolder;
-import io.github.mortuusars.exposure.camera.infrastructure.ServerCameraHolder;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.event.ClientEvents;
@@ -83,16 +81,10 @@ public class Exposure {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> {
             modEventBus.register(ClientEvents.ModBus.class);
             MinecraftForge.EVENT_BUS.register(ClientEvents.ForgeBus.class);
+            MinecraftForge.EVENT_BUS.register(ViewfinderClient.ForgeEvents.class);
 
-            MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onComputeFovEvent);
-            MinecraftForge.EVENT_BUS.addListener(ViewfinderRenderer::onMouseScrollEvent);
             MinecraftForge.EVENT_BUS.addListener(CaptureManager::onRenderTick);
         });
-    }
-
-    public static Camera getCamera() {
-        return Thread.currentThread().getThreadGroup() == SidedThreadGroups.SERVER ?
-                ServerCameraHolder.SERVER_CAMERA : ClientCameraHolder.CLIENT_CAMERA;
     }
 
     public static IExposureStorage getStorage() {

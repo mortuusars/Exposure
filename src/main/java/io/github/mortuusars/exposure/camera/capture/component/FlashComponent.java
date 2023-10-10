@@ -38,6 +38,6 @@ public class FlashComponent implements ICaptureComponent {
         if (cameraInHand.isEmpty())
             return;
 
-        cameraInHand.getItem().spawnClientsideFlashEffects(player, cameraInHand);
+        cameraInHand.getItem().spawnClientsideFlashEffects(player, cameraInHand.getStack());
     }
 }

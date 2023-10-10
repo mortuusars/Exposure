@@ -13,6 +13,7 @@
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
     "PhotographInHandRendererMixin",
+    "SelfieCameraMixin",
     "ToggleKeyMappingMixin",
     "ViewfinderSensitivityMixin"
   ],

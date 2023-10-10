@@ -40,6 +40,10 @@ public class ShutterSpeed {
         return valueMilliseconds;
     }
 
+    public int getTicks() {
+        return Math.max(1, (int)(valueMilliseconds * 20 / 1000f));
+    }
+
     public float getStopsDifference(ShutterSpeed relative) {
         return (float) (Math.log(valueMilliseconds / relative.getMilliseconds()) / Math.log(2));
     }

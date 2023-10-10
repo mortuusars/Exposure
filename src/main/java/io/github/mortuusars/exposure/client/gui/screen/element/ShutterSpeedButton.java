@@ -30,7 +30,7 @@ public class ShutterSpeedButton extends CycleButton {
         super(screen, x, y, width, height, u, v, height, texture);
         this.screen = screen;
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
 
         List<ShutterSpeed> speeds = new ArrayList<>(camera.getItem().getAllShutterSpeeds(camera.getStack()));
         Collections.reverse(speeds);
@@ -61,7 +61,7 @@ public class ShutterSpeedButton extends CycleButton {
     public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         ShutterSpeed shutterSpeed = camera.getItem().getShutterSpeed(camera.getStack());
         String text = shutterSpeed.toString();
         if (shutterSpeed.equals(ShutterSpeed.DEFAULT))
@@ -82,7 +82,7 @@ public class ShutterSpeedButton extends CycleButton {
 
     @Override
     protected void onCycle() {
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(index)) {
                 SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(index));

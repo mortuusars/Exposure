@@ -26,8 +26,29 @@ public class CameraInHand {
             if (itemInHand.getItem() instanceof CameraItem) {
                 this.camera = new ItemAndStack<>(itemInHand);
                 this.hand = hand;
+                return;
             }
         }
+    }
+
+    public static @Nullable InteractionHand getActiveHand(Player player) {
+        Preconditions.checkArgument(player != null, "Player should not be null.");
+
+        for (InteractionHand hand : InteractionHand.values()) {
+            ItemStack itemInHand = player.getItemInHand(hand);
+            if (itemInHand.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(player, itemInHand))
+                return hand;
+        }
+
+        return null;
+    }
+
+    public static boolean isActive(Player player) {
+        return getActiveHand(player) != null;
+    }
+
+    public static CameraInHand ofPlayer(Player player) {
+        return new CameraInHand(player);
     }
 
     public boolean isEmpty() {

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.FrameData;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import io.github.mortuusars.exposure.item.IFilmItem;
 import net.minecraft.client.Minecraft;

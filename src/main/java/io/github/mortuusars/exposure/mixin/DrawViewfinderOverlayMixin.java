@@ -1,6 +1,9 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.client.renderer.ViewfinderRenderer;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
+import net.minecraft.client.CameraType;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,8 +13,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public class DrawViewfinderOverlayMixin {
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getProfiler()Lnet/minecraft/util/profiling/ProfilerFiller;", ordinal = 1))
-    private void renderViewfinder(float pPartialTicks, long pNanoTime, boolean pRenderLevel, CallbackInfo ci) {
-        if (ViewfinderRenderer.shouldRender())
-            ViewfinderRenderer.render();
+    private void renderViewfinder(float partialTicks, long nanoTime, boolean renderLevel, CallbackInfo ci) {
+        if (ViewfinderClient.isOpen() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON)
+            ViewfinderOverlay.render();
     }
 }

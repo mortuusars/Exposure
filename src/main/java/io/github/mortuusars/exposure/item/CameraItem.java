@@ -3,22 +3,21 @@ package io.github.mortuusars.exposure.item;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.FlashBlock;
-import io.github.mortuusars.exposure.camera.FrameData;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.capture.component.*;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringConverter;
 import io.github.mortuusars.exposure.camera.component.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
-import io.github.mortuusars.exposure.camera.infrastructure.Shutter;
-import io.github.mortuusars.exposure.client.GammaModifier;
+import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.SyncCameraServerboundPacket;
-import io.github.mortuusars.exposure.util.CameraInHand;
+import io.github.mortuusars.exposure.network.packet.SetItemInHandServerboundPacket;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
+import io.github.mortuusars.exposure.util.ScheduledTasks;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,7 +51,6 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
@@ -117,63 +115,126 @@ public class CameraItem extends Item {
     public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
         if (context.getPlayer() != null)
             useCamera(context.getPlayer(), context.getHand());
-        return InteractionResult.FAIL; // To not play attack animation.
+        return InteractionResult.CONSUME; // To not play attack animation.
     }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
         useCamera(player, usedHand);
-        return InteractionResultHolder.fail(player.getItemInHand(usedHand)); // To not play attack animation.
+        return InteractionResultHolder.consume(player.getItemInHand(usedHand)); // To not play attack animation.
+    }
+
+    public boolean isActive(Player player, ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag != null && tag.getBoolean("Active") && player.getLevel().getGameTime() - tag.getLong("ActiveTimestamp") < 5;
+    }
+
+    public void setActive(Player player, ItemStack stack, boolean active) {
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putBoolean("Active", active);
+        tag.putLong("ActiveTimestamp", player.getLevel().getGameTime());
+    }
+
+    public void activate(Player player, ItemStack stack) {
+        boolean isActive = isActive(player, stack);
+        setActive(player, stack, true);
+        if (!isActive) {
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), SoundSource.PLAYERS,
+                    0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+        }
+    }
+
+    public void deactivate(Player player, ItemStack stack) {
+        boolean wasActive = isActive(player, stack);
+        setActive(player, stack, false);
+        if (wasActive) {
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), SoundSource.PLAYERS,
+                    0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+        }
+    }
+
+    public boolean isShutterOpen(ItemStack stack, Level level) {
+        return stack.getTag() != null
+            && stack.getTag().getBoolean("ShutterOpen")
+                && stack.getTag().getLong("ShutterCloseTimestamp") > level.getGameTime();
+    }
+
+    public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed) {
+        CompoundTag tag = stack.getOrCreateTag();
+        tag.putBoolean("ShutterOpen", true);
+        tag.putLong("ShutterCloseTimestamp", player.getLevel().getGameTime() + shutterSpeed.getTicks());
+    }
+
+    public void closeShutter(Player player, ItemStack cameraStack, ShutterSpeed shutterSpeed) {
+        CompoundTag tag = cameraStack.getTag();
+        if (tag != null) {
+            tag.putBoolean("ShutterOpen", false);
+            tag.remove("ShutterCloseTimestamp");
+        }
     }
 
     public void useCamera(Player player, InteractionHand hand) {
+        Level level = player.getLevel();
+
         if (player.getCooldowns().isOnCooldown(this))
             return;
 
-        if (!Exposure.getCamera().isActive(player)) {
+        ItemStack cameraStack = player.getItemInHand(hand);
+        if (cameraStack.isEmpty() || cameraStack.getItem() != this)
+            return;
+
+        if (!isActive(player, cameraStack)) {
             if (player.isSecondaryUseActive())
                 openCameraAttachmentsGUI(player, hand);
-            else
-                Exposure.getCamera().activate(player, hand);
+            else {
+                activate(player, cameraStack);
+
+                if (level.isClientSide)
+                    ViewfinderClient.open(player);
+            }
 
             player.getCooldowns().addCooldown(this, 4);
             return;
         }
 
-        //TODO: Will fail for multiple cameras:
-        if (Exposure.getCamera().getShutter().isOpen(player))
+        if (isShutterOpen(cameraStack, level))
             return;
 
-        CameraInHand camera = Exposure.getCamera().getCameraInHand(player);
-        if (camera.isEmpty()) {
-            Exposure.LOGGER.error("Player must be holding a camera at this point.");
-            return;
-        }
+        boolean canAddFrame = getFilm(cameraStack).map(f -> f.getItem().canAddFrame(f.getStack())).orElse(false);
+        boolean flashHasFired = shouldFlashFire(player, cameraStack) && tryUseFlash(player, cameraStack);
 
-        boolean canAddFrame = getFilm(camera.getStack()).map(f -> f.getItem().canAddFrame(f.getStack())).orElse(false);
-        boolean flashHasFired = shouldFlashFire(player, camera.getStack()) && tryUseFlash(player, camera.getCamera());
+        ShutterSpeed shutterSpeed = getShutterSpeed(cameraStack);
 
-        Exposure.getCamera().getShutter().open(player, camera.getCamera(), getShutterSpeed(camera.getStack()), canAddFrame);
+        openShutter(player, cameraStack, shutterSpeed);
+        onShutterOpen(player, shutterSpeed, canAddFrame);
+
+        ScheduledTasks.schedule(new ScheduledTasks.Task(shutterSpeed.getTicks(),
+                () -> {
+                    closeShutter(player, cameraStack, shutterSpeed);
+                    onShutterClosed(player, shutterSpeed, canAddFrame);
+                    player.getCooldowns().addCooldown(this, 1);
+                }));
+
         player.getCooldowns().addCooldown(this, flashHasFired ? 15 : 4);
 
-        if (player.getLevel().isClientSide) {
+        if (level.isClientSide) {
             if (canAddFrame) {
                 String exposureId = createExposureId(player);
-                Capture capture = createCapture(player, camera, exposureId, flashHasFired);
+                Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
                 CaptureManager.enqueue(capture);
 
-                List<Entity> entitiesInFrame = EntitiesInFrame.get(player, 12);
-                FrameData frameData = createFrameData(player, camera.getStack(), exposureId, capture, flashHasFired, entitiesInFrame);
+                List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
+                FrameData frameData = createFrameData(player, cameraStack, exposureId, capture, flashHasFired, entitiesInFrame);
 
-                ItemAndStack<FilmRollItem> film = getFilm(camera.getStack()).orElseThrow();
+                ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
                 film.getItem().addFrame(film.getStack(), frameData);
-                setFilm(camera.getStack(), film.getStack());
+                setFilm(cameraStack, film.getStack());
 
                 // Update camera serverside:
-                Packets.sendToServer(new SyncCameraServerboundPacket(camera.getStack(), hand));
+                Packets.sendToServer(new SetItemInHandServerboundPacket(cameraStack, hand));
             }
             else if (flashHasFired) {
-                spawnClientsideFlashEffects(player, camera);
+                spawnClientsideFlashEffects(player, cameraStack);
             }
         }
     }
@@ -188,7 +249,7 @@ public class CameraItem extends Item {
             case AUTO -> {
                 Level level = player.getLevel();
 
-                level.updateSkyBrightness(); // This updates 'getSkyDarken' on the client. Without it always returns 0.
+                level.updateSkyBrightness(); // This updates 'getSkyDarken' on the client. Otherwise, it always returns 0.
                 int skyBrightness = level.getBrightness(LightLayer.SKY, player.blockPosition());
                 int blockBrightness = level.getBrightness(LightLayer.BLOCK, player.blockPosition());
                 int lightLevel = skyBrightness < 15 ?
@@ -200,7 +261,7 @@ public class CameraItem extends Item {
         };
     }
 
-    public boolean tryUseFlash(Player player, ItemAndStack<CameraItem> camera) {
+    public boolean tryUseFlash(Player player, ItemStack cameraStack) {
         Level level = player.getLevel();
         BlockPos playerHeadPos = player.blockPosition().above();
         @Nullable BlockPos flashPos = null;
@@ -221,8 +282,7 @@ public class CameraItem extends Item {
             return false;
 
         level.setBlock(flashPos, Exposure.Blocks.FLASH.get().defaultBlockState()
-                .setValue(FlashBlock.WATERLOGGED, level.getFluidState(flashPos)
-                        .isSourceOfType(Fluids.WATER)), Block.UPDATE_ALL_IMMEDIATE);
+                .setValue(FlashBlock.WATERLOGGED, level.getFluidState(flashPos).isSourceOfType(Fluids.WATER)), Block.UPDATE_ALL_IMMEDIATE);
         level.playSound(player, player, Exposure.SoundEvents.FLASH.get(), SoundSource.PLAYERS, 1f, 1f);
 
         // Send particles to other players:
@@ -299,12 +359,10 @@ public class CameraItem extends Item {
         return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
-    protected Capture createCapture(Player player, CameraInHand camera, String exposureId, boolean flash) {
-        Preconditions.checkState(!camera.isEmpty(), "Camera should not be empty at this point.");
-
-        ItemAndStack<FilmRollItem> film = getFilm(camera.getStack()).orElseThrow();
+    protected Capture createCapture(Player player, ItemStack cameraStack, String exposureId, boolean flash) {
+        ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
         int frameSize = film.getItem().getFrameSize(film.getStack());
-        float brightnessStops = getShutterSpeed(camera.getStack()).getStopsDifference(ShutterSpeed.DEFAULT);
+        float brightnessStops = getShutterSpeed(cameraStack).getStopsDifference(ShutterSpeed.DEFAULT);
 
         ArrayList<ICaptureComponent> components = new ArrayList<>();
         components.add(new BaseComponent());
@@ -326,24 +384,20 @@ public class CameraItem extends Item {
                 .converter(new DitheringConverter());
     }
 
-    public void onShutterOpen(Player player, Shutter.OpenShutter shutter) {
+    public void onShutterOpen(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {
         player.getLevel()
-                .playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
-                        player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1.1f : 1.25f));
+                .playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, exposingFrame ? 0.85f : 0.65f,
+                        player.getLevel().getRandom().nextFloat() * 0.15f + (exposingFrame ? 1.1f : 1.25f));
 
-        if (shutter.shutterSpeed().getMilliseconds() > 500) // More than 1/2
+        if (shutterSpeed.getMilliseconds() > 500) // More than 1/2
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
     }
 
-    public void onShutterTick(Player player, Shutter.OpenShutter shutter) {
-
-    }
-
-    public void onShutterClosed(Player player, Shutter.OpenShutter shutter) {
+    public void onShutterClosed(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {
         player.getLevel()
-                .playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS, shutter.exposingFrame() ? 0.85f : 0.65f,
-                        player.getLevel().getRandom().nextFloat() * 0.15f + (shutter.exposingFrame() ? 1f : 1.2f));
-        if (shutter.exposingFrame()) {
+                .playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS, exposingFrame ? 0.85f : 0.65f,
+                        player.getLevel().getRandom().nextFloat() * 0.15f + (exposingFrame ? 1f : 1.2f));
+        if (exposingFrame) {
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
                     1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
         }
@@ -352,7 +406,7 @@ public class CameraItem extends Item {
     /**
      * This method is called after we take a screenshot (or immediately if not capturing but should show effects). Otherwise, due to the delays (flash, etc) - particles would be captured as well.
      */
-    public void spawnClientsideFlashEffects(@NotNull Player player, CameraInHand cameraInHand) {
+    public void spawnClientsideFlashEffects(@NotNull Player player, ItemStack cameraStack) {
         Preconditions.checkState(player.getLevel().isClientSide, "This methods should only be called client-side.");
         Level level = player.getLevel();
         Vec3 pos = player.position();
@@ -444,8 +498,8 @@ public class CameraItem extends Item {
         return cameraStack.hasTag() ? cameraStack.getOrCreateTag().getFloat("Zoom") : getFocalRange(cameraStack).min();
     }
 
-    public void setZoom(ItemStack cameraStack, float focalLength) {
-        cameraStack.getOrCreateTag().putFloat("Zoom", focalLength);
+    public void setZoom(ItemStack cameraStack, double focalLength) {
+        cameraStack.getOrCreateTag().putDouble("Zoom", focalLength);
     }
 
     public CompositionGuide getCompositionGuide(ItemStack cameraStack) {
