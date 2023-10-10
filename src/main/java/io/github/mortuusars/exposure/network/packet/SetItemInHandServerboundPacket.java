@@ -11,22 +11,22 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record SyncCameraServerboundPacket(ItemStack cameraStack, InteractionHand hand) {
+public record SetItemInHandServerboundPacket(ItemStack itemStack, InteractionHand hand) {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(SyncCameraServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(SyncCameraServerboundPacket::toBuffer)
-                .decoder(SyncCameraServerboundPacket::fromBuffer)
-                .consumerMainThread(SyncCameraServerboundPacket::handle)
+        channel.messageBuilder(SetItemInHandServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(SetItemInHandServerboundPacket::toBuffer)
+                .decoder(SetItemInHandServerboundPacket::fromBuffer)
+                .consumerMainThread(SetItemInHandServerboundPacket::handle)
                 .add();
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
-        buffer.writeItemStack(cameraStack, false);
+        buffer.writeItemStack(itemStack, false);
         buffer.writeEnum(hand);
     }
 
-    public static SyncCameraServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new SyncCameraServerboundPacket(buffer.readItem(), buffer.readEnum(InteractionHand.class));
+    public static SetItemInHandServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new SetItemInHandServerboundPacket(buffer.readItem(), buffer.readEnum(InteractionHand.class));
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -35,9 +35,9 @@ public record SyncCameraServerboundPacket(ItemStack cameraStack, InteractionHand
         @Nullable ServerPlayer player = context.getSender();
 
         if (player == null)
-            throw new IllegalStateException("Cannot handle SyncCameraPacket: Player is null.");
+            throw new IllegalStateException("Cannot handle packet: Player is null.");
 
-        player.setItemInHand(hand, cameraStack);
+        player.setItemInHand(hand, itemStack);
         return true;
     }
 }

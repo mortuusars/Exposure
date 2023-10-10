@@ -143,10 +143,6 @@ public class ViewfinderOverlay {
         }
 
         poseStack.popPose();
-
-        Minecraft.getInstance().font.draw(poseStack, "Shutter: " + (camera.getStack().getOrCreateTag().getBoolean("ShutterOpen") ? "OPEN" : "CLOSED"), 5, 5, 0xFFFFFFFF);
-        Minecraft.getInstance().font.draw(poseStack, String.valueOf(camera.getStack().getOrCreateTag().getLong("ShutterCloseTimestamp")), 5, 14, 0xFFFFFFFF);
-        Minecraft.getInstance().font.draw(poseStack, String.valueOf(CameraInHand.ofPlayer(player).getHand()), 5, 14 + 9, 0xFFFFFFFF);
     }
 
     public static void drawRect(PoseStack poseStack, float minX, float minY, float maxX, float maxY, int color) {

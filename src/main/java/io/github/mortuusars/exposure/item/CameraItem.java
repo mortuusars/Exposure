@@ -14,7 +14,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.SyncCameraServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.SetItemInHandServerboundPacket;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
 import io.github.mortuusars.exposure.util.ScheduledTasks;
@@ -231,7 +231,7 @@ public class CameraItem extends Item {
                 setFilm(cameraStack, film.getStack());
 
                 // Update camera serverside:
-                Packets.sendToServer(new SyncCameraServerboundPacket(cameraStack, hand));
+                Packets.sendToServer(new SetItemInHandServerboundPacket(cameraStack, hand));
             }
             else if (flashHasFired) {
                 spawnClientsideFlashEffects(player, cameraStack);
@@ -282,8 +282,7 @@ public class CameraItem extends Item {
             return false;
 
         level.setBlock(flashPos, Exposure.Blocks.FLASH.get().defaultBlockState()
-                .setValue(FlashBlock.WATERLOGGED, level.getFluidState(flashPos)
-                        .isSourceOfType(Fluids.WATER)), Block.UPDATE_ALL_IMMEDIATE);
+                .setValue(FlashBlock.WATERLOGGED, level.getFluidState(flashPos).isSourceOfType(Fluids.WATER)), Block.UPDATE_ALL_IMMEDIATE);
         level.playSound(player, player, Exposure.SoundEvents.FLASH.get(), SoundSource.PLAYERS, 1f, 1f);
 
         // Send particles to other players:

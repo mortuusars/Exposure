@@ -10,7 +10,6 @@ import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
-import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
@@ -25,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 public class ViewfinderClient {
     public static final float ZOOM_STEP = 8f;

@@ -30,7 +30,7 @@ public class Packets {
         CameraSetCompositionGuideServerboundPacket.register(CHANNEL, id++);
         CameraSetFlashModeServerboundPacket.register(CHANNEL, id++);
         CameraSetShutterSpeedServerboundPacket.register(CHANNEL, id++);
-        SyncCameraServerboundPacket.register(CHANNEL, id++);
+        SetItemInHandServerboundPacket.register(CHANNEL, id++);
         QueryExposureDataServerboundPacket.register(CHANNEL, id++);
 
         ApplyShaderClientboundPacket.register(CHANNEL, id++);
