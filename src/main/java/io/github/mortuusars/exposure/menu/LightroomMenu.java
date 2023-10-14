@@ -3,8 +3,10 @@ package io.github.mortuusars.exposure.menu;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
+import io.github.mortuusars.exposure.item.IFilmItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -18,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -98,8 +101,21 @@ public class LightroomMenu extends AbstractContainerMenu {
         return frames;
     }
 
+    public @Nullable FrameData getFrameByIndex(int index) {
+        return index >= 0 && index < getExposedFrames().size() ? getExposedFrames().get(index) : null;
+    }
+
+    public boolean isColorFilm() {
+        return getSlot(LightroomBlockEntity.FILM_SLOT).getItem().getItem() instanceof IFilmItem filmItem && filmItem.getType() == FilmType.COLOR;
+    }
+
     public int getCurrentFrame() {
         return data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
+    }
+
+    public int getTotalFrames() {
+        ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
+        return (!filmStack.isEmpty() && filmStack.getItem() instanceof IFilmItem filmItem) ? filmItem.getExposedFramesCount(filmStack) : 0;
     }
 
     @Override
@@ -109,13 +125,13 @@ public class LightroomMenu extends AbstractContainerMenu {
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
             if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem filmItem) {
-                List<FrameData> frameData = filmItem.getExposedFrames(filmStack);
-                if (frameData.size() == 0)
+                int frames = getTotalFrames();
+                if (frames == 0)
                     return true;
 
                 int currentFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
                 currentFrame = currentFrame + (buttonId == NEXT_FRAME_BUTTON_ID ? 1 : -1);
-                currentFrame = Mth.clamp(currentFrame, 0, frameData.size() - 1);
+                currentFrame = Mth.clamp(currentFrame, 0, frames - 1);
                 data.set(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID, currentFrame);
                 return true;
             }

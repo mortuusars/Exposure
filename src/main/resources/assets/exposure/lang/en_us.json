@@ -50,5 +50,6 @@
 
   "subtitle.exposure.photograph.placed" : "Photograph placed",
   "subtitle.exposure.photograph.break" : "Photograph broken",
-  "subtitle.exposure.photograph.rustle" : "Photograph rustles"
+  "subtitle.exposure.photograph.rustle" : "Photograph rustles",
+  "gui.exposure.lightroom.zoom_in.tooltip": "Left Click or Scroll Up to zoom in"
 }

@@ -119,7 +119,7 @@ public class ExposureRenderer implements AutoCloseable {
             this.negative = negative;
             this.simulateFilm = simulateFilm;
             ResourceLocation resourcelocation = Minecraft.getInstance().textureManager
-                    .register("exposure/" + id.toLowerCase() + (negative ? "negative" : ""), this.texture);
+                    .register("exposure/" + id.toLowerCase() + (negative ? "negative" : "") + (simulateFilm ? "s" : ""), this.texture);
             this.renderType = RenderType.text(resourcelocation);
         }
 

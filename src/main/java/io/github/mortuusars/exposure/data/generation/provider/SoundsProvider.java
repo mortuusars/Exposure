@@ -44,6 +44,9 @@ public class SoundsProvider extends SoundDefinitionsProvider {
                 .subtitle("subtitle.exposure.camera.flash")
                 .with(sound(Exposure.ID + ":item/camera/flash")));
 
+        add(Exposure.SoundEvents.FILM_RUSTLE.get(), definition()
+                .with(sound(Exposure.ID + ":item/film_rustle")));
+
         add(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), definition()
                 .subtitle("subtitle.exposure.photograph.place")
                 .with(sound(Exposure.ID + ":item/photograph/place")));

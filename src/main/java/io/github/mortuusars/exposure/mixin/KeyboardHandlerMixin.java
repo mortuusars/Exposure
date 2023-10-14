@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class KeyboardHandlerMixin {
     @Inject(method = "keyPress", at = @At(value = "HEAD"), cancellable = true)
     private void keyPress(long pWindowPointer, int pKey, int pScanCode, int pAction, int pModifiers, CallbackInfo ci) {
-        if (CameraInHand.isActive(Minecraft.getInstance().player)
+        if (Minecraft.getInstance().player != null && CameraInHand.isActive(Minecraft.getInstance().player)
                 && KeyboardHandler.handleViewfinderKeyPress(pWindowPointer, pKey, pScanCode, pAction, pModifiers))
             ci.cancel();
     }

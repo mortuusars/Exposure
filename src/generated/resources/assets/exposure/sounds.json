@@ -67,6 +67,11 @@
     ],
     "subtitle": "subtitle.exposure.camera.viewfinder_open"
   },
+  "item.film.rustle": {
+    "sounds": [
+      "exposure:item/film_rustle"
+    ]
+  },
   "item.photograph.break": {
     "sounds": [
       "exposure:item/photograph/place"
