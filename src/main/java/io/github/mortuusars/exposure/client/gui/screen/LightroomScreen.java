@@ -197,19 +197,19 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     @Override
-    protected void renderTooltip(@NotNull PoseStack poseStack, int x, int y) {
-        super.renderTooltip(poseStack, x, y);
+    protected void renderTooltip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
+        super.renderTooltip(poseStack, mouseX, mouseY);
 
         if (!isInFrameInspectMode) {
-            if (isOverLeftFrame(x, y)) {
-                renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.previous_frame"), x, y);
-            } else if (isOverCenterFrame(x, y)) {
+            if (isOverLeftFrame(mouseX, mouseY)) {
+                renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.previous_frame"), mouseX, mouseY);
+            } else if (isOverCenterFrame(mouseX, mouseY)) {
                 renderTooltip(poseStack, List.of(
                         Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getCurrentFrame() + 1)),
                         Component.translatable("gui.exposure.lightroom.zoom_in.tooltip").withStyle(ChatFormatting.GRAY)),
-                        Optional.empty(), x, y);
-            } else if (isOverRightFrame(x, y)) {
-                renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.next_frame"), x, y);
+                        Optional.empty(), mouseX, mouseY);
+            } else if (isOverRightFrame(mouseX, mouseY)) {
+                renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.next_frame"), mouseX, mouseY);
             }
         }
     }
@@ -331,5 +331,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
     private void enterFrameInspectMode() {
         Minecraft.getInstance().setScreen(new FilmFrameInspectScreen(this, getMenu()));
+        Objects.requireNonNull(Minecraft.getInstance().player).playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 1.3f);
     }
 }
