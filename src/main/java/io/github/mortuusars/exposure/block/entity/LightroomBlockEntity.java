@@ -114,7 +114,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
                         if (filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem) {
                             int exposedFramesCount = developedFilmItem.getExposedFramesCount(filmStack);
                             if (currentFrame >= exposedFramesCount - 1)
-                                ejectFilm();
+                                tryEjectFilm();
                             else
                                 currentFrame++;
                         }
@@ -122,28 +122,34 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
                 }
                 stopPrintingProcess();
             }
-            else
+            else {
                 progress++;
+                if (progress % 55 == 0 && printTime - progress > 12 && level != null)
+                    level.playSound(null, getBlockPos(), Exposure.SoundEvents.LIGHTROOM_PRINT.get(), SoundSource.BLOCKS,
+                    1f, level.getRandom().nextFloat() * 0.3f + 1f);
+            }
         }
         else {
             stopPrintingProcess();
         }
     }
 
-    protected void ejectFilm() {
+    protected void tryEjectFilm() {
         if (level == null || level.isClientSide || getItem(FILM_SLOT).isEmpty())
             return;
 
         BlockPos pos = getBlockPos();
         Direction facing = level.getBlockState(pos).getValue(LightroomBlock.FACING);
+
+        if (level.getBlockState(pos.relative(facing)).canOcclude())
+            return;
+
         Vec3i normal = facing.getNormal();
         Vec3 point = Vec3.atCenterOf(pos).add(normal.getX() * 0.75f, normal.getY() * 0.75f, normal.getZ() * 0.75f);
         ItemEntity itemEntity = new ItemEntity(level, point.x, point.y, point.z, removeItem(FILM_SLOT, 1));
         itemEntity.setDeltaMovement(normal.getX() * 0.05f, normal.getY() * 0.05f + 0.15f, normal.getZ() * 0.05f);
         itemEntity.setDefaultPickUpDelay();
         level.addFreshEntity(itemEntity);
-
-        //TODO: Eject sound.
     }
 
     public int getCurrentFrame() {
@@ -250,7 +256,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         getItem(PAPER_SLOT).shrink(1);
 
         if (level != null)
-            level.playSound(null, getBlockPos(), Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 1f, 1f);
+            level.playSound(null, getBlockPos(), Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 0.8f, 1f);
 
         return true;
     }

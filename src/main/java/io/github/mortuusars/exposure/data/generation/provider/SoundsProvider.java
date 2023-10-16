@@ -44,9 +44,6 @@ public class SoundsProvider extends SoundDefinitionsProvider {
                 .subtitle("subtitle.exposure.camera.flash")
                 .with(sound(Exposure.ID + ":item/camera/flash")));
 
-        add(Exposure.SoundEvents.FILM_RUSTLE.get(), definition()
-                .with(sound(Exposure.ID + ":item/film_rustle")));
-
         add(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), definition()
                 .subtitle("subtitle.exposure.photograph.place")
                 .with(sound(Exposure.ID + ":item/photograph/place")));
@@ -56,6 +53,10 @@ public class SoundsProvider extends SoundDefinitionsProvider {
         add(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), definition()
                 .subtitle("subtitle.exposure.photograph.rustle")
                 .with(multiple(2, Exposure.ID + ":item/photograph/rustle", 1f, 1)));
+
+        add(Exposure.SoundEvents.LIGHTROOM_PRINT.get(), definition()
+                .subtitle("subtitle.exposure.lightroom.print")
+                .with(multiple(5, Exposure.ID + ":block/lightroom/print", 1f, 1)));
     }
 
     private SoundDefinition.Sound[] multiple(int count, String name, float volume, float pitch) {

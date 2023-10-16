@@ -214,11 +214,11 @@ public class Exposure {
         public static final RegistryObject<SoundEvent> FILTER_PLACE = register("item", "camera.filter_place");
         public static final RegistryObject<SoundEvent> FLASH = register("item", "camera.flash");
 
-        public static final RegistryObject<SoundEvent> FILM_RUSTLE = register("item", "film.rustle");
-
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_PLACE = register("item", "photograph.place");
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_BREAK = register("item", "photograph.break");
         public static final RegistryObject<SoundEvent> PHOTOGRAPH_RUSTLE = register("item", "photograph.rustle");
+
+        public static final RegistryObject<SoundEvent> LIGHTROOM_PRINT = register("block", "lightroom.print");
 
         private static RegistryObject<SoundEvent> register(String category, String key) {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");

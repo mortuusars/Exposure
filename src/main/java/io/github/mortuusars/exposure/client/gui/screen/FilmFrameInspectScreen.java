@@ -264,7 +264,7 @@ public class FilmFrameInspectScreen extends Screen {
         }
 
         if (button == 1) { // Right Click
-            close();
+            targetZoom = 1f;
             return true;
         }
 

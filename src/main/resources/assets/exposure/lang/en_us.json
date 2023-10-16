@@ -47,6 +47,7 @@
   "subtitle.exposure.camera.button_click": "Camera button clicks",
   "subtitle.exposure.camera.dial_click": "Camera dial rotates",
   "subtitle.exposure.camera.flash": "Camera flash puffs",
+  "subtitle.exposure.lightroom.print": "Lightroom prints a Photograph",
 
   "subtitle.exposure.photograph.placed" : "Photograph placed",
   "subtitle.exposure.photograph.break" : "Photograph broken",

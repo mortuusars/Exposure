@@ -1,4 +1,14 @@
 {
+  "block.lightroom.print": {
+    "sounds": [
+      "exposure:block/lightroom/print1",
+      "exposure:block/lightroom/print2",
+      "exposure:block/lightroom/print3",
+      "exposure:block/lightroom/print4",
+      "exposure:block/lightroom/print5"
+    ],
+    "subtitle": "subtitle.exposure.lightroom.print"
+  },
   "item.camera.button_click": {
     "sounds": [
       "exposure:item/camera/button_click"
@@ -66,11 +76,6 @@
       "exposure:item/camera/viewfinder_open"
     ],
     "subtitle": "subtitle.exposure.camera.viewfinder_open"
-  },
-  "item.film.rustle": {
-    "sounds": [
-      "exposure:item/film_rustle"
-    ]
   },
   "item.photograph.break": {
     "sounds": [
