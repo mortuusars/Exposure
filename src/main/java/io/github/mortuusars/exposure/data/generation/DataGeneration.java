@@ -1,13 +1,8 @@
 package io.github.mortuusars.exposure.data.generation;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.data.generation.provider.BlockTagsProvider;
-import io.github.mortuusars.exposure.data.generation.provider.ItemTagsProvider;
-import io.github.mortuusars.exposure.data.generation.provider.RecipeProvider;
-import io.github.mortuusars.exposure.data.generation.provider.SoundsProvider;
+import io.github.mortuusars.exposure.data.generation.provider.*;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -22,7 +17,7 @@ public class DataGeneration
         ExistingFileHelper helper = event.getExistingFileHelper();
 
 //        generator.addProvider(event.includeServer(), new Advancements(generator, helper));
-//        generator.addProvider(event.includeServer(), new LootTables(generator));
+        generator.addProvider(event.includeServer(), new LootTablesProvider(generator));
         generator.addProvider(event.includeServer(), new RecipeProvider(generator));
         BlockTagsProvider blockTags = new BlockTagsProvider(generator, helper);
         generator.addProvider(event.includeServer(), blockTags);

@@ -25,7 +25,7 @@ public class FlashBlockEntity extends BlockEntity {
 
     protected void tick() {
         ticks--;
-        if (ticks == 0) {
+        if (ticks <= 0) {
             BlockState blockState = Objects.requireNonNull(level).getBlockState(getBlockPos());
             level.setBlock(getBlockPos(), blockState.getValue(FlashBlock.WATERLOGGED) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState(), Block.UPDATE_ALL);
         }

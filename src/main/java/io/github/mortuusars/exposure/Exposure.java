@@ -33,6 +33,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
@@ -105,6 +106,8 @@ public class Exposure {
         public static final RegistryObject<LightroomBlock> LIGHTROOM = BLOCKS.register("lightroom",
                 () -> new LightroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
                         .color(MaterialColor.COLOR_BROWN)
+                        .strength(2.5f)
+                        .sound(SoundType.WOOD)
                         .lightLevel(state -> 15)));
 
         public static final RegistryObject<FlashBlock> FLASH = BLOCKS.register("flash",
