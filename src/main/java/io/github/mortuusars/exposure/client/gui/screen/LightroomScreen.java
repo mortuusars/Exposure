@@ -8,13 +8,10 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
-import io.github.mortuusars.exposure.util.GuiUtil;
 import io.github.mortuusars.exposure.util.Navigation;
-import io.github.mortuusars.exposure.util.OnePerPlayerSoundsClient;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -25,7 +22,6 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
@@ -40,10 +36,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     public static final ResourceLocation FILM_OVERLAYS_TEXTURE = Exposure.resource("textures/gui/lightroom_film_overlays.png");
     public static final int FRAME_SIZE = 54;
     private Button printButton;
-
-    private boolean isInFrameInspectMode = false;
-    private float targetFrameZoom = 2f;
-    private float currentFrameZoom = 1f;
 
     public LightroomScreen(LightroomMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -77,51 +69,8 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         printButton.visible = !getMenu().isPrinting();
 
         renderBackground(poseStack);
-
-//        if (isInFrameInspectMode)
-//            renderFrameInspectOverlay(poseStack, mouseX, mouseY, partialTick);
-//        else
-            super.render(poseStack, mouseX, mouseY, partialTick);
-
+        super.render(poseStack, mouseX, mouseY, partialTick);
         renderTooltip(poseStack, mouseX, mouseY);
-    }
-
-    private void renderFrameInspectOverlay(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        int currentFrame = getMenu().getCurrentFrame();
-        @Nullable FrameData frame = getMenu().getFrameByIndex(currentFrame);
-
-        if (frame == null || (targetFrameZoom == 1f && currentFrameZoom <= 1.2f)) {
-            isInFrameInspectMode = false;
-            return;
-        }
-
-        if (currentFrameZoom < targetFrameZoom)
-            currentFrameZoom = Mth.lerp(Math.min(0.4f * partialTick, 1f), currentFrameZoom, targetFrameZoom);
-        else
-            currentFrameZoom = Mth.lerp(Math.min(0.75f * partialTick, 1f), currentFrameZoom, targetFrameZoom);
-
-        boolean colorFilm = getMenu().isColorFilm();
-
-        poseStack.pushPose();
-
-        poseStack.translate(width / 2f, height / 2f, 0);
-        poseStack.scale(currentFrameZoom, currentFrameZoom, currentFrameZoom);
-        poseStack.translate(78 / -2f, 78 / -2f, 0);
-
-        RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
-
-        GuiUtil.blit(poseStack, 0, 0, 78, 78, 178, 0, 256, 256, 0);
-
-        if (colorFilm)
-            RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 1.0F);
-
-        GuiUtil.blit(poseStack, 0, 0, 78, 78, 178, 78, 256, 256, 0);
-
-        poseStack.translate(12, 12, 0);
-        renderFrame(frame, poseStack, 0, 0, 1f, colorFilm);
-
-
-        poseStack.popPose();
     }
 
     private boolean canPressPrintButton() {
@@ -165,10 +114,10 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             return;
         }
 
-        int currentFrame = getMenu().getCurrentFrame();
-        @Nullable FrameData leftFrame = getMenu().getFrameByIndex(currentFrame - 1);
-        @Nullable FrameData centerFrame = getMenu().getFrameByIndex(currentFrame);
-        @Nullable FrameData rightFrame = getMenu().getFrameByIndex(currentFrame + 1);
+        int selectedFrame = getMenu().getSelectedFrame();
+        @Nullable FrameData leftFrame = getMenu().getFrameByIndex(selectedFrame - 1);
+        @Nullable FrameData centerFrame = getMenu().getFrameByIndex(selectedFrame);
+        @Nullable FrameData rightFrame = getMenu().getFrameByIndex(selectedFrame + 1);
 
         RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
 
@@ -183,7 +132,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         blit(poseStack, leftPos + 55, topPos + 15, 55, rightFrame != null ? 0 : 68, 64, 68);
         // Right film part
         if (rightFrame != null) {
-            boolean hasMoreFrames = currentFrame + 2 < frames.size();
+            boolean hasMoreFrames = selectedFrame + 2 < frames.size();
             blit(poseStack, leftPos + 119, topPos + 15, 120, hasMoreFrames ? 68 : 0, 56, 68);
         }
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -200,36 +149,34 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     protected void renderTooltip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
         super.renderTooltip(poseStack, mouseX, mouseY);
 
-        if (!isInFrameInspectMode) {
-            if (isOverLeftFrame(mouseX, mouseY)) {
-                renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.previous_frame"), mouseX, mouseY);
-            } else if (isOverCenterFrame(mouseX, mouseY)) {
-                renderTooltip(poseStack, List.of(
-                        Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getCurrentFrame() + 1)),
-                        Component.translatable("gui.exposure.lightroom.zoom_in.tooltip").withStyle(ChatFormatting.GRAY)),
-                        Optional.empty(), mouseX, mouseY);
-            } else if (isOverRightFrame(mouseX, mouseY)) {
-                renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.next_frame"), mouseX, mouseY);
-            }
+        if (isOverLeftFrame(mouseX, mouseY)) {
+            renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.previous_frame"), mouseX, mouseY);
+        } else if (isOverCenterFrame(mouseX, mouseY)) {
+            renderTooltip(poseStack, List.of(
+                    Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getSelectedFrame() + 1)),
+                    Component.translatable("gui.exposure.lightroom.zoom_in.tooltip").withStyle(ChatFormatting.GRAY)),
+                    Optional.empty(), mouseX, mouseY);
+        } else if (isOverRightFrame(mouseX, mouseY)) {
+            renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.next_frame"), mouseX, mouseY);
         }
     }
 
     private boolean isOverLeftFrame(int mouseX, int mouseY) {
         List<FrameData> frames = getMenu().getExposedFrames();
-        int currentFrame = getMenu().getCurrentFrame();
-        return currentFrame - 1 >= 0 && currentFrame - 1 < frames.size() && isHovering(6, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
+        int selectedFrame = getMenu().getSelectedFrame();
+        return selectedFrame - 1 >= 0 && selectedFrame - 1 < frames.size() && isHovering(6, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private boolean isOverCenterFrame(int mouseX, int mouseY) {
         List<FrameData> frames = getMenu().getExposedFrames();
-        int currentFrame = getMenu().getCurrentFrame();
-        return currentFrame >= 0 && currentFrame < frames.size() && isHovering(61, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
+        int selectedFrame = getMenu().getSelectedFrame();
+        return selectedFrame >= 0 && selectedFrame < frames.size() && isHovering(61, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private boolean isOverRightFrame(int mouseX, int mouseY) {
         List<FrameData> frames = getMenu().getExposedFrames();
-        int currentFrame = getMenu().getCurrentFrame();
-        return currentFrame + 1 >= 0 && currentFrame + 1 < frames.size() && isHovering(116, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
+        int selectedFrame = getMenu().getSelectedFrame();
+        return selectedFrame + 1 >= 0 && selectedFrame + 1 < frames.size() && isHovering(116, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private void renderFrame(@NotNull FrameData frame, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
@@ -279,12 +226,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         boolean handled = super.mouseScrolled(mouseX, mouseY, delta);
 
         if (!handled) {
-            ZoomDirection direction = delta >= 0.0 ? ZoomDirection.IN : ZoomDirection.OUT;
-            if (isInFrameInspectMode) {
-                float change = direction == ZoomDirection.IN ? 1f : -1f;
-                targetFrameZoom = Mth.clamp(targetFrameZoom + change, 1f, 8f);
-            }
-            else if (direction == ZoomDirection.IN && isOverCenterFrame((int) mouseX, (int) mouseY))
+            if (delta >= 0.0 && isOverCenterFrame((int) mouseX, (int) mouseY)) // Scroll Up
                 enterFrameInspectMode();
         }
 
@@ -317,8 +259,8 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     public void changeFrame(Navigation navigation) {
-        if ((navigation == Navigation.PREVIOUS && getMenu().getCurrentFrame() == 0)
-                || (navigation == Navigation.NEXT && getMenu().getCurrentFrame() == getMenu().getTotalFrames() - 1))
+        if ((navigation == Navigation.PREVIOUS && getMenu().getSelectedFrame() == 0)
+                || (navigation == Navigation.NEXT && getMenu().getSelectedFrame() == getMenu().getTotalFrames() - 1))
             return;
 
         Preconditions.checkState(minecraft != null);

@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.config;
 
+import io.github.mortuusars.exposure.client.renderer.ExposureRenderer;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.awt.*;
@@ -10,6 +11,7 @@ public class Config {
 
         public static final ForgeConfigSpec.IntValue LIGHTROOM_BW_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_COLOR_FILM_PRINT_TIME;
+        public static final ForgeConfigSpec.IntValue LIGHTROOM_EXPERIENCE_PER_PRINT;
 
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -17,11 +19,14 @@ public class Config {
             builder.push("Lightroom");
 
             LIGHTROOM_BW_FILM_PRINT_TIME = builder
-                    .comment("Time in ticks to print black and white photograph.")
+                    .comment("Time in ticks to print black and white photograph. Default 100")
                     .defineInRange("BlackAndWhitePrintTime", 100, 1, Integer.MAX_VALUE);
             LIGHTROOM_COLOR_FILM_PRINT_TIME = builder
-                    .comment("Time in ticks to print color photograph.")
-                    .defineInRange("ColorPrintTime", 300, 1, Integer.MAX_VALUE);
+                    .comment("Time in ticks to print color photograph. Default: 250")
+                    .defineInRange("ColorPrintTime", 250, 1, Integer.MAX_VALUE);
+            LIGHTROOM_EXPERIENCE_PER_PRINT = builder
+                    .comment("Amount of experience dropped per printed Photograph. Set to 0 to disable. Default: 4")
+                    .defineInRange("ExperiencePerPrint", 4, 0, 32767);
 
             builder.pop();
 

@@ -61,8 +61,10 @@ public class LightroomBlock extends Block implements EntityBlock {
     public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
         if (!state.is(newState.getBlock())) {
             if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
-                if (level instanceof ServerLevel serverLevel)
+                if (level instanceof ServerLevel serverLevel) {
                     Containers.dropContents(serverLevel, pos, lightroomBlockEntity);
+                    lightroomBlockEntity.dropStoredExperience(null);
+                }
 
                 level.updateNeighbourForOutputSignal(pos, this);
             }
@@ -86,7 +88,7 @@ public class LightroomBlock extends Block implements EntityBlock {
                 return 0;
 
             int exposedFrames = developedFilmItem.getExposedFramesCount(filmStack);
-            int currentFrame = lightroomBlockEntity.getCurrentFrame();
+            int currentFrame = lightroomBlockEntity.getSelectedFrame();
 
             return Mth.floor((currentFrame + 1f) / exposedFrames * 14.0F) + 1;
         }

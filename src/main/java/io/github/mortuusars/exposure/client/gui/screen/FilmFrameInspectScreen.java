@@ -22,9 +22,7 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 public class FilmFrameInspectScreen extends Screen {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/film_frame_inspect.png");
@@ -74,7 +72,7 @@ public class FilmFrameInspectScreen extends Screen {
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
 
-        int currentFrame = getLightroomMenu().getCurrentFrame();
+        int currentFrame = getLightroomMenu().getSelectedFrame();
         @Nullable FrameData frame = getLightroomMenu().getFrameByIndex(currentFrame);
 
         if (frame == null || (targetZoom == 1f && currentZoom <= 1.2f)) {
@@ -100,7 +98,7 @@ public class FilmFrameInspectScreen extends Screen {
 
         // Previous Frame button
         int pVOffset = 0;
-        if (getLightroomMenu().getCurrentFrame() == 0)
+        if (getLightroomMenu().getSelectedFrame() == 0)
             pVOffset = 32;
         else if (isOverPreviousButton(mouseX, mouseY))
             pVOffset = BUTTON_SIZE;
@@ -115,7 +113,7 @@ public class FilmFrameInspectScreen extends Screen {
 
         // Next Frame button
         int nVOffset = 0;
-        if (getLightroomMenu().getCurrentFrame() + 1 == getLightroomMenu().getTotalFrames())
+        if (getLightroomMenu().getSelectedFrame() + 1 == getLightroomMenu().getTotalFrames())
             nVOffset = 32;
         else if (isOverNextButton(mouseX, mouseY))
             nVOffset = BUTTON_SIZE;
@@ -146,11 +144,11 @@ public class FilmFrameInspectScreen extends Screen {
     }
 
     private void renderTooltip(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (isOverPreviousButton(mouseX, mouseY) && getLightroomMenu().getCurrentFrame() != 0) {
+        if (isOverPreviousButton(mouseX, mouseY) && getLightroomMenu().getSelectedFrame() != 0) {
             renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.previous_frame"), mouseX, mouseY);
         }
 
-        if (isOverNextButton(mouseX, mouseY) && getLightroomMenu().getCurrentFrame() + 1 < getLightroomMenu().getTotalFrames()) {
+        if (isOverNextButton(mouseX, mouseY) && getLightroomMenu().getSelectedFrame() + 1 < getLightroomMenu().getTotalFrames()) {
             renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.next_frame"), mouseX, mouseY);
         }
     }

@@ -65,6 +65,18 @@ public class LightroomMenu extends AbstractContainerMenu {
                 public boolean mayPlace(@NotNull ItemStack stack) {
                     return false;
                 }
+
+                @Override
+                public void onTake(Player player, ItemStack pStack) {
+                    super.onTake(player, pStack);
+                    blockEntity.dropStoredExperience(player);
+                }
+
+                @Override
+                public void onQuickCraft(@NotNull ItemStack oldStackIn, @NotNull ItemStack newStackIn) {
+                    super.onQuickCraft(oldStackIn, newStackIn);
+                    blockEntity.dropStoredExperience(playerInventory.player);
+                }
             });
         }
 
@@ -109,8 +121,8 @@ public class LightroomMenu extends AbstractContainerMenu {
         return getSlot(LightroomBlockEntity.FILM_SLOT).getItem().getItem() instanceof IFilmItem filmItem && filmItem.getType() == FilmType.COLOR;
     }
 
-    public int getCurrentFrame() {
-        return data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
+    public int getSelectedFrame() {
+        return data.get(LightroomBlockEntity.CONTAINER_DATA_SELECTED_FRAME_ID);
     }
 
     public int getTotalFrames() {
@@ -124,15 +136,15 @@ public class LightroomMenu extends AbstractContainerMenu {
 
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
-            if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem filmItem) {
+            if (!filmStack.isEmpty() && filmStack.getItem() instanceof DevelopedFilmItem) {
                 int frames = getTotalFrames();
                 if (frames == 0)
                     return true;
 
-                int currentFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID);
-                currentFrame = currentFrame + (buttonId == NEXT_FRAME_BUTTON_ID ? 1 : -1);
-                currentFrame = Mth.clamp(currentFrame, 0, frames - 1);
-                data.set(LightroomBlockEntity.CONTAINER_DATA_CURRENT_FRAME_ID, currentFrame);
+                int selectedFrame = data.get(LightroomBlockEntity.CONTAINER_DATA_SELECTED_FRAME_ID);
+                selectedFrame = selectedFrame + (buttonId == NEXT_FRAME_BUTTON_ID ? 1 : -1);
+                selectedFrame = Mth.clamp(selectedFrame, 0, frames - 1);
+                data.set(LightroomBlockEntity.CONTAINER_DATA_SELECTED_FRAME_ID, selectedFrame);
                 return true;
             }
         }
@@ -151,9 +163,13 @@ public class LightroomMenu extends AbstractContainerMenu {
         ItemStack clickedStack = slot.getItem();
         ItemStack returnedStack = clickedStack.copy();
 
-        if (index < LightroomBlockEntity.SLOTS) {
-            if (!moveItemStackTo(clickedStack, LightroomBlockEntity.SLOTS, slots.size(), true))
+         if (index < LightroomBlockEntity.SLOTS) {
+            if (!moveItemStackTo(clickedStack, LightroomBlockEntity.SLOTS, slots.size(), true)) {
                 return ItemStack.EMPTY;
+            }
+
+            if (index == LightroomBlockEntity.RESULT_SLOT)
+                slot.onQuickCraft(clickedStack, returnedStack);
         }
         else if (index < slots.size()) {
             if (!moveItemStackTo(clickedStack, 0, LightroomBlockEntity.SLOTS, false))
