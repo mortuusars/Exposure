@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -26,8 +27,6 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
     public void render(@NotNull T entity, float entityYaw, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 
-
-
         boolean invisible = entity.isInvisible();
 
         poseStack.pushPose();
@@ -46,6 +45,9 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
             case UP -> 255;
             default -> 235;
         };
+
+        if (entity.isGlowing())
+            packedLight = LightTexture.FULL_BRIGHT;
 
         Either<String, ResourceLocation> idOrTexture = entity.getIdOrTexture();
         if (invisible) {

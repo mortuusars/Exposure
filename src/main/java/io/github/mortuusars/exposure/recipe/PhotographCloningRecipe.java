@@ -4,51 +4,24 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.core.NonNullList;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.item.WrittenBookItem;
-import net.minecraft.world.item.crafting.*;
-import net.minecraft.world.level.Level;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
+import net.minecraft.world.item.crafting.ShapelessRecipe;
 import org.jetbrains.annotations.NotNull;
 
 public class PhotographCloningRecipe extends ShapelessRecipe {
     public PhotographCloningRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
         super(id, group, result, ingredients);
     }
-
-//    public boolean matches(CraftingContainer craftingContainer, Level level) {
-//        int i = 0;
-//        ItemStack itemstack = ItemStack.EMPTY;
-//
-//        for(int j = 0; j < craftingContainer.getContainerSize(); ++j) {
-//            ItemStack itemstack1 = craftingContainer.getItem(j);
-//            if (!itemstack1.isEmpty()) {
-//                if (itemstack1.is(Items.WRITTEN_BOOK)) {
-//                    if (!itemstack.isEmpty()) {
-//                        return false;
-//                    }
-//
-//                    itemstack = itemstack1;
-//                } else {
-//                    if (!itemstack1.is(Items.WRITABLE_BOOK)) {
-//                        return false;
-//                    }
-//
-//                    ++i;
-//                }
-//            }
-//        }
-//
-//        return !itemstack.isEmpty() && itemstack.hasTag() && i > 0;
-//    }
 
     @Override
     public @NotNull ItemStack assemble(CraftingContainer container) {
@@ -63,41 +36,7 @@ public class PhotographCloningRecipe extends ShapelessRecipe {
         return ItemStack.EMPTY;
     }
 
-//    public ItemStack assemble(CraftingContainer pInv) {
-//        int i = 0;
-//        ItemStack itemstack = ItemStack.EMPTY;
-//
-//        for(int j = 0; j < pInv.getContainerSize(); ++j) {
-//            ItemStack itemstack1 = pInv.getItem(j);
-//            if (!itemstack1.isEmpty()) {
-//                if (itemstack1.is(Items.WRITTEN_BOOK)) {
-//                    if (!itemstack.isEmpty()) {
-//                        return ItemStack.EMPTY;
-//                    }
-//
-//                    itemstack = itemstack1;
-//                } else {
-//                    if (!itemstack1.is(Items.WRITABLE_BOOK)) {
-//                        return ItemStack.EMPTY;
-//                    }
-//
-//                    ++i;
-//                }
-//            }
-//        }
-//
-//        if (!itemstack.isEmpty() && itemstack.hasTag() && i >= 1 && WrittenBookItem.getGeneration(itemstack) < 2) {
-//            ItemStack itemstack2 = new ItemStack(Items.WRITTEN_BOOK, i);
-//            CompoundTag compoundtag = itemstack.getTag().copy();
-//            compoundtag.putInt("generation", WrittenBookItem.getGeneration(itemstack) + 1);
-//            itemstack2.setTag(compoundtag);
-//            return itemstack2;
-//        } else {
-//            return ItemStack.EMPTY;
-//        }
-//    }
-
-    public NonNullList<ItemStack> getRemainingItems(CraftingContainer pInv) {
+    public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer pInv) {
         NonNullList<ItemStack> nonnulllist = NonNullList.withSize(pInv.getContainerSize(), ItemStack.EMPTY);
 
         for(int i = 0; i < nonnulllist.size(); ++i) {

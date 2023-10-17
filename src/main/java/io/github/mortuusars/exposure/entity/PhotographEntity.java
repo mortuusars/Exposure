@@ -6,6 +6,8 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Vec3i;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
@@ -25,6 +27,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +40,7 @@ import javax.annotation.Nullable;
 
 public class PhotographEntity extends HangingEntity {
     protected static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(PhotographEntity.class, EntityDataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<Boolean> DATA_GLOWING = SynchedEntityData.defineId(PhotographEntity.class, EntityDataSerializers.BOOLEAN);
     protected static final EntityDataAccessor<Integer> DATA_ROTATION = SynchedEntityData.defineId(PhotographEntity.class, EntityDataSerializers.INT);
 
     @Nullable
@@ -57,6 +61,7 @@ public class PhotographEntity extends HangingEntity {
 
     protected void defineSynchedData() {
         this.getEntityData().define(DATA_ITEM, ItemStack.EMPTY);
+        this.getEntityData().define(DATA_GLOWING, false);
         this.getEntityData().define(DATA_ROTATION, 0);
     }
 
@@ -81,6 +86,7 @@ public class PhotographEntity extends HangingEntity {
         super.addAdditionalSaveData(tag);
         if (!this.getItem().isEmpty()) {
             tag.put("Item", this.getItem().save(new CompoundTag()));
+            tag.putBoolean("Glowing", this.isGlowing());
             tag.putByte("ItemRotation", (byte)this.getRotation());
         }
 
@@ -100,6 +106,7 @@ public class PhotographEntity extends HangingEntity {
                 Exposure.LOGGER.warn("Unable to load item from: {}", compoundtag);
 
             setItem(itemstack);
+            setGlowing(tag.getBoolean("Glowing"));
             setRotation(tag.getByte("ItemRotation"));
         }
 
@@ -216,6 +223,14 @@ public class PhotographEntity extends HangingEntity {
         this.recalculateBoundingBox();
     }
 
+    public boolean isGlowing() {
+        return this.getEntityData().get(DATA_GLOWING);
+    }
+
+    public void setGlowing(boolean glowing) {
+        this.getEntityData().set(DATA_GLOWING, glowing);
+    }
+
     public int getRotation() {
         return this.getEntityData().get(DATA_ROTATION);
     }
@@ -234,6 +249,14 @@ public class PhotographEntity extends HangingEntity {
                 playSound(SoundEvents.SHEEP_SHEAR, 1f, level.getRandom().nextFloat() * 0.2f + 0.9f);
             }
 
+            return InteractionResult.SUCCESS;
+        }
+
+        if (itemInHand.is(Items.GLOW_INK_SAC)) {
+            setGlowing(true);
+            itemInHand.shrink(1);
+            if (!level.isClientSide)
+                playSound(SoundEvents.GLOW_INK_SAC_USE);
             return InteractionResult.SUCCESS;
         }
 
@@ -270,6 +293,21 @@ public class PhotographEntity extends HangingEntity {
 
         ItemStack itemStack = getItem();
         spawnAtLocation(itemStack);
+    }
+
+    @Override
+    public void tick() {
+        if (level.isClientSide && isGlowing() && level.getRandom().nextFloat() < 0.01f) {
+            AABB bb = getBoundingBox();
+            Vec3i normal = getDirection().getNormal();
+            level.addParticle(ParticleTypes.END_ROD,
+                    position().x + (level.getRandom().nextFloat() * (bb.getXsize() * 0.75f) - bb.getXsize() * 0.75f / 2),
+                    position().y + (level.getRandom().nextFloat() * (bb.getYsize() * 0.75f) - bb.getYsize() * 0.75f / 2),
+                    position().z + (level.getRandom().nextFloat() * (bb.getZsize() * 0.75f) - bb.getZsize() * 0.75f / 2),
+                    level.getRandom().nextFloat() * 0.02f * normal.getX(),
+                    level.getRandom().nextFloat() * 0.02f * normal.getY(),
+                    level.getRandom().nextFloat() * 0.02f * normal.getZ());
+        }
     }
 
     @Override
