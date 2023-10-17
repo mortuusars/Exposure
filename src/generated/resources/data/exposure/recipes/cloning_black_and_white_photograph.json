@@ -1,0 +1,19 @@
+{
+  "type": "exposure:photograph_cloning",
+  "ingredients": [
+    {
+      "type": "forge:partial_nbt",
+      "item": "exposure:photograph",
+      "nbt": "{FilmType:\"black_and_white\"}"
+    },
+    {
+      "tag": "exposure:photo_papers"
+    },
+    {
+      "tag": "exposure:black_printing_dyes"
+    }
+  ],
+  "result": {
+    "item": "exposure:photograph"
+  }
+}

@@ -7,6 +7,10 @@
   "item.exposure.developed_black_and_white_film": "Developed Black and White Film",
   "item.exposure.developed_color_film": "Developed Color Film",
   "item.exposure.photograph": "Photograph",
+  "item.exposure.photograph.generation.0": "Original",
+  "item.exposure.photograph.generation.1": "Copy of original",
+  "item.exposure.photograph.generation.2": "Copy of a copy",
+  "item.exposure.photograph.generation.3": "Tattered",
   "item.exposure.photograph.message.no_data": "The paper is clean. No trace of an image is found on it, even if it had one at some point.",
   "item.exposure.stacked_photographs": "Stacked Photographs",
 

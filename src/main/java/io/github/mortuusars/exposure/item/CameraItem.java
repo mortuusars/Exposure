@@ -223,10 +223,11 @@ public class CameraItem extends Item {
                 Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
                 CaptureManager.enqueue(capture);
 
-                List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
-                FrameData frameData = createFrameData(player, cameraStack, exposureId, capture, flashHasFired, entitiesInFrame);
-
                 ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
+
+                List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
+                FrameData frameData = createFrameData(player, cameraStack, exposureId, film.getItem().getType(), capture, flashHasFired, entitiesInFrame);
+
                 film.getItem().addFrame(film.getStack(), frameData);
                 setFilm(cameraStack, film.getStack());
 
@@ -306,7 +307,7 @@ public class CameraItem extends Item {
         return true;
     }
 
-    protected FrameData createFrameData(Player player, ItemStack cameraStack, String exposureId, Capture capture, boolean flash, List<Entity> entitiesInFrame) {
+    protected FrameData createFrameData(Player player, ItemStack cameraStack, String exposureId, FilmType filmType, Capture capture, boolean flash, List<Entity> entitiesInFrame) {
         List<FrameData.EntityInfo> entitiesData = new ArrayList<>();
         for (Entity entity : entitiesInFrame) {
             entitiesData.add(createEntityInFrameInfo(entity, player, cameraStack, capture));
@@ -316,7 +317,7 @@ public class CameraItem extends Item {
         ResourceLocation dimension = player.level.dimension().location();
         ResourceLocation biome = player.level.getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location).orElse(null);
 
-        return new FrameData(exposureId, player.getScoreboardName(), Util.getFilenameFormattedDateTime(), dayTimeTicks,
+        return new FrameData(exposureId, filmType, player.getScoreboardName(), Util.getFilenameFormattedDateTime(), dayTimeTicks,
                 player.blockPosition(), dimension, biome, flash, entitiesData);
     }
 

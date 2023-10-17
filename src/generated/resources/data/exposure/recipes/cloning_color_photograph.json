@@ -1,0 +1,28 @@
+{
+  "type": "exposure:photograph_cloning",
+  "ingredients": [
+    {
+      "type": "forge:partial_nbt",
+      "item": "exposure:photograph",
+      "nbt": "{FilmType:\"color\"}"
+    },
+    {
+      "tag": "exposure:photo_papers"
+    },
+    {
+      "tag": "exposure:black_printing_dyes"
+    },
+    {
+      "tag": "exposure:cyan_printing_dyes"
+    },
+    {
+      "tag": "exposure:magenta_printing_dyes"
+    },
+    {
+      "tag": "exposure:yellow_printing_dyes"
+    }
+  ],
+  "result": {
+    "item": "exposure:photograph"
+  }
+}

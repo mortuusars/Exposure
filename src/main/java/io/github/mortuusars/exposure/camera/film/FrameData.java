@@ -12,6 +12,7 @@ import java.util.List;
 
 public class FrameData {
     public String id;
+    public FilmType filmType;
     public String photographer;
     public String timestamp;
     public long dayTimeTicks;
@@ -23,12 +24,13 @@ public class FrameData {
     public boolean flash;
     public List<EntityInfo> entitiesInFrame;
 
-    public static final FrameData EMPTY = new FrameData("", "", "", -1, BlockPos.ZERO,
+    public static final FrameData EMPTY = new FrameData("", FilmType.COLOR, "", "", -1, BlockPos.ZERO,
             null, null, false, Collections.emptyList());
 
-    public FrameData(String id, String photographer, String timestamp, long dayTimeTicks, BlockPos shotPosition, @Nullable ResourceLocation dimension,
+    public FrameData(String id, FilmType filmType, String photographer, String timestamp, long dayTimeTicks, BlockPos shotPosition, @Nullable ResourceLocation dimension,
                      @Nullable ResourceLocation biome, boolean flash, List<EntityInfo> entitiesInFrame) {
         this.id = id;
+        this.filmType = filmType;
         this.photographer = photographer;
         this.timestamp = timestamp;
         this.dayTimeTicks = dayTimeTicks;
@@ -41,6 +43,8 @@ public class FrameData {
 
     public CompoundTag save(CompoundTag tag) {
         tag.putString("Id", id);
+
+        tag.putString("FilmType", filmType.getSerializedName());
 
         if (photographer.length() > 0)
             tag.putString("Photographer", photographer);
@@ -89,6 +93,9 @@ public class FrameData {
             return EMPTY;
         }
 
+        @Nullable FilmType type = FilmType.byName(tag.getString("FilmType"));
+        FilmType filmType = type != null ? type : FilmType.COLOR;
+
         String shooterName = tag.getString("Photographer");
         String timestamp = tag.getString("Timestamp");
         long dayTime = tag.getLong("DayTime");
@@ -122,7 +129,7 @@ public class FrameData {
             entitiesInFrame.add(EntityInfo.fromTag(((CompoundTag) entityInfoTag)));
         }
 
-        return new FrameData(id, shooterName, timestamp, dayTime, pos, dimension, biome, flash, entitiesInFrame);
+        return new FrameData(id, filmType, shooterName, timestamp, dayTime, pos, dimension, biome, flash, entitiesInFrame);
     }
 
     public static class EntityInfo {

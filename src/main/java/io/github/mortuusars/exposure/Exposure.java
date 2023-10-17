@@ -18,6 +18,7 @@ import io.github.mortuusars.exposure.item.*;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
+import io.github.mortuusars.exposure.recipe.PhotographCloningRecipe;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.resources.ResourceLocation;
@@ -200,6 +201,8 @@ public class Exposure {
 
         public static final RegistryObject<RecipeSerializer<?>> FILM_DEVELOPING = RECIPE_SERIALIZERS.register("film_developing",
                 FilmDevelopingRecipe.Serializer::new);
+        public static final RegistryObject<RecipeSerializer<?>> PHOTOGRAPH_CLONING = RECIPE_SERIALIZERS.register("photograph_cloning",
+                PhotographCloningRecipe.Serializer::new);
     }
 
     public static class SoundEvents {

@@ -239,6 +239,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         ItemStack photographStack = new ItemStack(photographItem);
         exposureFrame.save(photographStack.getOrCreateTag());
         photographItem.setId(photographStack, exposureFrame.id);
+        photographStack.getOrCreateTag().putString("FilmType", film.getItem().getType().getSerializedName());
 
         ItemStack resultStack = getItem(RESULT_SLOT);
         if (resultStack.isEmpty())

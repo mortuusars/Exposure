@@ -1,7 +1,9 @@
 package io.github.mortuusars.exposure.data.generation.provider;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.data.generation.recipe.FilmDevelopingFinishedRecipe;
+import io.github.mortuusars.exposure.data.generation.recipe.PhotographCloningFinishedRecipe;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.RequirementsStrategy;
@@ -61,6 +63,52 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
                 new ResourceLocation(colorRecipeId.getNamespace(), "recipes/" +
                         Objects.requireNonNull(Exposure.Items.DEVELOPED_COLOR_FILM.get()
                                 .getItemCategory()).getRecipeFolderName() + "/" + colorRecipeId.getPath())
+        ));
+
+
+        ResourceLocation bwPhotoCloningRecipeId = Exposure.resource("cloning_black_and_white_photograph");
+        Advancement.Builder bwPhotoCloningAdvancementBuilder = Advancement.Builder.advancement()
+                .parent(new ResourceLocation("recipes/root"))
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(bwPhotoCloningRecipeId))
+                .addCriterion("has_photograph", has(Exposure.Items.PHOTOGRAPH.get()))
+                .rewards(AdvancementRewards.Builder.recipe(bwPhotoCloningRecipeId))
+                .requirements(RequirementsStrategy.OR);
+
+        CompoundTag bwTag = new CompoundTag();
+        bwTag.putString("FilmType", FilmType.BLACK_AND_WHITE.getSerializedName());
+
+        recipeConsumer.accept(new PhotographCloningFinishedRecipe(bwPhotoCloningRecipeId,
+                Exposure.Items.PHOTOGRAPH.get(), 1, "",
+                List.of(PartialNBTIngredient.of(Exposure.Items.PHOTOGRAPH.get(), bwTag),
+                        Ingredient.of(Exposure.Tags.Items.PHOTO_PAPERS),
+                        Ingredient.of(Exposure.Tags.Items.BLACK_PRINTING_DYES)), bwPhotoCloningAdvancementBuilder,
+                new ResourceLocation(bwPhotoCloningRecipeId.getNamespace(), "recipes/" +
+                        Objects.requireNonNull(Exposure.Items.PHOTOGRAPH.get()
+                                .getItemCategory()).getRecipeFolderName() + "/" + bwPhotoCloningRecipeId.getPath())
+        ));
+
+        ResourceLocation colorPhotoCloningRecipeId = Exposure.resource("cloning_color_photograph");
+        Advancement.Builder colorPhotoCloningAdvancementBuilder = Advancement.Builder.advancement()
+                .parent(new ResourceLocation("recipes/root"))
+                .addCriterion("has_the_recipe", RecipeUnlockedTrigger.unlocked(bwPhotoCloningRecipeId))
+                .addCriterion("has_photograph", has(Exposure.Items.PHOTOGRAPH.get()))
+                .rewards(AdvancementRewards.Builder.recipe(colorPhotoCloningRecipeId))
+                .requirements(RequirementsStrategy.OR);
+
+        CompoundTag colorTag = new CompoundTag();
+        colorTag.putString("FilmType", FilmType.COLOR.getSerializedName());
+
+        recipeConsumer.accept(new PhotographCloningFinishedRecipe(colorPhotoCloningRecipeId,
+                Exposure.Items.PHOTOGRAPH.get(), 1, "",
+                List.of(PartialNBTIngredient.of(Exposure.Items.PHOTOGRAPH.get(), colorTag),
+                        Ingredient.of(Exposure.Tags.Items.PHOTO_PAPERS),
+                        Ingredient.of(Exposure.Tags.Items.BLACK_PRINTING_DYES),
+                        Ingredient.of(Exposure.Tags.Items.CYAN_PRINTING_DYES),
+                        Ingredient.of(Exposure.Tags.Items.MAGENTA_PRINTING_DYES),
+                        Ingredient.of(Exposure.Tags.Items.YELLOW_PRINTING_DYES)), colorPhotoCloningAdvancementBuilder,
+                new ResourceLocation(colorPhotoCloningRecipeId.getNamespace(), "recipes/" +
+                        Objects.requireNonNull(Exposure.Items.PHOTOGRAPH.get()
+                                .getItemCategory()).getRecipeFolderName() + "/" + colorPhotoCloningRecipeId.getPath())
         ));
 
         ShapedRecipeBuilder.shaped(Exposure.Items.CAMERA.get())
