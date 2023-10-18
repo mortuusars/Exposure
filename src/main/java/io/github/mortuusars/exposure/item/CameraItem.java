@@ -212,10 +212,8 @@ public class CameraItem extends Item {
                 () -> {
                     closeShutter(player, cameraStack, shutterSpeed);
                     onShutterClosed(player, shutterSpeed, canAddFrame);
-                    player.getCooldowns().addCooldown(this, 1);
+                    player.getCooldowns().addCooldown(this, Math.max(1, (flashHasFired ? 15 : 4) - shutterSpeed.getTicks()));
                 }));
-
-        player.getCooldowns().addCooldown(this, flashHasFired ? 15 : 4);
 
         if (level.isClientSide) {
             if (canAddFrame) {
