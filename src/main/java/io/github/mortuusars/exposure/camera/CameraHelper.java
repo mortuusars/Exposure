@@ -18,7 +18,7 @@ public class CameraHelper {
             deactivate(player, cameraItem, player.getOffhandItem());
 
         if (player.getLevel().isClientSide) {
-            ViewfinderClient.close(player);
+//            ViewfinderClient.close(player);
 
             if (sendToServer)
                 Packets.sendToServer(new DeactivateCameraServerboundPacket(player.getUUID()));

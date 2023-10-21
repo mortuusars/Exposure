@@ -127,8 +127,8 @@ public class ViewfinderControlsScreen extends Screen {
             return;
         }
 
-//        if (Minecraft.getInstance().options.hideGui)
-//            return;
+        if (Minecraft.getInstance().options.hideGui)
+            return;
 
         poseStack.pushPose();
 
@@ -162,11 +162,10 @@ public class ViewfinderControlsScreen extends Screen {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
 
-        if (!handled && button == 1) {
+        if (!handled && button == 1 && Minecraft.getInstance().gameMode != null) {
             CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
             if (!camera.isEmpty()) {
                 Minecraft.getInstance().gameMode.useItem(player, camera.getHand());
-//                camera.getItem().useCamera(player, camera.getHand());
                 handled = true;
             }
         }

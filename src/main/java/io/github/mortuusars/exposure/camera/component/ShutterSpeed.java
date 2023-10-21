@@ -32,7 +32,10 @@ public class ShutterSpeed {
             return 1f / Integer.parseInt(shutterSpeed) * 1000;
     }
 
-    public String getText() {
+    public String getFormattedText() {
+        if (getMilliseconds() < 999 && !text.startsWith("1/"))
+            return "1/" + text;
+
         return text;
     }
 

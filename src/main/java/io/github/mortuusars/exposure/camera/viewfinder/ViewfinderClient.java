@@ -10,6 +10,7 @@ import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
+import net.minecraft.Util;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
@@ -30,6 +31,7 @@ public class ViewfinderClient {
     public static final float ZOOM_STEP = 8f;
     public static final float ZOOM_PRECISE_MODIFIER = 0.25f;
     private static boolean isOpen;
+    private static long closedAt = 0;
 
     private static FocalRange focalRange = FocalRange.FULL;
     private static double targetFov = 90f;
@@ -48,7 +50,7 @@ public class ViewfinderClient {
 
     public static void open(Player player) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
-        if (player != Minecraft.getInstance().player)
+        if (isOpen() || player != Minecraft.getInstance().player)
             return;
 
         CameraInHand camera = CameraInHand.ofPlayer(player);
@@ -73,8 +75,21 @@ public class ViewfinderClient {
 
     public static void close(Player player) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
-        if (!isOpen() || player != Minecraft.getInstance().player)
+
+        if (player != Minecraft.getInstance().player)
             return;
+
+        if (!isOpen())
+            return;
+
+        // This method sometimes gets called twice: from regular closing and from playerTick.
+        // And isOpen is true the second time for some reason.
+        // I'm not sure if this fixes it, but leaving it just in case.
+        if (Util.getMillis() - closedAt < 100) {
+            isOpen = false;
+            return;
+        }
+        closedAt = Util.getMillis();
 
         isOpen = false;
         targetFov = Minecraft.getInstance().options.fov().get();
