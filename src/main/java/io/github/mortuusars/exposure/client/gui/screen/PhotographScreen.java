@@ -2,9 +2,11 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
@@ -13,6 +15,8 @@ import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Navigation;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -25,29 +29,33 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 public class PhotographScreen extends Screen {
-    private static final float MIN_ZOOM = 0.25f;
-    private static final float MAX_ZOOM = 2f;
-    private static final float DEFAULT_ZOOM = 0.75f;
-    private static final float ZOOM_IN_SPEED = 0.6f;
-    private static final float ZOOM_OUT_SPEED = 0.8f;
+    public static final ResourceLocation WIDGETS_TEXTURE = Exposure.resource("textures/gui/widgets.png");
+    public static final int BUTTON_SIZE = 16;
 
     private final List<ItemAndStack<PhotographItem>> photographs;
-
     private int currentIndex = 0;
-
-    private double x;
-    private double y;
-    private float zoomFactor;
-    private float targetZoom = DEFAULT_ZOOM;
-    private float currentZoom = 0.1f;
-
     private long lastCycledAt;
-    private boolean playing = false;
+
+    private final ZoomHandler zoom;
+    private float zoomFactor;
+    private float x;
+    private float y;
+
+    private ImageButton previousButton;
+    private ImageButton nextButton;
 
     public PhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
         super(Component.empty());
         Preconditions.checkState(photographs.size() > 0, "No photographs to display.");
         this.photographs = photographs;
+        this.zoom = new ZoomHandler();
+
+        // Query all photographs:
+        for (ItemAndStack<PhotographItem> photograph : photographs) {
+            @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+            if (idOrTexture != null)
+                idOrTexture.ifLeft(id -> Exposure.getStorage().getOrQuery(id));
+        }
     }
 
     @Override
@@ -55,43 +63,73 @@ public class PhotographScreen extends Screen {
         super.init();
         this.minecraft = Minecraft.getInstance();
         zoomFactor = (float) height / PhotographRenderer.SIZE;
-//        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+
+        previousButton = new ImageButton(0, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
+                0, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
+        nextButton = new ImageButton(width - BUTTON_SIZE, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
+                16, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
+
+        addRenderableWidget(previousButton);
+        addRenderableWidget(nextButton);
+    }
+
+    private void buttonPressed(Button button) {
+        if (button == previousButton)
+            cyclePhotograph(Navigation.PREVIOUS);
+        else if (button == nextButton)
+            cyclePhotograph(Navigation.NEXT);
     }
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-//        if (playing)
-//            cyclePhotograph(Navigation.NEXT);
-
         renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, partialTick);
 
-        currentZoom = Mth.lerp(Math.min((currentZoom < targetZoom ? ZOOM_IN_SPEED : ZOOM_OUT_SPEED) * partialTick, 1f), currentZoom, targetZoom);
-        float zoom = currentZoom * zoomFactor;
+        zoom.update(partialTick);
+        float scale = zoom.get() * zoomFactor;
 
         poseStack.pushPose();
 
         poseStack.translate(x, y, 0);
         poseStack.translate(width / 2f, height / 2f, 0);
-        poseStack.scale(zoom, zoom, zoom);
+        poseStack.scale(scale, scale, scale);
         poseStack.translate(PhotographRenderer.SIZE / -2f, PhotographRenderer.SIZE / -2f, 0);
-
-
-        ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
-        poseStack.pushPose();
-        poseStack.translate(3, 3, -1);
-        PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack,
-                bufferSource, 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
-                LightTexture.FULL_BRIGHT, 200, 200, 200, 255);
-        poseStack.popPose();
+        // Rendering paper bottom to top:
+        for (int i = Math.min(2, photographs.size() - 1); i > 0; i--) {
+            float posOffset = 4 * i;
+            int brightness = Mth.clamp(255 - 50 * i, 0, 255);
 
+            float rotateOffset = PhotographRenderer.SIZE / 2f;
+
+            poseStack.pushPose();
+            poseStack.translate(posOffset, posOffset, 0);
+
+            poseStack.translate(rotateOffset, rotateOffset, 0);
+            poseStack.mulPose(Vector3f.ZP.rotationDegrees(i * 90 + 90));
+            poseStack.translate(-rotateOffset, -rotateOffset, 0);
+
+            PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack,
+                    bufferSource, 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
+                    LightTexture.FULL_BRIGHT, brightness, brightness, brightness, 255);
+
+            poseStack.popPose();
+        }
+
+        ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
         @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
         PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
         bufferSource.endBatch();
 
+        poseStack.popPose();
+
+        poseStack.pushPose();
+        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        super.render(poseStack, mouseX, mouseY, partialTick);
         poseStack.popPose();
     }
 
@@ -105,41 +143,23 @@ public class PhotographScreen extends Screen {
         Preconditions.checkState(minecraft != null);
 
         boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
+        if (handled)
+            return true;
 
-        if (!handled) {
-            if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT) {
-                cyclePhotograph(Navigation.NEXT);
-                playing = false;
-                handled = true;
-            }
-            else if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT) {
-                cyclePhotograph(Navigation.PREVIOUS);
-                playing = false;
-                handled = true;
-            }
-            else if (minecraft.options.keyJump.matches(keyCode, scanCode)) {
-                playing = !playing;
-                handled = true;
-            }
-            else if (minecraft.options.keyInventory.matches(keyCode, scanCode)) {
-                this.onClose();
-                handled = true;
-            }
-            else if (keyCode - 48 >= 0 && keyCode - 48 <= 10) { // 0 - 9
-                int number = keyCode - 48;
-                if (number == 0)
-                    setZoom(DEFAULT_ZOOM);
-                else
-                    setZoom(Mth.map(number, 1, 9, MIN_ZOOM, MAX_ZOOM));
-                handled = true;
-            }
-        }
+        if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT)
+            cyclePhotograph(Navigation.PREVIOUS);
+        else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT)
+            cyclePhotograph(Navigation.NEXT);
+        else if (minecraft.options.keyInventory.matches(keyCode, scanCode))
+            this.onClose();
+        else if (keyCode == InputConstants.KEY_ADD || keyCode == InputConstants.KEY_EQUALS)
+            zoom(ZoomDirection.IN);
+        else if (keyCode == 333 /*KEY_SUBTRACT*/ || keyCode == InputConstants.KEY_MINUS)
+            zoom(ZoomDirection.OUT);
+        else
+            return false;
 
-        return handled;
-    }
-
-    public void setZoom(float zoom) {
-        targetZoom = Mth.clamp(zoom, MIN_ZOOM, MAX_ZOOM);
+        return true;
     }
 
     @Override
@@ -154,7 +174,7 @@ public class PhotographScreen extends Screen {
     }
 
     private void cyclePhotograph(Navigation navigation) {
-        if (Util.getMillis() - lastCycledAt < 83) // 12 fps
+        if (Util.getMillis() - lastCycledAt < 50)
             return;
 
         int prevIndex = currentIndex;
@@ -166,9 +186,9 @@ public class PhotographScreen extends Screen {
             currentIndex = photographs.size() - 1;
 
         if (prevIndex != currentIndex && minecraft != null && minecraft.player != null) {
-            lastCycledAt = Util.getMillis();
             minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 0.8f,
                     minecraft.player.level.getRandom().nextFloat() * 0.2f + (navigation == Navigation.NEXT ? 1.1f : 0.9f));
+            lastCycledAt = Util.getMillis();
         }
     }
 
@@ -177,19 +197,23 @@ public class PhotographScreen extends Screen {
         boolean handled = super.mouseScrolled(mouseX, mouseY, delta);
 
         if (!handled) {
-            float change = 0.1f + 0.3f * (targetZoom - MIN_ZOOM);
-            setZoom(targetZoom + (delta >= 0.0 ? change : -change));
-            handled = true;
+            zoom(delta >= 0.0 ? ZoomDirection.IN : ZoomDirection.OUT);
+            return true;
         }
 
-        return handled;
+        return true;
+    }
+
+    private void zoom(ZoomDirection direction) {
+        float change = 0.1f + 0.3f * (zoom.getTargetZoom() - zoom.getMinZoom());
+        zoom.add(direction == ZoomDirection.IN ? change : -change);
     }
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         boolean handled = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
 
-        if (!handled /*&& !isClickedOnButton*/ && button == 0) { // Left Click
+        if (!handled && button == 0) { // Left Click
             float centerX = width / 2f;
             float centerY = height / 2f;
 

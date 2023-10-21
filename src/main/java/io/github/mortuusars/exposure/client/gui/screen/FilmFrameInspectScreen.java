@@ -26,6 +26,7 @@ import java.util.Objects;
 
 public class FilmFrameInspectScreen extends Screen {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/film_frame_inspect.png");
+
     public static final int BG_SIZE = 78;
     public static final int FRAME_SIZE = 54;
     public static final int BUTTON_SIZE = 16;

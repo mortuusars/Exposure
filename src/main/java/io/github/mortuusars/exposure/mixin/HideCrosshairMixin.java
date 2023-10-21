@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,7 +17,8 @@ public class HideCrosshairMixin {
     private void renderCrosshair(PoseStack poseStack, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();
         if (Config.Client.PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR.get() && mc.player != null && mc.player.getXRot() > 25f
-                && mc.player.getMainHandItem().getItem() instanceof PhotographItem && mc.player.getOffhandItem().isEmpty())
+                && (mc.player.getMainHandItem().getItem() instanceof PhotographItem || mc.player.getMainHandItem().getItem() instanceof StackedPhotographsItem)
+                && mc.player.getOffhandItem().isEmpty())
             ci.cancel();
     }
 }
