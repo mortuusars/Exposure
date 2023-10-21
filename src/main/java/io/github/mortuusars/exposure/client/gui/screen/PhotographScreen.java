@@ -59,6 +59,11 @@ public class PhotographScreen extends Screen {
     }
 
     @Override
+    public boolean isPauseScreen() {
+        return false;
+    }
+
+    @Override
     protected void init() {
         super.init();
         this.minecraft = Minecraft.getInstance();
@@ -131,11 +136,6 @@ public class PhotographScreen extends Screen {
         RenderSystem.defaultBlendFunc();
         super.render(poseStack, mouseX, mouseY, partialTick);
         poseStack.popPose();
-    }
-
-    @Override
-    public boolean isPauseScreen() {
-        return false;
     }
 
     @Override
