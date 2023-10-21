@@ -78,19 +78,19 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void renderOverlay(RenderGuiOverlayEvent.Pre event) {
-            if (isLookingThroughViewfinder())
+            if (ViewfinderClient.isLookingThrough())
                 event.setCanceled(true);
         }
 
         @SubscribeEvent
         public static void renderHand(RenderHandEvent event) {
-            if (isLookingThroughViewfinder())
+            if (ViewfinderClient.isLookingThrough())
                 event.setCanceled(true);
         }
 
         @SubscribeEvent
         public static void onGuiOpen(ScreenEvent.Opening event) {
-            if (isLookingThroughViewfinder() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
+            if (ViewfinderClient.isLookingThrough() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null)
                     CameraHelper.deactivateAll(player, true);
@@ -100,10 +100,6 @@ public class ClientEvents {
         @SubscribeEvent
         public static void renderItemFrameItem(RenderItemInFrameEvent event) {
             ItemFramePhotographRenderer.render(event);
-        }
-
-        private static boolean isLookingThroughViewfinder() {
-            return ViewfinderClient.isOpen();
         }
     }
 }

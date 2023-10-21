@@ -122,7 +122,7 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        if (!ViewfinderClient.isOpen()) {
+        if (!ViewfinderClient.isLookingThrough()) {
             this.onClose();
             return;
         }

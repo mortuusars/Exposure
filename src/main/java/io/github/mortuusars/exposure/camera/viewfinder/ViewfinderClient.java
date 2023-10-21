@@ -10,6 +10,7 @@ import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
@@ -41,6 +42,10 @@ public class ViewfinderClient {
         return isOpen;
     }
 
+    public static boolean isLookingThrough() {
+        return isOpen() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
+    }
+
     public static void open(Player player) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
         if (player != Minecraft.getInstance().player)
@@ -68,7 +73,7 @@ public class ViewfinderClient {
 
     public static void close(Player player) {
         Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
-        if (player != Minecraft.getInstance().player)
+        if (!isOpen() || player != Minecraft.getInstance().player)
             return;
 
         isOpen = false;
@@ -111,7 +116,7 @@ public class ViewfinderClient {
     }
 
     public static double modifyMouseSensitivity(double sensitivity) {
-        if (!isOpen())
+        if (!isLookingThrough())
             return sensitivity;
 
         double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get()
@@ -122,7 +127,7 @@ public class ViewfinderClient {
     public static class ForgeEvents {
         @SubscribeEvent
         public static void mouseScroll(InputEvent.MouseScrollingEvent event) {
-            if (isOpen() && event.getScrollDelta() != 0) {
+            if (isLookingThrough() && event.getScrollDelta() != 0) {
                 event.setCanceled(true);
                 zoom(event.getScrollDelta() > 0d ? ZoomDirection.IN : ZoomDirection.OUT, false);
             }
@@ -133,7 +138,7 @@ public class ViewfinderClient {
             if (!event.usedConfiguredFov())
                 return;
 
-            if (isOpen())
+            if (isLookingThrough())
                 currentFov = Mth.lerp(Math.min(0.6f * Minecraft.getInstance().getDeltaFrameTime(), 0.6f), currentFov, targetFov);
             else if (Math.abs(currentFov - event.getFOV()) > 0.00001)
                 currentFov = Mth.lerp(Math.min(0.8f * Minecraft.getInstance().getDeltaFrameTime(), 0.8f), currentFov, event.getFOV());

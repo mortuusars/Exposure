@@ -21,7 +21,7 @@ public class ClientGUI {
         Minecraft.getInstance().setScreen(new PhotographScreen(photographs));
     }
 
-    public static void openViewfinderConfigScreen() {
+    public static void openViewfinderControlsScreen() {
         Minecraft.getInstance().setScreen(new ViewfinderControlsScreen());
     }
 
