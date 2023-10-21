@@ -168,8 +168,6 @@ public class PhotographItem extends Item {
         return false;
     }
 
-
-
     public ItemStack copy(ItemStack original) {
         ItemStack newPhotographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
         CompoundTag compoundtag = Objects.requireNonNull(original.getTag()).copy();

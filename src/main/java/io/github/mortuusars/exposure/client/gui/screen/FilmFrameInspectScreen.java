@@ -30,6 +30,7 @@ public class FilmFrameInspectScreen extends Screen {
     public static final int FRAME_SIZE = 54;
     public static final int BUTTON_SIZE = 16;
     public static final int BUTTON_SPACING = 2;
+    public static final float BUTTON_SCALE = 0.8f;
 
     private final LightroomScreen lightroomScreen;
     private final LightroomMenu lightroomMenu;
@@ -106,7 +107,7 @@ public class FilmFrameInspectScreen extends Screen {
         poseStack.pushPose();
         poseStack.translate(-(offsetX + BUTTON_SIZE), BUTTON_SIZE / -2f, 0);
         poseStack.translate(BUTTON_SIZE / 2f, BUTTON_SIZE / 2f, 0);
-        poseStack.scale(0.8f, 0.8f, 0.8f);
+        poseStack.scale(BUTTON_SCALE, BUTTON_SCALE, BUTTON_SCALE);
         poseStack.translate(BUTTON_SIZE / -2f, BUTTON_SIZE / -2f, 0);
         blit(poseStack, 0, 0, 0, 156 + pVOffset, BUTTON_SIZE, BUTTON_SIZE);
         poseStack.popPose();
@@ -120,7 +121,7 @@ public class FilmFrameInspectScreen extends Screen {
         poseStack.pushPose();
         poseStack.translate(offsetX, BUTTON_SIZE / -2f, 0);
         poseStack.translate(BUTTON_SIZE / 2f, BUTTON_SIZE / 2f, 0);
-        poseStack.scale(0.8f, 0.8f, 0.8f);
+        poseStack.scale(BUTTON_SCALE, BUTTON_SCALE, BUTTON_SCALE);
         poseStack.translate(BUTTON_SIZE / -2f, BUTTON_SIZE / -2f, 0);
         blit(poseStack, 0, 0, BUTTON_SIZE, 156 + nVOffset, BUTTON_SIZE, BUTTON_SIZE);
         poseStack.popPose();
@@ -290,6 +291,4 @@ public class FilmFrameInspectScreen extends Screen {
 
         return handled;
     }
-
-
 }

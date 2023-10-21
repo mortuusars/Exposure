@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
@@ -11,6 +12,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,6 +28,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -106,6 +110,23 @@ public class StackedPhotographsItem extends Item {
         CompoundTag stackTag = photographsList.getCompound(index);
         ItemStack stack = ItemStack.of(stackTag);
         return new ItemAndStack<>(stack);
+    }
+
+    public @Nullable Either<String, ResourceLocation> getFirstIdOrTexture(ItemStack stackedPhotographsStack) {
+        ListTag listTag = getOrCreatePhotographsListTag(stackedPhotographsStack);
+        if (listTag.size() == 0)
+            return null;
+
+        CompoundTag first = listTag.getCompound(0).getCompound("tag");
+        String id = first.getString("Id");
+        if (id.length() > 0)
+            return Either.left(id);
+
+        String resource = first.getString("Resource");
+        if (resource.length() > 0)
+            return Either.right(new ResourceLocation(resource));
+
+        return null;
     }
 
     // ---
@@ -247,8 +268,31 @@ public class StackedPhotographsItem extends Item {
     }
 
     @Override
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        if (!context.isSecondaryUseActive())
+            return InteractionResult.PASS;
+
+        cyclePhotographs(stack, context.getPlayer());
+        return InteractionResult.SUCCESS;
+    }
+
+    private void cyclePhotographs(ItemStack stack, @Nullable Player player) {
+        ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(stack);
+        addPhotographToBottom(stack, topPhotograph.getStack());
+        if (player != null) {
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 0.6f,
+                player.getLevel().getRandom().nextFloat() * 0.2f + 1.2f);
+        }
+    }
+
+    @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemInHand = player.getItemInHand(hand);
+
+        if (player.isSecondaryUseActive()) {
+            cyclePhotographs(itemInHand, player);
+            return InteractionResultHolder.success(itemInHand);
+        }
 
         List<ItemAndStack<PhotographItem>> photographs = getPhotographs(itemInHand);
         if (photographs.size() > 0) {

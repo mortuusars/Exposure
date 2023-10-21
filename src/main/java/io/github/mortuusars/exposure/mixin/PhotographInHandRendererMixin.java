@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.client.renderer.PhotographInHandRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -37,7 +38,7 @@ public abstract class PhotographInHandRendererMixin {
     private void renderPhotograph(AbstractClientPlayer player, float partialTicks, float pitch, InteractionHand hand,
                                   float swingProgress, ItemStack stack, float equipProgress, PoseStack poseStack,
                                   MultiBufferSource buffer, int combinedLight, CallbackInfo ci, boolean isMainHand, HumanoidArm arm) {
-        if (stack.getItem() instanceof PhotographItem) {
+        if (stack.getItem() instanceof PhotographItem || stack.getItem() instanceof StackedPhotographsItem) {
             if (isMainHand && this.offHandItem.isEmpty()) {
                 renderTwoHandedPhotograph(player, poseStack, buffer, combinedLight, pitch, equipProgress, swingProgress);
             } else {
