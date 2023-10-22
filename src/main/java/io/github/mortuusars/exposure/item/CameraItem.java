@@ -218,6 +218,9 @@ public class CameraItem extends Item {
                     player.getCooldowns().addCooldown(this, Math.max(1, (flashHasFired ? 15 : 4) - shutterSpeed.getTicks()));
                 }));
 
+        if (player instanceof ServerPlayer serverPlayer)
+            Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(cameraStack), flashHasFired, canAddFrame);
+
         if (level.isClientSide) {
             if (canAddFrame) {
                 String exposureId = createExposureId(player);
@@ -472,7 +475,7 @@ public class CameraItem extends Item {
         }
 
         if (attachmentType == LENS_ATTACHMENT) {
-            float prevZoom = getZoom(cameraStack);
+            float prevZoom = getFocalLength(cameraStack);
             FocalRange prevFocalRange = getFocalRange(cameraStack);
             FocalRange newFocalRange = attachmentStack.isEmpty() ? FocalRange.SHORT : FocalRange.LONG;
             float adjustedZoom = Mth.map(prevZoom, prevFocalRange.min(), prevFocalRange.max(), newFocalRange.min(), newFocalRange.max());
@@ -497,7 +500,7 @@ public class CameraItem extends Item {
         shutterSpeed.save(cameraStack.getOrCreateTag());
     }
 
-    public float getZoom(ItemStack cameraStack) {
+    public float getFocalLength(ItemStack cameraStack) {
         return cameraStack.hasTag() ? cameraStack.getOrCreateTag().getFloat("Zoom") : getFocalRange(cameraStack).min();
     }
 

@@ -1,0 +1,37 @@
+{
+  "parent": "exposure:adventure/expose_film",
+  "criteria": {
+    "flash_in_ancient_city": {
+      "conditions": {
+        "camera": {
+          "flash": true,
+          "frame_exposed": true
+        },
+        "location": {
+          "structure": "minecraft:ancient_city"
+        }
+      },
+      "trigger": "minecraft:frame_exposed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.exposure.lights_up.description"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "minecraft:redstone_lamp"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.exposure.lights_up.title"
+    }
+  },
+  "requirements": [
+    [
+      "flash_in_ancient_city"
+    ]
+  ]
+}

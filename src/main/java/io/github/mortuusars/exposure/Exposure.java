@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.exposure.advancement.trigger.CameraTakenShotTrigger;
 import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.block.LightroomBlock;
 import io.github.mortuusars.exposure.block.entity.FlashBlockEntity;
@@ -21,6 +22,7 @@ import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.recipe.PhotographCloningRecipe;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
@@ -231,6 +233,14 @@ public class Exposure {
             Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
             String path = category + "." + key;
             return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path), 16f));
+        }
+    }
+
+    public static class Advancements {
+        public static CameraTakenShotTrigger CAMERA_TAKEN_SHOT = new CameraTakenShotTrigger();
+
+        public static void register() {
+            CriteriaTriggers.register(CAMERA_TAKEN_SHOT);
         }
     }
 

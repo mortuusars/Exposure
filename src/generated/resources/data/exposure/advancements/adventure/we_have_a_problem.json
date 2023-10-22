@@ -1,0 +1,36 @@
+{
+  "parent": "exposure:adventure/lights_up",
+  "criteria": {
+    "photograph_in_end": {
+      "conditions": {
+        "camera": {
+          "frame_exposed": true
+        },
+        "location": {
+          "dimension": "minecraft:the_end"
+        }
+      },
+      "trigger": "minecraft:frame_exposed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.exposure.we_have_a_problem.description"
+    },
+    "frame": "task",
+    "hidden": true,
+    "icon": {
+      "item": "minecraft:end_stone_bricks"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.exposure.we_have_a_problem.title"
+    }
+  },
+  "requirements": [
+    [
+      "photograph_in_end"
+    ]
+  ]
+}

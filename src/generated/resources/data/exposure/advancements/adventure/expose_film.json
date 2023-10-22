@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:adventure/root",
+  "criteria": {
+    "expose_film": {
+      "conditions": {
+        "camera": {
+          "frame_exposed": true
+        }
+      },
+      "trigger": "minecraft:frame_exposed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.exposure.exposure.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "exposure:camera"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.exposure.exposure.title"
+    }
+  },
+  "requirements": [
+    [
+      "expose_film"
+    ]
+  ]
+}

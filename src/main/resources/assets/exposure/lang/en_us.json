@@ -61,5 +61,14 @@
   "jei.exposure.photograph_printing.title": "Printing",
   "jei.exposure.photograph_stacking.title": "Stacking Photographs",
   "jei.exposure.photograph_stacking.stacking.tooltip": "Right Click",
-  "jei.exposure.photograph_stacking.removing.tooltip": "Right Click"
+  "jei.exposure.photograph_stacking.removing.tooltip": "Right Click",
+
+  "advancement.exposure.get_photograph.title": "A Moment in Time",
+  "advancement.exposure.get_photograph.description": "Get a Photograph",
+  "advancement.exposure.exposure.title": "Exposure",
+  "advancement.exposure.exposure.description": "Use Camera to expose a Film frame",
+  "advancement.exposure.we_have_a_problem.title": "Houston, We Have a Problem",
+  "advancement.exposure.we_have_a_problem.description": "Take a Photograph in the End",
+  "advancement.exposure.lights_up.title": "Lights Up",
+  "advancement.exposure.lights_up.description": "Use flash when taking a photograph in the Ancient City"
 }

@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
-    public RecipeProvider(DataGenerator generator) {
+public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
+    public RecipesProvider(DataGenerator generator) {
         super(generator);
     }
 

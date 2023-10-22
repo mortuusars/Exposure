@@ -1,0 +1,50 @@
+{
+  "parent": "exposure:adventure/expose_film",
+  "criteria": {
+    "get_photograph": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "exposure:photograph"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "get_stacked_photographs": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "exposure:stacked_photographs"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": true,
+    "description": {
+      "translate": "advancement.exposure.get_photograph.description"
+    },
+    "frame": "task",
+    "hidden": false,
+    "icon": {
+      "item": "exposure:photograph"
+    },
+    "show_toast": true,
+    "title": {
+      "translate": "advancement.exposure.get_photograph.title"
+    }
+  },
+  "requirements": [
+    [
+      "get_photograph",
+      "get_stacked_photographs"
+    ]
+  ]
+}

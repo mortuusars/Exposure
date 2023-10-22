@@ -27,7 +27,10 @@ public class CommonEvents {
     public static class ModBus {
         @SubscribeEvent
         public static void commonSetup(FMLCommonSetupEvent event) {
-            event.enqueueWork(Packets::register);
+            event.enqueueWork(() -> {
+                Packets.register();
+                Exposure.Advancements.register();
+            });
         }
     }
 

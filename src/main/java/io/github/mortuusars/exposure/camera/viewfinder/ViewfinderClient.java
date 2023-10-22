@@ -56,7 +56,7 @@ public class ViewfinderClient {
         CameraInHand camera = CameraInHand.ofPlayer(player);
 
         focalRange = camera.getItem().getFocalRange(camera.getStack());
-        targetFov = Fov.focalLengthToFov(Mth.clamp(camera.getItem().getZoom(camera.getStack()), focalRange.min(), focalRange.max()));
+        targetFov = Fov.focalLengthToFov(Mth.clamp(camera.getItem().getFocalLength(camera.getStack()), focalRange.min(), focalRange.max()));
 
         isOpen = true;
 
