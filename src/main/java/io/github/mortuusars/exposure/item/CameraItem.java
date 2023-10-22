@@ -48,6 +48,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
@@ -139,6 +140,7 @@ public class CameraItem extends Item {
         boolean isActive = isActive(player, stack);
         setActive(player, stack, true);
         if (!isActive) {
+            player.gameEvent(GameEvent.EQUIP);
             player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), SoundSource.PLAYERS,
                     0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
         }
@@ -148,6 +150,7 @@ public class CameraItem extends Item {
         boolean wasActive = isActive(player, stack);
         setActive(player, stack, false);
         if (wasActive) {
+            player.gameEvent(GameEvent.EQUIP);
             player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), SoundSource.PLAYERS,
                     0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
         }
@@ -284,6 +287,8 @@ public class CameraItem extends Item {
                 .setValue(FlashBlock.WATERLOGGED, level.getFluidState(flashPos).isSourceOfType(Fluids.WATER)), Block.UPDATE_ALL_IMMEDIATE);
         level.playSound(player, player, Exposure.SoundEvents.FLASH.get(), SoundSource.PLAYERS, 1f, 1f);
 
+        player.gameEvent(GameEvent.PRIME_FUSE);
+
         // Send particles to other players:
         if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
             Vec3 pos = player.position();
@@ -384,18 +389,17 @@ public class CameraItem extends Item {
     }
 
     public void onShutterOpen(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {
-        player.getLevel()
-                .playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS, exposingFrame ? 0.85f : 0.65f,
-                        player.getLevel().getRandom().nextFloat() * 0.15f + (exposingFrame ? 1.1f : 1.25f));
-
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS,
+                exposingFrame ? 0.85f : 0.65f, player.getLevel().getRandom().nextFloat() * 0.15f + (exposingFrame ? 1.1f : 1.25f));
+        player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         if (shutterSpeed.getMilliseconds() > 500) // More than 1/2
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
     }
 
     public void onShutterClosed(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {
-        player.getLevel()
-                .playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS, exposingFrame ? 0.85f : 0.65f,
-                        player.getLevel().getRandom().nextFloat() * 0.15f + (exposingFrame ? 1f : 1.2f));
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS,
+                exposingFrame ? 0.85f : 0.65f, player.getLevel().getRandom().nextFloat() * 0.15f + (exposingFrame ? 1f : 1.2f));
+        player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         if (exposingFrame) {
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
                     1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);

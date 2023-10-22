@@ -282,6 +282,7 @@ public class StackedPhotographsItem extends Item {
         if (player != null) {
             player.getLevel().playSound(player, player, Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 0.6f,
                 player.getLevel().getRandom().nextFloat() * 0.2f + 1.2f);
+            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         }
     }
 
