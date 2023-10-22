@@ -88,16 +88,16 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         // PLACEHOLDER ICONS
         if (!getMenu().slots.get(LightroomBlockEntity.FILM_SLOT).hasItem())
             blit(poseStack, leftPos - 21, topPos + 41, 238, 0, 18, 18);
-        if (!getMenu().slots.get(LightroomBlockEntity.CYAN_SLOT).hasItem())
-            blit(poseStack, leftPos + 7, topPos + 91, 238, 36, 18, 18);
-        if (!getMenu().slots.get(LightroomBlockEntity.MAGENTA_SLOT).hasItem())
-            blit(poseStack, leftPos + 25, topPos + 91, 238, 54, 18, 18);
-        if (!getMenu().slots.get(LightroomBlockEntity.YELLOW_SLOT).hasItem())
-            blit(poseStack, leftPos + 43, topPos + 91, 238, 72, 18, 18);
-        if (!getMenu().slots.get(LightroomBlockEntity.BLACK_SLOT).hasItem())
-            blit(poseStack, leftPos + 61, topPos + 91, 238, 90, 18, 18);
         if (!getMenu().slots.get(LightroomBlockEntity.PAPER_SLOT).hasItem())
-            blit(poseStack, leftPos + 95, topPos + 91, 238, 18, 18, 18);
+            blit(poseStack, leftPos + 7, topPos + 91, 238, 18, 18, 18);
+        if (!getMenu().slots.get(LightroomBlockEntity.CYAN_SLOT).hasItem())
+            blit(poseStack, leftPos + 41, topPos + 91, 238, 36, 18, 18);
+        if (!getMenu().slots.get(LightroomBlockEntity.MAGENTA_SLOT).hasItem())
+            blit(poseStack, leftPos + 59, topPos + 91, 238, 54, 18, 18);
+        if (!getMenu().slots.get(LightroomBlockEntity.YELLOW_SLOT).hasItem())
+            blit(poseStack, leftPos + 77, topPos + 91, 238, 72, 18, 18);
+        if (!getMenu().slots.get(LightroomBlockEntity.BLACK_SLOT).hasItem())
+            blit(poseStack, leftPos + 95, topPos + 91, 238, 90, 18, 18);
 
         if (getMenu().isPrinting()) {
             int progress = getMenu().getData().get(LightroomBlockEntity.CONTAINER_DATA_PROGRESS_ID);

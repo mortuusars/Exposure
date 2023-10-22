@@ -56,5 +56,7 @@
 
   "subtitle.exposure.photograph.place" : "Photograph placed",
   "subtitle.exposure.photograph.break" : "Photograph broken",
-  "subtitle.exposure.photograph.rustle" : "Photograph rustles"
+  "subtitle.exposure.photograph.rustle" : "Photograph rustles",
+
+  "jei.exposure.photograph_printing.title": "Printing"
 }

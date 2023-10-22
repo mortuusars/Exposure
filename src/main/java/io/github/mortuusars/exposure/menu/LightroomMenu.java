@@ -52,12 +52,11 @@ public class LightroomMenu extends AbstractContainerMenu {
                 }
             });
 
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.CYAN_SLOT, 8, 92));
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.MAGENTA_SLOT, 26, 92));
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.YELLOW_SLOT, 44, 92));
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.BLACK_SLOT, 62, 92));
-
-            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 96, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.PAPER_SLOT, 8, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.CYAN_SLOT, 42, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.MAGENTA_SLOT, 60, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.YELLOW_SLOT, 78, 92));
+            this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.BLACK_SLOT, 96, 92));
 
             // OUTPUT
             this.addSlot(new SlotItemHandler(itemHandler, LightroomBlockEntity.RESULT_SLOT, 148, 92) {
