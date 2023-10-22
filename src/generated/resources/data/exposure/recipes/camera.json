@@ -16,10 +16,13 @@
     },
     "N": {
       "tag": "forge:nuggets/iron"
+    },
+    "P": {
+      "item": "minecraft:heavy_weighted_pressure_plate"
     }
   },
   "pattern": [
-    "LIB",
+    "LPB",
     "IGI",
     "NIN"
   ],

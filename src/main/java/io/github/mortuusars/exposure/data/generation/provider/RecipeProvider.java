@@ -112,30 +112,18 @@ public class RecipeProvider extends net.minecraft.data.recipes.RecipeProvider {
         ));
 
         ShapedRecipeBuilder.shaped(Exposure.Items.CAMERA.get())
-                .pattern("LIB")
+                .pattern("LPB")
                 .pattern("IGI")
                 .pattern("NIN")
-                .define('N', Tags.Items.NUGGETS_IRON)
                 .define('I', Tags.Items.INGOTS_IRON)
+                .define('N', Tags.Items.NUGGETS_IRON)
                 .define('G', Tags.Items.GLASS_PANES_COLORLESS)
                 .define('L', Items.LEVER)
+                .define('P', Items.HEAVY_WEIGHTED_PRESSURE_PLATE)
                 .define('B', ItemTags.BUTTONS)
                 .group("camera")
                 .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                 .save(recipeConsumer);
-
-//        ShapedRecipeBuilder.shaped(Exposure.Items.CAMERA.get())
-//                .pattern("BIL")
-//                .pattern("IGI")
-//                .pattern("NIN")
-//                .define('N', Tags.Items.NUGGETS_IRON)
-//                .define('I', Tags.Items.INGOTS_IRON)
-//                .define('G', Tags.Items.GLASS_PANES_COLORLESS)
-//                .define('L', Items.LEVER)
-//                .define('B', ItemTags.BUTTONS)
-//                .group("camera")
-//                .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
-//                .save(recipeConsumer, "camera_inverted");
 
         ShapedRecipeBuilder.shaped(Exposure.Items.BLACK_AND_WHITE_FILM.get())
                 .pattern("NBB")
