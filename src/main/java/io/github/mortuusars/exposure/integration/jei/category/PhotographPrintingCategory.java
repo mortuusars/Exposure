@@ -22,7 +22,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,18 +39,6 @@ public class PhotographPrintingCategory implements IRecipeCategory<PhotographPri
         icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(Exposure.Items.LIGHTROOM.get()));
 
         filmDrawable = guiHelper.createDrawable(TEXTURE, 0, 80, 170, 80);
-    }
-
-    @Override
-    public @NotNull List<Component> getTooltipStrings(@NotNull PhotographPrintingJeiRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
-//        if ( (mouseX >= 15 && mouseX < 60) && (mouseY >= 8 && mouseY < 50))
-//            return waterCauldronTooltip;
-//        else if ( (mouseX >= 15 && mouseX < 60) && (mouseY >= 50 && mouseY < 85))
-//            return heatSourceTooltip;
-//        else if ( (mouseX >= 106 && mouseX < 153) && (mouseY >= 31 && mouseY < 76))
-//            return saltCauldronTooltip;
-
-        return Collections.emptyList();
     }
 
     @Override

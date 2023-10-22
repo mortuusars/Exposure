@@ -58,5 +58,8 @@
   "subtitle.exposure.photograph.break" : "Photograph broken",
   "subtitle.exposure.photograph.rustle" : "Photograph rustles",
 
-  "jei.exposure.photograph_printing.title": "Printing"
+  "jei.exposure.photograph_printing.title": "Printing",
+  "jei.exposure.photograph_stacking.title": "Stacking Photographs",
+  "jei.exposure.photograph_stacking.stacking.tooltip": "Right Click",
+  "jei.exposure.photograph_stacking.removing.tooltip": "Right Click"
 }
