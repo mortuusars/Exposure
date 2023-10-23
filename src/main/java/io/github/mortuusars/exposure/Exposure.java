@@ -10,7 +10,6 @@ import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.event.ClientEvents;
@@ -23,8 +22,10 @@ import io.github.mortuusars.exposure.recipe.PhotographCloningRecipe;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.stats.StatFormatter;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
@@ -55,6 +56,9 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.slf4j.Logger;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Mod(Exposure.ID)
 public class Exposure {
@@ -233,6 +237,30 @@ public class Exposure {
             Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
             String path = category + "." + key;
             return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path), 16f));
+        }
+    }
+
+    public static class Stats {
+        private static final Map<ResourceLocation, StatFormatter> STATS = new HashMap<>();
+
+        public static final ResourceLocation INTERACT_WITH_LIGHTROOM =
+                register(Exposure.resource("interact_with_lightroom"), StatFormatter.DEFAULT);
+        public static final ResourceLocation FILM_FRAMES_EXPOSED =
+                register(Exposure.resource("film_frames_exposed"), StatFormatter.DEFAULT);
+        public static final ResourceLocation FLASHES_TRIGGERED =
+                register(Exposure.resource("flashes_triggered"), StatFormatter.DEFAULT);
+
+        @SuppressWarnings("SameParameterValue")
+        private static ResourceLocation register(ResourceLocation location, StatFormatter formatter) {
+            STATS.put(location, formatter);
+            return location;
+        }
+
+        public static void register() {
+            STATS.forEach((location, formatter) -> {
+                Registry.register(Registry.CUSTOM_STAT, location, location);
+                net.minecraft.stats.Stats.CUSTOM.get(location, formatter);
+            });
         }
     }
 

@@ -70,5 +70,9 @@
   "advancement.exposure.we_have_a_problem.title": "Houston, We Have a Problem",
   "advancement.exposure.we_have_a_problem.description": "Take a Photograph in the End",
   "advancement.exposure.lights_up.title": "Lights Up",
-  "advancement.exposure.lights_up.description": "Use flash when taking a photograph in the Ancient City"
+  "advancement.exposure.lights_up.description": "Use flash when taking a photograph in the Ancient City",
+
+  "stat.exposure.interact_with_lightroom": "Interactions with Lightroom",
+  "stat.exposure.film_frames_exposed": "Film Frames Exposed",
+  "stat.exposure.flashes_triggered": "Camera Flashes Triggered"
 }

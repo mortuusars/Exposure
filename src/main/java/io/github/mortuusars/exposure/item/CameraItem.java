@@ -221,6 +221,9 @@ public class CameraItem extends Item {
         if (player instanceof ServerPlayer serverPlayer)
             Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(cameraStack), flashHasFired, canAddFrame);
 
+        if (canAddFrame)
+            player.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
+
         if (level.isClientSide) {
             if (canAddFrame) {
                 String exposureId = createExposureId(player);
@@ -291,6 +294,7 @@ public class CameraItem extends Item {
         level.playSound(player, player, Exposure.SoundEvents.FLASH.get(), SoundSource.PLAYERS, 1f, 1f);
 
         player.gameEvent(GameEvent.PRIME_FUSE);
+        player.awardStat(Exposure.Stats.FLASHES_TRIGGERED);
 
         // Send particles to other players:
         if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {

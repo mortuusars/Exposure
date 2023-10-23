@@ -30,6 +30,7 @@ public class CommonEvents {
             event.enqueueWork(() -> {
                 Packets.register();
                 Exposure.Advancements.register();
+                Exposure.Stats.register();
             });
         }
     }

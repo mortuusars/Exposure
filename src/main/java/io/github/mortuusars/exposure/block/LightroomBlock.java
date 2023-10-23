@@ -115,8 +115,7 @@ public class LightroomBlock extends Block implements EntityBlock {
         if (!(level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity))
             return InteractionResult.FAIL;
 
-        // TODO: Stat
-//        player.awardStat(Wares.Stats.INTERACT_WITH_DELIVERY_TABLE);
+        player.awardStat(Exposure.Stats.INTERACT_WITH_LIGHTROOM);
 
         if (player instanceof ServerPlayer serverPlayer)
             NetworkHooks.openScreen(serverPlayer, lightroomBlockEntity, pos);
