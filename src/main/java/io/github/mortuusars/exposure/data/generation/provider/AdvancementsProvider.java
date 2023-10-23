@@ -109,15 +109,15 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                             new CameraPredicate(MinMaxBounds.Doubles.ANY, MinMaxBounds.Doubles.ANY, null, true, true)))
                     .save(advancementConsumer, Exposure.resource("adventure/lights_up"), existingFileHelper);
 
-            Advancement problem = Advancement.Builder.advancement()
+            Advancement thatVoid = Advancement.Builder.advancement()
                     .parent(lightsUp)
                     .display(new ItemStack(Items.END_STONE_BRICKS),
-                            Component.translatable("advancement.exposure.we_have_a_problem.title"),
-                            Component.translatable("advancement.exposure.we_have_a_problem.description"),
+                            Component.translatable("advancement.exposure.void.title"),
+                            Component.translatable("advancement.exposure.void.description"),
                             null, FrameType.TASK, true, true, true)
                     .addCriterion("photograph_in_end", new CameraTakenShotTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
                             LocationPredicate.inDimension(Level.END), CameraPredicate.exposesFilm()))
-                    .save(advancementConsumer, Exposure.resource("adventure/we_have_a_problem"), existingFileHelper);
+                    .save(advancementConsumer, Exposure.resource("adventure/void"), existingFileHelper);
         }
     }
 }
