@@ -8,8 +8,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
-import io.github.mortuusars.exposure.camera.film.FrameData;
-import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import io.github.mortuusars.exposure.util.Navigation;
@@ -23,7 +21,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -92,18 +89,13 @@ public class FilmFrameInspectScreen extends Screen {
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         renderBackground(poseStack);
 
-        int currentFrame = getLightroomMenu().getSelectedFrame();
-        @Nullable FrameData frame = getLightroomMenu().getFrameByIndex(currentFrame);
-
         zoom.update(partialTick);
         float scale = zoom.get() * zoomFactor;
-
         if (zoom.getTargetZoom() == zoom.getMinZoom() && Math.abs(zoom.getMinZoom() - zoom.get()) < 0.1f) {
             close();
             return;
         }
 
-        boolean colorFilm = getLightroomMenu().isColorFilm();
 
         poseStack.pushPose();
 
@@ -117,14 +109,17 @@ public class FilmFrameInspectScreen extends Screen {
 
         GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
 
+        boolean colorFilm = getLightroomMenu().isColorFilm();
         if (colorFilm)
             RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 1.0F);
 
         GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
 
         poseStack.translate(12, 12, 0);
-        if (frame != null)
-            renderFrame(frame, poseStack, 0, 0, 1f, colorFilm);
+
+        int currentFrame = getLightroomMenu().getSelectedFrame();
+        String frame = getLightroomMenu().getFrameIdByIndex(currentFrame);
+        renderFrame(frame, poseStack, 0, 0, 1f, colorFilm);
 
         poseStack.popPose();
 
@@ -141,19 +136,22 @@ public class FilmFrameInspectScreen extends Screen {
         poseStack.popPose();
     }
 
-    private void renderFrame(@NotNull FrameData frame, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
-        Exposure.getStorage().getOrQuery(frame.id).ifPresent(exposureData -> {
+    private void renderFrame(String exposureId, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
+        if (exposureId.length() == 0)
+            return;
+
+        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
             poseStack.pushPose();
             poseStack.translate(x, y, 0);
 
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
             if (colorFilm)
-                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 180, 130, 110,
                         Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
             else
-                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 255, 255, 255,
                         Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
 

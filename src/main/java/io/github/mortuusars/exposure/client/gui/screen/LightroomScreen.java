@@ -8,7 +8,6 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.Navigation;
@@ -20,12 +19,12 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Objects;
@@ -106,7 +105,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             blit(poseStack, leftPos + 116, topPos + 91, 176, 0, width + 1, 17);
         }
 
-        List<FrameData> frames = getMenu().getExposedFrames();
+        ListTag frames = getMenu().getExposedFrames();
 
         if (frames.size() == 0) {
             RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
@@ -115,9 +114,9 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         }
 
         int selectedFrame = getMenu().getSelectedFrame();
-        @Nullable FrameData leftFrame = getMenu().getFrameByIndex(selectedFrame - 1);
-        @Nullable FrameData centerFrame = getMenu().getFrameByIndex(selectedFrame);
-        @Nullable FrameData rightFrame = getMenu().getFrameByIndex(selectedFrame + 1);
+        String leftFrame = getMenu().getFrameIdByIndex(selectedFrame - 1);
+        String centerFrame = getMenu().getFrameIdByIndex(selectedFrame);
+        String rightFrame = getMenu().getFrameIdByIndex(selectedFrame + 1);
 
         RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
 
@@ -162,36 +161,39 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     private boolean isOverLeftFrame(int mouseX, int mouseY) {
-        List<FrameData> frames = getMenu().getExposedFrames();
+        ListTag frames = getMenu().getExposedFrames();
         int selectedFrame = getMenu().getSelectedFrame();
         return selectedFrame - 1 >= 0 && selectedFrame - 1 < frames.size() && isHovering(6, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private boolean isOverCenterFrame(int mouseX, int mouseY) {
-        List<FrameData> frames = getMenu().getExposedFrames();
+        ListTag frames = getMenu().getExposedFrames();
         int selectedFrame = getMenu().getSelectedFrame();
         return selectedFrame >= 0 && selectedFrame < frames.size() && isHovering(61, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
     private boolean isOverRightFrame(int mouseX, int mouseY) {
-        List<FrameData> frames = getMenu().getExposedFrames();
+        ListTag frames = getMenu().getExposedFrames();
         int selectedFrame = getMenu().getSelectedFrame();
         return selectedFrame + 1 >= 0 && selectedFrame + 1 < frames.size() && isHovering(116, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
-    private void renderFrame(@NotNull FrameData frame, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
-        Exposure.getStorage().getOrQuery(frame.id).ifPresent(exposureData -> {
+    private void renderFrame(String exposureId, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
+        if (exposureId.length() == 0)
+            return;
+
+        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
             poseStack.pushPose();
             poseStack.translate(x, y, 0);
 
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance()
                     .getBuilder());
             if (colorFilm)
-                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 180, 130, 110,
                         Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
             else
-                ExposureClient.getExposureRenderer().renderNegative(frame.id, exposureData, true, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, poseStack,
                         bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 255, 255, 255,
                         Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
 

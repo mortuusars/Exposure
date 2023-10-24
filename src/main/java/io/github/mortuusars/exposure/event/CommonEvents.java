@@ -55,9 +55,7 @@ public class CommonEvents {
             if (activeHand == null) {
                 if (player.getLevel().isClientSide && ViewfinderClient.isOpen()) {
                     ViewfinderClient.close(player);
-//                    player.playSound(Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), 0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
                 }
-//                CameraHelper.deactivateAll(player, false);
                 return;
             }
 

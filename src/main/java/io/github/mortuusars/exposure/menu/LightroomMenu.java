@@ -4,9 +4,9 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.IFilmItem;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
@@ -20,10 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 public class LightroomMenu extends AbstractContainerMenu {
@@ -34,7 +31,7 @@ public class LightroomMenu extends AbstractContainerMenu {
     private final LightroomBlockEntity lightroomBlockEntity;
     private final ContainerData data;
 
-    private List<FrameData> frames = Collections.emptyList();
+    private ListTag frames = new ListTag();
 
     public LightroomMenu(int containerId, final Inventory playerInventory, final LightroomBlockEntity blockEntity, ContainerData containerData) {
         super(Exposure.MenuTypes.LIGHTROOM.get(), containerId);
@@ -48,7 +45,7 @@ public class LightroomMenu extends AbstractContainerMenu {
                 public void setChanged() {
                     super.setChanged();
                     frames = getItem().getItem() instanceof DevelopedFilmItem developedFilm ?
-                            developedFilm.getExposedFrames(getItem()) : Collections.emptyList();
+                            developedFilm.getExposedFrames(getItem()) : new ListTag();
                 }
             });
 
@@ -108,12 +105,12 @@ public class LightroomMenu extends AbstractContainerMenu {
         return data;
     }
 
-    public List<FrameData> getExposedFrames() {
+    public ListTag getExposedFrames() {
         return frames;
     }
 
-    public @Nullable FrameData getFrameByIndex(int index) {
-        return index >= 0 && index < getExposedFrames().size() ? getExposedFrames().get(index) : null;
+    public String getFrameIdByIndex(int index) {
+        return index >= 0 && index < getExposedFrames().size() ? getExposedFrames().getCompound(index).getString("Id") : "";
     }
 
     public boolean isColorFilm() {

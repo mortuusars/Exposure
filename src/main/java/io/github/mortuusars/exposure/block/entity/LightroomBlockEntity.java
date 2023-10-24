@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.LightroomBlock;
-import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
@@ -14,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -43,8 +43,6 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 public class LightroomBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int SLOTS = 7;
@@ -229,17 +227,15 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             return false;
 
         ItemAndStack<DevelopedFilmItem> film = new ItemAndStack<>(getItem(FILM_SLOT));
-        List<FrameData> frames = film.getItem().getExposedFrames(film.getStack());
+        ListTag frames = film.getItem().getExposedFrames(film.getStack());
         if (printedFrame >= frames.size())
             return false;
 
-        FrameData exposureFrame = frames.get(printedFrame);
+        CompoundTag frameTag = frames.getCompound(printedFrame);
+        frameTag.putString("Type", film.getItem().getType().getSerializedName());
 
-        PhotographItem photographItem = Exposure.Items.PHOTOGRAPH.get();
-        ItemStack photographStack = new ItemStack(photographItem);
-        exposureFrame.save(photographStack.getOrCreateTag());
-        photographItem.setId(photographStack, exposureFrame.id);
-        photographStack.getOrCreateTag().putString("FilmType", film.getItem().getType().getSerializedName());
+        ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
+        photographStack.setTag(frameTag);
 
         ItemStack resultStack = getItem(RESULT_SLOT);
         if (resultStack.isEmpty())

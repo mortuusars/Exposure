@@ -20,10 +20,10 @@ public class Config {
 
             LIGHTROOM_BW_FILM_PRINT_TIME = builder
                     .comment("Time in ticks to print black and white photograph. Default 100")
-                    .defineInRange("BlackAndWhitePrintTime", 100, 1, Integer.MAX_VALUE);
+                    .defineInRange("BlackAndWhitePrintTime", 80, 1, Integer.MAX_VALUE);
             LIGHTROOM_COLOR_FILM_PRINT_TIME = builder
                     .comment("Time in ticks to print color photograph. Default: 250")
-                    .defineInRange("ColorPrintTime", 250, 1, Integer.MAX_VALUE);
+                    .defineInRange("ColorPrintTime", 160, 1, Integer.MAX_VALUE);
             LIGHTROOM_EXPERIENCE_PER_PRINT = builder
                     .comment("Amount of experience dropped per printed Photograph. Set to 0 to disable. Default: 4")
                     .defineInRange("ExperiencePerPrint", 4, 0, 32767);

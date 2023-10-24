@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FrameData;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
@@ -56,7 +55,7 @@ public class FilmRollItem extends Item implements IFilmItem {
         return barColor;
     }
 
-    public void addFrame(ItemStack filmStack, FrameData frame) {
+    public void addFrame(ItemStack filmStack, CompoundTag frame) {
         CompoundTag tag = filmStack.getOrCreateTag();
 
         if (!tag.contains("Frames", Tag.TAG_LIST)) {
@@ -68,7 +67,7 @@ public class FilmRollItem extends Item implements IFilmItem {
         if (listTag.size() >= getFrameCount(filmStack))
             throw new IllegalStateException("Cannot add more frames than film could fit. Size: " + listTag.size());
 
-        listTag.add(frame.save(new CompoundTag()));
+        listTag.add(frame);
         tag.put("Frames", listTag);
     }
 
