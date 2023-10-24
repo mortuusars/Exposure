@@ -25,8 +25,6 @@ public class CameraPredicate {
     private final Boolean flash;
     @Nullable
     private final Boolean frameExposed;
-//    private final BooleanPredicate flashPredicate;
-//    private final BooleanPredicate frameExposedPredicate;
 
     public CameraPredicate(MinMaxBounds.Doubles shutterSpeedMilliseconds, MinMaxBounds.Doubles focalLength,
                            @Nullable FilmType filmType, @Nullable Boolean flashFired, @Nullable Boolean frameExposed) {
@@ -73,8 +71,6 @@ public class CameraPredicate {
         @Nullable FilmType filmType = jsonobject.has("film_type") ? FilmType.byName(jsonobject.get("film_type").getAsString()) : null;
         @Nullable Boolean flash = jsonobject.has("flash") ? jsonobject.get("flash").getAsBoolean() : null;
         @Nullable Boolean frameExposed = jsonobject.has("frame_exposed") ? jsonobject.get("frame_exposed").getAsBoolean() : null;
-//        BooleanPredicate flash = BooleanPredicate.fromJson(jsonobject.get("flash"));
-//        BooleanPredicate frameExposed = BooleanPredicate.fromJson(jsonobject.get("frame_exposed"));
 
         return new CameraPredicate(shutterSpeedMsPredicate, focalLengthPredicate, filmType, flash, frameExposed);
     }
@@ -95,8 +91,7 @@ public class CameraPredicate {
 
         if (frameExposed != null)
             jsonobject.addProperty("frame_exposed", frameExposed);
-//        jsonobject.add("flash", this.flashPredicate.serializeToJson());
-//        jsonobject.add("frame_exposed", this.frameExposedPredicate.serializeToJson());
+
         return jsonobject;
     }
 }

@@ -98,19 +98,21 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                     .requirements(RequirementsStrategy.OR)
                     .save(advancementConsumer, Exposure.resource("adventure/get_photograph"), existingFileHelper);
 
-            Advancement lightsUp = Advancement.Builder.advancement()
+            Advancement flash = Advancement.Builder.advancement()
                     .parent(exposure)
                     .display(new ItemStack(Items.REDSTONE_LAMP),
-                            Component.translatable("advancement.exposure.lights_up.title"),
-                            Component.translatable("advancement.exposure.lights_up.description"),
+                            Component.translatable("advancement.exposure.flash.title"),
+                            Component.translatable("advancement.exposure.flash.description"),
                             null, FrameType.TASK, true, true, true)
-                    .addCriterion("flash_in_ancient_city", new CameraTakenShotTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
-                            LocationPredicate.inStructure(BuiltinStructures.ANCIENT_CITY),
+                    .addCriterion("flash_in_darkness", new CameraTakenShotTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
+                            LocationPredicate.Builder.location()
+                                    .setLight(LightPredicate.Builder.light().setComposite(MinMaxBounds.Ints.atMost(4)).build())
+                                    .build(),
                             new CameraPredicate(MinMaxBounds.Doubles.ANY, MinMaxBounds.Doubles.ANY, null, true, true)))
-                    .save(advancementConsumer, Exposure.resource("adventure/lights_up"), existingFileHelper);
+                    .save(advancementConsumer, Exposure.resource("adventure/flash"), existingFileHelper);
 
             Advancement thatVoid = Advancement.Builder.advancement()
-                    .parent(lightsUp)
+                    .parent(flash)
                     .display(new ItemStack(Items.END_STONE_BRICKS),
                             Component.translatable("advancement.exposure.void.title"),
                             Component.translatable("advancement.exposure.void.description"),

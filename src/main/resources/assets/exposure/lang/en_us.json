@@ -69,8 +69,8 @@
   "advancement.exposure.exposure.description": "Use Camera to expose a Film frame",
   "advancement.exposure.void.title": "It's a Brilliant Surface in That Void",
   "advancement.exposure.void.description": "Take a Photograph in the End",
-  "advancement.exposure.lights_up.title": "Lights Up",
-  "advancement.exposure.lights_up.description": "Use flash when taking a photograph in the Ancient City",
+  "advancement.exposure.flash.title": "Lights Up",
+  "advancement.exposure.flash.description": "Use flash when taking a photograph in the dark",
 
   "stat.exposure.interact_with_lightroom": "Interactions with Lightroom",
   "stat.exposure.film_frames_exposed": "Film Frames Exposed",
