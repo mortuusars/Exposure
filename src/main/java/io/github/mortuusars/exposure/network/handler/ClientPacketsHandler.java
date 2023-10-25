@@ -8,8 +8,8 @@ import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.capture.component.BaseComponent;
 import io.github.mortuusars.exposure.camera.capture.component.ExposureStorageSaveComponent;
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
-import io.github.mortuusars.exposure.camera.capture.converter.DitheringConverter;
-import io.github.mortuusars.exposure.camera.capture.converter.SimpleConverter;
+import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConverter;
+import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
 import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.ChatFormatting;
@@ -49,7 +49,7 @@ public class ClientPacketsHandler {
                 .components(
                         new BaseComponent(),
                         FileSaveComponent.withDefaultFolders(Util.getFilenameFormattedDateTime()))
-                .converter(new DitheringConverter());
+                .converter(new DitheringColorConverter());
         CaptureManager.enqueue(capture);
     }
 
@@ -78,7 +78,7 @@ public class ClientPacketsHandler {
                         .size(size)
                         .cropFactor(1f)
                         .components(new ExposureStorageSaveComponent(finalExposureId, true))
-                        .converter(dither ? new DitheringConverter() : new SimpleConverter());
+                        .converter(dither ? new DitheringColorConverter() : new SimpleColorConverter());
                 capture.processImage(image);
 
                 Exposure.LOGGER.info("Loaded exposure from file '" + path + "' with exposureId: '" + finalExposureId + "'.");

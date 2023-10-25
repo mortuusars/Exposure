@@ -73,7 +73,7 @@ public interface ICaptureComponent {
      */
     default void teardown(Capture capture) { }
 
-    default void save(Capture capture, byte[] materialColorPixels, int width, int height) { }
+    default void save(byte[] materialColorPixels, int width, int height) { }
 
     /**
      * Called in the end, after an image has been processed and saved.

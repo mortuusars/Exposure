@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.config;
 
-import io.github.mortuusars.exposure.client.renderer.ExposureRenderer;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.awt.*;
@@ -47,8 +46,8 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
 
         // IMAGE SAVING
-        public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_LEVEL_SUBFOLDER;
-        public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVE_ON_EVERY_CAPTURE;
+        public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING;
+        public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING_LEVEL_SUBFOLDER;
 
         // MISC
         public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
@@ -65,11 +64,12 @@ public class Config {
             VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FF7A736C");
             builder.pop();
 
-            builder.push("ExposureFileSaving");
-            EXPOSURE_SAVE_LEVEL_SUBFOLDER = builder
+            builder.push("FileSaving");
+            EXPOSURE_SAVING = builder
+                    .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
+                    .define("SavePhotographs", true);
+            EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder
                     .define("LevelNameSubfolder", true);
-            EXPOSURE_SAVE_ON_EVERY_CAPTURE = builder
-                    .define("SaveOnEveryCapture", true); //TODO: remove before release
             builder.pop();
 
             builder.push("Capture");

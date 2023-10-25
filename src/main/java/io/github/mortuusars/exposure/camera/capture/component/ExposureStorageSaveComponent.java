@@ -14,7 +14,7 @@ public class ExposureStorageSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(Capture capture, byte[] materialColorPixels, int width, int height) {
+    public void save(byte[] materialColorPixels, int width, int height) {
         ExposureSavedData exposureSavedData = new ExposureSavedData(width, height, materialColorPixels);
 
         ExposureStorage.storeOnClient(exposureId, exposureSavedData);

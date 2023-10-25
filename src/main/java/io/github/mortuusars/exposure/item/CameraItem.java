@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.capture.component.*;
-import io.github.mortuusars.exposure.camera.capture.converter.DitheringConverter;
+import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConverter;
 import io.github.mortuusars.exposure.camera.component.*;
 import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.EntitiesInFrame;
@@ -438,16 +438,14 @@ public class CameraItem extends Item {
             components.add(new BrightnessComponent(brightnessStops));
         if (film.getItem().getType() == FilmType.BLACK_AND_WHITE)
             components.add(new BlackAndWhiteComponent());
-        components.add(new ExposureStorageSaveComponent(exposureId, true));
 
-        //TODO: DEBUG
-        components.add(FileSaveComponent.withDefaultFolders(exposureId));
+        components.add(new ExposureStorageSaveComponent(exposureId, true));
 
         return new Capture()
                 .size(frameSize)
                 .brightnessStops(brightnessStops)
                 .components(components)
-                .converter(new DitheringConverter());
+                .converter(new DitheringColorConverter());
     }
 
     public void onShutterOpen(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {

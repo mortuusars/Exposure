@@ -51,15 +51,17 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
-        printButton = new ImageButton(leftPos + 117, topPos + 89, 22, 22, 176, 17, 22, MAIN_TEXTURE, 256, 256,
-                pButton -> {
-                    if (Minecraft.getInstance().gameMode != null)
-                        Minecraft.getInstance().gameMode.handleInventoryButtonClick(getMenu().containerId, LightroomMenu.PRINT_BUTTON_ID);
-                }, (button, poseStack, mouseX, mouseY) -> {
+        printButton = new ImageButton(leftPos + 117, topPos + 89, 22, 22, 176, 17,
+                22, MAIN_TEXTURE, 256, 256, this::onPrintButtonPressed, (button, poseStack, mouseX, mouseY) -> {
             if (button.visible && button.isActive())
                 renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.print"), mouseX, mouseY);
         }, Component.empty());
         addRenderableWidget(printButton);
+    }
+
+    private void onPrintButtonPressed(Button button) {
+        if (Minecraft.getInstance().gameMode != null)
+            Minecraft.getInstance().gameMode.handleInventoryButtonClick(getMenu().containerId, LightroomMenu.PRINT_BUTTON_ID);
     }
 
     @Override

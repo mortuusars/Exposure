@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.component.ICaptureComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.IImageToMapColorsConverter;
-import io.github.mortuusars.exposure.camera.capture.converter.SimpleConverter;
+import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -24,7 +24,7 @@ public class Capture {
     private float brightnessStops = 0f;
     private boolean asyncProcessing = true;
     private Collection<ICaptureComponent> components = Collections.emptyList();
-    private IImageToMapColorsConverter converter = new SimpleConverter();
+    private IImageToMapColorsConverter converter = new SimpleColorConverter();
 
     private int ticksDelay = -1;
     private int framesDelay = -1;
@@ -175,7 +175,7 @@ public class Capture {
             }
 
             for (ICaptureComponent component : components) {
-                component.save(this, materialColorPixels, image.getWidth(), image.getHeight());
+                component.save(materialColorPixels, image.getWidth(), image.getHeight());
             }
         } catch (Exception e) {
             Exposure.LOGGER.error(e.toString());

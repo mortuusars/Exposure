@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.camera.capture.processing.FloydDither;
 
 import java.awt.image.BufferedImage;
 
-public class DitheringConverter implements IImageToMapColorsConverter {
+public class DitheringColorConverter implements IImageToMapColorsConverter {
     @Override
     public byte[] convert(Capture capture, BufferedImage image) {
         return FloydDither.ditherWithMapColors(image);

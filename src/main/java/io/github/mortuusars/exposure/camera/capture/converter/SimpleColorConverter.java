@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.camera.capture.processing.RGBToMapColorConv
 
 import java.awt.image.BufferedImage;
 
-public class SimpleConverter implements IImageToMapColorsConverter {
+public class SimpleColorConverter implements IImageToMapColorsConverter {
     @Override
     public byte[] convert(Capture capture, BufferedImage image) {
         return RGBToMapColorConverter.convert(image);

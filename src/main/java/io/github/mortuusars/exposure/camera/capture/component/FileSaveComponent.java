@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.camera.capture.component;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
@@ -26,15 +25,18 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     public static FileSaveComponent withDefaultFolders(String exposureId) {
-        return new FileSaveComponent(exposureId, Exposure.EXPOSURES_FOLDER_NAME, Config.Client.EXPOSURE_SAVE_LEVEL_SUBFOLDER.get());
+        return new FileSaveComponent(exposureId, Exposure.EXPOSURES_FOLDER_NAME, Config.Client.EXPOSURE_SAVING_LEVEL_SUBFOLDER.get());
     }
 
     @Override
-    public void save(Capture capture, byte[] materialColorPixels, int width, int height) {
+    public void save(byte[] materialColorPixels, int width, int height) {
         BufferedImage img = convertToBufferedImage(materialColorPixels, width, height);
 
         File outputFile = new File(folder + "/" + (levelNameSubfolder ? getLevelName() + "/" : "") + exposureId + ".png");
         try {
+            if (outputFile.exists())
+                return;
+
             //noinspection ResultOfMethodCallIgnored
             outputFile.mkdirs();
             ImageIO.write(img, "png", outputFile);

@@ -8,8 +8,10 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
 import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
+import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Navigation;
@@ -26,6 +28,7 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PhotographScreen extends Screen {
@@ -33,6 +36,7 @@ public class PhotographScreen extends Screen {
     public static final int BUTTON_SIZE = 16;
 
     private final List<ItemAndStack<PhotographItem>> photographs;
+    private final List<String> savedExposures = new ArrayList<>();
     private int currentIndex = 0;
     private long lastCycledAt;
 
@@ -52,7 +56,8 @@ public class PhotographScreen extends Screen {
 
         // Query all photographs:
         for (ItemAndStack<PhotographItem> photograph : photographs) {
-            @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+            @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()
+                    .getIdOrTexture(photograph.getStack());
             if (idOrTexture != null)
                 idOrTexture.ifLeft(id -> Exposure.getStorage().getOrQuery(id));
         }
@@ -100,7 +105,8 @@ public class PhotographScreen extends Screen {
         poseStack.scale(scale, scale, scale);
         poseStack.translate(PhotographRenderer.SIZE / -2f, PhotographRenderer.SIZE / -2f, 0);
 
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance()
+                .getBuilder());
 
         // Rendering paper bottom to top:
         for (int i = Math.min(2, photographs.size() - 1); i > 0; i--) {
@@ -128,6 +134,21 @@ public class PhotographScreen extends Screen {
         PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
         bufferSource.endBatch();
 
+        // Save current photo.
+        if (Config.Client.EXPOSURE_SAVING.get()) {
+            if (idOrTexture != null) {
+                idOrTexture.ifLeft(id -> {
+                    if (!savedExposures.contains(id)) {
+                        Exposure.getStorage().getOrQuery(id).ifPresent(exposure -> {
+                            savedExposures.add(id);
+                            new Thread(() -> FileSaveComponent.withDefaultFolders(id)
+                                    .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight()), "ExposureSaving").start();
+                        });
+                    }
+                });
+            }
+        }
+
         poseStack.popPose();
 
         poseStack.pushPose();
@@ -146,7 +167,7 @@ public class PhotographScreen extends Screen {
         if (handled)
             return true;
 
-        if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT)
+        if (minecraft.options.keyLeft.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_LEFT)
             cyclePhotograph(Navigation.PREVIOUS);
         else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT)
             cyclePhotograph(Navigation.NEXT);
@@ -166,7 +187,7 @@ public class PhotographScreen extends Screen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         Preconditions.checkState(minecraft != null);
         if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT
-                || minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT) {
+                || minecraft.options.keyLeft.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_LEFT) {
             lastCycledAt = 0;
         }
 
@@ -187,7 +208,8 @@ public class PhotographScreen extends Screen {
 
         if (prevIndex != currentIndex && minecraft != null && minecraft.player != null) {
             minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 0.8f,
-                    minecraft.player.level.getRandom().nextFloat() * 0.2f + (navigation == Navigation.NEXT ? 1.1f : 0.9f));
+                    minecraft.player.level.getRandom()
+                            .nextFloat() * 0.2f + (navigation == Navigation.NEXT ? 1.1f : 0.9f));
             lastCycledAt = Util.getMillis();
         }
     }
@@ -217,8 +239,8 @@ public class PhotographScreen extends Screen {
             float centerX = width / 2f;
             float centerY = height / 2f;
 
-            x = (float)Mth.clamp(x + dragX, -centerX, centerX);
-            y = (float)Mth.clamp(y + dragY, -centerY, centerY);
+            x = (float) Mth.clamp(x + dragX, -centerX, centerX);
+            y = (float) Mth.clamp(y + dragY, -centerY, centerY);
             handled = true;
         }
 
