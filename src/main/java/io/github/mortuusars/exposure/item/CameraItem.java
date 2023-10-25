@@ -326,6 +326,7 @@ public class CameraItem extends Item {
             tag.putBoolean("Flash", true);
         tag.putString("Timestamp", Util.getFilenameFormattedDateTime());
         tag.putString("Photographer", player.getScoreboardName());
+        tag.putUUID("PhotographerId", player.getUUID());
 
         ListTag pos = new ListTag();
         pos.add(IntTag.valueOf(player.blockPosition().getX()));

@@ -22,6 +22,8 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -134,21 +136,6 @@ public class PhotographScreen extends Screen {
         PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
         bufferSource.endBatch();
 
-        // Save current photo.
-        if (Config.Client.EXPOSURE_SAVING.get()) {
-            if (idOrTexture != null) {
-                idOrTexture.ifLeft(id -> {
-                    if (!savedExposures.contains(id)) {
-                        Exposure.getStorage().getOrQuery(id).ifPresent(exposure -> {
-                            savedExposures.add(id);
-                            new Thread(() -> FileSaveComponent.withDefaultFolders(id)
-                                    .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight()), "ExposureSaving").start();
-                        });
-                    }
-                });
-            }
-        }
-
         poseStack.popPose();
 
         poseStack.pushPose();
@@ -157,6 +144,31 @@ public class PhotographScreen extends Screen {
         RenderSystem.defaultBlendFunc();
         super.render(poseStack, mouseX, mouseY, partialTick);
         poseStack.popPose();
+
+        trySaveToFile(photograph, idOrTexture);
+    }
+
+    private void trySaveToFile(ItemAndStack<PhotographItem> photograph, @Nullable Either<String, ResourceLocation> idOrTexture) {
+        if (!Config.Client.EXPOSURE_SAVING.get() || idOrTexture == null || Minecraft.getInstance().player == null)
+            return;
+
+        CompoundTag tag = photograph.getStack().getTag();
+        if (tag == null
+                || !tag.contains("PhotographerId", Tag.TAG_INT_ARRAY)
+                || !tag.getUUID("PhotographerId").equals(Minecraft.getInstance().player.getUUID())) {
+            return;
+        }
+
+        idOrTexture.ifLeft(id -> {
+            if (savedExposures.contains(id))
+                return;
+
+            Exposure.getStorage().getOrQuery(id).ifPresent(exposure -> {
+                savedExposures.add(id);
+                new Thread(() -> FileSaveComponent.withDefaultFolders(id)
+                        .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight()), "ExposureSaving").start();
+            });
+        });
     }
 
     @Override
