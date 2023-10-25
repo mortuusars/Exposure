@@ -10,12 +10,17 @@ public class ExposureSavedData extends SavedData {
     private int width;
     private int height;
     private byte[] pixels;
+    private boolean printed;
 
     public ExposureSavedData(int width, int height) {
         this(width, height, new byte[width * height]);
     }
 
     public ExposureSavedData(int width, int height, byte[] pixels) {
+        this(width, height, pixels, false);
+    }
+
+    public ExposureSavedData(int width, int height, byte[] pixels, boolean printed) {
         Preconditions.checkArgument(width >= 0, "Width cannot be negative.");
         Preconditions.checkArgument(height >= 0, "Height cannot be negative.");
 
@@ -25,6 +30,7 @@ public class ExposureSavedData extends SavedData {
         this.width = width;
         this.height = height;
         this.pixels = pixels;
+        this.printed = printed;
     }
 
     public int getWidth() {
@@ -39,14 +45,22 @@ public class ExposureSavedData extends SavedData {
         return pixels;
     }
 
+    public byte getPixel(int x, int y) {
+        return pixels[y * width + x];
+    }
+
     public void setPixel(int x, int y, byte value) {
         Preconditions.checkArgument(x >= 0 && x < width,  "X=" + x + " is out of bounds for Width=" + width);
         Preconditions.checkArgument(y >= 0 && y < height,  "Y=" + x + " is out of bounds for Height=" + height);
         pixels[y * width + x] = value;
     }
 
-    public byte getPixel(int x, int y) {
-        return pixels[y * width + x];
+    public boolean isPrinted() {
+        return printed;
+    }
+
+    public void setPrinted(boolean printed) {
+        this.printed = printed;
     }
 
     @Override
@@ -54,14 +68,16 @@ public class ExposureSavedData extends SavedData {
         compoundTag.putInt("width", width);
         compoundTag.putInt("height", height);
         compoundTag.putByteArray("pixels", pixels);
+        if (printed)
+            compoundTag.putBoolean("printed", true);
         return compoundTag;
     }
 
     public static ExposureSavedData load(CompoundTag compoundTag) {
-        int width = compoundTag.getInt("width");
-        int height = compoundTag.getInt("height");
-        byte[] pixels = compoundTag.getByteArray("pixels");
-
-        return new ExposureSavedData(width, height, pixels);
+        return new ExposureSavedData(
+                compoundTag.getInt("width"),
+                compoundTag.getInt("height"),
+                compoundTag.getByteArray("pixels"),
+                compoundTag.getBoolean("printed"));
     }
 }

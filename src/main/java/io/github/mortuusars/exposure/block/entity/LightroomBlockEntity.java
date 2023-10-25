@@ -271,6 +271,17 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
         printedPhotographsCount++;
 
+        // Mark exposure as printed
+        String id = frameTag.getString("Id");
+        if (id.length() > 0) {
+            Exposure.getStorage().getOrQuery(id).ifPresent(exposure -> {
+                if (!exposure.isPrinted()) {
+                    exposure.setPrinted(true);
+                    exposure.setDirty();
+                }
+            });
+        }
+
         return true;
     }
 
