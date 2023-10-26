@@ -79,20 +79,33 @@
   },
   "item.photograph.break": {
     "sounds": [
-      "exposure:item/photograph/place"
+      {
+        "name": "exposure:item/photograph/place1",
+        "pitch": 0.8
+      },
+      {
+        "name": "exposure:item/photograph/place2",
+        "pitch": 0.8
+      }
     ],
     "subtitle": "subtitle.exposure.photograph.break"
   },
   "item.photograph.place": {
     "sounds": [
-      "exposure:item/photograph/place"
+      {
+        "name": "exposure:item/photograph/place1",
+        "pitch": 1.2
+      },
+      {
+        "name": "exposure:item/photograph/place2",
+        "pitch": 1.2
+      }
     ],
     "subtitle": "subtitle.exposure.photograph.place"
   },
   "item.photograph.rustle": {
     "sounds": [
-      "exposure:item/photograph/rustle1",
-      "exposure:item/photograph/rustle2"
+      "exposure:item/photograph/rustle"
     ],
     "subtitle": "subtitle.exposure.photograph.rustle"
   }

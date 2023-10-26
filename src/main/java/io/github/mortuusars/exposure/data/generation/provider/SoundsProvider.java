@@ -44,15 +44,15 @@ public class SoundsProvider extends SoundDefinitionsProvider {
                 .subtitle("subtitle.exposure.camera.flash")
                 .with(sound(Exposure.ID + ":item/camera/flash")));
 
-        add(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), definition()
-                .subtitle("subtitle.exposure.photograph.place")
-                .with(sound(Exposure.ID + ":item/photograph/place")));
-        add(Exposure.SoundEvents.PHOTOGRAPH_BREAK.get(), definition()
-                .subtitle("subtitle.exposure.photograph.break")
-                .with(sound(Exposure.ID + ":item/photograph/place")));
         add(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), definition()
                 .subtitle("subtitle.exposure.photograph.rustle")
-                .with(multiple(2, Exposure.ID + ":item/photograph/rustle", 1f, 1)));
+                .with(sound(Exposure.ID + ":item/photograph/rustle")));
+        add(Exposure.SoundEvents.PHOTOGRAPH_BREAK.get(), definition()
+                .subtitle("subtitle.exposure.photograph.break")
+                .with(multiple(2, Exposure.ID + ":item/photograph/place", 1f, 0.8f)));
+        add(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), definition()
+                .subtitle("subtitle.exposure.photograph.place")
+                .with(multiple(2, Exposure.ID + ":item/photograph/place", 1f, 1.2f)));
 
         add(Exposure.SoundEvents.LIGHTROOM_PRINT.get(), definition()
                 .subtitle("subtitle.exposure.lightroom.print")
