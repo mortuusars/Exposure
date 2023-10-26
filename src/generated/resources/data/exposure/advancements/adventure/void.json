@@ -1,5 +1,5 @@
 {
-  "parent": "exposure:adventure/lights_up",
+  "parent": "exposure:adventure/flash",
   "criteria": {
     "photograph_in_end": {
       "conditions": {

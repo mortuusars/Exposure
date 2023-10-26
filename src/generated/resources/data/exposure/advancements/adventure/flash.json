@@ -21,7 +21,7 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "advancement.exposure.lights_up.description"
+      "translate": "advancement.exposure.flash.description"
     },
     "frame": "task",
     "hidden": true,
@@ -30,7 +30,7 @@
     },
     "show_toast": true,
     "title": {
-      "translate": "advancement.exposure.lights_up.title"
+      "translate": "advancement.exposure.flash.title"
     }
   },
   "requirements": [
