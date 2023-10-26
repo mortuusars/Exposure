@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.data.generation.provider;
 
 import com.google.common.collect.Sets;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.advancement.predicate.BooleanPredicate;
 import io.github.mortuusars.exposure.advancement.predicate.CameraPredicate;
 import io.github.mortuusars.exposure.advancement.trigger.CameraTakenShotTrigger;
 import net.minecraft.MethodsReturnNonnullByDefault;
@@ -18,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
