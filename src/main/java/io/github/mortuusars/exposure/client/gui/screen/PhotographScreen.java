@@ -77,13 +77,15 @@ public class PhotographScreen extends Screen {
         zoomFactor = (float) height / PhotographRenderer.SIZE;
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
-        previousButton = new ImageButton(0, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
-                0, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
-        nextButton = new ImageButton(width - BUTTON_SIZE, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
-                16, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
+        if (photographs.size() > 1) {
+            previousButton = new ImageButton(0, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
+                    0, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
+            nextButton = new ImageButton(width - BUTTON_SIZE, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
+                    16, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
 
-        addRenderableWidget(previousButton);
-        addRenderableWidget(nextButton);
+            addRenderableWidget(previousButton);
+            addRenderableWidget(nextButton);
+        }
     }
 
     private void buttonPressed(Button button) {
