@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -183,6 +184,26 @@ public class ViewfinderControlsScreen extends Screen {
         }
 
         return super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        Preconditions.checkState(minecraft != null);
+
+        boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
+        if (handled)
+            return true;
+
+        if (keyCode == InputConstants.KEY_ADD || keyCode == InputConstants.KEY_EQUALS) {
+            ViewfinderClient.zoom(ZoomDirection.IN, true);
+            return true;
+        }
+        else if (keyCode == 333 /*KEY_SUBTRACT*/ || keyCode == InputConstants.KEY_MINUS) {
+            ViewfinderClient.zoom(ZoomDirection.OUT, true);
+            return true;
+        }
+
+        return false;
     }
 
     @Override

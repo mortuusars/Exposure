@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.camera.CameraHelper;
+import io.github.mortuusars.exposure.camera.component.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
@@ -26,10 +27,25 @@ public class KeyboardHandler {
             return true;
         }
 
-        if (Minecraft.getInstance().options.keyShift.matches(key, scanCode) &&
-            !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
-            ClientGUI.openViewfinderControlsScreen();
-            return false; // Do not handle to keep sneaking
+
+
+        if (!(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
+            if (Minecraft.getInstance().options.keyShift.matches(key, scanCode)) {
+                ClientGUI.openViewfinderControlsScreen();
+                return false; // Do not handle to keep sneaking
+            }
+
+            if (action == 1 || action == 2) { // Press or Hold
+                if (key == InputConstants.KEY_ADD || key == InputConstants.KEY_EQUALS) {
+                    ViewfinderClient.zoom(ZoomDirection.IN, false);
+                    return true;
+                }
+
+                if (key == 333 /*KEY_SUBTRACT*/ || key == InputConstants.KEY_MINUS) {
+                    ViewfinderClient.zoom(ZoomDirection.OUT, false);
+                    return true;
+                }
+            }
         }
 
         return false;
