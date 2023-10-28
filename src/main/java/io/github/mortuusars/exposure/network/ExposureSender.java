@@ -25,7 +25,7 @@ public class ExposureSender {
 
         for (byte[] part : parts) {
             ExposureDataPartPacket packet = new ExposureDataPartPacket(id,
-                    exposureData.getWidth(), exposureData.getHeight(), offset, part);
+                    exposureData.getWidth(), exposureData.getHeight(), exposureData.getType(), offset, part);
 
             if (direction == NetworkDirection.PLAY_TO_SERVER)
                 Packets.sendToServer(packet);

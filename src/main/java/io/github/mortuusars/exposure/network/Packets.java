@@ -36,6 +36,7 @@ public class Packets {
 
         ApplyShaderClientboundPacket.register(CHANNEL, id++);
         LoadExposureCommandClientboundPacket.register(CHANNEL, id++);
+        ShowExposureClientboundPacket.register(CHANNEL, id++);
         ExposeCommandClientboundPacket.register(CHANNEL, id++);
         PlayOnePerPlayerSoundClientboundPacket.register(CHANNEL, id++);
         StopOnePerPlayerSoundClientboundPacket.register(CHANNEL, id++);

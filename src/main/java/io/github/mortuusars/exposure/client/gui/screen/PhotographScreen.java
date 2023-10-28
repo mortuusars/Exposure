@@ -168,7 +168,7 @@ public class PhotographScreen extends Screen {
             Exposure.getStorage().getOrQuery(id).ifPresent(exposure -> {
                 savedExposures.add(id);
                 new Thread(() -> FileSaveComponent.withDefaultFolders(id)
-                        .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight()), "ExposureSaving").start();
+                        .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight(), exposure.getType()), "ExposureSaving").start();
             });
         });
     }

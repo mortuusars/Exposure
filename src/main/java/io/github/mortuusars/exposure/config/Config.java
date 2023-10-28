@@ -18,13 +18,13 @@ public class Config {
             builder.push("Lightroom");
 
             LIGHTROOM_BW_FILM_PRINT_TIME = builder
-                    .comment("Time in ticks to print black and white photograph. Default 100")
+                    .comment("Time in ticks to print black and white photograph.")
                     .defineInRange("BlackAndWhitePrintTime", 80, 1, Integer.MAX_VALUE);
             LIGHTROOM_COLOR_FILM_PRINT_TIME = builder
-                    .comment("Time in ticks to print color photograph. Default: 250")
-                    .defineInRange("ColorPrintTime", 160, 1, Integer.MAX_VALUE);
+                    .comment("Time in ticks to print color photograph.")
+                    .defineInRange("ColorPrintTime", 200, 1, Integer.MAX_VALUE);
             LIGHTROOM_EXPERIENCE_PER_PRINT = builder
-                    .comment("Amount of experience dropped per printed Photograph. Set to 0 to disable. Default: 4")
+                    .comment("Amount of experience awarded per printed Photograph. Set to 0 to disable.")
                     .defineInRange("ExperiencePerPrint", 4, 0, 32767);
 
             builder.pop();
@@ -57,7 +57,7 @@ public class Config {
 
             builder.push("ViewfinderUI");
             VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER = builder
-                    .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes. Default: 0.048")
+                    .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes.")
                     .defineInRange("ZoomSensitivityModifier", 0.048, 0.0, 1.0);
             VIEWFINDER_BACKGROUND_COLOR = builder.define("BackgroundColorHex", "FA1F1D1B");
             VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF2B2622");

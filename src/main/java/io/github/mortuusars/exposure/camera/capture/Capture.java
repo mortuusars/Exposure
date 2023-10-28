@@ -6,6 +6,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.component.ICaptureComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.IImageToMapColorsConverter;
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Capture {
+    private FilmType type = FilmType.COLOR;
     private int size = Exposure.DEFAULT_FILM_SIZE;
     private float cropFactor = Exposure.CROP_FACTOR;
     private float brightnessStops = 0f;
@@ -42,6 +44,15 @@ public class Capture {
 
     public int getFramesDelay() {
         return framesDelay;
+    }
+
+    public FilmType getFilmType() {
+        return type;
+    }
+
+    public Capture setFilmType(FilmType type) {
+        this.type = type;
+        return this;
     }
 
     public int getSize() {
@@ -175,7 +186,7 @@ public class Capture {
             }
 
             for (ICaptureComponent component : components) {
-                component.save(materialColorPixels, image.getWidth(), image.getHeight());
+                component.save(materialColorPixels, image.getWidth(), image.getHeight(), getFilmType());
             }
         } catch (Exception e) {
             Exposure.LOGGER.error(e.toString());

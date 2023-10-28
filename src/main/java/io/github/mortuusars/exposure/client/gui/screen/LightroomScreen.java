@@ -26,6 +26,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -154,7 +155,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         boolean colorFilm = getMenu().isColorFilm();
 
         if (colorFilm)
-            RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 1.0F);
+            RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
 
         // Left film part
         blit(poseStack, leftPos + 1, topPos + 15, 0, leftFrame.length() > 0 ? 68 : 0, 54, 68);
@@ -179,16 +180,33 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     protected void renderTooltip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
         super.renderTooltip(poseStack, mouseX, mouseY);
 
+        boolean advancedTooltips = Minecraft.getInstance().options.advancedItemTooltips;
+        int selectedFrame = getMenu().getSelectedFrame();
+        List<Component> tooltipLines = new ArrayList<>();
+
         if (isOverLeftFrame(mouseX, mouseY)) {
-            renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.previous_frame"), mouseX, mouseY);
+            tooltipLines.add(Component.translatable("gui.exposure.lightroom.previous_frame"));
+            if (advancedTooltips) {
+                String id = getMenu().getFrameIdByIndex(selectedFrame - 1);
+                tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
+            }
         } else if (isOverCenterFrame(mouseX, mouseY)) {
-            renderTooltip(poseStack, List.of(
-                    Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getSelectedFrame() + 1)),
-                    Component.translatable("gui.exposure.lightroom.zoom_in.tooltip").withStyle(ChatFormatting.GRAY)),
-                    Optional.empty(), mouseX, mouseY);
+            tooltipLines.add(Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getSelectedFrame() + 1)));
+            tooltipLines.add(Component.translatable("gui.exposure.lightroom.zoom_in.tooltip").withStyle(ChatFormatting.GRAY));
+            if (advancedTooltips) {
+                String id = getMenu().getFrameIdByIndex(selectedFrame);
+                tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
+            }
         } else if (isOverRightFrame(mouseX, mouseY)) {
-            renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.next_frame"), mouseX, mouseY);
+            tooltipLines.add(Component.translatable("gui.exposure.lightroom.next_frame"));
+            if (advancedTooltips) {
+                String id = getMenu().getFrameIdByIndex(selectedFrame - 1);
+                tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
+            }
         }
+
+
+        renderTooltip(poseStack, tooltipLines, Optional.empty(), mouseX, mouseY);
     }
 
     private boolean isOverLeftFrame(int mouseX, int mouseY) {

@@ -102,7 +102,16 @@ public class PhotographItem extends Item {
         if (stack.getTag() != null) {
             int generation = stack.getTag().getInt("generation");
             if (generation > 0)
-                tooltipComponents.add(Component.translatable("item.exposure.photograph.generation." + generation).withStyle(ChatFormatting.GRAY));
+                tooltipComponents.add(Component.translatable("item.exposure.photograph.generation." + generation)
+                        .withStyle(ChatFormatting.GRAY));
+
+            if (isAdvanced.isAdvanced()) {
+                @Nullable Either<String, ResourceLocation> idOrTexture = getIdOrTexture(stack);
+                if (idOrTexture != null) {
+                    String text = idOrTexture.map(id -> "Exposure Id: " + id, texture -> "Texture: " + texture);
+                    tooltipComponents.add(Component.literal(text).withStyle(ChatFormatting.DARK_GRAY));
+                }
+            }
         }
     }
 

@@ -10,14 +10,21 @@ import io.github.mortuusars.exposure.camera.capture.component.ExposureStorageSav
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConverter;
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
+import io.github.mortuusars.exposure.client.gui.ClientGUI;
+import io.github.mortuusars.exposure.client.gui.screen.NegativeExposureScreen;
+import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.ShowExposureClientboundPacket;
 import io.github.mortuusars.exposure.util.ColorUtils;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.StringUtil;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -25,6 +32,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 @OnlyIn(Dist.CLIENT)
@@ -92,5 +100,19 @@ public class ClientPacketsHandler {
                                 .withStyle(ChatFormatting.RED), false);
             }
         }).start();
+    }
+
+    public static void showExposure(ShowExposureClientboundPacket packet) {
+        if (packet.negative()) {
+            Minecraft.getInstance().setScreen(new NegativeExposureScreen(packet.exposureId()));
+        }
+        else {
+            ItemStack stack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
+            CompoundTag tag = new CompoundTag();
+            tag.putString("Id", packet.exposureId());
+            stack.setTag(tag);
+
+            ClientGUI.openPhotographScreen(List.of(new ItemAndStack<>(stack)));
+        }
     }
 }

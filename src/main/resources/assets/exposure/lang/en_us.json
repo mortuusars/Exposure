@@ -78,5 +78,8 @@
 
   "stat.exposure.interact_with_lightroom": "Interactions with Lightroom",
   "stat.exposure.film_frames_exposed": "Film Frames Exposed",
-  "stat.exposure.flashes_triggered": "Camera Flashes Triggered"
+  "stat.exposure.flashes_triggered": "Camera Flashes Triggered",
+
+  "command.exposure.show.error.not_a_player": "This command should be issued by the player.",
+  "command.exposure.show.error.not_found": "Exposure with id '%s' is not found or cannot be loaded."
 }

@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.camera.capture.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.camera.capture.Capture;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -73,7 +74,7 @@ public interface ICaptureComponent {
      */
     default void teardown(Capture capture) { }
 
-    default void save(byte[] materialColorPixels, int width, int height) { }
+    default void save(byte[] materialColorPixels, int width, int height, FilmType filmType) { }
 
     /**
      * Called in the end, after an image has been processed and saved.

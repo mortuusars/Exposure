@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.camera.capture.component;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
@@ -29,7 +30,7 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(byte[] materialColorPixels, int width, int height) {
+    public void save(byte[] materialColorPixels, int width, int height, FilmType filmType) {
         BufferedImage img = convertToBufferedImage(materialColorPixels, width, height);
 
         File outputFile = new File(folder + "/" + (levelNameSubfolder ? getLevelName() + "/" : "") + exposureId + ".png");

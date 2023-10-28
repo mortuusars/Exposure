@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.camera.capture.component;
 
-import io.github.mortuusars.exposure.camera.capture.Capture;
+import io.github.mortuusars.exposure.camera.film.FilmType;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 
@@ -14,8 +14,8 @@ public class ExposureStorageSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(byte[] materialColorPixels, int width, int height) {
-        ExposureSavedData exposureSavedData = new ExposureSavedData(width, height, materialColorPixels);
+    public void save(byte[] materialColorPixels, int width, int height, FilmType filmType) {
+        ExposureSavedData exposureSavedData = new ExposureSavedData(width, height, materialColorPixels, filmType, false);
 
         ExposureStorage.storeOnClient(exposureId, exposureSavedData);
         if (sendToServer)
