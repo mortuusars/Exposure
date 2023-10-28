@@ -1,20 +1,18 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
-import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.client.gui.component.ZoomableScreen;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import io.github.mortuusars.exposure.util.Navigation;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -22,9 +20,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
-public class FilmFrameInspectScreen extends Screen {
+public class FilmFrameInspectScreen extends ZoomableScreen {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/film_frame_inspect.png");
     public static final ResourceLocation WIDGETS_TEXTURE = Exposure.resource("textures/gui/widgets.png");
     public static final int BG_SIZE = 78;
@@ -34,11 +30,6 @@ public class FilmFrameInspectScreen extends Screen {
     private final LightroomScreen lightroomScreen;
     private final LightroomMenu lightroomMenu;
 
-    private final ZoomHandler zoom;
-    private float zoomFactor;
-    private float x;
-    private float y;
-
     private ImageButton previousButton;
     private ImageButton nextButton;
 
@@ -46,7 +37,6 @@ public class FilmFrameInspectScreen extends Screen {
         super(Component.empty());
         this.lightroomScreen = lightroomScreen;
         this.lightroomMenu = lightroomMenu;
-        this.zoom = new ZoomHandler();
     }
 
     @Override
@@ -61,6 +51,7 @@ public class FilmFrameInspectScreen extends Screen {
     @Override
     protected void init() {
         super.init();
+
         zoomFactor = (float) height / BG_SIZE;
         Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
@@ -82,20 +73,25 @@ public class FilmFrameInspectScreen extends Screen {
 
     public void close() {
         Minecraft.getInstance().setScreen(lightroomScreen);
-        Objects.requireNonNull(Minecraft.getInstance().player).playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 0.7f);
+        if (minecraft.player != null)
+            minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 0.7f);
     }
 
     @Override
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         renderBackground(poseStack);
 
-        zoom.update(partialTick);
-        float scale = zoom.get() * zoomFactor;
-        if (zoom.getTargetZoom() == zoom.getMinZoom() && Math.abs(zoom.getMinZoom() - zoom.get()) < 0.1f) {
+        poseStack.pushPose();
+        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        super.render(poseStack, mouseX, mouseY, partialTick);
+        poseStack.popPose();
+
+        if (zoom.targetZoom == zoom.minZoom && Math.abs(zoom.minZoom - zoom.get()) < 0.1f) {
             close();
             return;
         }
-
 
         poseStack.pushPose();
 
@@ -127,13 +123,6 @@ public class FilmFrameInspectScreen extends Screen {
         previousButton.active = currentFrame != 0;
         nextButton.visible = currentFrame != getLightroomMenu().getTotalFrames() - 1;
         nextButton.active = currentFrame != getLightroomMenu().getTotalFrames() - 1;
-
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        poseStack.popPose();
     }
 
     private void renderFrame(String exposureId, PoseStack poseStack, float x, float y, float alpha, boolean colorFilm) {
@@ -167,39 +156,14 @@ public class FilmFrameInspectScreen extends Screen {
         if (handled)
             return true;
 
-        Preconditions.checkState(minecraft != null);
-
-        if (minecraft.options.keyInventory.matches(keyCode, scanCode))
-            close();
-        else if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT)
+        if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT)
             lightroomScreen.changeFrame(Navigation.PREVIOUS);
         else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT)
             lightroomScreen.changeFrame(Navigation.NEXT);
-        else if (keyCode == InputConstants.KEY_ADD || keyCode == InputConstants.KEY_EQUALS)
-            zoom(ZoomDirection.IN);
-        else if (keyCode == 333 /*KEY_SUBTRACT*/ || keyCode == InputConstants.KEY_MINUS)
-            zoom(ZoomDirection.OUT);
         else
             return false;
 
         return true;
-    }
-
-    @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        boolean handled = super.mouseScrolled(mouseX, mouseY, delta);
-
-        if (!handled) {
-            zoom(delta >= 0.0 ? ZoomDirection.IN : ZoomDirection.OUT);
-            return true;
-        }
-
-        return true;
-    }
-
-    private void zoom(ZoomDirection direction) {
-        float change = 0.1f + 0.3f * (zoom.getTargetZoom() - zoom.getMinZoom());
-        zoom.add(direction == ZoomDirection.IN ? change : -change);
     }
 
     @Override
@@ -214,21 +178,5 @@ public class FilmFrameInspectScreen extends Screen {
         }
 
         return false;
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        boolean handled = super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-
-        if (!handled && button == 0) { // Left Click
-            float centerX = width / 2f;
-            float centerY = height / 2f;
-
-            x = (float)Mth.clamp(x + dragX, -centerX, centerX);
-            y = (float)Mth.clamp(y + dragY, -centerY, centerY);
-            handled = true;
-        }
-
-        return handled;
     }
 }
