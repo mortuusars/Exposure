@@ -113,27 +113,6 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             lightroomBlockEntity.tick();
     }
 
-//    protected void tick() {
-//        if (printTime > 0 && canPrint()) {
-//            if (progress >= printTime) {
-//                if (tryPrint()) {
-//                    onFramePrinted();
-//                }
-//
-//                stopPrintingProcess();
-//            }
-//            else {
-//                progress++;
-//                if (progress % 55 == 0 && printTime - progress > 12 && level != null)
-//                    level.playSound(null, getBlockPos(), Exposure.SoundEvents.LIGHTROOM_PRINT.get(), SoundSource.BLOCKS,
-//                    1f, level.getRandom().nextFloat() * 0.3f + 1f);
-//            }
-//        }
-//        else {
-//            stopPrintingProcess();
-//        }
-//    }
-
     protected void tick() {
         if (printTime <= 0 || !canPrint()) {
             stopPrintingProcess();
@@ -171,6 +150,10 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
     public boolean isEjectingFilmAfterLastFrame() {
         return ejectFilmAfterLastFrame;
+    }
+
+    public boolean isAdvancingFrameOnPrint() {
+        return advanceFrame;
     }
 
     public void toggleEjectFilm() {

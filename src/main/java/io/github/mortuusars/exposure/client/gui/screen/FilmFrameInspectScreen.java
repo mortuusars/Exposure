@@ -37,6 +37,7 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
         super(Component.empty());
         this.lightroomScreen = lightroomScreen;
         this.lightroomMenu = lightroomMenu;
+        zoom.minZoom = zoom.defaultZoom / (float)Math.pow(zoom.step, 2f);
     }
 
     @Override
@@ -88,7 +89,7 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
         super.render(poseStack, mouseX, mouseY, partialTick);
         poseStack.popPose();
 
-        if (zoom.targetZoom == zoom.minZoom && Math.abs(zoom.minZoom - zoom.get()) < 0.1f) {
+        if (zoom.targetZoom == zoom.minZoom/* && Math.abs(zoom.minZoom - zoom.get()) < 0.001f*/) {
             close();
             return;
         }
@@ -110,6 +111,7 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
             RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
 
         GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         poseStack.translate(12, 12, 0);
 

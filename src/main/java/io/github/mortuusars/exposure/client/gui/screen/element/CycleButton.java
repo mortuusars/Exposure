@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -12,10 +11,7 @@ public abstract class CycleButton extends ImageButton {
     protected int index = 0;
     protected boolean loop = true;
 
-    protected int scrollTimeoutMS = 40;
-    private long lastChangeTime;
-
-    public CycleButton(Screen screen, int x, int y, int width, int height, int u, int v, int yDiffTex,  ResourceLocation texture) {
+    public CycleButton(Screen screen, int x, int y, int width, int height, int u, int v, int yDiffTex, ResourceLocation texture) {
         super(x, y, width, height, u, v, yDiffTex, texture, button -> {});
         this.screen = screen;
     }
@@ -27,8 +23,9 @@ public abstract class CycleButton extends ImageButton {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isActive() && visible && (button == 0 || button == 1) && clicked(mouseX, mouseY)) {
+        if ((button == 0 || button == 1) && clicked(mouseX, mouseY)) {
             cycle(button == 1);
+            this.playDownSound(Minecraft.getInstance().getSoundManager());
             return true;
         }
         return false;
@@ -36,8 +33,8 @@ public abstract class CycleButton extends ImageButton {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        if (System.currentTimeMillis() - lastChangeTime > scrollTimeoutMS)
-            cycle(delta < 0d);
+        cycle(delta < 0d);
+        this.playDownSound(Minecraft.getInstance().getSoundManager());
         return true;
     }
 
@@ -61,16 +58,11 @@ public abstract class CycleButton extends ImageButton {
 
         if (index != value) {
             index = value;
-            this.playDownSound(Minecraft.getInstance().getSoundManager());
-            lastChangeTime = System.currentTimeMillis();
             onCycle();
         }
     }
 
-    protected void onCycle() { }
+    protected void onCycle() {
 
-    @Override
-    public void renderToolTip(PoseStack pPoseStack, int pMouseX, int pMouseY) {
-        super.renderToolTip(pPoseStack, pMouseX, pMouseY);
     }
 }

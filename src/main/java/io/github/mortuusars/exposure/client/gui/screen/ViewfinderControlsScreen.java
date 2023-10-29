@@ -71,6 +71,11 @@ public class ViewfinderControlsScreen extends Screen {
         int elementX = leftPos + 128 - (sideButtonsWidth + 1 + buttonWidth + 1 + (hasFlashAttached ? buttonWidth + 1 : 0) + sideButtonsWidth) / 2;
         int elementY = topPos + 238;
 
+        // Order of adding influences TAB key behavior
+
+        ShutterSpeedButton shutterSpeedButton = new ShutterSpeedButton(this, leftPos + 94, topPos + 226, 69, 12, 112, 0, TEXTURE);
+        addRenderableWidget(shutterSpeedButton);
+
         FocalLengthButton focalLengthButton = new FocalLengthButton(this, elementX, elementY, 48, 18, 0, 0, TEXTURE);
         addRenderableOnly(focalLengthButton);
         elementX += focalLengthButton.getWidth();
@@ -99,9 +104,6 @@ public class ViewfinderControlsScreen extends Screen {
 
         FrameCounterButton frameCounterButton = new FrameCounterButton(this, elementX, elementY, 48, 18, 63, 0, TEXTURE);
         addRenderableOnly(frameCounterButton);
-
-        ShutterSpeedButton shutterSpeedButton = new ShutterSpeedButton(this, leftPos + 94, topPos + 226, 69, 12, 112, 0, TEXTURE);
-        addRenderableWidget(shutterSpeedButton);
     }
 
     /**

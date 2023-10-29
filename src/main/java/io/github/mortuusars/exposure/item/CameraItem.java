@@ -169,7 +169,7 @@ public class CameraItem extends Item {
     public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed) {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putBoolean("ShutterOpen", true);
-        tag.putLong("ShutterCloseTimestamp", player.getLevel().getGameTime() + shutterSpeed.getTicks());
+        tag.putLong("ShutterCloseTimestamp", player.getLevel().getGameTime() + Math.max(shutterSpeed.getTicks(), 2));
     }
 
     public void closeShutter(Player player, ItemStack cameraStack, ShutterSpeed shutterSpeed) {
@@ -216,7 +216,7 @@ public class CameraItem extends Item {
         openShutter(player, cameraStack, shutterSpeed);
         onShutterOpen(player, shutterSpeed, exposingFilm);
 
-        ScheduledTasks.schedule(new ScheduledTasks.Task(shutterSpeed.getTicks(),
+        ScheduledTasks.schedule(new ScheduledTasks.Task(Math.max(shutterSpeed.getTicks(), 2),
                 () -> {
                     closeShutter(player, cameraStack, shutterSpeed);
                     onShutterClosed(player, shutterSpeed, exposingFilm);

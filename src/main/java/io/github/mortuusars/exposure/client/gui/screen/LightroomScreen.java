@@ -65,14 +65,16 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
                 13, MAIN_TEXTURE, 256, 256, this::onEjectButtonPressed, (button, poseStack, mouseX, mouseY) -> {
             if (button.visible && button.isActive())
                 renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.lightroom.eject_off"),
-                        Component.translatable("gui.exposure.lightroom.eject_off.info").withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
+                        Component.translatable("gui.exposure.lightroom.eject_off.info")
+                                .withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
         }, Component.empty());
         addRenderableWidget(ejectButtonOff);
         ejectButtonOn = new ImageButton(leftPos - 21, topPos + 64, 18, 13, 216, 17,
                 13, MAIN_TEXTURE, 256, 256, this::onEjectButtonPressed, (button, poseStack, mouseX, mouseY) -> {
             if (button.visible && button.isActive())
                 renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.lightroom.eject_on"),
-                        Component.translatable("gui.exposure.lightroom.eject_on.info").withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
+                        Component.translatable("gui.exposure.lightroom.eject_on.info")
+                                .withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
         }, Component.empty());
         addRenderableWidget(ejectButtonOn);
     }
@@ -112,9 +114,12 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderTexture(0, MAIN_TEXTURE);
         blit(poseStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         blit(poseStack, leftPos - 27, topPos + 34, 0, 208, 28, 31);
+
 
         // PLACEHOLDER ICONS
         if (!getMenu().slots.get(LightroomBlockEntity.FILM_SLOT).hasItem())
@@ -137,10 +142,10 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             blit(poseStack, leftPos + 116, topPos + 91, 176, 0, width + 1, 17);
         }
 
-        ListTag frames = getMenu().getExposedFrames();
+        RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
 
+        ListTag frames = getMenu().getExposedFrames();
         if (frames.size() == 0) {
-            RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
             blit(poseStack, leftPos + 4, topPos + 15, 0, 136, 168, 68);
             return;
         }
@@ -149,8 +154,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         String leftFrame = getMenu().getFrameIdByIndex(selectedFrame - 1);
         String centerFrame = getMenu().getFrameIdByIndex(selectedFrame);
         String rightFrame = getMenu().getFrameIdByIndex(selectedFrame + 1);
-
-        RenderSystem.setShaderTexture(0, FILM_OVERLAYS_TEXTURE);
 
         boolean colorFilm = getMenu().isColorFilm();
 
@@ -166,6 +169,16 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             boolean hasMoreFrames = selectedFrame + 2 < frames.size();
             blit(poseStack, leftPos + 119, topPos + 15, 120, hasMoreFrames ? 68 : 0, 56, 68);
         }
+
+        RenderSystem.setShaderTexture(0, MAIN_TEXTURE);
+
+        if (getMenu().getBlockEntity().isAdvancingFrameOnPrint()) {
+            poseStack.pushPose();
+            poseStack.translate(0, 0, 500);
+            blit(poseStack, leftPos + 111, topPos + 44, 200, 0, 10, 10);
+            poseStack.popPose();
+        }
+
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         if (leftFrame.length() > 0)
@@ -192,7 +205,8 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             }
         } else if (isOverCenterFrame(mouseX, mouseY)) {
             tooltipLines.add(Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getSelectedFrame() + 1)));
-            tooltipLines.add(Component.translatable("gui.exposure.lightroom.zoom_in.tooltip").withStyle(ChatFormatting.GRAY));
+            tooltipLines.add(Component.translatable("gui.exposure.lightroom.zoom_in.tooltip")
+                    .withStyle(ChatFormatting.GRAY));
             if (advancedTooltips) {
                 String id = getMenu().getFrameIdByIndex(selectedFrame);
                 tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
@@ -319,11 +333,13 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         Preconditions.checkState(minecraft.gameMode != null);
         int buttonId = navigation == Navigation.NEXT ? LightroomMenu.NEXT_FRAME_BUTTON_ID : LightroomMenu.PREVIOUS_FRAME_BUTTON_ID;
         minecraft.gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
-        minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, minecraft.player.getLevel().getRandom().nextFloat() * 0.4f + 0.8f);
+        minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, minecraft.player.getLevel()
+                .getRandom().nextFloat() * 0.4f + 0.8f);
     }
 
     private void enterFrameInspectMode() {
         Minecraft.getInstance().setScreen(new FilmFrameInspectScreen(this, getMenu()));
-        Objects.requireNonNull(Minecraft.getInstance().player).playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 1.3f);
+        Objects.requireNonNull(Minecraft.getInstance().player)
+                .playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 1.3f);
     }
 }

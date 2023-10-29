@@ -73,6 +73,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
                 if (colorFilm)
                     RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
                 GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
+                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
                 poseStack.popPose();
             }
