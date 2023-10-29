@@ -1,0 +1,1 @@
+### A Minecraft camera mod with emphasis on the process and aesthetics.
