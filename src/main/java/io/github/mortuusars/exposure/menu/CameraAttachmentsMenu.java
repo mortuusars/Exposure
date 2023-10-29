@@ -21,17 +21,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class CameraAttachmentsMenu extends AbstractContainerMenu {
-    private final ItemAndStack<CameraItem> camera;
     private final int attachmentSlots;
-    private final int slotMatchingItem;
 
     public CameraAttachmentsMenu(int containerId, Inventory playerInventory, ItemStack cameraStack) {
         super(Exposure.MenuTypes.CAMERA.get(), containerId);
-        this.camera = new ItemAndStack<>(cameraStack);
+        ItemAndStack<CameraItem> camera = new ItemAndStack<>(cameraStack);
         List<CameraItem.AttachmentType> attachmentTypes = camera.getItem().getAttachmentTypes(camera.getStack());
-        // doesn't work when multiple cameras
-        this.slotMatchingItem = playerInventory.findSlotMatchingItem(cameraStack);
-
 
         IItemHandler itemStackHandler = new CameraItemStackHandler(camera);
 
@@ -125,7 +120,13 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
 
         //Hotbar
         for (int slot = 0; slot < 9; slot++) {
-            addSlot(new Slot(playerInventory, slot, slot * 18 + 8, 161));
+            int finalSlot = slot;
+            addSlot(new Slot(playerInventory, finalSlot, slot * 18 + 8, 161) {
+                @Override
+                public boolean mayPickup(@NotNull Player player) {
+                    return super.mayPickup(player) && player.getInventory().selected != finalSlot;
+                }
+            });
         }
     }
 
