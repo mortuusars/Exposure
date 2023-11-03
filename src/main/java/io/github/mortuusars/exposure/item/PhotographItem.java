@@ -149,8 +149,10 @@ public class PhotographItem extends Item {
         if (getIdOrTexture(itemInHand) == null)
             Exposure.LOGGER.warn("No Id or Resource is defined. - " + itemInHand);
 
-        if (level.isClientSide)
+        if (level.isClientSide) {
             ClientGUI.openPhotographScreen(List.of(new ItemAndStack<>(itemInHand)));
+            player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f, 1.1f);
+        }
 
         return InteractionResultHolder.success(itemInHand);
     }

@@ -297,10 +297,10 @@ public class StackedPhotographsItem extends Item {
 
         List<ItemAndStack<PhotographItem>> photographs = getPhotographs(itemInHand);
         if (photographs.size() > 0) {
-            if (level.isClientSide)
+            if (level.isClientSide) {
                 ClientGUI.openPhotographScreen(photographs);
-
-            player.getCooldowns().addCooldown(this, 10);
+                player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f, 1.1f);
+            }
         }
 
         return InteractionResultHolder.success(itemInHand);
