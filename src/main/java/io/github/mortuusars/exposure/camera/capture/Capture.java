@@ -19,7 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("unused")
 public class Capture {
+    private final String exposureId;
     private FilmType type = FilmType.COLOR;
     private int size = Exposure.DEFAULT_FILM_SIZE;
     private float cropFactor = Exposure.CROP_FACTOR;
@@ -33,6 +35,10 @@ public class Capture {
     private long captureTick;
     private boolean completed = false;
     private long currentTick;
+
+    public Capture(String exposureId) {
+        this.exposureId = exposureId;
+    }
 
     public boolean isCompleted() {
         return completed;
@@ -188,9 +194,13 @@ public class Capture {
             for (ICaptureComponent component : components) {
                 component.save(materialColorPixels, image.getWidth(), image.getHeight(), getFilmType());
             }
-        } catch (Exception e) {
+
+            LastExposures.add(exposureId);
+        }
+        catch (Exception e) {
             Exposure.LOGGER.error(e.toString());
-        } finally {
+        }
+        finally {
             try {
                 for (ICaptureComponent component : components) {
                     component.end(this);

@@ -12,6 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ExposureLightTextureMixin {
     @Inject(method = "getBrightness", at = @At(value = "RETURN"), cancellable = true)
     private static void modifyBrightness(DimensionType pDimensionType, int pLightLevel, CallbackInfoReturnable<Float> cir) {
-        cir.setReturnValue(GammaModifier.modifyBrightness(cir.getReturnValue()));
+        if (GammaModifier.getAdditionalBrightness() != 0f)
+            cir.setReturnValue(GammaModifier.modifyBrightness(cir.getReturnValue()));
     }
 }

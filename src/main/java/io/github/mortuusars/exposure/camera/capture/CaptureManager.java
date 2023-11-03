@@ -1,7 +1,5 @@
 package io.github.mortuusars.exposure.camera.capture;
 
-
-import com.mojang.datafixers.util.Pair;
 import net.minecraftforge.event.TickEvent;
 import org.jetbrains.annotations.Nullable;
 

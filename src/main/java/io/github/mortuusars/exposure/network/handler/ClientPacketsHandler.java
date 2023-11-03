@@ -51,7 +51,7 @@ public class ClientPacketsHandler {
         if (size == Integer.MAX_VALUE)
             size = Math.min(Minecraft.getInstance().getWindow().getWidth(), Minecraft.getInstance().getWindow().getHeight());
 
-        Capture capture = new Capture()
+        Capture capture = new Capture(Util.getFilenameFormattedDateTime())
                 .size(size)
                 .cropFactor(1f)
                 .components(
@@ -82,7 +82,7 @@ public class ClientPacketsHandler {
                     }
                 }
 
-                Capture capture = new Capture()
+                Capture capture = new Capture(finalExposureId)
                         .size(size)
                         .cropFactor(1f)
                         .components(new ExposureStorageSaveComponent(finalExposureId, true))

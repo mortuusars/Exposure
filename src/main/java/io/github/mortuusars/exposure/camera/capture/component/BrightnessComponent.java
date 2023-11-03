@@ -3,17 +3,24 @@ package io.github.mortuusars.exposure.camera.capture.component;
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.client.GammaModifier;
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 
 import java.awt.*;
 import java.util.Objects;
 
-@SuppressWarnings("ClassCanBeRecord")
+@SuppressWarnings("unused")
 public class BrightnessComponent implements ICaptureComponent {
+    public float gammaPerStop = 0.01f;
+    public float brightenPerStop = 0.4f;
+    public float darkenPerStop = 0.3f;
+
     private final float brightnessStops;
+    private final float additionalGamma;
 
     public BrightnessComponent(float brightnessStops) {
         this.brightnessStops = brightnessStops;
+        additionalGamma = (gammaPerStop * brightnessStops) * ((1f - Minecraft.getInstance().options.gamma().get().floatValue()) * 0.65f + 0.35f);
     }
 
     public float getBrightnessStops() {
@@ -21,15 +28,12 @@ public class BrightnessComponent implements ICaptureComponent {
     }
 
     @Override
-    public int getFramesDelay(Capture capture) {
-        // Changing the gamma is not applied instantly for some reason. Delay of 1 seem to fix it.
-        return 1 /*brightnessStops > 0 ? 1 : 0*/;
-    }
-
-    @Override
     public void onDelayFrame(Capture capture, int delayFramesLeft) {
-        if (delayFramesLeft <= 1)
-            GammaModifier.setAdditionalBrightness(0.0075f * brightnessStops);
+        if (delayFramesLeft <= 1 && GammaModifier.getAdditionalBrightness() == 0f) {
+            GammaModifier.setAdditionalBrightness(additionalGamma);
+            // Update light texture immediately:
+            Minecraft.getInstance().gameRenderer.lightTexture().tick();
+        }
     }
 
     @Override
@@ -38,19 +42,23 @@ public class BrightnessComponent implements ICaptureComponent {
         if (stopsDif == 0f)
             return new Color(red, green, blue);
 
-        float brightness = 1f + (stopsDif * (stopsDif < 0 ? 0.2f : 0.35f));
+        float brightness = 1f + (stopsDif * (stopsDif < 0 ? darkenPerStop : brightenPerStop));
 
-        // We simulate the bright light by not modifying all pixels equally.
-        // Bright parts modified more when overexposed and less if underexposed.
-        // (the effect is slightly stronger when underexposing)
+        // We simulate the bright light by not modifying all pixels equally
         float lightness = (red + green + blue) / 765f; // from 0.0 to 1.0
-        float bias = stopsDif < 0 ? (1f - lightness) * 0.6f + 0.4f : lightness * 0.4f + 0.6f;
+        float bias;
+        if (stopsDif < 0)
+            bias = (1f - lightness) * 0.8f + 0.2f;
+        else {
+            float curve = (float) Math.pow(Math.sin(lightness * Math.PI), 2);
+            bias = lightness > 0.5f ? curve * 0.8f + 0.2f : curve * 0.5f + 0.5f;
+        }
 
         float r = Mth.lerp(bias, red, red * brightness);
         float g = Mth.lerp(bias, green, green * brightness);
         float b = Mth.lerp(bias, blue, blue * brightness);
 
-        // Above values is not clamped at 255 purposely.
+        // Above values are not clamped at 255 purposely.
         // Excess is redistributed to other channels. As a result - color gets less saturated, which gives more natural color.
         int[] rdst = redistribute(r, g, b);
 
@@ -61,6 +69,11 @@ public class BrightnessComponent implements ICaptureComponent {
                 Mth.clamp((int) ((g + rdst[1]) / 2), 0, 255),
                 Mth.clamp((int) ((b + rdst[2]) / 2), 0, 255));
     }
+
+//    @Override
+//    public void teardown(Capture capture) {
+//        GammaModifier.setAdditionalBrightness(0f);
+//    }
 
     @Override
     public void screenshotTaken(Capture capture, NativeImage screenshot) {

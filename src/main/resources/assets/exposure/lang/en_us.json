@@ -48,6 +48,11 @@
   "command.exposure.shader.removed": "Shader removed",
   "command.exposure.load_from_file.success": "Exposure '%s' has been loaded.",
   "command.exposure.load_from_file.failure": "Cannot load exposure. See logs for more more information.",
+  "command.exposure.show.error.not_a_player": "This command should be issued by the player.",
+  "command.exposure.show.error.not_found": "Exposure with id '%s' is not found or cannot be loaded.",
+  "command.exposure.latest.show.error.no_exposures": "There are no exposures stored.",
+  "command.exposure.latest.clear.success": "Latest exposures cleared.",
+  "command.exposure.latest.clear.error.nothing_to_clear": "There are no exposures stored.",
 
   "subtitle.exposure.camera.viewfinder_open": "Camera viewfinder opens",
   "subtitle.exposure.camera.viewfinder_close": "Camera viewfinder closes",
@@ -78,8 +83,5 @@
 
   "stat.exposure.interact_with_lightroom": "Interactions with Lightroom",
   "stat.exposure.film_frames_exposed": "Film Frames Exposed",
-  "stat.exposure.flashes_triggered": "Camera Flashes Triggered",
-
-  "command.exposure.show.error.not_a_player": "This command should be issued by the player.",
-  "command.exposure.show.error.not_found": "Exposure with id '%s' is not found or cannot be loaded."
+  "stat.exposure.flashes_triggered": "Camera Flashes Triggered"
 }

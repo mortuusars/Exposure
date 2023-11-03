@@ -10,6 +10,7 @@ import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.renderer.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.renderer.PhotographEntityRenderer;
+import io.github.mortuusars.exposure.command.ClientCommands;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -66,6 +67,11 @@ public class ClientEvents {
     }
 
     public static class ForgeBus {
+        @SubscribeEvent
+        public static void registerClientCommands(RegisterClientCommandsEvent event) {
+            ClientCommands.register(event.getDispatcher());
+        }
+
         @SubscribeEvent
         public static void onLevelClear(LevelEvent.Unload event) {
             ExposureClient.getExposureRenderer().clearData();

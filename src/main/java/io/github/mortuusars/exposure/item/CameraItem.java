@@ -442,7 +442,7 @@ public class CameraItem extends Item {
 
         components.add(new ExposureStorageSaveComponent(exposureId, true));
 
-        return new Capture()
+        return new Capture(exposureId)
                 .setFilmType(film.getItem().getType())
                 .size(frameSize)
                 .brightnessStops(brightnessStops)

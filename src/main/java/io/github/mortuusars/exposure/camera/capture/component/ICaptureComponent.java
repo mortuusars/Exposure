@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 /**
  * Client-side extension of the capture system. Allows modifying the steps of the capture process.
  */
+@SuppressWarnings("unused")
 public interface ICaptureComponent {
 
     /**
@@ -77,7 +78,7 @@ public interface ICaptureComponent {
     default void save(byte[] materialColorPixels, int width, int height, FilmType filmType) { }
 
     /**
-     * Called in the end, after an image has been processed and saved.
+     * Called in the end, regardless of the success or not.
      */
     default void end(Capture capture) { }
 }
