@@ -1,7 +1,6 @@
-package io.github.mortuusars.exposure.camera.component;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
 import com.google.common.collect.ImmutableList;
-import io.github.mortuusars.exposure.Exposure;
 
 import java.util.ArrayList;
 import java.util.List;

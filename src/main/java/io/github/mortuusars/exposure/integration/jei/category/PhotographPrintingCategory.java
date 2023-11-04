@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.integration.jei.category;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.integration.jei.ExposureJeiPlugin;
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographPrintingJeiRecipe;
 import mezz.jei.api.constants.VanillaTypes;

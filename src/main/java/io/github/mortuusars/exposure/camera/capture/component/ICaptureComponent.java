@@ -2,11 +2,10 @@ package io.github.mortuusars.exposure.camera.capture.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.camera.capture.Capture;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-
 
 /**
  * Client-side extension of the capture system. Allows modifying the steps of the capture process.

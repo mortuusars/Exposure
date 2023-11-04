@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.advancement.predicate;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;

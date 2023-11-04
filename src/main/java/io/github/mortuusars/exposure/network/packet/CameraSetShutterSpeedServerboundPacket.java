@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
+import io.github.mortuusars.exposure.camera.infrastructure.ShutterSpeed;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.network.FriendlyByteBuf;

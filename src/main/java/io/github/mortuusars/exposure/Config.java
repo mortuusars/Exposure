@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.config;
+package io.github.mortuusars.exposure;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 

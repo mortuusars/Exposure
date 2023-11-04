@@ -3,10 +3,10 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.component.FocalRange;
-import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.camera.infrastructure.FocalRange;
+import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
-import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;

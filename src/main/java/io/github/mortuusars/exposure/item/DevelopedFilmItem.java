@@ -1,13 +1,8 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.client.gui.ClientGUI;
-import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;

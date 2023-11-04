@@ -1,8 +1,5 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.camera.component.CompositionGuide;
-import io.github.mortuusars.exposure.camera.component.FlashMode;
-import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.network.packet.CameraSetCompositionGuideServerboundPacket;
 import io.github.mortuusars.exposure.network.packet.CameraSetFlashModeServerboundPacket;
 import io.github.mortuusars.exposure.network.packet.CameraSetShutterSpeedServerboundPacket;

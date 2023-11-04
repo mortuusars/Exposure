@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.integration.jei;
 
 import com.google.common.collect.ImmutableList;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.integration.jei.category.PhotographPrintingCategory;
 import io.github.mortuusars.exposure.integration.jei.category.PhotographStackingCategory;
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographPrintingJeiRecipe;

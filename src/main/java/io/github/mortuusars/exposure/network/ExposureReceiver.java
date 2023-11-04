@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
 
 import java.util.HashMap;

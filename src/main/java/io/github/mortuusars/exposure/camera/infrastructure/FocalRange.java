@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.camera.component;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
 public record FocalRange(float min, float max) {
     public static final FocalRange FULL = new FocalRange(18, 200);

@@ -1,6 +1,5 @@
-package io.github.mortuusars.exposure.camera.film;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
-import net.minecraft.core.Direction;
 import net.minecraft.util.StringRepresentable;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,6 +9,7 @@ public enum FilmType implements StringRepresentable {
     BLACK_AND_WHITE("black_and_white"),
     COLOR("color");
 
+    @SuppressWarnings("deprecation")
     public static final StringRepresentable.EnumCodec<FilmType> CODEC = StringRepresentable.fromEnum(FilmType::values);
 
     private final String name;

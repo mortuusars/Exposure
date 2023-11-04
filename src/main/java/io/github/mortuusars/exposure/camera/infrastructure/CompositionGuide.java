@@ -1,9 +1,8 @@
-package io.github.mortuusars.exposure.camera.component;
+package io.github.mortuusars.exposure.camera.infrastructure;
 
 import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 @SuppressWarnings("ClassCanBeRecord")
 public class CompositionGuide {

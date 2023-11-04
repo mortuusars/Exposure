@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
-import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import net.minecraft.util.Mth;
 
 public class ZoomHandler {

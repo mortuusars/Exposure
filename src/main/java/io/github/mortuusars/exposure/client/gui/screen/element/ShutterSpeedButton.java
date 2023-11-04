@@ -2,9 +2,9 @@ package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.component.ShutterSpeed;
+import io.github.mortuusars.exposure.camera.infrastructure.ShutterSpeed;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
-import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.client.gui.screen.element.*;

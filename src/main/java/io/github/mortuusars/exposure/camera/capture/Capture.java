@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.component.ICaptureComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.IImageToMapColorsConverter;
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;

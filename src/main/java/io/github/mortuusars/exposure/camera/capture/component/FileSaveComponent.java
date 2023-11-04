@@ -1,8 +1,8 @@
 package io.github.mortuusars.exposure.camera.capture.component;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.level.material.MaterialColor;

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.data.generation.provider;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.data.generation.recipe.FilmDevelopingFinishedRecipe;
 import io.github.mortuusars.exposure.data.generation.recipe.PhotographCloningFinishedRecipe;
 import net.minecraft.advancements.Advancement;

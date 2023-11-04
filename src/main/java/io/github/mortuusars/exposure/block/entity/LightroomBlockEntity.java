@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure.block.entity;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.LightroomBlock;
-import io.github.mortuusars.exposure.camera.film.FilmType;
-import io.github.mortuusars.exposure.config.Config;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;

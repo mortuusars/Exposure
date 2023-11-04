@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.gui.component;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.camera.component.ZoomDirection;
+import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.client.gui.screen.ZoomHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.storage;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.film.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
