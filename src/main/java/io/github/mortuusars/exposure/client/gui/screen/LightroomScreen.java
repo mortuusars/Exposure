@@ -36,8 +36,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     public static final ResourceLocation FILM_OVERLAYS_TEXTURE = Exposure.resource("textures/gui/lightroom_film_overlays.png");
     public static final int FRAME_SIZE = 54;
     private Button printButton;
-    private Button ejectButtonOn;
-    private Button ejectButtonOff;
 
     public LightroomScreen(LightroomMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -60,31 +58,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
                 renderTooltip(poseStack, Component.translatable("gui.exposure.lightroom.print"), mouseX, mouseY);
         }, Component.empty());
         addRenderableWidget(printButton);
-
-        ejectButtonOff = new ImageButton(leftPos - 21, topPos + 64, 18, 13, 198, 17,
-                13, MAIN_TEXTURE, 256, 256, this::onEjectButtonPressed, (button, poseStack, mouseX, mouseY) -> {
-            if (button.visible && button.isActive())
-                renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.lightroom.eject_off"),
-                        Component.translatable("gui.exposure.lightroom.eject_off.info")
-                                .withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
-        }, Component.empty());
-        addRenderableWidget(ejectButtonOff);
-        ejectButtonOn = new ImageButton(leftPos - 21, topPos + 64, 18, 13, 216, 17,
-                13, MAIN_TEXTURE, 256, 256, this::onEjectButtonPressed, (button, poseStack, mouseX, mouseY) -> {
-            if (button.visible && button.isActive())
-                renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.lightroom.eject_on"),
-                        Component.translatable("gui.exposure.lightroom.eject_on.info")
-                                .withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
-        }, Component.empty());
-        addRenderableWidget(ejectButtonOn);
-    }
-
-    private void onEjectButtonPressed(Button button) {
-        if (Minecraft.getInstance().gameMode == null) return;
-
-        Minecraft.getInstance().gameMode.handleInventoryButtonClick(getMenu().containerId, LightroomMenu.EJECT_BUTTON_ID);
-        ejectButtonOn.visible = button == ejectButtonOff;
-        ejectButtonOff.visible = button == ejectButtonOn;
     }
 
     private void onPrintButtonPressed(Button button) {
@@ -96,10 +69,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         printButton.active = canPressPrintButton();
         printButton.visible = !getMenu().isPrinting();
-
-        boolean eject = getMenu().getBlockEntity().isEjectingFilmAfterLastFrame();
-        ejectButtonOn.visible = eject;
-        ejectButtonOff.visible = !eject;
 
         renderBackground(poseStack);
         super.render(poseStack, mouseX, mouseY, partialTick);
@@ -170,15 +139,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             blit(poseStack, leftPos + 119, topPos + 15, 120, hasMoreFrames ? 68 : 0, 56, 68);
         }
 
-        RenderSystem.setShaderTexture(0, MAIN_TEXTURE);
-
-        if (getMenu().getBlockEntity().isAdvancingFrameOnPrint()) {
-            poseStack.pushPose();
-            poseStack.translate(0, 0, 500);
-            blit(poseStack, leftPos + 111, topPos + 44, 200, 0, 10, 10);
-            poseStack.popPose();
-        }
-
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
         if (leftFrame.length() > 0)
@@ -187,6 +147,24 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             renderFrame(centerFrame, poseStack, leftPos + 61, topPos + 22, 0.9f, colorFilm);
         if (rightFrame.length() > 0)
             renderFrame(rightFrame, poseStack, leftPos + 116, topPos + 22, isOverRightFrame(mouseX, mouseY) ? 0.8f : 0.25f, colorFilm);
+
+        RenderSystem.setShaderTexture(0, MAIN_TEXTURE);
+        if (colorFilm)
+            RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
+
+        if (getMenu().getBlockEntity().isAdvancingFrameOnPrint()) {
+            poseStack.pushPose();
+            poseStack.translate(0, 0, 800);
+
+            if (selectedFrame < getMenu().getTotalFrames() - 1)
+                blit(poseStack, leftPos + 111, topPos + 44, 200, 0, 10, 10);
+            else
+                blit(poseStack, leftPos + 111, topPos + 44, 210, 0, 10, 10);
+
+            poseStack.popPose();
+        }
+
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -335,6 +313,9 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         minecraft.gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
         minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, minecraft.player.getLevel()
                 .getRandom().nextFloat() * 0.4f + 0.8f);
+
+        // Update block entity clientside to faster update advance frame arrows:
+        getMenu().getBlockEntity().setSelectedFrame(getMenu().getBlockEntity().getSelectedFrame() + (navigation == Navigation.NEXT ? 1 : -1));
     }
 
     private void enterFrameInspectMode() {

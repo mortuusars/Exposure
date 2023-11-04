@@ -48,7 +48,7 @@ public class FilmRollItem extends Item implements IFilmItem {
     }
 
     public int getBarWidth(@NotNull ItemStack stack) {
-        return Math.min(1 + 12 * getExposedFramesCount(stack) / getFrameCount(stack), 13);
+        return Math.min(1 + 12 * getExposedFramesCount(stack) / getMaxFrameCount(stack), 13);
     }
 
     public int getBarColor(@NotNull ItemStack stack) {
@@ -64,7 +64,7 @@ public class FilmRollItem extends Item implements IFilmItem {
 
         ListTag listTag = tag.getList("Frames", Tag.TAG_COMPOUND);
 
-        if (listTag.size() >= getFrameCount(filmStack))
+        if (listTag.size() >= getMaxFrameCount(filmStack))
             throw new IllegalStateException("Cannot add more frames than film could fit. Size: " + listTag.size());
 
         listTag.add(frame);
@@ -75,7 +75,7 @@ public class FilmRollItem extends Item implements IFilmItem {
         if (!filmStack.hasTag() || !filmStack.getOrCreateTag().contains("Frames", Tag.TAG_LIST))
             return true;
 
-        return filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND).size() < getFrameCount(filmStack);
+        return filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND).size() < getMaxFrameCount(filmStack);
     }
 
     public ItemAndStack<DevelopedFilmItem> develop(ItemStack filmStack) {
@@ -94,7 +94,7 @@ public class FilmRollItem extends Item implements IFilmItem {
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         int exposedFrames = getExposedFramesCount(stack);
         if (exposedFrames > 0) {
-            int totalFrames = getFrameCount(stack);
+            int totalFrames = getMaxFrameCount(stack);
             tooltipComponents.add(Component.translatable("item.exposure.film_roll.tooltip.frame_count", exposedFrames, totalFrames)
                     .withStyle(ChatFormatting.GRAY));
         }

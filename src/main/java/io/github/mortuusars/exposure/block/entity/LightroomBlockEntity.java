@@ -14,7 +14,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.Vec3i;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -44,6 +43,7 @@ import net.minecraftforge.items.wrapper.SidedInvWrapper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class LightroomBlockEntity extends BaseContainerBlockEntity implements WorldlyContainer {
     public static final int SLOTS = 7;
     public static final int FILM_SLOT = 0;
@@ -54,21 +54,19 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     public static final int BLACK_SLOT = 5;
     public static final int RESULT_SLOT = 6;
 
-    public static final int[] OUTPUT_SLOTS = new int[] { 6 };
+    public static final int[] OUTPUT_SLOTS = new int[]{6};
 
-    public static final int CONTAINER_DATA_SIZE = 4;
+    public static final int CONTAINER_DATA_SIZE = 3;
     public static final int CONTAINER_DATA_PROGRESS_ID = 0;
     public static final int CONTAINER_DATA_PRINT_TIME_ID = 1;
     public static final int CONTAINER_DATA_SELECTED_FRAME_ID = 2;
-    public static final int CONTAINER_DATA_EJECT_ID = 3;
 
     protected final ContainerData containerData = new ContainerData() {
         public int get(int id) {
             return switch (id) {
                 case CONTAINER_DATA_PROGRESS_ID -> LightroomBlockEntity.this.progress;
                 case CONTAINER_DATA_PRINT_TIME_ID -> LightroomBlockEntity.this.printTime;
-                case CONTAINER_DATA_SELECTED_FRAME_ID -> LightroomBlockEntity.this.selectedFrame;
-                case CONTAINER_DATA_EJECT_ID -> LightroomBlockEntity.this.ejectFilmAfterLastFrame ? 1 : 0;
+                case CONTAINER_DATA_SELECTED_FRAME_ID -> LightroomBlockEntity.this.getSelectedFrame();
                 default -> 0;
             };
         }
@@ -79,9 +77,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             else if (id == CONTAINER_DATA_PRINT_TIME_ID)
                 LightroomBlockEntity.this.printTime = value;
             else if (id == CONTAINER_DATA_SELECTED_FRAME_ID)
-                LightroomBlockEntity.this.selectedFrame = value;
-            else if (id == CONTAINER_DATA_EJECT_ID)
-                LightroomBlockEntity.this.ejectFilmAfterLastFrame = value == 1;
+                LightroomBlockEntity.this.setSelectedFrame(value);
             setChanged();
         }
 
@@ -94,11 +90,9 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     protected final LazyOptional<IItemHandler> inventoryHandler;
     protected LazyOptional<IItemHandlerModifiable>[] inventoryHandlers;
     protected int selectedFrame = 0;
-    protected int printedFrame = -1;
     protected int progress = 0;
     protected int printTime = 0;
     protected int printedPhotographsCount = 0;
-    protected boolean ejectFilmAfterLastFrame;
     protected boolean advanceFrame;
 
     public LightroomBlockEntity(BlockPos pos, BlockState blockState) {
@@ -134,42 +128,37 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         stopPrintingProcess();
     }
 
-
-    private void onFramePrinted() {
-        ItemAndStack<DevelopedFilmItem> film = new ItemAndStack<>(getItem(FILM_SLOT));
-
-        int frames = film.getItem().getExposedFramesCount(film.getStack());
-        if (ejectFilmAfterLastFrame && printedFrame >= frames - 1) {
-            tryEjectFilm();
-        }
-        else if (advanceFrame && selectedFrame < frames - 1) {
-            selectedFrame++;
-        }
-        setChanged();
+    protected void onFramePrinted() {
+        if (advanceFrame)
+            advanceFrame();
     }
 
-    public boolean isEjectingFilmAfterLastFrame() {
-        return ejectFilmAfterLastFrame;
+    protected void advanceFrame() {
+        ItemAndStack<DevelopedFilmItem> film = new ItemAndStack<>(getItem(FILM_SLOT));
+        int frames = film.getItem().getExposedFramesCount(film.getStack());
+
+        if (getSelectedFrame() >= frames - 1) { // On last frame
+            if (tryEjectFilm())
+                setChanged();
+        } else {
+            setSelectedFrame(getSelectedFrame() + 1);
+            setChanged();
+        }
     }
 
     public boolean isAdvancingFrameOnPrint() {
         return advanceFrame;
     }
 
-    public void toggleEjectFilm() {
-        ejectFilmAfterLastFrame = !ejectFilmAfterLastFrame;
-        setChanged();
-    }
-
-    protected void tryEjectFilm() {
+    protected boolean tryEjectFilm() {
         if (level == null || level.isClientSide || getItem(FILM_SLOT).isEmpty())
-            return;
+            return false;
 
         BlockPos pos = getBlockPos();
         Direction facing = level.getBlockState(pos).getValue(LightroomBlock.FACING);
 
         if (level.getBlockState(pos.relative(facing)).canOcclude())
-            return;
+            return false;
 
         Vec3i normal = facing.getNormal();
         Vec3 point = Vec3.atCenterOf(pos).add(normal.getX() * 0.75f, normal.getY() * 0.75f, normal.getZ() * 0.75f);
@@ -177,17 +166,23 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         itemEntity.setDeltaMovement(normal.getX() * 0.05f, normal.getY() * 0.05f + 0.15f, normal.getZ() * 0.05f);
         itemEntity.setDefaultPickUpDelay();
         level.addFreshEntity(itemEntity);
+        return true;
     }
 
     public int getSelectedFrame() {
         return selectedFrame;
     }
 
+    public void setSelectedFrame(int index) {
+        if (selectedFrame != index) {
+            selectedFrame = index;
+            stopPrintingProcess();
+        }
+    }
+
     public void startPrintingProcess(boolean advanceFrame) {
         if (!canPrint())
             return;
-
-        printedFrame = selectedFrame;
 
         ItemStack filmStack = getItem(FILM_SLOT);
         if (!(filmStack.getItem() instanceof DevelopedFilmItem developedFilmItem))
@@ -198,19 +193,20 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
                 Config.Common.LIGHTROOM_BW_FILM_PRINT_TIME.get();
         this.advanceFrame = advanceFrame;
         if (level != null) {
-            level.setBlock(getBlockPos(), level.getBlockState(getBlockPos()).setValue(LightroomBlock.LIT, true), Block.UPDATE_CLIENTS);
+            level.setBlock(getBlockPos(), level.getBlockState(getBlockPos())
+                    .setValue(LightroomBlock.LIT, true), Block.UPDATE_CLIENTS);
             level.playSound(null, getBlockPos(), Exposure.SoundEvents.LIGHTROOM_PRINT.get(), SoundSource.BLOCKS,
                     1f, level.getRandom().nextFloat() * 0.3f + 1f);
         }
     }
 
     public void stopPrintingProcess() {
-        printedFrame = -1;
         progress = 0;
         printTime = 0;
         advanceFrame = false;
-        if (level != null)
-            level.setBlock(getBlockPos(), level.getBlockState(getBlockPos()).setValue(LightroomBlock.LIT, false), Block.UPDATE_CLIENTS);
+        if (level != null && level.getBlockState(getBlockPos()).getBlock() instanceof LightroomBlock)
+            level.setBlock(getBlockPos(), level.getBlockState(getBlockPos())
+                    .setValue(LightroomBlock.LIT, false), Block.UPDATE_CLIENTS);
     }
 
     public boolean isPrinting() {
@@ -218,11 +214,14 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     }
 
     public boolean canPrint() {
+        if (getSelectedFrame() < 0) // Upper bound is checked further down
+            return false;
+
         if (getItem(PAPER_SLOT).isEmpty())
             return false;
 
         ItemStack filmStack = getItem(FILM_SLOT);
-        if (!(filmStack.getItem() instanceof DevelopedFilmItem developedFilm) || !developedFilm.hasExposedFrame(filmStack, selectedFrame))
+        if (!(filmStack.getItem() instanceof DevelopedFilmItem developedFilm) || !developedFilm.hasExposedFrame(filmStack, getSelectedFrame()))
             return false;
 
         if (!hasDyesForPrint(developedFilm.getType()))
@@ -231,7 +230,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         ItemStack resultStack = getItem(RESULT_SLOT);
         return resultStack.isEmpty() || resultStack.getItem() instanceof PhotographItem
                 || (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem
-                    && stackedPhotographsItem.canAddPhotograph(resultStack));
+                && stackedPhotographsItem.canAddPhotograph(resultStack));
     }
 
     public boolean hasDyesForPrint(FilmType type) {
@@ -246,15 +245,13 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     }
 
     public boolean tryPrint() {
-        if (!canPrint() || printedFrame < 0)
+        if (!canPrint())
             return false;
 
         ItemAndStack<DevelopedFilmItem> film = new ItemAndStack<>(getItem(FILM_SLOT));
         ListTag frames = film.getItem().getExposedFrames(film.getStack());
-        if (printedFrame >= frames.size())
-            return false;
 
-        CompoundTag frameTag = frames.getCompound(printedFrame);
+        CompoundTag frameTag = frames.getCompound(getSelectedFrame());
         frameTag.putString("Type", film.getItem().getType().getSerializedName());
 
         ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
@@ -269,11 +266,9 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             stackedPhotographsItem.addPhotographOnTop(newStackedPhotographs, resultStack);
             stackedPhotographsItem.addPhotographOnTop(newStackedPhotographs, photographStack);
             resultStack = newStackedPhotographs;
-        }
-        else if (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
+        } else if (resultStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
             stackedPhotographsItem.addPhotographOnTop(resultStack, photographStack);
-        }
-        else {
+        } else {
             Exposure.LOGGER.error("Unexpected item in result slot: " + resultStack);
             return false;
         }
@@ -309,13 +304,14 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     }
 
     public void dropStoredExperience(@Nullable Player player) {
-        if (level == null  || level.isClientSide)
+        if (level == null || level.isClientSide)
             return;
 
         int xpPerPrint = Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT.get();
         if (xpPerPrint > 0) {
             for (int i = 0; i < printedPhotographsCount; i++) {
-                ExperienceOrb.award(((ServerLevel) level), player != null ? player.position() : Vec3.atCenterOf(getBlockPos()), xpPerPrint - 1 + level.getRandom().nextInt(0, 3));
+                ExperienceOrb.award(((ServerLevel) level), player != null ? player.position() : Vec3.atCenterOf(getBlockPos()), xpPerPrint - 1 + level.getRandom()
+                        .nextInt(0, 3));
             }
         }
 
@@ -368,9 +364,8 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     }
 
     protected void inventoryContentsChanged(int slot) {
-        if (slot == FILM_SLOT) {
-            selectedFrame = 0;
-        }
+        if (slot == FILM_SLOT)
+            setSelectedFrame(0);
 
         setChanged();
     }
@@ -415,8 +410,8 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     public boolean stillValid(@NotNull Player player) {
         return this.level != null && this.level.getBlockEntity(this.worldPosition) == this
                 && player.distanceToSqr(this.worldPosition.getX() + 0.5D,
-                    this.worldPosition.getY() + 0.5D,
-                    this.worldPosition.getZ() + 0.5D) <= 64.0D;
+                this.worldPosition.getY() + 0.5D,
+                this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
@@ -484,13 +479,10 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     public void load(@NotNull CompoundTag tag) {
         super.load(tag);
         this.inventory.deserializeNBT(tag.getCompound("Inventory"));
-        this.selectedFrame = tag.getInt("SelectedFrame");
-        if (tag.contains("PrintedFrame", Tag.TAG_INT))
-            this.printedFrame = tag.getInt("PrintedFrame");
+        this.setSelectedFrame(tag.getInt("SelectedFrame"));
         this.progress = tag.getInt("Progress");
         this.printTime = tag.getInt("PrintTime");
         this.printedPhotographsCount = tag.getInt("PrintedPhotographsCount");
-        this.ejectFilmAfterLastFrame = tag.getBoolean("EjectFilmAfterLastFrame");
         this.advanceFrame = tag.getBoolean("AdvanceFrame");
     }
 
@@ -498,18 +490,14 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     protected void saveAdditional(@NotNull CompoundTag tag) {
         super.saveAdditional(tag);
         tag.put("Inventory", this.inventory.serializeNBT());
-        if (selectedFrame > 0)
-            tag.putInt("SelectedFrame", selectedFrame);
-        if (printedFrame > -1)
-            tag.putInt("PrintedFrame", printedFrame);
+        if (getSelectedFrame() > 0)
+            tag.putInt("SelectedFrame", getSelectedFrame());
         if (progress > 0)
             tag.putInt("Progress", progress);
         if (printTime > 0)
             tag.putInt("PrintTime", printTime);
         if (printedPhotographsCount > 0)
             tag.putInt("PrintedPhotographsCount", printedPhotographsCount);
-        if (ejectFilmAfterLastFrame)
-            tag.putBoolean("EjectFilmAfterLastFrame", true);
         if (advanceFrame)
             tag.putBoolean("AdvanceFrame", true);
     }

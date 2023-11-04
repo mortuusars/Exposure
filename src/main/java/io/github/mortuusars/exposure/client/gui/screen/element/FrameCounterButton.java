@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.config.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
@@ -39,7 +38,7 @@ public class FrameCounterButton extends ImageButton {
 
         String text = camera.isEmpty() ? "-" : camera.getItem().getFilm(camera.getStack()).map(film -> {
             int exposedFrames = film.getItem().getExposedFrames(film.getStack()).size();
-            int totalFrames = film.getItem().getFrameCount(film.getStack());
+            int totalFrames = film.getItem().getMaxFrameCount(film.getStack());
             return exposedFrames + "/" + totalFrames;
         }).orElse("-");
 

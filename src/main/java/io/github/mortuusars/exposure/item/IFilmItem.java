@@ -7,15 +7,15 @@ import net.minecraft.world.item.ItemStack;
 
 public interface IFilmItem {
     FilmType getType();
-    default int getDefaultFrameCount(ItemStack filmStack) {
+    default int getDefaultMaxFrameCount(ItemStack filmStack) {
         return 16;
     }
 
-    default int getFrameCount(ItemStack filmStack) {
+    default int getMaxFrameCount(ItemStack filmStack) {
         if (filmStack.getTag() != null && filmStack.getOrCreateTag().contains("FrameCount", Tag.TAG_INT))
             return filmStack.getOrCreateTag().getInt("FrameCount");
         else
-            return getDefaultFrameCount(filmStack);
+            return getDefaultMaxFrameCount(filmStack);
     }
 
     default boolean hasExposedFrame(ItemStack filmStack, int index) {
