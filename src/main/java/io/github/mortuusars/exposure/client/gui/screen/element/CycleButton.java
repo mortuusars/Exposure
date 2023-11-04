@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 public abstract class CycleButton extends ImageButton {
     protected final Screen screen;
     protected int count = 1;
-    protected int index = 0;
+    protected int currentIndex = 0;
     protected boolean loop = true;
 
     public CycleButton(Screen screen, int x, int y, int width, int height, int u, int v, int yDiffTex, ResourceLocation texture) {
@@ -18,7 +18,7 @@ public abstract class CycleButton extends ImageButton {
 
     public void setupButtonElements(int count, int startingIndex) {
         this.count = count;
-        this.index = startingIndex;
+        this.currentIndex = startingIndex;
     }
 
     @Override
@@ -49,15 +49,15 @@ public abstract class CycleButton extends ImageButton {
     }
 
     protected void cycle(boolean reverse) {
-        int value = index;
+        int value = currentIndex;
         value += reverse ? -1 : 1;
         if (value < 0)
             value = loop ? count - 1 : 0;
         else if (value >= count)
             value = loop ? 0 : count - 1;
 
-        if (index != value) {
-            index = value;
+        if (currentIndex != value) {
+            currentIndex = value;
             onCycle();
         }
     }

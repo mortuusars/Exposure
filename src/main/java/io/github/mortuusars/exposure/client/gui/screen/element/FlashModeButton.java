@@ -55,7 +55,7 @@ public class FlashModeButton extends CycleButton {
         super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         // Icon
-        RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/flash_mode/" + flashModes.get(index).getId() + ".png"));
+        RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/flash_mode/" + flashModes.get(currentIndex).getId() + ".png"));
         blit(poseStack, x, y + 4, 0, 0, 0, 15, 14, 15, 14);
     }
 
@@ -67,13 +67,13 @@ public class FlashModeButton extends CycleButton {
 
     @Override
     public @NotNull Component getMessage() {
-        return flashModes.get(index).translate();
+        return flashModes.get(currentIndex).translate();
     }
 
     @Override
     protected void onCycle() {
         CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty())
-            SynchronizedCameraInHandActions.setFlashMode(flashModes.get(index));
+            SynchronizedCameraInHandActions.setFlashMode(flashModes.get(currentIndex));
     }
 }

@@ -1,10 +1,10 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.ShutterSpeed;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
-import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -15,7 +15,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 public class ShutterSpeedButton extends CycleButton {
     private final Screen screen;
@@ -34,8 +37,9 @@ public class ShutterSpeedButton extends CycleButton {
         shutterSpeeds = speeds;
 
         ShutterSpeed shutterSpeed = camera.getItem().getShutterSpeed(camera.getStack());
-        if (!shutterSpeeds.contains(shutterSpeed))
-            shutterSpeed = ShutterSpeed.DEFAULT;
+        if (!shutterSpeeds.contains(shutterSpeed)) {
+            throw new IllegalStateException("Camera {" + camera.getStack() + "} has invalid shutter speed.");
+        }
 
         int currentShutterSpeedIndex = 0;
         for (int i = 0; i < shutterSpeeds.size(); i++) {
@@ -51,16 +55,16 @@ public class ShutterSpeedButton extends CycleButton {
     @Override
     public void playDownSound(SoundManager handler) {
         handler.play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_DIAL_CLICK.get(),
-                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.05f + 0.9f + index * 0.01f, 0.7f));
+                Objects.requireNonNull(Minecraft.getInstance().level).random.nextFloat() * 0.05f + 0.9f + currentIndex * 0.01f, 0.7f));
     }
 
     @Override
     public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-        ShutterSpeed shutterSpeed = camera.getItem().getShutterSpeed(camera.getStack());
+        ShutterSpeed shutterSpeed = shutterSpeeds.get(currentIndex);
         String text = shutterSpeed.toString();
+
         if (shutterSpeed.equals(ShutterSpeed.DEFAULT))
             text = text + "•";
 
@@ -81,8 +85,8 @@ public class ShutterSpeedButton extends CycleButton {
     protected void onCycle() {
         CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
-            if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(index)) {
-                SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(index));
+            if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentIndex)) {
+                SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(currentIndex));
             }
         }
     }
