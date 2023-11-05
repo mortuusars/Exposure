@@ -13,6 +13,7 @@ import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.packet.CameraInHandAddFrameServerboundPacket;
 import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
 import io.github.mortuusars.exposure.util.*;
+import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -135,24 +136,19 @@ public class CameraItem extends Item {
         }
     }
 
-    public boolean isShutterOpen(ItemStack stack, Level level) {
-        return stack.getTag() != null
-                && stack.getTag().getBoolean("ShutterOpen");
+    public boolean isShutterOpen(ItemStack stack) {
+        return stack.getTag() != null && stack.getTag().getBoolean("ShutterOpen");
     }
 
-    public boolean shouldShutterClose(ItemStack stack, Level level) {
-        return stack.getTag() != null
-                && stack.getTag().getBoolean("ShutterOpen")
-                && stack.getTag().getLong("ShutterCloseTimestamp") <= level.getGameTime();
-    }
-
-    public void setShutterOpen(Level level, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame) {
+    public void setShutterOpen(Level level, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame, boolean flashHasFired) {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putBoolean("ShutterOpen", true);
         tag.putInt("ShutterTicks", Math.max(shutterSpeed.getTicks(), 1));
         tag.putLong("ShutterCloseTimestamp", level.getGameTime() + Math.max(shutterSpeed.getTicks(), 1));
         if (exposingFrame)
             tag.putBoolean("ExposingFrame", true);
+        if (flashHasFired)
+            tag.putBoolean("FlashHasFired", true);
     }
 
     public void setShutterClosed(ItemStack stack) {
@@ -162,11 +158,12 @@ public class CameraItem extends Item {
             tag.remove("ShutterTicks");
             tag.remove("ShutterCloseTimestamp");
             tag.remove("ExposingFrame");
+            tag.remove("FlashHasFired");
         }
     }
 
-    public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame) {
-        setShutterOpen(player.getLevel(), stack, shutterSpeed, exposingFrame);
+    public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame, boolean flashHasFired) {
+        setShutterOpen(player.getLevel(), stack, shutterSpeed, exposingFrame, flashHasFired);
 
         player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         playCameraSound(player, Exposure.SoundEvents.SHUTTER_OPEN.get(), exposingFrame ? 0.85f : 0.65f,
@@ -177,13 +174,14 @@ public class CameraItem extends Item {
 
     public void closeShutter(Player player, ItemStack stack) {
         long closedAtTimestamp = stack.getTag() != null ? stack.getTag().getLong("ShutterCloseTimestamp") : -1;
+        boolean exposingFrame = stack.getTag() != null && stack.getTag().getBoolean("ExposingFrame");
+        boolean flashHasFired = stack.getTag() != null && stack.getTag().getBoolean("FlashHasFired");
 
         setShutterClosed(stack);
 
         if (player.getLevel().getGameTime() - closedAtTimestamp < 40) { // Skip effects if shutter "was closed" long ago
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-            boolean exposingFrame = stack.getTag() != null && stack.getTag().getBoolean("ExposingFrame");
-            player.getCooldowns().addCooldown(this, 2);
+            player.getCooldowns().addCooldown(this, flashHasFired ? 10 : 2);
             playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), exposingFrame ? 0.85f : 0.65f,
                     exposingFrame ? 1.1f : 1.25f, 0.2f);
             if (exposingFrame) {
@@ -193,6 +191,7 @@ public class CameraItem extends Item {
         }
     }
 
+    @SuppressWarnings("unused")
     public void playCameraSound(Player player, SoundEvent sound, float volume, float pitch) {
         playCameraSound(player, sound, volume, pitch, 0f);
     }
@@ -208,7 +207,7 @@ public class CameraItem extends Item {
         if (!(entity instanceof Player player))
             return;
 
-        if (isShutterOpen(stack, level)) {
+        if (isShutterOpen(stack)) {
             if (stack.getTag() != null && stack.getTag().contains("ShutterTicks")) {
                 int ticks = stack.getTag().getInt("ShutterTicks");
                 if (ticks <= 0)
@@ -218,10 +217,10 @@ public class CameraItem extends Item {
                     stack.getTag().putInt("ShutterTicks", ticks);
                 }
             }
+            else {
+                setShutterClosed(stack);
+            }
         }
-
-//        if (isShutterOpen(stack, level) && shouldShutterClose(stack, player.getLevel()))
-//            closeShutter(player, stack);
 
         boolean inOffhand = player.getOffhandItem().equals(stack);
         boolean inHand = isSelected || inOffhand;
@@ -233,7 +232,7 @@ public class CameraItem extends Item {
 
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return !oldStack.getItem().equals(newStack.getItem()) /*|| slotChanged*/;
+        return !oldStack.getItem().equals(newStack.getItem());
     }
 
     @Override
@@ -255,14 +254,8 @@ public class CameraItem extends Item {
             return InteractionResultHolder.pass(player.getItemInHand(hand));
 
 
-        InteractionResult interactionResult = useCamera(player, hand);
+        useCamera(player, hand);
         return InteractionResultHolder.consume(player.getItemInHand(hand));
-//        return switch (interactionResult) {
-//            case SUCCESS -> InteractionResultHolder.success(player.getItemInHand(hand));
-//            case CONSUME, CONSUME_PARTIAL -> InteractionResultHolder.consume(player.getItemInHand(hand));
-//            case PASS -> InteractionResultHolder.pass(player.getItemInHand(hand));
-//            case FAIL -> InteractionResultHolder.fail(player.getItemInHand(hand));
-//        };
     }
 
     public InteractionResult useCamera(Player player, InteractionHand hand) {
@@ -278,8 +271,9 @@ public class CameraItem extends Item {
         boolean active = isActive(stack);
 
         if (!active && player.isSecondaryUseActive()) {
-            if (isShutterOpen(stack, level)) {
-                player.displayClientMessage(Component.translatable("item.exposure.camera.camera_attachments.fail.shutter_open"), true);
+            if (isShutterOpen(stack)) {
+                player.displayClientMessage(Component.translatable("item.exposure.camera.camera_attachments.fail.shutter_open")
+                        .withStyle(ChatFormatting.RED), true);
                 return InteractionResult.FAIL;
             }
 
@@ -290,10 +284,10 @@ public class CameraItem extends Item {
         if (!active) {
             activate(player, stack);
             player.getCooldowns().addCooldown(this, 4);
-            return InteractionResult.SUCCESS; // Consume to not play animation
+            return InteractionResult.CONSUME; // Consume to not play animation
         }
 
-        if (isShutterOpen(stack, level))
+        if (isShutterOpen(stack))
             return InteractionResult.FAIL;
 
         Optional<ItemAndStack<FilmRollItem>> filmOpt = getFilm(stack);
@@ -302,7 +296,7 @@ public class CameraItem extends Item {
 
         ShutterSpeed shutterSpeed = getShutterSpeed(stack);
 
-        openShutter(player, stack, shutterSpeed, exposingFilm);
+        openShutter(player, stack, shutterSpeed, exposingFilm, flashHasFired);
 
         if (player instanceof ServerPlayer serverPlayer)
             Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(stack), flashHasFired, exposingFilm);
@@ -349,6 +343,7 @@ public class CameraItem extends Item {
         };
     }
 
+    @SuppressWarnings("unused")
     public boolean tryUseFlash(Player player, ItemStack cameraStack) {
         Level level = player.getLevel();
         BlockPos playerHeadPos = player.blockPosition().above();
@@ -464,6 +459,7 @@ public class CameraItem extends Item {
         return tag;
     }
 
+    @SuppressWarnings("unused")
     protected CompoundTag createEntityInFrameInfo(Entity entity, Player player, ItemStack cameraStack, Capture capture) {
         CompoundTag tag = new CompoundTag();
         ResourceLocation entityRL = ForgeRegistries.ENTITY_TYPES.getKey(entity.getType());
@@ -499,7 +495,7 @@ public class CameraItem extends Item {
 
     protected String createExposureId(Player player) {
         // This method is called only client-side and then gets sent to server in a packet
-        // because gameTime is different between client/server (by 1 tick, as I've seen), and IDs won't match.
+        // because gameTime is different between client/server, and IDs won't match.
         return player.getName().getString() + "_" + player.getLevel().getGameTime();
     }
 
@@ -507,6 +503,7 @@ public class CameraItem extends Item {
         return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
     }
 
+    @SuppressWarnings("unused")
     protected Capture createCapture(Player player, ItemStack cameraStack, String exposureId, boolean flash) {
         ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
         int frameSize = film.getItem().getFrameSize(film.getStack());
@@ -534,6 +531,7 @@ public class CameraItem extends Item {
     /**
      * This method is called after we take a screenshot (or immediately if not capturing but should show effects). Otherwise, due to the delays (flash, etc) - particles would be captured as well.
      */
+    @SuppressWarnings("unused")
     public void spawnClientsideFlashEffects(@NotNull Player player, ItemStack cameraStack) {
         Preconditions.checkState(player.getLevel().isClientSide, "This methods should only be called client-side.");
         Level level = player.getLevel();
@@ -555,6 +553,7 @@ public class CameraItem extends Item {
 
     // ---
 
+    @SuppressWarnings("unused")
     public List<AttachmentType> getAttachmentTypes(ItemStack cameraStack) {
         return ATTACHMENTS;
     }
@@ -610,6 +609,7 @@ public class CameraItem extends Item {
     /**
      * Returns all possible Shutter Speeds for this camera.
      */
+    @SuppressWarnings("unused")
     public List<ShutterSpeed> getAllShutterSpeeds(ItemStack cameraStack) {
         return SHUTTER_SPEEDS;
     }

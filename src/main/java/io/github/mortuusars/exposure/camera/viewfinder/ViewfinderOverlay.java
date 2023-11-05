@@ -114,7 +114,7 @@ public class ViewfinderOverlay {
         drawRect(poseStack, -9999, opening.y + opening.height, width + 9999, height + 9999, backgroundColor);
 
         // Shutter
-        if (camera.getItem().isShutterOpen(camera.getStack(), player.getLevel()))
+        if (camera.getItem().isShutterOpen(camera.getStack()))
             drawRect(poseStack, opening.x, opening.y, opening.x + opening.width, opening.y + opening.height, 0xfa1f1d1b);
 
         // Opening Texture

@@ -4,7 +4,6 @@ import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.world.level.storage.LevelResource;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -39,6 +38,7 @@ public class ServersideExposureStorage implements IExposureStorage {
     private boolean createStorageDirectory() {
         try {
             Path path = ServerLifecycleHooks.getCurrentServer().getWorldPath(LevelResource.ROOT).resolve("data/" + EXPOSURE_DIR);
+            //noinspection ResultOfMethodCallIgnored
             path.toFile().mkdirs();
             return Files.exists(path);
         }

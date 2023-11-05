@@ -2,6 +2,7 @@
   "block.exposure.lightroom": "Lightroom",
 
   "item.exposure.camera": "Camera",
+  "item.exposure.camera.camera_attachments.fail.shutter_open": "Cannot disassemble the camera while shutter is open.",
   "item.exposure.black_and_white_film": "Black and White Film",
   "item.exposure.color_film": "Color Film",
   "item.exposure.developed_black_and_white_film": "Developed Black and White Film",
@@ -81,6 +82,5 @@
 
   "stat.exposure.interact_with_lightroom": "Interactions with Lightroom",
   "stat.exposure.film_frames_exposed": "Film Frames Exposed",
-  "stat.exposure.flashes_triggered": "Camera Flashes Triggered",
-  "item.exposure.camera.camera_attachments.fail.shutter_open": "Cannot disassemble the camera while shutter is open."
+  "stat.exposure.flashes_triggered": "Camera Flashes Triggered"
 }
