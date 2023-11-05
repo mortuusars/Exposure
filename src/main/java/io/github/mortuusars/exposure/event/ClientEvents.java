@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.event;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.camera.CameraHelper;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
@@ -11,6 +10,7 @@ import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.renderer.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.renderer.PhotographEntityRenderer;
 import io.github.mortuusars.exposure.command.ClientCommands;
+import io.github.mortuusars.exposure.item.CameraItemClient;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -19,7 +19,6 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -34,17 +33,8 @@ public class ClientEvents {
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
 
-                ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"),
-                        (pStack, pLevel, pEntity, pSeed) -> {
-                            if (pEntity instanceof Player player) {
-                                CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-                                if (!camera.isEmpty() && camera.getItem().isActive(player, pStack)) {
-                                    return 0.1f;
-                                }
-                            }
-                            return 0f;
-                        });
-
+                //noinspection deprecation
+                ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClient::itemPropertyFunction);
                 ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
                         (pStack, pLevel, pEntity, pSeed) -> {
                             if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
@@ -96,10 +86,10 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void onGuiOpen(ScreenEvent.Opening event) {
-            if (ViewfinderClient.isLookingThrough() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
+            if (ViewfinderClient.isOpen() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
                 LocalPlayer player = Minecraft.getInstance().player;
                 if (player != null)
-                    CameraHelper.deactivateAll(player, true);
+                    CameraInHand.deactivate(player);
             }
         }
 

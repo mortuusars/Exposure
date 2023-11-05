@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
-import io.github.mortuusars.exposure.client.gui.component.ZoomableScreen;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;

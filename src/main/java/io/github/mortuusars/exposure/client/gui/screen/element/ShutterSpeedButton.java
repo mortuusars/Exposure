@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
@@ -30,7 +31,8 @@ public class ShutterSpeedButton extends CycleButton {
         super(screen, x, y, width, height, u, v, height, texture);
         this.screen = screen;
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
+        Preconditions.checkState(!camera.isEmpty(), "Player must hold an active camera at this point.");
 
         List<ShutterSpeed> speeds = new ArrayList<>(camera.getItem().getAllShutterSpeeds(camera.getStack()));
         Collections.reverse(speeds);
@@ -83,7 +85,7 @@ public class ShutterSpeedButton extends CycleButton {
 
     @Override
     protected void onCycle() {
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
         if (!camera.isEmpty()) {
             if (camera.getItem().getShutterSpeed(camera.getStack()) != shutterSpeeds.get(currentIndex)) {
                 SynchronizedCameraInHandActions.setShutterSpeed(shutterSpeeds.get(currentIndex));

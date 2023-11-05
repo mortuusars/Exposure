@@ -11,10 +11,8 @@ import io.github.mortuusars.exposure.camera.infrastructure.*;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.packet.CameraInHandAddFrameServerboundPacket;
-import io.github.mortuusars.exposure.util.ItemAndStack;
-import io.github.mortuusars.exposure.util.LevelUtil;
-import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
-import io.github.mortuusars.exposure.util.ScheduledTasks;
+import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
+import io.github.mortuusars.exposure.util.*;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,6 +27,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -112,118 +111,201 @@ public class CameraItem extends Item {
         consumer.accept(CameraItemClient.INSTANCE);
     }
 
-    @Override
-    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-        if (context.getPlayer() != null)
-            useCamera(context.getPlayer(), context.getHand());
-        return InteractionResult.CONSUME; // To not play attack animation.
+    public boolean isActive(ItemStack stack) {
+        return stack.getTag() != null && stack.getTag().getBoolean("Active");
     }
 
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand usedHand) {
-        useCamera(player, usedHand);
-        return InteractionResultHolder.consume(player.getItemInHand(usedHand)); // To not play attack animation.
-    }
-
-    public boolean isActive(Player player, ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        return tag != null && tag.getBoolean("Active") && player.getLevel()
-                .getGameTime() - tag.getLong("ActiveTimestamp") < 5;
-    }
-
-    public void setActive(Player player, ItemStack stack, boolean active) {
-        CompoundTag tag = stack.getOrCreateTag();
-        tag.putBoolean("Active", active);
-        tag.putLong("ActiveTimestamp", player.getLevel().getGameTime());
+    public void setActive(ItemStack stack, boolean active) {
+        stack.getOrCreateTag().putBoolean("Active", active);
     }
 
     public void activate(Player player, ItemStack stack) {
-        boolean isActive = isActive(player, stack);
-        setActive(player, stack, true);
-        if (!isActive) {
-            player.gameEvent(GameEvent.EQUIP);
-            player.getLevel().playSound(player, player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), SoundSource.PLAYERS,
-                    0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+        if (!isActive(stack)) {
+            setActive(stack, true);
+            player.gameEvent(GameEvent.EQUIP); // Sends skulk vibrations
+            playCameraSound(player, Exposure.SoundEvents.VIEWFINDER_OPEN.get(), 0.35f, 0.9f, 0.2f);
         }
     }
 
     public void deactivate(Player player, ItemStack stack) {
-        boolean wasActive = isActive(player, stack);
-        setActive(player, stack, false);
-        if (wasActive) {
+        if (isActive(stack)) {
+            setActive(stack, false);
             player.gameEvent(GameEvent.EQUIP);
-            player.getLevel()
-                    .playSound(player, player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), SoundSource.PLAYERS,
-                            0.35f, player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
+            playCameraSound(player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), 0.35f, 0.9f, 0.2f);
         }
     }
 
     public boolean isShutterOpen(ItemStack stack, Level level) {
         return stack.getTag() != null
-                && stack.getTag().getBoolean("ShutterOpen")
-                && stack.getTag().getLong("ShutterCloseTimestamp") > level.getGameTime();
+                && stack.getTag().getBoolean("ShutterOpen");
     }
 
-    public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed) {
+    public boolean shouldShutterClose(ItemStack stack, Level level) {
+        return stack.getTag() != null
+                && stack.getTag().getBoolean("ShutterOpen")
+                && stack.getTag().getLong("ShutterCloseTimestamp") <= level.getGameTime();
+    }
+
+    public void setShutterOpen(Level level, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame) {
         CompoundTag tag = stack.getOrCreateTag();
         tag.putBoolean("ShutterOpen", true);
-        tag.putLong("ShutterCloseTimestamp", player.getLevel().getGameTime() + Math.max(shutterSpeed.getTicks(), 2));
+        tag.putInt("ShutterTicks", Math.max(shutterSpeed.getTicks(), 1));
+        tag.putLong("ShutterCloseTimestamp", level.getGameTime() + Math.max(shutterSpeed.getTicks(), 1));
+        if (exposingFrame)
+            tag.putBoolean("ExposingFrame", true);
     }
 
-    public void closeShutter(Player player, ItemStack cameraStack, ShutterSpeed shutterSpeed) {
-        CompoundTag tag = cameraStack.getTag();
+    public void setShutterClosed(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
         if (tag != null) {
-            tag.putBoolean("ShutterOpen", false);
+            tag.remove("ShutterOpen");
+            tag.remove("ShutterTicks");
             tag.remove("ShutterCloseTimestamp");
+            tag.remove("ExposingFrame");
         }
     }
 
-    public void useCamera(Player player, InteractionHand hand) {
+    public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame) {
+        setShutterOpen(player.getLevel(), stack, shutterSpeed, exposingFrame);
+
+        player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+        playCameraSound(player, Exposure.SoundEvents.SHUTTER_OPEN.get(), exposingFrame ? 0.85f : 0.65f,
+                exposingFrame ? 1.1f : 1.25f, 0.2f);
+        if (shutterSpeed.getMilliseconds() > 500) // More than 1/2
+            OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
+    }
+
+    public void closeShutter(Player player, ItemStack stack) {
+        long closedAtTimestamp = stack.getTag() != null ? stack.getTag().getLong("ShutterCloseTimestamp") : -1;
+
+        setShutterClosed(stack);
+
+        if (player.getLevel().getGameTime() - closedAtTimestamp < 40) { // Skip effects if shutter "was closed" long ago
+            player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
+            boolean exposingFrame = stack.getTag() != null && stack.getTag().getBoolean("ExposingFrame");
+            player.getCooldowns().addCooldown(this, 2);
+            playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), exposingFrame ? 0.85f : 0.65f,
+                    exposingFrame ? 1.1f : 1.25f, 0.2f);
+            if (exposingFrame) {
+                OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
+                        1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
+            }
+        }
+    }
+
+    public void playCameraSound(Player player, SoundEvent sound, float volume, float pitch) {
+        playCameraSound(player, sound, volume, pitch, 0f);
+    }
+
+    public void playCameraSound(Player player, SoundEvent sound, float volume, float pitch, float pitchVariety) {
+        if (pitchVariety > 0f)
+            pitch = pitch - (pitchVariety / 2f) + (player.getRandom().nextFloat() * pitchVariety);
+        player.getLevel().playSound(player, player, sound, SoundSource.PLAYERS, volume, pitch);
+    }
+
+    @Override
+    public void inventoryTick(@NotNull ItemStack stack, @NotNull Level level, @NotNull Entity entity, int slotId, boolean isSelected) {
+        if (!(entity instanceof Player player))
+            return;
+
+        if (isShutterOpen(stack, level)) {
+            if (stack.getTag() != null && stack.getTag().contains("ShutterTicks")) {
+                int ticks = stack.getTag().getInt("ShutterTicks");
+                if (ticks <= 0)
+                    closeShutter(player, stack);
+                else {
+                    ticks--;
+                    stack.getTag().putInt("ShutterTicks", ticks);
+                }
+            }
+        }
+
+//        if (isShutterOpen(stack, level) && shouldShutterClose(stack, player.getLevel()))
+//            closeShutter(player, stack);
+
+        boolean inOffhand = player.getOffhandItem().equals(stack);
+        boolean inHand = isSelected || inOffhand;
+
+        if (!inHand) {
+            deactivate(player, stack);
+        }
+    }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return !oldStack.getItem().equals(newStack.getItem()) /*|| slotChanged*/;
+    }
+
+    @Override
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+        Player player = context.getPlayer();
+        if (player != null) {
+            InteractionHand hand = context.getHand();
+            if (hand == InteractionHand.MAIN_HAND && CameraInHand.getActiveHand(player) == InteractionHand.OFF_HAND)
+                return InteractionResult.PASS;
+
+            return useCamera(player, hand);
+        }
+        return InteractionResult.CONSUME; // To not play attack animation.
+    }
+
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+        if (hand == InteractionHand.MAIN_HAND && CameraInHand.getActiveHand(player) == InteractionHand.OFF_HAND)
+            return InteractionResultHolder.pass(player.getItemInHand(hand));
+
+
+        InteractionResult interactionResult = useCamera(player, hand);
+        return InteractionResultHolder.consume(player.getItemInHand(hand));
+//        return switch (interactionResult) {
+//            case SUCCESS -> InteractionResultHolder.success(player.getItemInHand(hand));
+//            case CONSUME, CONSUME_PARTIAL -> InteractionResultHolder.consume(player.getItemInHand(hand));
+//            case PASS -> InteractionResultHolder.pass(player.getItemInHand(hand));
+//            case FAIL -> InteractionResultHolder.fail(player.getItemInHand(hand));
+//        };
+    }
+
+    public InteractionResult useCamera(Player player, InteractionHand hand) {
         Level level = player.getLevel();
 
         if (player.getCooldowns().isOnCooldown(this))
-            return;
+            return InteractionResult.FAIL;
 
-        ItemStack cameraStack = player.getItemInHand(hand);
-        if (cameraStack.isEmpty() || cameraStack.getItem() != this)
-            return;
+        ItemStack stack = player.getItemInHand(hand);
+        if (stack.isEmpty() || stack.getItem() != this)
+            return InteractionResult.PASS;
 
-        if (!isActive(player, cameraStack)) {
-            if (player.isSecondaryUseActive())
-                openCameraAttachmentsGUI(player, hand);
-            else {
-                activate(player, cameraStack);
+        boolean active = isActive(stack);
 
-                if (level.isClientSide)
-                    ViewfinderClient.open(player);
+        if (!active && player.isSecondaryUseActive()) {
+            if (isShutterOpen(stack, level)) {
+                player.displayClientMessage(Component.translatable("item.exposure.camera.camera_attachments.fail.shutter_open"), true);
+                return InteractionResult.FAIL;
             }
 
-            player.getCooldowns().addCooldown(this, 4);
-            return;
+            openCameraAttachmentsGUI(player, hand);
+            return InteractionResult.SUCCESS;
         }
 
-        if (isShutterOpen(cameraStack, level))
-            return;
+        if (!active) {
+            activate(player, stack);
+            player.getCooldowns().addCooldown(this, 4);
+            return InteractionResult.SUCCESS; // Consume to not play animation
+        }
 
-        Optional<ItemAndStack<FilmRollItem>> filmOpt = getFilm(cameraStack);
+        if (isShutterOpen(stack, level))
+            return InteractionResult.FAIL;
+
+        Optional<ItemAndStack<FilmRollItem>> filmOpt = getFilm(stack);
         boolean exposingFilm = filmOpt.map(f -> f.getItem().canAddFrame(f.getStack())).orElse(false);
-        boolean flashHasFired = shouldFlashFire(player, cameraStack) && tryUseFlash(player, cameraStack);
+        boolean flashHasFired = shouldFlashFire(player, stack) && tryUseFlash(player, stack);
 
-        ShutterSpeed shutterSpeed = getShutterSpeed(cameraStack);
+        ShutterSpeed shutterSpeed = getShutterSpeed(stack);
 
-        openShutter(player, cameraStack, shutterSpeed);
-        onShutterOpen(player, shutterSpeed, exposingFilm);
-
-        ScheduledTasks.schedule(new ScheduledTasks.Task(Math.max(shutterSpeed.getTicks(), 2),
-                () -> {
-                    closeShutter(player, cameraStack, shutterSpeed);
-                    onShutterClosed(player, shutterSpeed, exposingFilm);
-                    player.getCooldowns()
-                            .addCooldown(this, Math.max(1, (flashHasFired ? 15 : 4) - shutterSpeed.getTicks()));
-                }));
+        openShutter(player, stack, shutterSpeed, exposingFilm);
 
         if (player instanceof ServerPlayer serverPlayer)
-            Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(cameraStack), flashHasFired, exposingFilm);
+            Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(stack), flashHasFired, exposingFilm);
 
         if (exposingFilm)
             player.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
@@ -231,19 +313,21 @@ public class CameraItem extends Item {
         if (level.isClientSide) {
             if (exposingFilm) {
                 String exposureId = createExposureId(player);
-                Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
+                Capture capture = createCapture(player, stack, exposureId, flashHasFired);
                 CaptureManager.enqueue(capture);
 
-                CompoundTag frame = createFrameTag(player, cameraStack, exposureId, capture, flashHasFired);
+                CompoundTag frame = createFrameTag(player, stack, exposureId, capture, flashHasFired);
 
-                exposeFilmFrame(cameraStack, frame);
+                exposeFilmFrame(stack, frame);
 
                 // Send to server:
                 CameraInHandAddFrameServerboundPacket.send(hand, frame);
             } else if (flashHasFired) {
-                spawnClientsideFlashEffects(player, cameraStack);
+                spawnClientsideFlashEffects(player, stack);
             }
         }
+
+        return InteractionResult.CONSUME; // Consume to not play animation
     }
 
     public void exposeFilmFrame(ItemStack cameraStack, CompoundTag frame) {
@@ -270,8 +354,7 @@ public class CameraItem extends Item {
         BlockPos playerHeadPos = player.blockPosition().above();
         @Nullable BlockPos flashPos = null;
 
-        if (level.getBlockState(playerHeadPos).isAir() || level.getFluidState(playerHeadPos)
-                .isSourceOfType(Fluids.WATER))
+        if (level.getBlockState(playerHeadPos).isAir() || level.getFluidState(playerHeadPos).isSourceOfType(Fluids.WATER))
             flashPos = playerHeadPos;
         else {
             for (Direction direction : Direction.values()) {
@@ -446,26 +529,6 @@ public class CameraItem extends Item {
                 .brightnessStops(brightnessStops)
                 .components(components)
                 .converter(new DitheringColorConverter());
-    }
-
-    public void onShutterOpen(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {
-        player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_OPEN.get(), SoundSource.PLAYERS,
-                exposingFrame ? 0.85f : 0.65f, player.getLevel().getRandom()
-                        .nextFloat() * 0.15f + (exposingFrame ? 1.1f : 1.25f));
-        player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-        if (shutterSpeed.getMilliseconds() > 500) // More than 1/2
-            OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
-    }
-
-    public void onShutterClosed(Player player, ShutterSpeed shutterSpeed, boolean exposingFrame) {
-        player.getLevel().playSound(player, player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), SoundSource.PLAYERS,
-                exposingFrame ? 0.85f : 0.65f, player.getLevel().getRandom()
-                        .nextFloat() * 0.15f + (exposingFrame ? 1f : 1.2f));
-        player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-        if (exposingFrame) {
-            OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
-                    1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
-        }
     }
 
     /**

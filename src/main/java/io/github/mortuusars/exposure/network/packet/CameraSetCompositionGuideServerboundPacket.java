@@ -40,7 +40,7 @@ public record CameraSetCompositionGuideServerboundPacket(CompositionGuide guide)
         @Nullable ServerPlayer player = context.getSender();
         Preconditions.checkState(player != null, "Cannot handle packet: Player was null");
 
-        CameraInHand camera = CameraInHand.ofPlayer(player);
+        CameraInHand camera = CameraInHand.getActive(player);
         if (!camera.isEmpty()) {
             camera.getItem().setCompositionGuide(camera.getStack(), guide);
         }

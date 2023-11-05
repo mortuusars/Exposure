@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.util;
+package io.github.mortuusars.exposure.sound;
 
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.PlayOnePerPlayerSoundClientboundPacket;

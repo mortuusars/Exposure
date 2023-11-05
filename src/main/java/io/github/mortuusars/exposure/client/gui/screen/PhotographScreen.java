@@ -9,7 +9,6 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
-import io.github.mortuusars.exposure.client.gui.component.ZoomableScreen;
 import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.item.PhotographItem;

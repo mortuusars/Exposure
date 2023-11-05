@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.util.OnePerPlayerSounds;
+import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;

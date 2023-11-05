@@ -1,11 +1,11 @@
 package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.mortuusars.exposure.camera.CameraHelper;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 
@@ -17,17 +17,13 @@ public class KeyboardHandler {
 
         if (key == InputConstants.KEY_ESCAPE || Minecraft.getInstance().options.keyInventory.matches(key, scanCode)) {
             if (action == 0) { // Release
-                if (Minecraft.getInstance().screen instanceof ViewfinderControlsScreen viewfinderControlsScreen) {
-                        viewfinderControlsScreen.onClose();
-                }
-                else {
-                    CameraHelper.deactivateAll(player, true);
-                }
+                if (Minecraft.getInstance().screen instanceof ViewfinderControlsScreen viewfinderControlsScreen)
+                    viewfinderControlsScreen.onClose();
+                else
+                    CameraInHand.deactivate(player);
             }
             return true;
         }
-
-
 
         if (!(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
             if (Minecraft.getInstance().options.keyShift.matches(key, scanCode)) {

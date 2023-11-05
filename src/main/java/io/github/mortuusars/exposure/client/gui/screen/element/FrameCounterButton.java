@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -34,7 +35,7 @@ public class FrameCounterButton extends ImageButton {
     public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float pPartialTick) {
         super.renderButton(poseStack, mouseX, mouseY, pPartialTick);
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
 
         String text = camera.isEmpty() ? "-" : camera.getItem().getFilm(camera.getStack()).map(film -> {
             int exposedFrames = film.getItem().getExposedFrames(film.getStack()).size();
@@ -55,7 +56,7 @@ public class FrameCounterButton extends ImageButton {
         List<Component> components = new ArrayList<>();
         components.add(Component.translatable("gui.exposure.viewfinder.film_frame_counter.tooltip"));
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
         if (!camera.isEmpty() && camera.getItem().getFilm(camera.getStack()).isEmpty()) {
             components.add(Component.translatable("gui.exposure.viewfinder.film_frame_counter.tooltip.no_film")
                     .withStyle(Style.EMPTY.withColor(0xdd6357)));

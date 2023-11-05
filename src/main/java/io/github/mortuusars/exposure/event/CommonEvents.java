@@ -21,6 +21,7 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 
 public class CommonEvents {
@@ -46,31 +47,41 @@ public class CommonEvents {
 
         @SubscribeEvent
         public static void playerTick(TickEvent.PlayerTickEvent event) {
-            if (event.phase != TickEvent.Phase.END)
-                return;
-
             Player player = event.player;
-            InteractionHand activeHand = CameraInHand.getActiveHand(player);
-
-            if (activeHand == null) {
-                if (player.getLevel().isClientSide && ViewfinderClient.isOpen()) {
-                    ViewfinderClient.close(player);
-                }
+            if (event.phase != TickEvent.Phase.END || !player.getLevel().isClientSide)
                 return;
-            }
 
-            ItemStack itemInHand = player.getItemInHand(activeHand);
+            boolean cameraActive = CameraInHand.isActive(player);
+            if (cameraActive && !ViewfinderClient.isOpen())
+                ViewfinderClient.open();
+            else if (!cameraActive && ViewfinderClient.isOpen())
+                ViewfinderClient.close();
 
-            if (activeHand == InteractionHand.OFF_HAND && player.getMainHandItem().getItem() instanceof CameraItem) {
-                CameraHelper.deactivateAll(player, false);
-            }
-            else {
-                // Refresh active camera
-                ((CameraItem) itemInHand.getItem()).setActive(player, itemInHand, true);
 
-                if (player.getLevel().isClientSide && !ViewfinderClient.isOpen())
-                    ViewfinderClient.open(player);
-            }
+//            InteractionHand activeHand = CameraInHand.getActiveHand(player);
+//
+//            if (activeHand == null) {
+//                if (player.getLevel().isClientSide && ViewfinderClient.isOpen()) {
+//                    ViewfinderClient.close(player);
+//                }
+//                return;
+//            }
+//
+//            ItemStack itemInHand = player.getItemInHand(activeHand);
+//
+//            if (activeHand == InteractionHand.OFF_HAND && player.getMainHandItem().getItem() instanceof CameraItem) {
+//                CameraItem camera = ((CameraItem) itemInHand.getItem());
+//                if (camera.isActive(player, itemInHand))
+//                    camera.deactivate(player, itemInHand);
+////                CameraHelper.deactivateAll(player, false);
+//            }
+//            else {
+//                // Refresh active camera
+//                ((CameraItem) itemInHand.getItem()).setActive(player, itemInHand, true);
+//
+//                if (player.getLevel().isClientSide && !ViewfinderClient.isOpen())
+//                    ViewfinderClient.open(player);
+//            }
         }
 
         // IDK why but LevelTickEvent is fired 3 times on the server per 1 on the client.
@@ -92,19 +103,19 @@ public class CommonEvents {
             Player player = event.getEntity();
 
             // Interacting with entity when trying to shoot is annoying
-            if (CameraInHand.isActive(player)) {
+            CameraInHand camera = CameraInHand.getActive(player);
+            if (!camera.isEmpty()) {
                 event.setCanceled(true);
                 event.setCancellationResult(InteractionResult.SUCCESS);
-                CameraInHand camera = CameraInHand.ofPlayer(player);
                 camera.getStack().use(player.level, player, camera.getHand());
             }
         }
 
         @SubscribeEvent
         public static void onItemToss(ItemTossEvent event) {
-            ItemStack itemStack = event.getEntity().getItem();
-            if (itemStack.getItem() instanceof CameraItem cameraItem)
-                cameraItem.setActive(event.getPlayer(), itemStack, false);
+            ItemStack stack = event.getEntity().getItem();
+            if (stack.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(stack))
+                cameraItem.deactivate(event.getPlayer(), stack);
         }
     }
 }

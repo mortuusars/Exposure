@@ -6,7 +6,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.client.gui.component.ZoomableScreen;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import io.github.mortuusars.exposure.util.Navigation;

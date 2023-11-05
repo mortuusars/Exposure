@@ -22,17 +22,15 @@ public class ClientCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("exposure")
                 .requires((stack) -> stack.hasPermission(2))
-                .then(Commands.literal("latest")
-                        .then(Commands.literal("show")
-                                .executes(ClientCommands::showLast))
-                        /*.then(Commands.literal("clear")
-                                .executes(ClientCommands::clearLast))*/));
+                .then(Commands.literal("show")
+                        .then(Commands.literal("latest")
+                                .executes(ClientCommands::showLatest))));
     }
 
-    private static int showLast(CommandContext<CommandSourceStack> context) {
+    private static int showLatest(CommandContext<CommandSourceStack> context) {
         Collection<String> exposureIds = LastExposures.get();
         if (exposureIds.size() == 0) {
-            context.getSource().sendFailure(Component.translatable("command.exposure.latest.show.error.no_exposures"));
+            context.getSource().sendFailure(Component.translatable("command.exposure.show.latest.error.no_exposures"));
             return 0;
         }
 
@@ -48,18 +46,6 @@ public class ClientCommands {
         }
 
         ScheduledTasks.schedule(new ScheduledTasks.Task(2, () -> ClientGUI.openPhotographScreen(photographs)));
-        return 0;
-    }
-
-    private static int clearLast(CommandContext<CommandSourceStack> context) {
-        if (LastExposures.get().size() > 0) {
-            LastExposures.clear();
-            context.getSource().sendSuccess(Component.translatable("command.exposure.latest.clear.success"), false);
-        }
-        else {
-            context.getSource().sendFailure(Component.translatable("command.exposure.latest.clear.error.nothing_to_clear"));
-        }
-
         return 0;
     }
 }

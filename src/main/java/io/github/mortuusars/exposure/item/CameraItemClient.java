@@ -2,8 +2,10 @@ package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.util.CameraInHand;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -36,5 +38,12 @@ public class CameraItemClient implements IClientItemExtensions {
             AnimationUtils.animateCrossbowHold(model.rightArm, model.leftArm, model.head, false);
         }
         model.head.xRot += 0.3;
+    }
+
+    public static float itemPropertyFunction(ItemStack stack, ClientLevel clientLevel, LivingEntity livingEntity, int seed) {
+        if (stack.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(stack))
+            return 0.1f;
+
+        return 0f;
     }
 }

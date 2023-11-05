@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.network.packet;
 
-import io.github.mortuusars.exposure.camera.CameraHelper;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkDirection;
@@ -8,24 +8,21 @@ import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 import javax.annotation.Nullable;
-import java.util.UUID;
 import java.util.function.Supplier;
 
-public record DeactivateCameraServerboundPacket(UUID playerUUID) {
+public record DeactivateCamerasInHandServerboundPacket() {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(DeactivateCameraServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(DeactivateCameraServerboundPacket::toBuffer)
-                .decoder(DeactivateCameraServerboundPacket::fromBuffer)
-                .consumerMainThread(DeactivateCameraServerboundPacket::handle)
+        channel.messageBuilder(DeactivateCamerasInHandServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(DeactivateCamerasInHandServerboundPacket::toBuffer)
+                .decoder(DeactivateCamerasInHandServerboundPacket::fromBuffer)
+                .consumerMainThread(DeactivateCamerasInHandServerboundPacket::handle)
                 .add();
     }
 
-    public void toBuffer(FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeUUID(playerUUID);
-    }
+    public void toBuffer(FriendlyByteBuf friendlyByteBuf) {}
 
-    public static DeactivateCameraServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new DeactivateCameraServerboundPacket(buffer.readUUID());
+    public static DeactivateCamerasInHandServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new DeactivateCamerasInHandServerboundPacket();
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -36,7 +33,7 @@ public record DeactivateCameraServerboundPacket(UUID playerUUID) {
         if (player == null)
             throw new IllegalStateException("Cannot handle the packet: Player was null");
 
-        CameraHelper.deactivateAll(player, false);
+        CameraInHand.deactivate(player);
 
         return true;
     }

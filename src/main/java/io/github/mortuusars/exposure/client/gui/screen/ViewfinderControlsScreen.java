@@ -22,7 +22,9 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
@@ -59,9 +61,8 @@ public class ViewfinderControlsScreen extends Screen {
         int leftPos = (width - 256) / 2;
         int topPos = Math.round(ViewfinderOverlay.opening.y + ViewfinderOverlay.opening.height - 256);
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-        if (camera.isEmpty())
-            throw new IllegalStateException("Active Camera cannot be empty here.");
+        CameraInHand camera = CameraInHand.getActive(player);
+        Preconditions.checkState(!camera.isEmpty(), "Player should hold an Active Camera at this point.");
 
         boolean hasFlashAttached = camera.getItem().getAttachment(camera.getStack(), CameraItem.FLASH_ATTACHMENT).isPresent();
 
@@ -166,11 +167,15 @@ public class ViewfinderControlsScreen extends Screen {
         boolean handled = super.mouseClicked(mouseX, mouseY, button);
 
         if (!handled && button == 1 && Minecraft.getInstance().gameMode != null) {
-            CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-            if (!camera.isEmpty()) {
-                Minecraft.getInstance().gameMode.useItem(player, camera.getHand());
-                handled = true;
+            InteractionHand activeHand = CameraInHand.getActiveHand(player);
+            if (activeHand != null) {
+                ItemStack itemInHand = player.getItemInHand(activeHand);
+                if (itemInHand.getItem() instanceof CameraItem) {
+                    Minecraft.getInstance().gameMode.useItem(player, activeHand);
+                }
             }
+
+            handled = true;
         }
 
         return handled;

@@ -24,7 +24,7 @@ public class Packets {
     public static void register() {
         ExposureDataPartPacket.register(CHANNEL, id++);
 
-        DeactivateCameraServerboundPacket.register(CHANNEL, id++);
+        DeactivateCamerasInHandServerboundPacket.register(CHANNEL, id++);
 
         CameraSetZoomServerboundPacket.register(CHANNEL, id++);
         CameraSetCompositionGuideServerboundPacket.register(CHANNEL, id++);

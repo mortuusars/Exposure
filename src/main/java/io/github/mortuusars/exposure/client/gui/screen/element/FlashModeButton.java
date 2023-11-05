@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
@@ -29,7 +30,8 @@ public class FlashModeButton extends CycleButton {
         super(screen, x, y, width, height, u, v, height, texture);
         flashModes = Arrays.stream(FlashMode.values()).toList();
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
+        Preconditions.checkState(!camera.isEmpty(), "Player must hold an active camera at this point.");
         FlashMode guide = camera.getItem().getFlashMode(camera.getStack());
 
         int currentGuideIndex = 0;
@@ -72,8 +74,6 @@ public class FlashModeButton extends CycleButton {
 
     @Override
     protected void onCycle() {
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-        if (!camera.isEmpty())
-            SynchronizedCameraInHandActions.setFlashMode(flashModes.get(currentIndex));
+        SynchronizedCameraInHandActions.setFlashMode(flashModes.get(currentIndex));
     }
 }

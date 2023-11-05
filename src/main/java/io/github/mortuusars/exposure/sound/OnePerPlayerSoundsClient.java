@@ -1,7 +1,7 @@
-package io.github.mortuusars.exposure.util;
+package io.github.mortuusars.exposure.sound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.sound.ShutterTimerTickingSoundInstance;
+import io.github.mortuusars.exposure.sound.instance.ShutterTimerTickingSoundInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;

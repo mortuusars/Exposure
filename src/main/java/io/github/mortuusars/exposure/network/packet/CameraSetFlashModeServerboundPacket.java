@@ -40,7 +40,7 @@ public record CameraSetFlashModeServerboundPacket(FlashMode flashMode) {
         @Nullable ServerPlayer player = context.getSender();
         Preconditions.checkState(player != null, "Cannot handle packet: Player was null");
 
-        CameraInHand camera = CameraInHand.ofPlayer(player);
+        CameraInHand camera = CameraInHand.getActive(player);
         if (!camera.isEmpty()) {
             camera.getItem().setFlashMode(camera.getStack(), flashMode);
         }

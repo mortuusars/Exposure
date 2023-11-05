@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
@@ -29,7 +30,8 @@ public class CompositionGuideButton extends CycleButton {
         guides = CompositionGuides.getGuides();
 
 
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
+        CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
+        Preconditions.checkState(!camera.isEmpty(), "Player must hold an active camera at this point.");
         CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());
 
         int currentGuideIndex = 0;
@@ -72,8 +74,6 @@ public class CompositionGuideButton extends CycleButton {
 
     @Override
     protected void onCycle() {
-        CameraInHand camera = CameraInHand.ofPlayer(Minecraft.getInstance().player);
-        if (!camera.isEmpty())
-            SynchronizedCameraInHandActions.setCompositionGuide(guides.get(currentIndex));
+        SynchronizedCameraInHandActions.setCompositionGuide(guides.get(currentIndex));
     }
 }

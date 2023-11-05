@@ -61,7 +61,7 @@ public class ViewfinderOverlay {
         if (minecraft.options.hideGui)
             return;
 
-        CameraInHand camera = CameraInHand.ofPlayer(minecraft.player);
+        CameraInHand camera = CameraInHand.getActive(player);
         if (camera.isEmpty())
             return;
 

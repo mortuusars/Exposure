@@ -2,21 +2,22 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FocalRange;
-import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
-import io.github.mortuusars.exposure.Config;
+import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.Fov;
-import net.minecraft.Util;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ViewportEvent;
@@ -48,12 +49,18 @@ public class ViewfinderClient {
         return isOpen() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
     }
 
-    public static void open(Player player) {
-        Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
-        if (isOpen() || player != Minecraft.getInstance().player)
+    public static void open() {
+        LocalPlayer player = Minecraft.getInstance().player;
+        Preconditions.checkState(player != null, "Player should not be null");
+        Preconditions.checkState(player.getLevel().isClientSide(), "This should be called only client-side.");
+
+        if (isOpen())
             return;
 
-        CameraInHand camera = CameraInHand.ofPlayer(player);
+        @Nullable InteractionHand activeHand = CameraInHand.getActiveHand(player);
+        Preconditions.checkState(activeHand != null, "Player should have active camera in hand.");
+
+        ItemAndStack<CameraItem> camera = new ItemAndStack<>(player.getItemInHand(activeHand));
 
         focalRange = camera.getItem().getFocalRange(camera.getStack());
         targetFov = Fov.focalLengthToFov(Mth.clamp(camera.getItem().getFocalLength(camera.getStack()), focalRange.min(), focalRange.max()));
@@ -73,23 +80,18 @@ public class ViewfinderClient {
         ViewfinderOverlay.setup();
     }
 
-    public static void close(Player player) {
-        Preconditions.checkState(player.getLevel().isClientSide, "This should be called only client-side.");
+    public static void close() {
+//        if (!isOpen())
+//            return;
 
-        if (player != Minecraft.getInstance().player)
-            return;
-
-        if (!isOpen())
-            return;
-
-        // This method sometimes gets called twice: from regular closing and from playerTick.
-        // And isOpen is true the second time for some reason.
-        // I'm not sure if this fixes it, but leaving it just in case.
-        if (Util.getMillis() - closedAt < 100) {
-            isOpen = false;
-            return;
-        }
-        closedAt = Util.getMillis();
+//        // This method sometimes gets called twice: from regular closing and from playerTick.
+//        // And isOpen is true the second time for some reason.
+//        // I'm not sure if this fixes it, but leaving it just in case.
+//        if (Util.getMillis() - closedAt < 100) {
+//            isOpen = false;
+//            return;
+//        }
+//        closedAt = Util.getMillis();
 
         isOpen = false;
         targetFov = Minecraft.getInstance().options.fov().get();
