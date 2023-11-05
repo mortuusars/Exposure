@@ -28,6 +28,12 @@
     ],
     "subtitle": "subtitle.exposure.camera.film_advance"
   },
+  "item.camera.film_advance_last": {
+    "sounds": [
+      "exposure:item/camera/film_advance_last"
+    ],
+    "subtitle": "subtitle.exposure.camera.film_advance_last"
+  },
   "item.camera.filter_place": {
     "sounds": [
       "exposure:item/camera/filter_place"
@@ -45,6 +51,12 @@
       "exposure:item/camera/lens_ring2",
       "exposure:item/camera/lens_ring3"
     ]
+  },
+  "item.camera.release_button_click": {
+    "sounds": [
+      "exposure:item/camera/release_button_click"
+    ],
+    "subtitle": "subtitle.exposure.camera.release_button_click"
   },
   "item.camera.shutter_close": {
     "sounds": [

@@ -179,14 +179,17 @@ public class CameraItem extends Item {
 
         setShutterClosed(stack);
 
-        if (player.getLevel().getGameTime() - closedAtTimestamp < 40) { // Skip effects if shutter "was closed" long ago
+        if (player.getLevel().getGameTime() - closedAtTimestamp < 50) { // Skip effects if shutter "was closed" long ago
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
             player.getCooldowns().addCooldown(this, flashHasFired ? 10 : 2);
-            playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), exposingFrame ? 0.85f : 0.65f,
-                    exposingFrame ? 1.1f : 1.25f, 0.2f);
+            playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), 0.85f, 1.1f, 0.2f);
             if (exposingFrame) {
-                OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
-                        1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
+                boolean lastFrame = getFilm(stack)
+                        .map(film -> film.getItem().getExposedFramesCount(film.getStack())
+                                == film.getItem().getMaxFrameCount(film.getStack()))
+                        .orElse(false);
+                SoundEvent sound = lastFrame ? Exposure.SoundEvents.FILM_ADVANCE_LAST.get() : Exposure.SoundEvents.FILM_ADVANCE.get();
+                OnePerPlayerSounds.play(player, sound, SoundSource.PLAYERS, 1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
             }
         }
     }
@@ -287,38 +290,44 @@ public class CameraItem extends Item {
             return InteractionResult.CONSUME; // Consume to not play animation
         }
 
+        playCameraSound(player, Exposure.SoundEvents.CAMERA_RELEASE_BUTTON_CLICK.get(), 0.75f, 1f, 0.1f);
+
+        Optional<ItemAndStack<FilmRollItem>> filmAttachment = getFilm(stack);
+
+        if (filmAttachment.isEmpty())
+            return InteractionResult.FAIL;
+
+        ItemAndStack<FilmRollItem> film = filmAttachment.get();
+        boolean exposingFilm = film.getItem().canAddFrame(film.getStack());
+
+        if (!exposingFilm)
+            return InteractionResult.FAIL;
+
         if (isShutterOpen(stack))
             return InteractionResult.FAIL;
 
-        Optional<ItemAndStack<FilmRollItem>> filmOpt = getFilm(stack);
-        boolean exposingFilm = filmOpt.map(f -> f.getItem().canAddFrame(f.getStack())).orElse(false);
         boolean flashHasFired = shouldFlashFire(player, stack) && tryUseFlash(player, stack);
 
         ShutterSpeed shutterSpeed = getShutterSpeed(stack);
 
-        openShutter(player, stack, shutterSpeed, exposingFilm, flashHasFired);
+        openShutter(player, stack, shutterSpeed, true, flashHasFired);
 
         if (player instanceof ServerPlayer serverPlayer)
-            Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(stack), flashHasFired, exposingFilm);
+            Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(stack), flashHasFired, true);
 
-        if (exposingFilm)
-            player.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
+        player.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
 
         if (level.isClientSide) {
-            if (exposingFilm) {
-                String exposureId = createExposureId(player);
-                Capture capture = createCapture(player, stack, exposureId, flashHasFired);
-                CaptureManager.enqueue(capture);
+            String exposureId = createExposureId(player);
+            Capture capture = createCapture(player, stack, exposureId, flashHasFired);
+            CaptureManager.enqueue(capture);
 
-                CompoundTag frame = createFrameTag(player, stack, exposureId, capture, flashHasFired);
+            CompoundTag frame = createFrameTag(player, stack, exposureId, capture, flashHasFired);
 
-                exposeFilmFrame(stack, frame);
+            exposeFilmFrame(stack, frame);
 
-                // Send to server:
-                CameraInHandAddFrameServerboundPacket.send(hand, frame);
-            } else if (flashHasFired) {
-                spawnClientsideFlashEffects(player, stack);
-            }
+            // Send to server:
+            CameraInHandAddFrameServerboundPacket.send(hand, frame);
         }
 
         return InteractionResult.CONSUME; // Consume to not play animation

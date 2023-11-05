@@ -67,7 +67,7 @@ public record CameraInHandAddFrameServerboundPacket(InteractionHand hand, Compou
         addStructuresInfo(player);
 
         cameraItem.exposeFilmFrame(itemInHand, frame);
-        player.setItemInHand(hand, itemInHand);
+//        player.setItemInHand(hand, itemInHand);
         return true;
     }
 
