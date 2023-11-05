@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.network.packet;
+package io.github.mortuusars.exposure.network.packet.server;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.storage;
 
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.QueryExposureDataServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.QueryExposureDataServerboundPacket;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;

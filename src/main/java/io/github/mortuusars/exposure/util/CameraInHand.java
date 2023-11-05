@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.util;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.DeactivateCamerasInHandServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.DeactivateCamerasInHandServerboundPacket;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

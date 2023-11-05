@@ -1,8 +1,8 @@
 package io.github.mortuusars.exposure.sound;
 
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.PlayOnePerPlayerSoundClientboundPacket;
-import io.github.mortuusars.exposure.network.packet.StopOnePerPlayerSoundClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.client.PlayOnePerPlayerSoundClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.client.StopOnePerPlayerSoundClientboundPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;

@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
-public class CameraTakenShotTrigger extends SimpleCriterionTrigger<CameraTakenShotTrigger.TriggerInstance> {
+public class CameraFilmFrameExposedTrigger extends SimpleCriterionTrigger<CameraFilmFrameExposedTrigger.TriggerInstance> {
     public static final ResourceLocation ID = new ResourceLocation("frame_exposed");
 
     public @NotNull ResourceLocation getId() {

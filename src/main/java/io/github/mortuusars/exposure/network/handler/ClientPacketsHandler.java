@@ -12,9 +12,11 @@ import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConv
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.NegativeExposureScreen;
-import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.network.packet.ApplyShaderClientboundPacket;
-import io.github.mortuusars.exposure.network.packet.ShowExposureClientboundPacket;
+import io.github.mortuusars.exposure.item.CameraItem;
+import io.github.mortuusars.exposure.network.packet.client.ApplyShaderClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.client.ShowExposureClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.client.StartExposureClientboundPacket;
+import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
@@ -27,6 +29,7 @@ import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.Nullable;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -114,5 +117,16 @@ public class ClientPacketsHandler {
 
             ClientGUI.openPhotographScreen(List.of(new ItemAndStack<>(stack)));
         }
+    }
+
+    public static void startExposure(StartExposureClientboundPacket packet) {
+        @Nullable LocalPlayer player = Minecraft.getInstance().player;
+        Preconditions.checkState(player != null, "Player cannot be null.");
+
+        ItemStack itemInHand = player.getItemInHand(packet.activeHand());
+        if (!(itemInHand.getItem() instanceof CameraItem cameraItem) || !cameraItem.isActive(itemInHand))
+            throw new IllegalStateException("Player should have active Camera in hand. " + itemInHand);
+
+        cameraItem.exposeFrameClientside(player, packet.activeHand(), packet.exposureId(), packet.flashHasFired());
     }
 }

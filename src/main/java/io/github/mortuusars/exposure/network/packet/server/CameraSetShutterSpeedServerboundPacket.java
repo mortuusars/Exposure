@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.network.packet;
+package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.camera.infrastructure.ShutterSpeed;

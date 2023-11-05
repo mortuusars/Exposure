@@ -1,8 +1,10 @@
-package io.github.mortuusars.exposure.network.packet;
+package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.BuiltinRegistries;
@@ -19,7 +21,6 @@ import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -67,7 +68,7 @@ public record CameraInHandAddFrameServerboundPacket(InteractionHand hand, Compou
         addStructuresInfo(player);
 
         cameraItem.exposeFilmFrame(itemInHand, frame);
-//        player.setItemInHand(hand, itemInHand);
+        Exposure.Advancements.FILM_FRAME_EXPOSED.trigger(player, new ItemAndStack<>(itemInHand), frame.getBoolean("Flash"), true);
         return true;
     }
 

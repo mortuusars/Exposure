@@ -2,6 +2,8 @@ package io.github.mortuusars.exposure.network;
 
 
 import io.github.mortuusars.exposure.network.packet.*;
+import io.github.mortuusars.exposure.network.packet.client.*;
+import io.github.mortuusars.exposure.network.packet.server.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkRegistry;
@@ -35,6 +37,7 @@ public class Packets {
         QueryExposureDataServerboundPacket.register(CHANNEL, id++);
 
         ApplyShaderClientboundPacket.register(CHANNEL, id++);
+        StartExposureClientboundPacket.register(CHANNEL, id++);
         LoadExposureCommandClientboundPacket.register(CHANNEL, id++);
         ShowExposureClientboundPacket.register(CHANNEL, id++);
         ExposeCommandClientboundPacket.register(CHANNEL, id++);

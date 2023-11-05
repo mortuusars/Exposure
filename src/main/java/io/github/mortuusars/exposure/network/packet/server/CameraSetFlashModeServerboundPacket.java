@@ -1,7 +1,7 @@
-package io.github.mortuusars.exposure.network.packet;
+package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.camera.infrastructure.CompositionGuide;
+import io.github.mortuusars.exposure.camera.infrastructure.FlashMode;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.network.FriendlyByteBuf;
@@ -13,25 +13,25 @@ import net.minecraftforge.network.simple.SimpleChannel;
 import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
-public record CameraSetCompositionGuideServerboundPacket(CompositionGuide guide) {
+public record CameraSetFlashModeServerboundPacket(FlashMode flashMode) {
     public static void register(SimpleChannel channel, int id) {
-        channel.messageBuilder(CameraSetCompositionGuideServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(CameraSetCompositionGuideServerboundPacket::toBuffer)
-                .decoder(CameraSetCompositionGuideServerboundPacket::fromBuffer)
-                .consumerMainThread(CameraSetCompositionGuideServerboundPacket::handle)
+        channel.messageBuilder(CameraSetFlashModeServerboundPacket.class, id, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CameraSetFlashModeServerboundPacket::toBuffer)
+                .decoder(CameraSetFlashModeServerboundPacket::fromBuffer)
+                .consumerMainThread(CameraSetFlashModeServerboundPacket::handle)
                 .add();
     }
 
-    public static void send(CompositionGuide guide) {
-        Packets.sendToServer(new CameraSetCompositionGuideServerboundPacket(guide));
+    public static void send(FlashMode flashMode) {
+        Packets.sendToServer(new CameraSetFlashModeServerboundPacket(flashMode));
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
-        guide.toBuffer(buffer);
+        flashMode.toBuffer(buffer);
     }
 
-    public static CameraSetCompositionGuideServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new CameraSetCompositionGuideServerboundPacket(CompositionGuide.fromBuffer(buffer));
+    public static CameraSetFlashModeServerboundPacket fromBuffer(FriendlyByteBuf buffer) {
+        return new CameraSetFlashModeServerboundPacket(FlashMode.fromBuffer(buffer));
     }
 
     @SuppressWarnings("UnusedReturnValue")
@@ -42,7 +42,7 @@ public record CameraSetCompositionGuideServerboundPacket(CompositionGuide guide)
 
         CameraInHand camera = CameraInHand.getActive(player);
         if (!camera.isEmpty()) {
-            camera.getItem().setCompositionGuide(camera.getStack(), guide);
+            camera.getItem().setFlashMode(camera.getStack(), flashMode);
         }
 
         return true;

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
-import io.github.mortuusars.exposure.advancement.trigger.CameraTakenShotTrigger;
+import io.github.mortuusars.exposure.advancement.trigger.CameraFilmFrameExposedTrigger;
 import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.block.LightroomBlock;
 import io.github.mortuusars.exposure.block.entity.FlashBlockEntity;
@@ -265,10 +265,10 @@ public class Exposure {
     }
 
     public static class Advancements {
-        public static CameraTakenShotTrigger CAMERA_TAKEN_SHOT = new CameraTakenShotTrigger();
+        public static CameraFilmFrameExposedTrigger FILM_FRAME_EXPOSED = new CameraFilmFrameExposedTrigger();
 
         public static void register() {
-            CriteriaTriggers.register(CAMERA_TAKEN_SHOT);
+            CriteriaTriggers.register(FILM_FRAME_EXPOSED);
         }
     }
 

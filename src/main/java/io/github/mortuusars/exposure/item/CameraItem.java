@@ -10,7 +10,8 @@ import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConv
 import io.github.mortuusars.exposure.camera.infrastructure.*;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
-import io.github.mortuusars.exposure.network.packet.CameraInHandAddFrameServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.client.StartExposureClientboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.CameraInHandAddFrameServerboundPacket;
 import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
 import io.github.mortuusars.exposure.util.*;
 import net.minecraft.ChatFormatting;
@@ -166,7 +167,7 @@ public class CameraItem extends Item {
         setShutterOpen(player.getLevel(), stack, shutterSpeed, exposingFrame, flashHasFired);
 
         player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
-        playCameraSound(player, Exposure.SoundEvents.SHUTTER_OPEN.get(), exposingFrame ? 0.85f : 0.65f,
+        playCameraSound(player, Exposure.SoundEvents.SHUTTER_OPEN.get(), exposingFrame ? 0.7f : 0.5f,
                 exposingFrame ? 1.1f : 1.25f, 0.2f);
         if (shutterSpeed.getMilliseconds() > 500) // More than 1/2
             OnePerPlayerSounds.play(player, Exposure.SoundEvents.SHUTTER_TICKING.get(), SoundSource.PLAYERS, 1f, 1f);
@@ -182,14 +183,19 @@ public class CameraItem extends Item {
         if (player.getLevel().getGameTime() - closedAtTimestamp < 50) { // Skip effects if shutter "was closed" long ago
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
             player.getCooldowns().addCooldown(this, flashHasFired ? 10 : 2);
-            playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), 0.85f, 1.1f, 0.2f);
+            playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), 0.7f, 1.1f, 0.2f);
             if (exposingFrame) {
-                boolean lastFrame = getFilm(stack)
-                        .map(film -> film.getItem().getExposedFramesCount(film.getStack())
-                                == film.getItem().getMaxFrameCount(film.getStack()))
-                        .orElse(false);
-                SoundEvent sound = lastFrame ? Exposure.SoundEvents.FILM_ADVANCE_LAST.get() : Exposure.SoundEvents.FILM_ADVANCE.get();
-                OnePerPlayerSounds.play(player, sound, SoundSource.PLAYERS, 1f, player.getLevel().getRandom().nextFloat() * 0.15f + 0.93f);
+                ItemAndStack<FilmRollItem> film = getFilm(stack).orElseThrow();
+
+                float fullness = (float) film.getItem().getExposedFramesCount(film.getStack()) / film.getItem().getMaxFrameCount(film.getStack());
+                boolean lastFrame = fullness == 1f;
+
+                if (lastFrame)
+                    OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE_LAST.get(), SoundSource.PLAYERS, 1f, 1f);
+                else {
+                    OnePerPlayerSounds.play(player, Exposure.SoundEvents.FILM_ADVANCE.get(), SoundSource.PLAYERS,
+                            1f, 0.9f + 0.1f * fullness);
+                }
             }
         }
     }
@@ -262,8 +268,6 @@ public class CameraItem extends Item {
     }
 
     public InteractionResult useCamera(Player player, InteractionHand hand) {
-        Level level = player.getLevel();
-
         if (player.getCooldowns().isOnCooldown(this))
             return InteractionResult.FAIL;
 
@@ -290,7 +294,7 @@ public class CameraItem extends Item {
             return InteractionResult.CONSUME; // Consume to not play animation
         }
 
-        playCameraSound(player, Exposure.SoundEvents.CAMERA_RELEASE_BUTTON_CLICK.get(), 0.75f, 1f, 0.1f);
+        playCameraSound(player, Exposure.SoundEvents.CAMERA_RELEASE_BUTTON_CLICK.get(), 0.3f, 1f, 0.1f);
 
         Optional<ItemAndStack<FilmRollItem>> filmAttachment = getFilm(stack);
 
@@ -312,25 +316,29 @@ public class CameraItem extends Item {
 
         openShutter(player, stack, shutterSpeed, true, flashHasFired);
 
-        if (player instanceof ServerPlayer serverPlayer)
-            Exposure.Advancements.CAMERA_TAKEN_SHOT.trigger(serverPlayer, new ItemAndStack<>(stack), flashHasFired, true);
-
         player.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
 
-        if (level.isClientSide) {
-            String exposureId = createExposureId(player);
-            Capture capture = createCapture(player, stack, exposureId, flashHasFired);
-            CaptureManager.enqueue(capture);
-
-            CompoundTag frame = createFrameTag(player, stack, exposureId, capture, flashHasFired);
-
-            exposeFilmFrame(stack, frame);
-
-            // Send to server:
-            CameraInHandAddFrameServerboundPacket.send(hand, frame);
+        if (player instanceof ServerPlayer serverPlayer) {
+            StartExposureClientboundPacket.send(serverPlayer, createExposureId(player), hand, flashHasFired);
         }
 
         return InteractionResult.CONSUME; // Consume to not play animation
+    }
+
+    public void exposeFrameClientside(Player player, InteractionHand hand, String exposureId, boolean flashHasFired) {
+        Preconditions.checkState(player.getLevel().isClientSide, "Should only be called on client.");
+
+        ItemStack cameraStack = player.getItemInHand(hand);
+
+        Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
+        CaptureManager.enqueue(capture);
+
+        CompoundTag frame = createFrameTag(player, cameraStack, exposureId, capture, flashHasFired);
+
+        exposeFilmFrame(cameraStack, frame);
+
+        // Send to server:
+        CameraInHandAddFrameServerboundPacket.send(hand, frame);
     }
 
     public void exposeFilmFrame(ItemStack cameraStack, CompoundTag frame) {
@@ -503,7 +511,7 @@ public class CameraItem extends Item {
     }
 
     protected String createExposureId(Player player) {
-        // This method is called only client-side and then gets sent to server in a packet
+        // This method is called only server-side and then gets sent to client in a packet
         // because gameTime is different between client/server, and IDs won't match.
         return player.getName().getString() + "_" + player.getLevel().getGameTime();
     }

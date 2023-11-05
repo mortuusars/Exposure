@@ -1,9 +1,9 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
-import io.github.mortuusars.exposure.network.packet.CameraSetCompositionGuideServerboundPacket;
-import io.github.mortuusars.exposure.network.packet.CameraSetFlashModeServerboundPacket;
-import io.github.mortuusars.exposure.network.packet.CameraSetShutterSpeedServerboundPacket;
-import io.github.mortuusars.exposure.network.packet.CameraSetZoomServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.CameraSetCompositionGuideServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.CameraSetFlashModeServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.CameraSetShutterSpeedServerboundPacket;
+import io.github.mortuusars.exposure.network.packet.server.CameraSetZoomServerboundPacket;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;

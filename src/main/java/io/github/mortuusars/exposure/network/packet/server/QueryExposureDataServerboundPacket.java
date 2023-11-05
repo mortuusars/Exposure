@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.network.packet;
+package io.github.mortuusars.exposure.network.packet.server;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.network.ExposureSender;

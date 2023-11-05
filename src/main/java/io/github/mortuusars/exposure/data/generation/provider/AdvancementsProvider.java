@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.data.generation.provider;
 import com.google.common.collect.Sets;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.advancement.predicate.CameraPredicate;
-import io.github.mortuusars.exposure.advancement.trigger.CameraTakenShotTrigger;
+import io.github.mortuusars.exposure.advancement.trigger.CameraFilmFrameExposedTrigger;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
@@ -81,7 +81,7 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                             Component.translatable("advancement.exposure.exposure.title"),
                             Component.translatable("advancement.exposure.exposure.description"),
                             null, FrameType.TASK, true, true, false)
-                    .addCriterion("expose_film", new CameraTakenShotTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
+                    .addCriterion("expose_film", new CameraFilmFrameExposedTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
                             LocationPredicate.ANY, CameraPredicate.exposesFilm()))
                     .save(advancementConsumer, Exposure.resource("adventure/expose_film"), existingFileHelper);
 
@@ -102,7 +102,7 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                             Component.translatable("advancement.exposure.flash.title"),
                             Component.translatable("advancement.exposure.flash.description"),
                             null, FrameType.TASK, true, true, true)
-                    .addCriterion("flash_in_darkness", new CameraTakenShotTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
+                    .addCriterion("flash_in_darkness", new CameraFilmFrameExposedTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
                             LocationPredicate.Builder.location()
                                     .setLight(LightPredicate.Builder.light().setComposite(MinMaxBounds.Ints.atMost(4)).build())
                                     .build(),
@@ -115,7 +115,7 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                             Component.translatable("advancement.exposure.void.title"),
                             Component.translatable("advancement.exposure.void.description"),
                             null, FrameType.TASK, true, true, true)
-                    .addCriterion("photograph_in_end", new CameraTakenShotTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
+                    .addCriterion("photograph_in_end", new CameraFilmFrameExposedTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
                             LocationPredicate.inDimension(Level.END), CameraPredicate.exposesFilm()))
                     .save(advancementConsumer, Exposure.resource("adventure/void"), existingFileHelper);
         }
