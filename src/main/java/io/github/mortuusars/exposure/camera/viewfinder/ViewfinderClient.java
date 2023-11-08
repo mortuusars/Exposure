@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.ViewportEvent;
@@ -139,6 +140,17 @@ public class ViewfinderClient {
         double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get()
                 * ((Minecraft.getInstance().options.fov().get() - currentFov) / 5f)), 0.01, 2f);
         return sensitivity * modifier;
+    }
+
+    public static void onPlayerTick(Player player) {
+        if (!player.equals(Minecraft.getInstance().player))
+            return;
+
+        boolean cameraActive = CameraInHand.isActive(player);
+        if (cameraActive && !ViewfinderClient.isOpen())
+            ViewfinderClient.open();
+        else if (!cameraActive && ViewfinderClient.isOpen())
+            ViewfinderClient.close();
     }
 
     public static class ForgeEvents {

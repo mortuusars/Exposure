@@ -10,12 +10,14 @@ import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ScheduledTasks;
+import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MinecartItem;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -48,40 +50,10 @@ public class CommonEvents {
         @SubscribeEvent
         public static void playerTick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
-            if (event.phase != TickEvent.Phase.END || !player.getLevel().isClientSide)
+            if (event.phase != TickEvent.Phase.END || !player.getLevel().isClientSide || !player.equals(Minecraft.getInstance().player))
                 return;
 
-            boolean cameraActive = CameraInHand.isActive(player);
-            if (cameraActive && !ViewfinderClient.isOpen())
-                ViewfinderClient.open();
-            else if (!cameraActive && ViewfinderClient.isOpen())
-                ViewfinderClient.close();
-
-
-//            InteractionHand activeHand = CameraInHand.getActiveHand(player);
-//
-//            if (activeHand == null) {
-//                if (player.getLevel().isClientSide && ViewfinderClient.isOpen()) {
-//                    ViewfinderClient.close(player);
-//                }
-//                return;
-//            }
-//
-//            ItemStack itemInHand = player.getItemInHand(activeHand);
-//
-//            if (activeHand == InteractionHand.OFF_HAND && player.getMainHandItem().getItem() instanceof CameraItem) {
-//                CameraItem camera = ((CameraItem) itemInHand.getItem());
-//                if (camera.isActive(player, itemInHand))
-//                    camera.deactivate(player, itemInHand);
-////                CameraHelper.deactivateAll(player, false);
-//            }
-//            else {
-//                // Refresh active camera
-//                ((CameraItem) itemInHand.getItem()).setActive(player, itemInHand, true);
-//
-//                if (player.getLevel().isClientSide && !ViewfinderClient.isOpen())
-//                    ViewfinderClient.open(player);
-//            }
+            ViewfinderClient.onPlayerTick(player);
         }
 
         // IDK why but LevelTickEvent is fired 3 times on the server per 1 on the client.
