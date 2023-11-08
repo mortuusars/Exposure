@@ -41,10 +41,6 @@
   "gui.exposure.lightroom.zoom_in.tooltip": "Left Click or Scroll Up to zoom in",
   "gui.exposure.lightroom.next_frame": "Next Frame",
   "gui.exposure.lightroom.print": "Print",
-  "gui.exposure.lightroom.eject_on": "Eject: ON",
-  "gui.exposure.lightroom.eject_on.info": "Film will be ejected after last frame has been printed",
-  "gui.exposure.lightroom.eject_off": "Eject: OFF",
-  "gui.exposure.lightroom.eject_off.info": "Film will stay in slot after last frame has been printed",
 
   "command.exposure.shader.removed": "Shader removed",
   "command.exposure.load_from_file.success": "Exposure '%s' has been loaded.",
@@ -77,9 +73,9 @@
   "advancement.exposure.get_photograph.description": "Get a Photograph",
   "advancement.exposure.exposure.title": "Exposure",
   "advancement.exposure.exposure.description": "Use Camera to expose a Film frame",
-  "advancement.exposure.void.title": "It's a Brilliant Surface in That Void",
+  "advancement.exposure.void.title": "It's a Brilliant Surface in That Void!",
   "advancement.exposure.void.description": "Take a Photograph in the End",
-  "advancement.exposure.flash.title": "Lights Up",
+  "advancement.exposure.flash.title": "Lights Up!",
   "advancement.exposure.flash.description": "Use flash when taking a photograph in the dark",
 
   "stat.exposure.interact_with_lightroom": "Interactions with Lightroom",
