@@ -272,11 +272,14 @@ public class StackedPhotographsItem extends Item {
         if (!context.isSecondaryUseActive())
             return InteractionResult.PASS;
 
-        cyclePhotographs(stack, context.getPlayer());
-        return InteractionResult.SUCCESS;
+        boolean result = cyclePhotographs(stack, context.getPlayer());
+        return result ? InteractionResult.SUCCESS : InteractionResult.FAIL;
     }
 
-    private void cyclePhotographs(ItemStack stack, @Nullable Player player) {
+    public boolean cyclePhotographs(ItemStack stack, @Nullable Player player) {
+        if (getPhotographsCount(stack) < 2)
+            return false;
+
         ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(stack);
         addPhotographToBottom(stack, topPhotograph.getStack());
         if (player != null) {
@@ -284,6 +287,8 @@ public class StackedPhotographsItem extends Item {
                 player.getLevel().getRandom().nextFloat() * 0.2f + 1.2f);
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         }
+
+        return true;
     }
 
     @Override
@@ -301,9 +306,10 @@ public class StackedPhotographsItem extends Item {
                 ClientGUI.openPhotographScreen(photographs);
                 player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f, 1.1f);
             }
+            return InteractionResultHolder.success(itemInHand);
         }
 
-        return InteractionResultHolder.success(itemInHand);
+        return InteractionResultHolder.fail(itemInHand);
     }
 
     public static void playAddSoundClientside(Player player) {
