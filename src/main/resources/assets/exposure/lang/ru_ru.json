@@ -19,6 +19,8 @@
   "item.exposure.film_roll.tooltip.frame_size": "Размер: %sмм",
   "item.exposure.developed_film.tooltip.frame_count": "Кадры: %s",
 
+  "entity.exposure.photograph": "Фотография",
+
   "gui.exposure.composition_guide.none": "Нет",
   "gui.exposure.composition_guide.crosshair": "Перекрестие",
   "gui.exposure.composition_guide.quads": "Квадранты",
