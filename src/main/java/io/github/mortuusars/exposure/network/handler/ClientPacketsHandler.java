@@ -127,6 +127,6 @@ public class ClientPacketsHandler {
         if (!(itemInHand.getItem() instanceof CameraItem cameraItem) || !cameraItem.isActive(itemInHand))
             throw new IllegalStateException("Player should have active Camera in hand. " + itemInHand);
 
-        cameraItem.exposeFrameClientside(player, packet.activeHand(), packet.exposureId(), packet.flashHasFired());
+        cameraItem.exposeFrameClientside(player, packet.activeHand(), packet.exposureId(), packet.flashHasFired(), packet.lightLevel());
     }
 }

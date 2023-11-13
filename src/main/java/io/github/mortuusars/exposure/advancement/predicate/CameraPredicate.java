@@ -76,7 +76,7 @@ public class CameraPredicate {
     }
 
     public JsonElement serializeToJson() {
-        if (this == ANY)
+        if (this.equals(ANY))
             return JsonNull.INSTANCE;
 
         JsonObject jsonobject = new JsonObject();

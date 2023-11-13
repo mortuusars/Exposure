@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Supplier;
 
-public record StartExposureClientboundPacket(@NotNull String exposureId, @NotNull InteractionHand activeHand, boolean flashHasFired) {
+public record StartExposureClientboundPacket(@NotNull String exposureId, @NotNull InteractionHand activeHand, boolean flashHasFired, int lightLevel) {
     public static void register(SimpleChannel channel, int id) {
         channel.messageBuilder(StartExposureClientboundPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(StartExposureClientboundPacket::toBuffer)
@@ -24,8 +24,8 @@ public record StartExposureClientboundPacket(@NotNull String exposureId, @NotNul
                 .add();
     }
 
-    public static void send(ServerPlayer player, @NotNull String exposureId, @NotNull InteractionHand activeHand, boolean flashHasFired) {
-        Packets.sendToClient(new StartExposureClientboundPacket(exposureId, activeHand, flashHasFired), player);
+    public static void send(ServerPlayer player, @NotNull String exposureId, @NotNull InteractionHand activeHand, boolean flashHasFired, int lightLevel) {
+        Packets.sendToClient(new StartExposureClientboundPacket(exposureId, activeHand, flashHasFired, lightLevel), player);
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
@@ -34,10 +34,11 @@ public record StartExposureClientboundPacket(@NotNull String exposureId, @NotNul
         buffer.writeUtf(exposureId);
         buffer.writeEnum(activeHand);
         buffer.writeBoolean(flashHasFired);
+        buffer.writeInt(lightLevel);
     }
 
     public static StartExposureClientboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new StartExposureClientboundPacket(buffer.readUtf(), buffer.readEnum(InteractionHand.class), buffer.readBoolean());
+        return new StartExposureClientboundPacket(buffer.readUtf(), buffer.readEnum(InteractionHand.class), buffer.readBoolean(), buffer.readInt());
     }
 
     @SuppressWarnings("UnusedReturnValue")

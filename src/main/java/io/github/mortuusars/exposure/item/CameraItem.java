@@ -13,7 +13,9 @@ import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.packet.client.StartExposureClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.server.CameraInHandAddFrameServerboundPacket;
 import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
-import io.github.mortuusars.exposure.util.*;
+import io.github.mortuusars.exposure.util.CameraInHand;
+import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.util.LevelUtil;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -198,6 +200,10 @@ public class CameraItem extends Item {
                 }
             }
         }
+
+        if (!player.getLevel().isClientSide()) {
+
+        }
     }
 
     @SuppressWarnings("unused")
@@ -227,7 +233,7 @@ public class CameraItem extends Item {
                 }
             }
             else {
-                setShutterClosed(stack);
+                closeShutter(player, stack);
             }
         }
 
@@ -310,6 +316,8 @@ public class CameraItem extends Item {
         if (isShutterOpen(stack))
             return InteractionResult.FAIL;
 
+        int lightLevel = LevelUtil.getLightLevelAt(player.getLevel(), player.blockPosition());
+
         boolean flashHasFired = shouldFlashFire(player, stack) && tryUseFlash(player, stack);
 
         ShutterSpeed shutterSpeed = getShutterSpeed(stack);
@@ -319,13 +327,13 @@ public class CameraItem extends Item {
         player.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
 
         if (player instanceof ServerPlayer serverPlayer) {
-            StartExposureClientboundPacket.send(serverPlayer, createExposureId(player), hand, flashHasFired);
+            StartExposureClientboundPacket.send(serverPlayer, createExposureId(player), hand, flashHasFired, lightLevel);
         }
 
         return InteractionResult.CONSUME; // Consume to not play animation
     }
 
-    public void exposeFrameClientside(Player player, InteractionHand hand, String exposureId, boolean flashHasFired) {
+    public void exposeFrameClientside(Player player, InteractionHand hand, String exposureId, boolean flashHasFired, int lightLevel) {
         Preconditions.checkState(player.getLevel().isClientSide, "Should only be called on client.");
 
         ItemStack cameraStack = player.getItemInHand(hand);
@@ -333,12 +341,23 @@ public class CameraItem extends Item {
         Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
         CaptureManager.enqueue(capture);
 
-        CompoundTag frame = createFrameTag(player, cameraStack, exposureId, capture, flashHasFired);
+        CompoundTag frame = createFrameTag(player, cameraStack, exposureId, capture, flashHasFired, lightLevel);
+
+        test(player, frame);
 
         exposeFilmFrame(cameraStack, frame);
 
         // Send to server:
         CameraInHandAddFrameServerboundPacket.send(hand, frame);
+    }
+
+    private void test(Player player, CompoundTag frame) {
+//        CompoundTag matchingTag = new CompoundTag();
+//        matchingTag.putBoolean("Flash", true);
+//
+//        ExposurePredicate pred1 = new ExposurePredicate(BooleanPredicate.MUST_BE_TRUE, new NbtPredicate(matchingTag));
+//        pred1.matches(player, frame);
+//        boolean as = true;
     }
 
     public void exposeFilmFrame(ItemStack cameraStack, CompoundTag frame) {
@@ -409,7 +428,7 @@ public class CameraItem extends Item {
         return true;
     }
 
-    protected CompoundTag createFrameTag(Player player, ItemStack cameraStack, String exposureId, Capture capture, boolean flash) {
+    protected CompoundTag createFrameTag(Player player, ItemStack cameraStack, String exposureId, Capture capture, boolean flash, int lightLevel) {
         Level level = player.getLevel();
 
         CompoundTag tag = new CompoundTag();
@@ -433,6 +452,7 @@ public class CameraItem extends Item {
                 .ifPresent(biome -> tag.putString("Biome", biome.toString()));
 
         int surfaceHeight = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, player.getBlockX(), player.getBlockZ());
+        level.updateSkyBrightness();
         int skyLight = level.getBrightness(LightLayer.SKY, player.blockPosition());
 
         if (player.isUnderWater())
@@ -450,7 +470,7 @@ public class CameraItem extends Item {
                 tag.putString("Weather", "Clear");
         }
 
-        tag.putInt("LightLevel", LevelUtil.getLightLevelAt(level, player.blockPosition()));
+        tag.putInt("LightLevel", lightLevel);
         tag.putFloat("SunPosition", level.getSunAngle(0));
 
         List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
@@ -489,6 +509,8 @@ public class CameraItem extends Item {
         pos.add(IntTag.valueOf((int) entity.getY()));
         pos.add(IntTag.valueOf((int) entity.getZ()));
         tag.put("Pos", pos);
+
+        tag.putFloat("Distance", player.distanceTo(entity));
 
         return tag;
     }
