@@ -8,6 +8,8 @@ public class Config {
     public static class Common {
         public static final ForgeConfigSpec SPEC;
 
+        public static final ForgeConfigSpec.BooleanValue CAMERA_SPYGLASS_SUPERZOOM;
+
         public static final ForgeConfigSpec.IntValue LIGHTROOM_BW_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_COLOR_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_EXPERIENCE_PER_PRINT;
@@ -16,6 +18,12 @@ public class Config {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
             builder.push("Lightroom");
+
+            CAMERA_SPYGLASS_SUPERZOOM = builder
+                    .comment("Spyglass will function like a superzoom lens instead of a teleconverter, allowing for a full range of focal lengths (18-200).",
+                            " Using it as a teleconverter allows only 55-200")
+                    .define("SpyglassSuperzoom", false);
+
 
             LIGHTROOM_BW_FILM_PRINT_TIME = builder
                     .comment("Time in ticks to print black and white photograph.")

@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.camera.capture.Capture;
@@ -528,7 +529,8 @@ public class CameraItem extends Item {
     }
 
     public FocalRange getFocalRange(ItemStack cameraStack) {
-        return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55) : new FocalRange(55, 200);
+        return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55)
+                : new FocalRange(Config.Common.CAMERA_SPYGLASS_SUPERZOOM.get() ? 18 : 55, 200);
     }
 
     @SuppressWarnings("unused")
