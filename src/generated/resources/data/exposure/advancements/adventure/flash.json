@@ -3,16 +3,11 @@
   "criteria": {
     "flash_in_darkness": {
       "conditions": {
-        "camera": {
-          "flash": true,
-          "frame_exposed": true
-        },
-        "location": {
-          "light": {
-            "light": {
-              "max": 4
-            }
-          }
+        "exposure": {
+          "light_level": {
+            "max": 4
+          },
+          "nbt": "{Flash:1b}"
         }
       },
       "trigger": "minecraft:frame_exposed"
@@ -24,7 +19,7 @@
       "translate": "advancement.exposure.flash.description"
     },
     "frame": "task",
-    "hidden": true,
+    "hidden": false,
     "icon": {
       "item": "minecraft:redstone_lamp"
     },

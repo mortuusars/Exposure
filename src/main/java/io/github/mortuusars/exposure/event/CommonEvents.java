@@ -5,6 +5,7 @@ import io.github.mortuusars.exposure.camera.CameraHelper;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.command.ExposureCommands;
 import io.github.mortuusars.exposure.command.ShaderCommand;
+import io.github.mortuusars.exposure.command.TestCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
@@ -45,6 +46,7 @@ public class CommonEvents {
 
             ExposureCommands.register(event.getDispatcher());
             ShaderCommand.register(event.getDispatcher());
+            TestCommand.register(event.getDispatcher());
         }
 
         @SubscribeEvent

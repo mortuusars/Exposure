@@ -3,9 +3,6 @@
   "criteria": {
     "photograph_in_end": {
       "conditions": {
-        "camera": {
-          "frame_exposed": true
-        },
         "location": {
           "dimension": "minecraft:the_end"
         }

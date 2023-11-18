@@ -343,21 +343,10 @@ public class CameraItem extends Item {
 
         CompoundTag frame = createFrameTag(player, cameraStack, exposureId, capture, flashHasFired, lightLevel);
 
-        test(player, frame);
-
         exposeFilmFrame(cameraStack, frame);
 
         // Send to server:
         CameraInHandAddFrameServerboundPacket.send(hand, frame);
-    }
-
-    private void test(Player player, CompoundTag frame) {
-//        CompoundTag matchingTag = new CompoundTag();
-//        matchingTag.putBoolean("Flash", true);
-//
-//        ExposurePredicate pred1 = new ExposurePredicate(BooleanPredicate.MUST_BE_TRUE, new NbtPredicate(matchingTag));
-//        pred1.matches(player, frame);
-//        boolean as = true;
     }
 
     public void exposeFilmFrame(ItemStack cameraStack, CompoundTag frame) {

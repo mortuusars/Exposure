@@ -2,11 +2,7 @@
   "parent": "minecraft:adventure/root",
   "criteria": {
     "expose_film": {
-      "conditions": {
-        "camera": {
-          "frame_exposed": true
-        }
-      },
+      "conditions": {},
       "trigger": "minecraft:frame_exposed"
     }
   },

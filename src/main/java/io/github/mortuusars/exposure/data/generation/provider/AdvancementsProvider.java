@@ -2,8 +2,11 @@ package io.github.mortuusars.exposure.data.generation.provider;
 
 import com.google.common.collect.Sets;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.advancement.predicate.CameraPredicate;
+import io.github.mortuusars.exposure.advancement.BooleanPredicate;
+import io.github.mortuusars.exposure.advancement.predicate.EntityInFramePredicate;
+import io.github.mortuusars.exposure.advancement.predicate.ExposurePredicate;
 import io.github.mortuusars.exposure.advancement.trigger.CameraFilmFrameExposedTrigger;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.FrameType;
@@ -12,6 +15,7 @@ import net.minecraft.advancements.critereon.*;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -82,7 +86,7 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                             Component.translatable("advancement.exposure.exposure.description"),
                             null, FrameType.TASK, true, true, false)
                     .addCriterion("expose_film", new CameraFilmFrameExposedTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
-                            LocationPredicate.ANY, CameraPredicate.exposesFilm()))
+                            LocationPredicate.ANY, ExposurePredicate.ANY))
                     .save(advancementConsumer, Exposure.resource("adventure/expose_film"), existingFileHelper);
 
             Advancement momentInTime = Advancement.Builder.advancement()
@@ -96,17 +100,19 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                     .requirements(RequirementsStrategy.OR)
                     .save(advancementConsumer, Exposure.resource("adventure/get_photograph"), existingFileHelper);
 
+            CompoundTag flashTag = new CompoundTag();
+            flashTag.putBoolean(FrameData.FLASH, true);
+
             Advancement flash = Advancement.Builder.advancement()
                     .parent(exposure)
                     .display(new ItemStack(Items.REDSTONE_LAMP),
                             Component.translatable("advancement.exposure.flash.title"),
                             Component.translatable("advancement.exposure.flash.description"),
-                            null, FrameType.TASK, true, true, true)
+                            null, FrameType.TASK, true, true, false)
                     .addCriterion("flash_in_darkness", new CameraFilmFrameExposedTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
-                            LocationPredicate.Builder.location()
-                                    .setLight(LightPredicate.Builder.light().setComposite(MinMaxBounds.Ints.atMost(4)).build())
-                                    .build(),
-                            new CameraPredicate(MinMaxBounds.Doubles.ANY, MinMaxBounds.Doubles.ANY, null, true, true)))
+                            LocationPredicate.ANY,
+                            new ExposurePredicate(BooleanPredicate.ANY, MinMaxBounds.Doubles.ANY, MinMaxBounds.Doubles.ANY,
+                                    new NbtPredicate(flashTag), MinMaxBounds.Ints.atMost(4), MinMaxBounds.Ints.ANY, EntityInFramePredicate.ANY)))
                     .save(advancementConsumer, Exposure.resource("adventure/flash"), existingFileHelper);
 
             Advancement thatVoid = Advancement.Builder.advancement()
@@ -116,7 +122,7 @@ public class AdvancementsProvider extends net.minecraft.data.advancements.Advanc
                             Component.translatable("advancement.exposure.void.description"),
                             null, FrameType.TASK, true, true, true)
                     .addCriterion("photograph_in_end", new CameraFilmFrameExposedTrigger.TriggerInstance(EntityPredicate.Composite.ANY,
-                            LocationPredicate.inDimension(Level.END), CameraPredicate.exposesFilm()))
+                            LocationPredicate.inDimension(Level.END), ExposurePredicate.ANY))
                     .save(advancementConsumer, Exposure.resource("adventure/void"), existingFileHelper);
         }
     }

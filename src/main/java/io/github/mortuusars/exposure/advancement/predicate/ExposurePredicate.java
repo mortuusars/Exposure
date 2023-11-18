@@ -23,12 +23,14 @@ public class ExposurePredicate {
             MinMaxBounds.Doubles.ANY,
             NbtPredicate.ANY,
             MinMaxBounds.Ints.ANY,
+            MinMaxBounds.Ints.ANY,
             EntityInFramePredicate.ANY);
 
     private final BooleanPredicate owner;
     private final MinMaxBounds.Doubles shutterSpeedMS;
     private final MinMaxBounds.Doubles focalLength;
     private final NbtPredicate nbt;
+    private final MinMaxBounds.Ints lightLevel;
     private final MinMaxBounds.Ints entitiesInFrameCount;
     private final EntityInFramePredicate entityInFrame;
 
@@ -36,12 +38,14 @@ public class ExposurePredicate {
                              MinMaxBounds.Doubles shutterSpeedMS,
                              MinMaxBounds.Doubles focalLength,
                              NbtPredicate nbtPredicate,
+                             MinMaxBounds.Ints lightLevel,
                              MinMaxBounds.Ints entitiesInFrameCount,
                              EntityInFramePredicate entityInFramePredicate) {
         this.owner = ownerPredicate;
         this.shutterSpeedMS = shutterSpeedMS;
         this.focalLength = focalLength;
         this.nbt = nbtPredicate;
+        this.lightLevel = lightLevel;
         this.entitiesInFrameCount = entitiesInFrameCount;
         this.entityInFrame = entityInFramePredicate;
     }
@@ -57,6 +61,9 @@ public class ExposurePredicate {
             return false;
 
         if (!nbt.matches(tag))
+            return false;
+
+        if (!lightLevel.matches(tag.getInt(FrameData.LIGHT_LEVEL)))
             return false;
 
         if (!entitiesMatch(player, tag))
@@ -90,6 +97,9 @@ public class ExposurePredicate {
                     return true;
             }
         }
+        else {
+            return entityInFrame.equals(EntityInFramePredicate.ANY) && entitiesInFrameCount.matches(0);
+        }
 
         return false;
     }
@@ -112,6 +122,9 @@ public class ExposurePredicate {
         if (!nbt.equals(NbtPredicate.ANY))
             json.add("nbt", nbt.serializeToJson());
 
+        if (!lightLevel.isAny())
+            json.add("light_level", lightLevel.serializeToJson());
+
         if (!entitiesInFrameCount.isAny())
             json.add("entities_count", entitiesInFrameCount.serializeToJson());
 
@@ -128,12 +141,13 @@ public class ExposurePredicate {
         JsonObject jsonobject = GsonHelper.convertToJsonObject(json, "exposure");
 
         return new ExposurePredicate(
-                BooleanPredicate.fromJson(jsonobject.getAsJsonObject("owner")),
-                MinMaxBounds.Doubles.fromJson(jsonobject.getAsJsonObject("shutter_speed_ms")),
-                MinMaxBounds.Doubles.fromJson(jsonobject.getAsJsonObject("focal_length")),
-                NbtPredicate.fromJson(jsonobject.getAsJsonObject("nbt")),
-                MinMaxBounds.Ints.fromJson(jsonobject.getAsJsonObject("entities_count")),
-                EntityInFramePredicate.fromJson(jsonobject.getAsJsonObject("entity_in_frame")));
+                BooleanPredicate.fromJson(jsonobject.get("owner")),
+                MinMaxBounds.Doubles.fromJson(jsonobject.get("shutter_speed_ms")),
+                MinMaxBounds.Doubles.fromJson(jsonobject.get("focal_length")),
+                NbtPredicate.fromJson(jsonobject.get("nbt")),
+                MinMaxBounds.Ints.fromJson(jsonobject.get("light_level")),
+                MinMaxBounds.Ints.fromJson(jsonobject.get("entities_count")),
+                EntityInFramePredicate.fromJson(jsonobject.get("entity_in_frame")));
     }
 
     @Override

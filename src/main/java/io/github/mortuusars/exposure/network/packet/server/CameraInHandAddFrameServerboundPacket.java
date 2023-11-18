@@ -68,7 +68,7 @@ public record CameraInHandAddFrameServerboundPacket(InteractionHand hand, Compou
         addStructuresInfo(player);
 
         cameraItem.exposeFilmFrame(itemInHand, frame);
-        Exposure.Advancements.FILM_FRAME_EXPOSED.trigger(player, new ItemAndStack<>(itemInHand), frame.getBoolean("Flash"), true);
+        Exposure.Advancements.FILM_FRAME_EXPOSED.trigger(player, new ItemAndStack<>(itemInHand), frame);
         return true;
     }
 
