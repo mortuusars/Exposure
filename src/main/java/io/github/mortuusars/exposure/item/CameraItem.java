@@ -116,6 +116,13 @@ public class CameraItem extends Item {
         consumer.accept(CameraItemClient.INSTANCE);
     }
 
+    @Override
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag isAdvanced) {
+        if (Config.Client.CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP.get()) {
+            components.add(Component.translatable("item.exposure.camera.sneak_to_open_tooltip").withStyle(ChatFormatting.GRAY));
+        }
+    }
+
     public boolean isActive(ItemStack stack) {
         return stack.getTag() != null && stack.getTag().getBoolean("Active");
     }

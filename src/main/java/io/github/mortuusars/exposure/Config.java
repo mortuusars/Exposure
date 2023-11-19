@@ -44,6 +44,11 @@ public class Config {
     public static class Client {
         public static final ForgeConfigSpec SPEC;
 
+        // UI
+        public static final ForgeConfigSpec.BooleanValue CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP;
+        public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP;
+        public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
+
         // CAPTURE
         public static final ForgeConfigSpec.IntValue FLASH_CAPTURE_DELAY_TICKS;
 
@@ -57,41 +62,56 @@ public class Config {
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING;
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING_LEVEL_SUBFOLDER;
 
-        // MISC
-        public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
-
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
-            builder.push("ViewfinderUI");
-            VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER = builder
-                    .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes.")
-                    .defineInRange("ZoomSensitivityModifier", 0.048, 0.0, 1.0);
-            VIEWFINDER_BACKGROUND_COLOR = builder.define("BackgroundColorHex", "FA1F1D1B");
-            VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF2B2622");
-            VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FF7A736C");
-            builder.pop();
+            {
+                builder.push("UI");
 
-            builder.push("FileSaving");
-            EXPOSURE_SAVING = builder
-                    .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
-                    .define("SavePhotographs", true);
-            EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder
-                    .define("LevelNameSubfolder", true);
-            builder.pop();
+                CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP = builder
+                        .comment("'Use with sneak to open' message will be shown in Camera item tooltip.")
+                        .define("CameraSneakOpenTooltip", true);
 
-            builder.push("Capture");
-            FLASH_CAPTURE_DELAY_TICKS = builder
-                    .comment("Delay in ticks before capturing an image when shooting with flash." +
-                            "\nIf you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
-                    .defineInRange("FlashCaptureDelayTicks", 3, 1, 6);
-            builder.pop();
+                PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP = builder
+                        .comment("Photographer name will be shown in Photograph's tooltip.")
+                        .define("PhotographPhotographerNameTooltip", false);
 
-            builder.push("Misc");
-            PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR = builder
-                    .comment("Crosshair will not get in the way when holding a photograph.")
-                    .define("PhotographInHandHideCrosshair", true);
-            builder.pop();
+                PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR = builder
+                        .comment("Crosshair will not get in the way when holding a photograph.")
+                        .define("PhotographInHandHideCrosshair", true);
+
+                {
+                    builder.push("Viewfinder");
+                    VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER = builder
+                            .comment("Mouse sensitivity modifier per 5 degrees of fov. Set to 0 to disable sensitivity changes.")
+                            .defineInRange("ZoomSensitivityModifier", 0.048, 0.0, 1.0);
+                    VIEWFINDER_BACKGROUND_COLOR = builder.define("BackgroundColorHex", "FA1F1D1B");
+                    VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF2B2622");
+                    VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FF7A736C");
+                    builder.pop();
+                }
+
+                builder.pop();
+            }
+
+            {
+                builder.push("FileSaving");
+                EXPOSURE_SAVING = builder
+                        .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
+                        .define("SavePhotographs", true);
+                EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder
+                        .define("LevelNameSubfolder", true);
+                builder.pop();
+            }
+
+            {
+                builder.push("Capture");
+                FLASH_CAPTURE_DELAY_TICKS = builder
+                        .comment("Delay in ticks before capturing an image when shooting with flash." +
+                                "\nIf you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
+                        .defineInRange("FlashCaptureDelayTicks", 3, 1, 6);
+                builder.pop();
+            }
 
             SPEC = builder.build();
         }

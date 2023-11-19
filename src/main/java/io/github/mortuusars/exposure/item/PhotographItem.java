@@ -2,7 +2,9 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
@@ -104,6 +106,13 @@ public class PhotographItem extends Item {
             if (generation > 0)
                 tooltipComponents.add(Component.translatable("item.exposure.photograph.generation." + generation)
                         .withStyle(ChatFormatting.GRAY));
+
+            String photographerName = stack.getTag().getString(FrameData.PHOTOGRAPHER);
+            if (photographerName.length() > 0 && Config.Client.PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP.get()) {
+                tooltipComponents.add(Component.translatable("item.exposure.photograph.photographer_tooltip",
+                                Component.literal(photographerName).withStyle(ChatFormatting.WHITE))
+                        .withStyle(ChatFormatting.GRAY));
+            }
 
             if (isAdvanced.isAdvanced()) {
                 @Nullable Either<String, ResourceLocation> idOrTexture = getIdOrTexture(stack);
