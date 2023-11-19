@@ -10,6 +10,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 
@@ -17,6 +18,10 @@ public class ItemFramePhotographRenderer {
     public static void render(RenderItemInFrameEvent event) {
         ItemStack itemStack = event.getItemStack();
         if (!(itemStack.getItem() instanceof PhotographItem photographItem))
+            return;
+
+        ResourceLocation frameEntityKey = ForgeRegistries.ENTITY_TYPES.getKey(event.getItemFrameEntity().getType());
+        if (frameEntityKey == null || frameEntityKey.toString().equals("quark:glass_frame"))
             return;
 
         @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(itemStack);

@@ -17,13 +17,16 @@ public class Config {
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
-            builder.push("Lightroom");
+            builder.push("Camera");
 
             CAMERA_SPYGLASS_SUPERZOOM = builder
                     .comment("Spyglass will function like a superzoom lens instead of a teleconverter, allowing for a full range of focal lengths (18-200).",
-                            " Using it as a teleconverter allows only 55-200")
+                             "Using it as a teleconverter allows only 55-200")
                     .define("SpyglassSuperzoom", false);
 
+            builder.pop();
+
+            builder.push("Lightroom");
 
             LIGHTROOM_BW_FILM_PRINT_TIME = builder
                     .comment("Time in ticks to print black and white photograph.")
@@ -69,7 +72,7 @@ public class Config {
                 builder.push("UI");
 
                 CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP = builder
-                        .comment("'Use with sneak to open' message will be shown in Camera item tooltip.")
+                        .comment("'Use while sneaking to open' message will be shown in Camera item tooltip.")
                         .define("CameraSneakOpenTooltip", true);
 
                 PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP = builder
@@ -95,21 +98,22 @@ public class Config {
             }
 
             {
-                builder.push("FileSaving");
-                EXPOSURE_SAVING = builder
-                        .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
-                        .define("SavePhotographs", true);
-                EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder
-                        .define("LevelNameSubfolder", true);
-                builder.pop();
-            }
-
-            {
                 builder.push("Capture");
                 FLASH_CAPTURE_DELAY_TICKS = builder
                         .comment("Delay in ticks before capturing an image when shooting with flash." +
                                 "\nIf you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
                         .defineInRange("FlashCaptureDelayTicks", 3, 1, 6);
+                builder.pop();
+            }
+
+            {
+                builder.push("FileSaving");
+                EXPOSURE_SAVING = builder
+                        .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
+                        .define("SavePhotographs", true);
+                EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder
+                        .comment("When saving, exposures will be organized into a folders corresponding to current world name.")
+                        .define("WorldNameSubfolder", true);
                 builder.pop();
             }
 
