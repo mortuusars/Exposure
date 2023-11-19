@@ -208,10 +208,6 @@ public class CameraItem extends Item {
                 }
             }
         }
-
-        if (!player.getLevel().isClientSide()) {
-
-        }
     }
 
     @SuppressWarnings("unused")
