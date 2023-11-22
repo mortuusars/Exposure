@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "equipment",
   "key": {
     "G": {
       "tag": "forge:nuggets/gold"
@@ -24,5 +25,6 @@
   ],
   "result": {
     "item": "exposure:color_film"
-  }
+  },
+  "show_notification": true
 }

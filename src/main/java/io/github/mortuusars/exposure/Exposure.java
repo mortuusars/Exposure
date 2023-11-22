@@ -22,6 +22,7 @@ import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.storage.IExposureStorage;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatFormatter;
@@ -32,15 +33,13 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.Material;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -109,17 +108,17 @@ public class Exposure {
         private static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, ID);
 
         public static final RegistryObject<LightroomBlock> LIGHTROOM = BLOCKS.register("lightroom",
-                () -> new LightroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
-                        .color(MaterialColor.COLOR_BROWN)
+                () -> new LightroomBlock(BlockBehaviour.Properties.of()
+                        .mapColor(MapColor.COLOR_BROWN)
                         .strength(2.5f)
                         .sound(SoundType.WOOD)
                         .lightLevel(state -> 15)));
 
         public static final RegistryObject<FlashBlock> FLASH = BLOCKS.register("flash",
-                () -> new FlashBlock(BlockBehaviour.Properties.of(Material.AIR)
+                () -> new FlashBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.AIR)
                         .strength(-1.0F, 3600000.8F)
                         .noLootTable()
-                        .color(MaterialColor.NONE)
+                        .mapColor(MapColor.NONE)
                         .noOcclusion()
                         .noCollission()
                         .lightLevel(state -> 15)));
@@ -141,42 +140,34 @@ public class Exposure {
 
         public static final RegistryObject<CameraItem> CAMERA = ITEMS.register("camera",
                 () -> new CameraItem(new Item.Properties()
-                        .stacksTo(1)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(1)));
 
         public static final RegistryObject<FilmRollItem> BLACK_AND_WHITE_FILM = ITEMS.register("black_and_white_film",
                 () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, DEFAULT_FILM_SIZE, Mth.color(0.8F, 0.8F, 0.9F), new Item.Properties()
-                        .stacksTo(16)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(16)));
 
         public static final RegistryObject<FilmRollItem> COLOR_FILM = ITEMS.register("color_film",
                 () -> new FilmRollItem(FilmType.COLOR, DEFAULT_FILM_SIZE, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
-                        .stacksTo(16)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(16)));
 
         public static final RegistryObject<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = ITEMS.register("developed_black_and_white_film",
                 () -> new DevelopedFilmItem(FilmType.BLACK_AND_WHITE, new Item.Properties()
-                        .stacksTo(1)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(1)));
 
         public static final RegistryObject<DevelopedFilmItem> DEVELOPED_COLOR_FILM = ITEMS.register("developed_color_film",
                 () -> new DevelopedFilmItem(FilmType.COLOR, new Item.Properties()
-                        .stacksTo(1)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(1)));
 
         public static final RegistryObject<PhotographItem> PHOTOGRAPH = ITEMS.register("photograph",
                 () -> new PhotographItem(new Item.Properties()
-                        .stacksTo(1)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(1)));
 
         public static final RegistryObject<StackedPhotographsItem> STACKED_PHOTOGRAPHS = ITEMS.register("stacked_photographs",
                 () -> new StackedPhotographsItem(16, new Item.Properties()
-                        .stacksTo(1)
-                        .tab(CreativeModeTab.TAB_TOOLS)));
+                        .stacksTo(1)));
 
         public static final RegistryObject<BlockItem> LIGHTROOM = ITEMS.register("lightroom",
-                () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()
-                        .tab(CreativeModeTab.TAB_DECORATIONS)));
+                () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));
     }
 
     public static class EntityTypes {
@@ -236,7 +227,7 @@ public class Exposure {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");
             Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
             String path = category + "." + key;
-            return SOUNDS.register(path, () -> new SoundEvent(Exposure.resource(path), 16f));
+            return SOUNDS.register(path, () -> SoundEvent.createVariableRangeEvent(Exposure.resource(path)));
         }
     }
 
@@ -258,7 +249,7 @@ public class Exposure {
 
         public static void register() {
             STATS.forEach((location, formatter) -> {
-                Registry.register(Registry.CUSTOM_STAT, location, location);
+                Registry.register(BuiltInRegistries.CUSTOM_STAT, location, location);
                 net.minecraft.stats.Stats.CUSTOM.get(location, formatter);
             });
         }

@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "equipment",
   "group": "camera",
   "key": {
     "B": {
@@ -28,5 +29,6 @@
   ],
   "result": {
     "item": "exposure:camera"
-  }
+  },
+  "show_notification": true
 }

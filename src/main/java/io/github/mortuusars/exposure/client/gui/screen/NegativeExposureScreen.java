@@ -1,12 +1,11 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.util.GuiUtil;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -39,52 +38,51 @@ public class NegativeExposureScreen extends ZoomableScreen {
     protected void init() {
         super.init();
         zoomFactor = 1f / minecraft.options.guiScale().get();
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(poseStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(guiGraphics);
 
-        super.render(poseStack, mouseX, mouseY, partialTick);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
             int width = exposureData.getWidth();
             int height = exposureData.getHeight();
             boolean colorFilm = exposureData.getType() == FilmType.COLOR;
 
-            poseStack.pushPose();
-            poseStack.translate(Math.round(x + this.width / 2f), Math.round(y + this.height / 2f), 0);
-            poseStack.scale(scale, scale, scale);
-            poseStack.translate(-Math.round(width / 2f), -Math.round(height / 2f), 0);
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(Math.round(x + this.width / 2f), Math.round(y + this.height / 2f), 0);
+            guiGraphics.pose().scale(scale, scale, scale);
+            guiGraphics.pose().translate(-Math.round(width / 2f), -Math.round(height / 2f), 0);
 
             {
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 RenderSystem.setShaderTexture(0, TEXTURE);
 
-                poseStack.pushPose();
+                guiGraphics.pose().pushPose();
                 float scale = Math.max((float) width / (FRAME_SIZE), (float) height / (FRAME_SIZE));
-                poseStack.scale(scale, scale, scale);
-                poseStack.translate(-12, -12, 0);
+                guiGraphics.pose().scale(scale, scale, scale);
+                guiGraphics.pose().translate(-12, -12, 0);
 
-                GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
+                GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
                 if (colorFilm)
                     RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
-                GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
+                GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-                poseStack.popPose();
+                guiGraphics.pose().popPose();
             }
 
             if (colorFilm)
-                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, guiGraphics.pose(),
                         width, height, LightTexture.FULL_BRIGHT, 180, 130, 110, 255);
             else
-                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, poseStack,
+                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, guiGraphics.pose(),
                         width, height, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
 
-            poseStack.popPose();
+            guiGraphics.pose().popPose();
         });
     }
 }

@@ -74,7 +74,7 @@ public interface ICaptureComponent {
      */
     default void teardown(Capture capture) { }
 
-    default void save(byte[] materialColorPixels, int width, int height, FilmType filmType) { }
+    default void save(byte[] MapColorPixels, int width, int height, FilmType filmType) { }
 
     /**
      * Called in the end, regardless of the success or not.

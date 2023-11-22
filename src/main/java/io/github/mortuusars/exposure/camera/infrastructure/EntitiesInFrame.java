@@ -16,7 +16,7 @@ public class EntitiesInFrame {
         double currentFov = fov / Exposure.CROP_FACTOR;
         double currentFocalLength = Fov.fovToFocalLength(currentFov);
 
-        List<Entity> entities = player.getLevel().getEntities(player, new AABB(player.blockPosition()).inflate(128),
+        List<Entity> entities = player.level().getEntities(player, new AABB(player.blockPosition()).inflate(128),
                 entity -> entity instanceof LivingEntity);
         entities.sort((entity, entity2) -> {
             float dist1 = player.distanceTo(entity);

@@ -1,10 +1,10 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
@@ -32,37 +32,36 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttac
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(poseStack);
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        this.renderTooltip(poseStack, mouseX, mouseY);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        this.renderBackground(guiGraphics);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderTooltip(guiGraphics, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        this.blit(poseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+        guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
 
         Slot filmSlot = menu.slots.get(CameraItem.FILM_ATTACHMENT.slot());
         if (!filmSlot.hasItem())
-            this.blit(poseStack, leftPos + filmSlot.x - 1, topPos + filmSlot.y - 1, 238, 0, 18, 18);
+            guiGraphics.blit(TEXTURE, leftPos + filmSlot.x - 1, topPos + filmSlot.y - 1, 238, 0, 18, 18);
 
         Slot flashSlot = menu.slots.get(CameraItem.FLASH_ATTACHMENT.slot());
         if (!flashSlot.hasItem())
-            this.blit(poseStack, leftPos + flashSlot.x - 1, topPos + flashSlot.y - 1, 238, 18, 18, 18);
+            guiGraphics.blit(TEXTURE, leftPos + flashSlot.x - 1, topPos + flashSlot.y - 1, 238, 18, 18, 18);
         else
-            this.blit(poseStack, leftPos + 99, topPos + 7, 0, 185, 24, 28);
+            guiGraphics.blit(TEXTURE, leftPos + 99, topPos + 7, 0, 185, 24, 28);
 
         Slot lensSlot = menu.slots.get(CameraItem.LENS_ATTACHMENT.slot());
         boolean hasLens = lensSlot.hasItem();
         if (hasLens)
-            this.blit(poseStack, leftPos + 103, topPos + 49, 24, 185, 31, 35);
+            guiGraphics.blit(TEXTURE, leftPos + 103, topPos + 49, 24, 185, 31, 35);
         else
-            this.blit(poseStack, leftPos + lensSlot.x - 1, topPos + lensSlot.y - 1, 238, 36, 18, 18);
+            guiGraphics.blit(TEXTURE, leftPos + lensSlot.x - 1, topPos + lensSlot.y - 1, 238, 36, 18, 18);
 
         Slot filterSlot = menu.slots.get(CameraItem.FILTER_ATTACHMENT.slot());
         if (filterSlot.hasItem()) {
@@ -86,12 +85,12 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttac
             }
             RenderSystem.setShaderColor(r, g, b, 1f);
             if (!filterSlot.getItem().is(Items.GLASS_PANE))
-                this.blit(poseStack, leftPos + x, topPos + y, 55, 185, 15, 23); // Opaque part
-            this.blit(poseStack, leftPos + x, topPos + y, 70, 185, 15, 23); // Glares
+                guiGraphics.blit(TEXTURE, leftPos + x, topPos + y, 55, 185, 15, 23); // Opaque part
+            guiGraphics.blit(TEXTURE, leftPos + x, topPos + y, 70, 185, 15, 23); // Glares
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
         else
-            this.blit(poseStack, leftPos + filterSlot.x - 1, topPos + filterSlot.y - 1, 238, 54, 18, 18);
+            guiGraphics.blit(TEXTURE, leftPos + filterSlot.x - 1, topPos + filterSlot.y - 1, 238, 54, 18, 18);
 
         RenderSystem.disableBlend();
     }

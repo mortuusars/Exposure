@@ -10,6 +10,7 @@ import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import io.github.mortuusars.exposure.util.Navigation;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.renderer.LightTexture;
@@ -53,7 +54,6 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
         super.init();
 
         zoomFactor = (float) height / BG_SIZE;
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         previousButton = new ImageButton(0, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
                 0, 0, BUTTON_SIZE, WIDGETS_TEXTURE, this::buttonPressed);
@@ -78,47 +78,47 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(poseStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(guiGraphics);
 
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0, 0, 500); // Otherwise exposure will overlap buttons
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        poseStack.popPose();
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.pose().popPose();
 
         if (zoom.targetZoom == zoom.minZoom/* && Math.abs(zoom.minZoom - zoom.get()) < 0.001f*/) {
             close();
             return;
         }
 
-        poseStack.pushPose();
+        guiGraphics.pose().pushPose();
 
-        poseStack.translate(x, y, 0);
-        poseStack.translate(width / 2f, height / 2f, 0);
-        poseStack.scale(scale, scale, scale);
+        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().translate(width / 2f, height / 2f, 0);
+        guiGraphics.pose().scale(scale, scale, scale);
 
         RenderSystem.setShaderTexture(0, TEXTURE);
 
-        poseStack.translate(BG_SIZE / -2f, BG_SIZE / -2f, 0);
+        guiGraphics.pose().translate(BG_SIZE / -2f, BG_SIZE / -2f, 0);
 
-        GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
+        GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
 
         boolean colorFilm = getLightroomMenu().isColorFilm();
         if (colorFilm)
             RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
 
-        GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
+        GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        poseStack.translate(12, 12, 0);
+        guiGraphics.pose().translate(12, 12, 0);
 
         int currentFrame = getLightroomMenu().getSelectedFrame();
         String frame = getLightroomMenu().getFrameIdByIndex(currentFrame);
-        renderFrame(frame, poseStack, 0, 0, 1f, colorFilm);
+        renderFrame(frame, guiGraphics.pose(), 0, 0, 1f, colorFilm);
 
-        poseStack.popPose();
+        guiGraphics.pose().popPose();
 
         previousButton.visible = currentFrame != 0;
         previousButton.active = currentFrame != 0;

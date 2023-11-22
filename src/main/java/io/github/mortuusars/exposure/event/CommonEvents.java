@@ -15,7 +15,9 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
@@ -33,6 +35,23 @@ public class CommonEvents {
                 Exposure.Stats.register();
             });
         }
+
+        @SubscribeEvent
+        public static void onCreativeTabsBuild(BuildCreativeModeTabContentsEvent event) {
+            if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+                event.accept(Exposure.Items.CAMERA.get());
+                event.accept(Exposure.Items.BLACK_AND_WHITE_FILM.get());
+                event.accept(Exposure.Items.COLOR_FILM.get());
+                event.accept(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
+                event.accept(Exposure.Items.DEVELOPED_COLOR_FILM.get());
+                event.accept(Exposure.Items.PHOTOGRAPH.get());
+                event.accept(Exposure.Items.STACKED_PHOTOGRAPHS.get());
+            }
+
+            if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+                event.accept(Exposure.Items.LIGHTROOM.get());
+            }
+        }
     }
 
     public static class ForgeBus {
@@ -48,7 +67,7 @@ public class CommonEvents {
         @SubscribeEvent
         public static void playerTick(TickEvent.PlayerTickEvent event) {
             Player player = event.player;
-            if (event.phase != TickEvent.Phase.END || !player.getLevel().isClientSide || !player.equals(Minecraft.getInstance().player))
+            if (event.phase != TickEvent.Phase.END || !player.level().isClientSide || !player.equals(Minecraft.getInstance().player))
                 return;
 
             ViewfinderClient.onPlayerTick(player);
@@ -77,7 +96,7 @@ public class CommonEvents {
             if (!camera.isEmpty()) {
                 event.setCanceled(true);
                 event.setCancellationResult(InteractionResult.SUCCESS);
-                camera.getStack().use(player.level, player, camera.getHand());
+                camera.getStack().use(player.level(), player, camera.getHand());
             }
         }
 

@@ -36,10 +36,12 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(itemStackHandler, CameraItem.FILM_ATTACHMENT.slot(), 13, 42) {
                 @Override
                 public void set(@NotNull ItemStack stack) {
+                    ItemStack previousItem = getItem();
                     super.set(stack);
-                    if (!stack.isEmpty() && playerInventory.player.getLevel().isClientSide)
+                    if (playerInventory.player.level().isClientSide && !stack.isEmpty() && !previousItem.is(getItem().getItem())) {
                         OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILM_ADVANCE.get(),
                                 SoundSource.PLAYERS, 0.9f, 1f);
+                    }
                 }
 
                 @Override
@@ -56,9 +58,9 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
                 public void set(@NotNull ItemStack stack) {
                     ItemStack previousItem = getItem();
                     super.set(stack);
-                    if (playerInventory.player.getLevel().isClientSide && !previousItem.equals(getItem())) {
+                    if (playerInventory.player.level().isClientSide && !stack.isEmpty() && !previousItem.is(getItem().getItem())) {
                         OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get(),
-                                SoundSource.PLAYERS, getItem().isEmpty() ? 0.6f : 0.8f, getItem().isEmpty() ? 1.2f : 0.8f);
+                                SoundSource.PLAYERS, 0.8f, 1f);
                     }
                 }
 
@@ -74,10 +76,12 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
             addSlot(new SlotItemHandler(itemStackHandler, CameraItem.LENS_ATTACHMENT.slot(), 147, 43) {
                 @Override
                 public void set(@NotNull ItemStack stack) {
+                    ItemStack previousItem = getItem();
                     super.set(stack);
-                    if (playerInventory.player.getLevel().isClientSide)
+                    if (playerInventory.player.level().isClientSide && !previousItem.is(getItem().getItem())) {
                         OnePerPlayerSounds.play(playerInventory.player, stack.isEmpty() ?
                                 SoundEvents.SPYGLASS_STOP_USING : SoundEvents.SPYGLASS_USE, SoundSource.PLAYERS, 0.9f, 1f);
+                    }
                 }
 
                 @Override
@@ -93,11 +97,9 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
                 public void set(@NotNull ItemStack stack) {
                     ItemStack previousItem = getItem();
                     super.set(stack);
-                    if (playerInventory.player.getLevel().isClientSide && !previousItem.equals(getItem())) {
-                        if (previousItem.isEmpty()) {
+                    if (playerInventory.player.level().isClientSide && !stack.isEmpty() && !previousItem.is(getItem().getItem())) {
                             OnePerPlayerSounds.play(playerInventory.player, Exposure.SoundEvents.FILTER_PLACE.get(), SoundSource.PLAYERS, 0.8f,
-                                    playerInventory.player.getLevel().getRandom().nextFloat() * 0.2f + 0.9f);
-                        }
+                                    playerInventory.player.level().getRandom().nextFloat() * 0.2f + 0.9f);
                     }
                 }
 

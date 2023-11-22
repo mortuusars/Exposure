@@ -29,5 +29,6 @@
     [
       "photograph_in_end"
     ]
-  ]
+  ],
+  "sends_telemetry_event": true
 }

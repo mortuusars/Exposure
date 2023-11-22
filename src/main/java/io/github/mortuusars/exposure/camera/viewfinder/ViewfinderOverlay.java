@@ -2,8 +2,7 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.Config;
@@ -16,6 +15,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import org.joml.Matrix4f;
 
 import java.awt.geom.Rectangle2D;
 import java.util.Optional;
@@ -95,8 +95,8 @@ public class ViewfinderOverlay {
             attackAnim = 1f - attackAnim;
         poseStack.scale(1f - attackAnim * 0.4f, 1f - attackAnim * 0.6f, 1f - attackAnim * 0.4f);
         poseStack.translate(width / 16f * attackAnim, width / 5f * attackAnim, 0);
-        poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.lerp(attackAnim, 0, 10)));
-        poseStack.mulPose(Vector3f.XP.rotationDegrees(Mth.lerp(attackAnim, 0, 100)));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(attackAnim, 0, 10)));
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(attackAnim, 0, 100)));
 
         poseStack.translate(-width / 2f - yDelay, -height / 2f - xDelay, 0);
 
@@ -167,7 +167,6 @@ public class ViewfinderOverlay {
 
         BufferBuilder bufferbuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
-        RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
@@ -176,7 +175,6 @@ public class ViewfinderOverlay {
         bufferbuilder.vertex(matrix, maxX, minY, 0.0F).color(r, g, b, alpha).endVertex();
         bufferbuilder.vertex(matrix, minX, minY, 0.0F).color(r, g, b, alpha).endVertex();
         BufferUploader.drawWithShader(bufferbuilder.end());
-        RenderSystem.enableTexture();
         RenderSystem.disableBlend();
     }
 
@@ -186,7 +184,7 @@ public class ViewfinderOverlay {
             float f1 = -(pl.walkDist + f * partialTicks);
             float f2 = Mth.lerp(partialTicks, pl.oBob, pl.bob);
             poseStack.translate((Mth.sin(f1 * (float) Math.PI) * f2 * 16F), (-Math.abs(Mth.cos(f1 * (float) Math.PI) * f2 * 32F)), 0.0D);
-            poseStack.mulPose(Vector3f.ZP.rotationDegrees(Mth.sin(f1 * (float) Math.PI) * f2 * 3.0F));
+            poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.sin(f1 * (float) Math.PI) * f2 * 3.0F));
         }
     }
 }

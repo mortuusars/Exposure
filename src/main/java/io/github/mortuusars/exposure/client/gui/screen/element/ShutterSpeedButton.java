@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.google.common.base.Preconditions;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.ShutterSpeed;
@@ -9,6 +8,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInH
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -22,14 +22,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class ShutterSpeedButton extends CycleButton {
-    private final Screen screen;
     private final List<ShutterSpeed> shutterSpeeds;
     private final int secondaryFontColor;
     private final int mainFontColor;
 
     public ShutterSpeedButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
         super(screen, x, y, width, height, u, v, height, texture);
-        this.screen = screen;
 
         CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
         Preconditions.checkState(!camera.isEmpty(), "Player must hold an active camera at this point.");
@@ -61,8 +59,8 @@ public class ShutterSpeedButton extends CycleButton {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        super.renderButton(poseStack, mouseX, mouseY, partialTick);
+    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
 
         ShutterSpeed shutterSpeed = shutterSpeeds.get(currentIndex);
         String text = shutterSpeed.toString();
@@ -74,13 +72,13 @@ public class ShutterSpeedButton extends CycleButton {
         int textWidth = font.width(text);
         int xPos = 35 - (textWidth / 2);
 
-        font.draw(poseStack, text, x + xPos, y + 4, secondaryFontColor);
-        font.draw(poseStack, text, x + xPos, y + 3, mainFontColor);
+        guiGraphics.drawString(font, text, getX() + xPos, getY() + 4, secondaryFontColor, false);
+        guiGraphics.drawString(font, text, getX() + xPos, getY() + 3, mainFontColor, false);
     }
 
     @Override
-    public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
-        screen.renderTooltip(poseStack, Component.translatable("gui.exposure.viewfinder.shutter_speed.tooltip"), mouseX, mouseY);
+    public void renderToolTip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("gui.exposure.viewfinder.shutter_speed.tooltip"), mouseX, mouseY);
     }
 
     @Override

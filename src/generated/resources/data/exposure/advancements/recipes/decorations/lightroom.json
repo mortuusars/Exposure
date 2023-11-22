@@ -28,5 +28,6 @@
     "recipes": [
       "exposure:lightroom"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

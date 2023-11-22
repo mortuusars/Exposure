@@ -28,5 +28,6 @@
     "recipes": [
       "exposure:camera"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

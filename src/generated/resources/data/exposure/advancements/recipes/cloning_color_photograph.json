@@ -1,12 +1,12 @@
 {
   "parent": "minecraft:recipes/root",
   "criteria": {
-    "has_color_film": {
+    "has_photograph": {
       "conditions": {
         "items": [
           {
             "items": [
-              "exposure:color_film"
+              "exposure:photograph"
             ]
           }
         ]
@@ -15,7 +15,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "exposure:developing_color_film"
+        "recipe": "exposure:cloning_black_and_white_photograph"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -23,12 +23,13 @@
   "requirements": [
     [
       "has_the_recipe",
-      "has_color_film"
+      "has_photograph"
     ]
   ],
   "rewards": {
     "recipes": [
-      "exposure:developing_color_film"
+      "exposure:cloning_color_photograph"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

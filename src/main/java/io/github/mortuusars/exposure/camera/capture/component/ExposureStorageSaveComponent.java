@@ -14,8 +14,8 @@ public class ExposureStorageSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(byte[] materialColorPixels, int width, int height, FilmType filmType) {
-        ExposureSavedData exposureSavedData = new ExposureSavedData(width, height, materialColorPixels, filmType, false);
+    public void save(byte[] MapColorPixels, int width, int height, FilmType filmType) {
+        ExposureSavedData exposureSavedData = new ExposureSavedData(width, height, MapColorPixels, filmType, false);
 
         ExposureStorage.storeOnClient(exposureId, exposureSavedData);
         if (sendToServer)

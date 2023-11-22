@@ -18,10 +18,11 @@ public class CameraFilmFrameExposedTrigger extends SimpleCriterionTrigger<Camera
     }
 
     @Override
-    protected @NotNull TriggerInstance createInstance(@NotNull JsonObject json, EntityPredicate.@NotNull Composite player, @NotNull DeserializationContext context) {
+    protected @NotNull TriggerInstance createInstance(JsonObject json, @NotNull ContextAwarePredicate predicate,
+                                                      @NotNull DeserializationContext deserializationContext) {
         LocationPredicate location = LocationPredicate.fromJson(json.get("location"));
         ExposurePredicate exposure = ExposurePredicate.fromJson(json.get("exposure"));
-        return new TriggerInstance(player, location, exposure);
+        return new TriggerInstance(predicate, location, exposure);
     }
 
     public void trigger(ServerPlayer player, ItemAndStack<CameraItem> camera, CompoundTag frame) {
@@ -32,14 +33,14 @@ public class CameraFilmFrameExposedTrigger extends SimpleCriterionTrigger<Camera
         private final LocationPredicate locationPredicate;
         private final ExposurePredicate exposurePredicate;
 
-        public TriggerInstance(EntityPredicate.Composite playerPredicate, LocationPredicate locationPredicate, ExposurePredicate exposurePredicate) {
-            super(ID, playerPredicate);
+        public TriggerInstance(ContextAwarePredicate predicate, LocationPredicate locationPredicate, ExposurePredicate exposurePredicate) {
+            super(ID, predicate);
             this.locationPredicate = locationPredicate;
             this.exposurePredicate = exposurePredicate;
         }
 
         public boolean matches(ServerPlayer player, ItemAndStack<CameraItem> camera, CompoundTag frame) {
-            if (!locationPredicate.matches(player.getLevel(), player.getX(), player.getY(), player.getZ()))
+            if (!locationPredicate.matches(player.serverLevel(), player.getX(), player.getY(), player.getZ()))
                 return false;
 
             return exposurePredicate.matches(player, frame);

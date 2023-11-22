@@ -3,7 +3,6 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
@@ -14,9 +13,10 @@ import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
@@ -43,9 +43,6 @@ public class ViewfinderControlsScreen extends Screen {
         level = Minecraft.getInstance().level;
         assert level != null;
         openedAtTimestamp = level.getGameTime();
-
-        passEvents = true;
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -54,9 +51,15 @@ public class ViewfinderControlsScreen extends Screen {
     }
 
     @Override
+    public void tick() {
+        refreshMovementKeys();
+        Minecraft.getInstance().handleKeybinds();
+    }
+
+    @Override
     protected void init() {
         super.init();
-        refreshMovementKeysToKeepPlayerMoving();
+        refreshMovementKeys();
 
         int leftPos = (width - 256) / 2;
         int topPos = Math.round(ViewfinderOverlay.opening.y + ViewfinderOverlay.opening.height - 256);
@@ -110,7 +113,7 @@ public class ViewfinderControlsScreen extends Screen {
     /**
      * When screen is opened - all keys are released. If we do not refresh them - player would stop moving (if they had).
      */
-    private void refreshMovementKeysToKeepPlayerMoving() {
+    private void refreshMovementKeys() {
         Options opt = Minecraft.getInstance().options;
         long windowId = Minecraft.getInstance().getWindow().getWindow();
         Consumer<KeyMapping> update = keyMapping -> keyMapping.setDown(InputConstants.isKeyDown(windowId, keyMapping.getKey().getValue()));
@@ -125,7 +128,7 @@ public class ViewfinderControlsScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         if (!ViewfinderClient.isLookingThrough()) {
             this.onClose();
             return;
@@ -134,13 +137,13 @@ public class ViewfinderControlsScreen extends Screen {
         if (Minecraft.getInstance().options.hideGui)
             return;
 
-        poseStack.pushPose();
+        guiGraphics.pose().pushPose();
 
         float viewfinderScale = ViewfinderOverlay.getScale();
         if (viewfinderScale != 1.0f) {
-            poseStack.translate(width / 2f, height / 2f, 0);
-            poseStack.scale(viewfinderScale, viewfinderScale, viewfinderScale);
-            poseStack.translate(-width / 2f, -height / 2f, 0);
+            guiGraphics.pose().translate(width / 2f, height / 2f, 0);
+            guiGraphics.pose().scale(viewfinderScale, viewfinderScale, viewfinderScale);
+            guiGraphics.pose().translate(-width / 2f, -height / 2f, 0);
         }
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -149,17 +152,17 @@ public class ViewfinderControlsScreen extends Screen {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-//        blit(poseStack, leftPos, topPos, 0, 0, 256, 256);
-        super.render(poseStack, mouseX, mouseY, partialTick);
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        for(Widget widget : this.renderables) {
-            if (widget instanceof AbstractWidget abstractWidget && abstractWidget.isHoveredOrFocused()) {
-                abstractWidget.renderToolTip(poseStack, mouseX, mouseY);
+        for(Renderable renderable : this.renderables) {
+            if (renderable instanceof IElementWithTooltip tooltipElement && renderable instanceof AbstractWidget widget
+                && widget.visible && widget.isHoveredOrFocused()) {
+                tooltipElement.renderToolTip(guiGraphics, mouseX, mouseY);
                 break;
             }
         }
 
-        poseStack.popPose();
+        guiGraphics.pose().popPose();
     }
 
     @Override

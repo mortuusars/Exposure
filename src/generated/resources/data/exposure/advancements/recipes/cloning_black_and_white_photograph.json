@@ -28,7 +28,8 @@
   ],
   "rewards": {
     "recipes": [
-      "exposure:cloning_color_photograph"
+      "exposure:cloning_black_and_white_photograph"
     ]
-  }
+  },
+  "sends_telemetry_event": true
 }

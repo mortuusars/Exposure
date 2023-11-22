@@ -44,7 +44,7 @@ public class CameraInHand {
                 cameraItem.deactivate(player, itemInHand);
         }
 
-        if (player.getLevel().isClientSide)
+        if (player.level().isClientSide)
             Packets.sendToServer(new DeactivateCamerasInHandServerboundPacket());
     }
 

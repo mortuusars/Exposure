@@ -139,9 +139,14 @@ repositories {
         dir file(extraModsDir)
     }
     maven {
-        // location of the maven that hosts JEI files
-        name = "Progwml6 maven"
+        // location of the maven that hosts JEI files before January 2023
+        name = "Progwml6's maven"
         url = "https://dvs1.progwml6.com/files/maven/"
+    }
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
     }
     maven {
         // location of a maven mirror for JEI files, as a fallback
@@ -159,9 +164,11 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
 
-    compileOnly(fg.deobf("mezz.jei:jei-${mcversion}-common-api:${jeiversion}")) // Adds JEI API as a compile dependency
-    compileOnly(fg.deobf("mezz.jei:jei-${mcversion}-forge-api:${jeiversion}"))  // Adds JEI API as a compile dependency
-    runtimeOnly(fg.deobf("mezz.jei:jei-${mcversion}-forge:${jeiversion}")) // Adds the full JEI mod as a runtime dependency
+    // compile against the JEI API but do not include it at runtime
+    compileOnly(fg.deobf("mezz.jei:jei-${mcversion}-common-api:${jeiversion}"))
+    compileOnly(fg.deobf("mezz.jei:jei-${mcversion}-forge-api:${jeiversion}"))
+    // at runtime, use the full JEI jar for Forge
+    runtimeOnly(fg.deobf("mezz.jei:jei-${mcversion}-forge:${jeiversion}"))
 
     // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
     for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {

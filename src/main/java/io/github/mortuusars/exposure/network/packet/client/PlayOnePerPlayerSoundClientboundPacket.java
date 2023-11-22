@@ -42,7 +42,7 @@ public record PlayOnePerPlayerSoundClientboundPacket(UUID sourcePlayerId, SoundE
         ResourceLocation soundEventLocation = buffer.readResourceLocation();
         @Nullable SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(soundEventLocation);
         if (soundEvent == null)
-            soundEvent = SoundEvents.NOTE_BLOCK_BASS;
+            soundEvent = SoundEvents.NOTE_BLOCK_BASS.get();
 
         return new PlayOnePerPlayerSoundClientboundPacket(uuid, soundEvent, buffer.readEnum(SoundSource.class),
                 buffer.readFloat(), buffer.readFloat());

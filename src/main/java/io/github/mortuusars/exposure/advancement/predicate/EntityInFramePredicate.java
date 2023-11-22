@@ -55,7 +55,7 @@ public class EntityInFramePredicate {
         int y = posList.getInt(1);
         int z = posList.getInt(2);
 
-        return location.matches(player.getLevel(), x, y, z);
+        return location.matches(player.serverLevel(), x, y, z);
     }
 
     public JsonElement serializeToJson() {

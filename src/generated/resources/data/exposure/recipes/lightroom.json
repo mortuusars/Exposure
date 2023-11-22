@@ -1,5 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
     "L": {
       "item": "minecraft:lantern"
@@ -18,5 +19,6 @@
   ],
   "result": {
     "item": "exposure:lightroom"
-  }
+  },
+  "show_notification": true
 }

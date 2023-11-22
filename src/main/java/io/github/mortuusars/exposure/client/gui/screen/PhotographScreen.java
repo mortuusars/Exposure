@@ -3,19 +3,19 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
 import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
-import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Navigation;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.renderer.LightTexture;
@@ -67,7 +67,6 @@ public class PhotographScreen extends ZoomableScreen {
         super.init();
 
         zoomFactor = (float) height / PhotographRenderer.SIZE;
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         if (photographs.size() > 1) {
             previousButton = new ImageButton(0, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
@@ -88,22 +87,22 @@ public class PhotographScreen extends ZoomableScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-        renderBackground(poseStack);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        renderBackground(guiGraphics);
 
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0, 0, 500); // Otherwise exposure will overlap buttons
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        poseStack.popPose();
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.pose().popPose();
 
-        poseStack.pushPose();
+        guiGraphics.pose().pushPose();
 
-        poseStack.translate(x, y, 0);
-        poseStack.translate(width / 2f, height / 2f, 0);
-        poseStack.scale(scale, scale, scale);
-        poseStack.translate(PhotographRenderer.SIZE / -2f, PhotographRenderer.SIZE / -2f, 0);
+        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().translate(width / 2f, height / 2f, 0);
+        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().translate(PhotographRenderer.SIZE / -2f, PhotographRenderer.SIZE / -2f, 0);
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
@@ -114,26 +113,26 @@ public class PhotographScreen extends ZoomableScreen {
 
             float rotateOffset = PhotographRenderer.SIZE / 2f;
 
-            poseStack.pushPose();
-            poseStack.translate(posOffset, posOffset, 0);
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(posOffset, posOffset, 0);
 
-            poseStack.translate(rotateOffset, rotateOffset, 0);
-            poseStack.mulPose(Vector3f.ZP.rotationDegrees(i * 90 + 90));
-            poseStack.translate(-rotateOffset, -rotateOffset, 0);
+            guiGraphics.pose().translate(rotateOffset, rotateOffset, 0);
+            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 90 + 90));
+            guiGraphics.pose().translate(-rotateOffset, -rotateOffset, 0);
 
-            PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack,
+            PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, guiGraphics.pose(),
                     bufferSource, 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, brightness, brightness, brightness, 255);
 
-            poseStack.popPose();
+            guiGraphics.pose().popPose();
         }
 
         ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
         @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
-        PhotographRenderer.renderOnPaper(idOrTexture, poseStack, bufferSource, LightTexture.FULL_BRIGHT, false);
+        PhotographRenderer.renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, false);
         bufferSource.endBatch();
 
-        poseStack.popPose();
+        guiGraphics.pose().popPose();
 
         trySaveToFile(photograph, idOrTexture);
     }
@@ -201,7 +200,7 @@ public class PhotographScreen extends ZoomableScreen {
 
         if (prevIndex != currentIndex && minecraft.player != null) {
             minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 0.8f,
-                    minecraft.player.level.getRandom()
+                    minecraft.player.level().getRandom()
                             .nextFloat() * 0.2f + (navigation == Navigation.NEXT ? 1.1f : 0.9f));
             lastCycledAt = Util.getMillis();
         }

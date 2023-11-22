@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -30,8 +30,8 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(byte[] materialColorPixels, int width, int height, FilmType filmType) {
-        BufferedImage img = convertToBufferedImage(materialColorPixels, width, height);
+    public void save(byte[] MapColorPixels, int width, int height, FilmType filmType) {
+        BufferedImage img = convertToBufferedImage(MapColorPixels, width, height);
 
         File outputFile = new File(folder + "/" + (levelNameSubfolder ? getLevelName() + "/" : "") + exposureId + ".png");
         try {
@@ -47,12 +47,12 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     @NotNull
-    private BufferedImage convertToBufferedImage(byte[] materialColorPixels, int width, int height) {
+    private BufferedImage convertToBufferedImage(byte[] MapColorPixels, int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int bgr = MaterialColor.getColorFromPackedId(materialColorPixels[x + y * width]); // Mojang returns BGR color
+                int bgr = MapColor.getColorFromPackedId(MapColorPixels[x + y * width]); // Mojang returns BGR color
                 int rgb = ColorUtils.BGRtoRGB(bgr);
                 img.setRGB(x, y, rgb);
             }

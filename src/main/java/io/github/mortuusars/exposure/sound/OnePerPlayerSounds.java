@@ -12,7 +12,7 @@ import net.minecraftforge.fml.DistExecutor;
 
 public class OnePerPlayerSounds {
     public static void play(Player sourcePlayer, SoundEvent soundEvent, SoundSource source, float volume, float pitch) {
-        if (sourcePlayer.getLevel().isClientSide) {
+        if (sourcePlayer.level().isClientSide) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () ->
                     () -> OnePerPlayerSoundsClient.play(sourcePlayer, soundEvent, source, volume, pitch));
         }
@@ -25,7 +25,7 @@ public class OnePerPlayerSounds {
     }
 
     public static void stop(Player sourcePlayer, SoundEvent soundEvent) {
-        if (sourcePlayer.getLevel().isClientSide) {
+        if (sourcePlayer.level().isClientSide) {
             DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () ->
                     () -> OnePerPlayerSoundsClient.stop(sourcePlayer, soundEvent));
         }

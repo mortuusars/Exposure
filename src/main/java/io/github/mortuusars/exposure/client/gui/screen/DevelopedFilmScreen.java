@@ -42,75 +42,74 @@ public class DevelopedFilmScreen extends Screen {
     protected void init() {
         super.init();
         this.minecraft = Minecraft.getInstance();
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
 
         x = width / 2f;
         y = height / 2f;
     }
 
-    @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
-//        renderBackground(poseStack);
-        fillGradient(poseStack, 0, 0, width, height, 0x20202020, 0x20121212);
-        super.render(poseStack, mouseX, mouseY, partialTick);
+//    @Override
+//    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+////        renderBackground(poseStack);
+//        fillGradient(poseStack, 0, 0, width, height, 0x20202020, 0x20121212);
+//        super.render(poseStack, mouseX, mouseY, partialTick);
+////
+////        float scale = (height - (height / 6f)) / phHeight;
+////        scale += zoom;
 //
-//        float scale = (height - (height / 6f)) / phHeight;
-//        scale += zoom;
-
-        poseStack.pushPose();
-
-        // Move to center
-        poseStack.translate(x, y, 0);
-        // Scale
-        poseStack.scale(zoom, zoom, zoom);
-        // Set origin point to center (for scale)
-//        poseStack.translate(filmWidth / -2f, -(PIECE_HEIGHT / 2f), 0);
-
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableBlend();
-        RenderSystem.setShaderTexture(0, TEXTURE);
-
-        if (film.getItem().getType() == FilmType.COLOR)
-            RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 0.6F);
-        else
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.6F);
-
-        GuiUtil.blit(poseStack, 0f, PIECE_WIDTH, 0f, PIECE_HEIGHT, 0f, 0f, PIECE_WIDTH / 256f, 0f, PIECE_HEIGHT / 256f);
-
-//        blit(poseStack, 0, 0, 0, 0, 78, 84);
-
-//        for (int i = 0; i < frames.size(); i++) {
-//            final int frameX = i * PIECE_WIDTH + PIECE_WIDTH;
-//            GuiUtil.blit(poseStack, frameX, (frameX + PIECE_WIDTH), 0f, PIECE_HEIGHT, 0, (i == (frames.size() - 1) ? 156 : PIECE_WIDTH) / 256f, ((i == (frames.size() - 1) ? 156 : PIECE_WIDTH) + PIECE_WIDTH) / 256f, 0f, PIECE_HEIGHT / 256f);
-////            blit(poseStack, frameX, 0,  i == (frames.size() - 1) ? 156 : 78, 0, 78, 84);
-//        }
+//        poseStack.pushPose();
 //
-//        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+//        // Move to center
+//        poseStack.translate(x, y, 0);
+//        // Scale
+//        poseStack.scale(zoom, zoom, zoom);
+//        // Set origin point to center (for scale)
+////        poseStack.translate(filmWidth / -2f, -(PIECE_HEIGHT / 2f), 0);
 //
-//        float size = 70;
+//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+//        RenderSystem.defaultBlendFunc();
+//        RenderSystem.enableBlend();
+//        RenderSystem.setShaderTexture(0, TEXTURE);
 //
-//        for (int i = 0; i < frames.size(); i++) {
-//            FrameData frame = frames.get(i);
-//            final int frameX = i * PIECE_WIDTH + PIECE_WIDTH;
+//        if (film.getItem().getType() == FilmType.COLOR)
+//            RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 0.6F);
+//        else
+//            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.6F);
 //
-//            poseStack.pushPose();
-//            poseStack.translate(frameX + 4, 7, 0);
-//            Exposure.getStorage().getOrQuery(frame.id).ifPresent(data -> {
-//                if (film.getItem().getType() == FilmType.COLOR) {
-//                    ExposureClient.getExposureRenderer().renderNegative(frame.id, data, true, poseStack,
-//                            size, size, LightTexture.FULL_BRIGHT, 180, 130, 110, 230);
-//                } else {
-//                    ExposureClient.getExposureRenderer().renderNegative(frame.id, data, true, poseStack,
-//                            size, size, LightTexture.FULL_BRIGHT, 255, 255, 255, 215);
-//                }
+//        GuiUtil.blit(poseStack, 0f, PIECE_WIDTH, 0f, PIECE_HEIGHT, 0f, 0f, PIECE_WIDTH / 256f, 0f, PIECE_HEIGHT / 256f);
 //
-//            });
-//            poseStack.popPose();
-//        }
-
-        poseStack.popPose();
-    }
+////        blit(poseStack, 0, 0, 0, 0, 78, 84);
+//
+////        for (int i = 0; i < frames.size(); i++) {
+////            final int frameX = i * PIECE_WIDTH + PIECE_WIDTH;
+////            GuiUtil.blit(poseStack, frameX, (frameX + PIECE_WIDTH), 0f, PIECE_HEIGHT, 0, (i == (frames.size() - 1) ? 156 : PIECE_WIDTH) / 256f, ((i == (frames.size() - 1) ? 156 : PIECE_WIDTH) + PIECE_WIDTH) / 256f, 0f, PIECE_HEIGHT / 256f);
+//////            blit(poseStack, frameX, 0,  i == (frames.size() - 1) ? 156 : 78, 0, 78, 84);
+////        }
+////
+////        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+////
+////        float size = 70;
+////
+////        for (int i = 0; i < frames.size(); i++) {
+////            FrameData frame = frames.get(i);
+////            final int frameX = i * PIECE_WIDTH + PIECE_WIDTH;
+////
+////            poseStack.pushPose();
+////            poseStack.translate(frameX + 4, 7, 0);
+////            Exposure.getStorage().getOrQuery(frame.id).ifPresent(data -> {
+////                if (film.getItem().getType() == FilmType.COLOR) {
+////                    ExposureClient.getExposureRenderer().renderNegative(frame.id, data, true, poseStack,
+////                            size, size, LightTexture.FULL_BRIGHT, 180, 130, 110, 230);
+////                } else {
+////                    ExposureClient.getExposureRenderer().renderNegative(frame.id, data, true, poseStack,
+////                            size, size, LightTexture.FULL_BRIGHT, 255, 255, 255, 215);
+////                }
+////
+////            });
+////            poseStack.popPose();
+////        }
+//
+//        poseStack.popPose();
+//    }
 
     @Override
     public boolean isPauseScreen() {

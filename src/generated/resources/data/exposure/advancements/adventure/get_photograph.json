@@ -46,5 +46,6 @@
       "get_photograph",
       "get_stacked_photographs"
     ]
-  ]
+  ],
+  "sends_telemetry_event": true
 }

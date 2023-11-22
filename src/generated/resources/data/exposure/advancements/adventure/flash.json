@@ -32,5 +32,6 @@
     [
       "flash_in_darkness"
     ]
-  ]
+  ],
+  "sends_telemetry_event": true
 }

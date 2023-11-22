@@ -10,7 +10,7 @@ public class CameraHelper {
 //        if (player.getOffhandItem().getItem() instanceof CameraItem cameraItem)
 //            deactivate(player, cameraItem, player.getOffhandItem());
 //
-//        if (player.getLevel().isClientSide) {
+//        if (player.level().isClientSide) {
 //            if (sendToServer)
 //                Packets.sendToServer(new DeactivateCameraServerboundPacket(player.getUUID()));
 //        }

@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.integration.jei.category;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.integration.jei.ExposureJeiPlugin;
@@ -16,6 +15,7 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -106,10 +106,10 @@ public class PhotographPrintingCategory implements IRecipeCategory<PhotographPri
     }
 
     @Override
-    public void draw(PhotographPrintingJeiRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull PoseStack stack, double mouseX, double mouseY) {
+    public void draw(PhotographPrintingJeiRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
         if (recipe.getFilmType() == FilmType.COLOR)
             RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 1.0F);
-        filmDrawable.draw(stack);
+        filmDrawable.draw(guiGraphics);
     }
 
     @Override

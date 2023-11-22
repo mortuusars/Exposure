@@ -53,7 +53,7 @@ public class ViewfinderClient {
     public static void open() {
         LocalPlayer player = Minecraft.getInstance().player;
         Preconditions.checkState(player != null, "Player should not be null");
-        Preconditions.checkState(player.getLevel().isClientSide(), "This should be called only client-side.");
+        Preconditions.checkState(player.level().isClientSide(), "This should be called only client-side.");
 
         if (isOpen())
             return;

@@ -8,7 +8,7 @@ import net.minecraftforge.common.data.SoundDefinitionsProvider;
 
 public class SoundsProvider extends SoundDefinitionsProvider {
     public SoundsProvider(DataGenerator generator, ExistingFileHelper helper) {
-        super(generator, Exposure.ID, helper);
+        super(generator.getPackOutput(), Exposure.ID, helper);
     }
 
     @Override

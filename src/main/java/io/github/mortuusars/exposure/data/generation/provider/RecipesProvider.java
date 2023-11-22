@@ -10,6 +10,7 @@ import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -28,11 +29,11 @@ import java.util.function.Consumer;
 
 public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
     public RecipesProvider(DataGenerator generator) {
-        super(generator);
+        super(generator.getPackOutput());
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> recipeConsumer) {
+    protected void buildRecipes(Consumer<FinishedRecipe> recipeConsumer) {
         ResourceLocation bwRecipeId = Exposure.resource("developing_black_and_white_film");
         Advancement.Builder bwAdvancementBuilder = Advancement.Builder.advancement()
                 .parent(new ResourceLocation("recipes/root"))
@@ -44,9 +45,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
         recipeConsumer.accept(new FilmDevelopingFinishedRecipe(bwRecipeId,
                 Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get(), 1, "",
                 List.of(Ingredient.of(Exposure.Items.BLACK_AND_WHITE_FILM.get()), potionIngredient(Potions.WATER)), bwAdvancementBuilder,
-                new ResourceLocation(bwRecipeId.getNamespace(), "recipes/" +
-                        Objects.requireNonNull(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get()
-                                .getItemCategory()).getRecipeFolderName() + "/" + bwRecipeId.getPath())
+                new ResourceLocation(bwRecipeId.getNamespace(), "recipes/" + bwRecipeId.getPath())
         ));
 
         ResourceLocation colorRecipeId = Exposure.resource("developing_color_film");
@@ -60,9 +59,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
         recipeConsumer.accept(new FilmDevelopingFinishedRecipe(colorRecipeId,
                 Exposure.Items.DEVELOPED_COLOR_FILM.get(), 1, "",
                 List.of(Ingredient.of(Exposure.Items.COLOR_FILM.get()), potionIngredient(Potions.AWKWARD), potionIngredient(Potions.MUNDANE), potionIngredient(Potions.THICK)), colorAdvancementBuilder,
-                new ResourceLocation(colorRecipeId.getNamespace(), "recipes/" +
-                        Objects.requireNonNull(Exposure.Items.DEVELOPED_COLOR_FILM.get()
-                                .getItemCategory()).getRecipeFolderName() + "/" + colorRecipeId.getPath())
+                new ResourceLocation(colorRecipeId.getNamespace(), "recipes/" + colorRecipeId.getPath())
         ));
 
 
@@ -82,9 +79,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 List.of(PartialNBTIngredient.of(Exposure.Items.PHOTOGRAPH.get(), bwTag),
                         Ingredient.of(Exposure.Tags.Items.PHOTO_PAPERS),
                         Ingredient.of(Exposure.Tags.Items.BLACK_PRINTING_DYES)), bwPhotoCloningAdvancementBuilder,
-                new ResourceLocation(bwPhotoCloningRecipeId.getNamespace(), "recipes/" +
-                        Objects.requireNonNull(Exposure.Items.PHOTOGRAPH.get()
-                                .getItemCategory()).getRecipeFolderName() + "/" + bwPhotoCloningRecipeId.getPath())
+                new ResourceLocation(bwPhotoCloningRecipeId.getNamespace(), "recipes/" + bwPhotoCloningRecipeId.getPath())
         ));
 
         ResourceLocation colorPhotoCloningRecipeId = Exposure.resource("cloning_color_photograph");
@@ -106,12 +101,10 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                         Ingredient.of(Exposure.Tags.Items.CYAN_PRINTING_DYES),
                         Ingredient.of(Exposure.Tags.Items.MAGENTA_PRINTING_DYES),
                         Ingredient.of(Exposure.Tags.Items.YELLOW_PRINTING_DYES)), colorPhotoCloningAdvancementBuilder,
-                new ResourceLocation(colorPhotoCloningRecipeId.getNamespace(), "recipes/" +
-                        Objects.requireNonNull(Exposure.Items.PHOTOGRAPH.get()
-                                .getItemCategory()).getRecipeFolderName() + "/" + colorPhotoCloningRecipeId.getPath())
+                new ResourceLocation(colorPhotoCloningRecipeId.getNamespace(), "recipes/" + colorPhotoCloningRecipeId.getPath())
         ));
 
-        ShapedRecipeBuilder.shaped(Exposure.Items.CAMERA.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Exposure.Items.CAMERA.get())
                 .pattern("LPB")
                 .pattern("IGI")
                 .pattern("NIN")
@@ -125,7 +118,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .unlockedBy("has_iron", has(Tags.Items.INGOTS_IRON))
                 .save(recipeConsumer);
 
-        ShapedRecipeBuilder.shaped(Exposure.Items.BLACK_AND_WHITE_FILM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Exposure.Items.BLACK_AND_WHITE_FILM.get())
                 .pattern("NBB")
                 .pattern("IGG")
                 .pattern("IKK")
@@ -137,7 +130,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .unlockedBy("has_camera", has(Exposure.Items.CAMERA.get()))
                 .save(recipeConsumer);
 
-        ShapedRecipeBuilder.shaped(Exposure.Items.COLOR_FILM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.TOOLS, Exposure.Items.COLOR_FILM.get())
                 .pattern("NLL")
                 .pattern("IGG")
                 .pattern("IKK")
@@ -149,7 +142,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .unlockedBy("has_camera", has(Exposure.Items.CAMERA.get()))
                 .save(recipeConsumer);
 
-        ShapedRecipeBuilder.shaped(Exposure.Items.LIGHTROOM.get())
+        ShapedRecipeBuilder.shaped(RecipeCategory.DECORATIONS, Exposure.Items.LIGHTROOM.get())
                 .pattern("LT ")
                 .pattern("PP ")
                 .pattern("PP ")

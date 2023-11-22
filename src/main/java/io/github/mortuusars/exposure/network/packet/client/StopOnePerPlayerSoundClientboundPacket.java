@@ -38,7 +38,7 @@ public record StopOnePerPlayerSoundClientboundPacket(UUID sourcePlayerId, SoundE
         ResourceLocation soundEventLocation = buffer.readResourceLocation();
         @Nullable SoundEvent soundEvent = ForgeRegistries.SOUND_EVENTS.getValue(soundEventLocation);
         if (soundEvent == null)
-            soundEvent = SoundEvents.NOTE_BLOCK_BASS;
+            soundEvent = SoundEvents.NOTE_BLOCK_BASS.get();
 
         return new StopOnePerPlayerSoundClientboundPacket(uuid, soundEvent);
     }

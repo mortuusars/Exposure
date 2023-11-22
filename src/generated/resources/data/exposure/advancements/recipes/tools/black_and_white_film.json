@@ -30,5 +30,6 @@
     "recipes": [
       "exposure:black_and_white_film"
     ]
-  }
+  },
+  "sends_telemetry_event": false
 }

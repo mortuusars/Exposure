@@ -185,14 +185,14 @@ public class Capture {
                 image = component.modifyImage(this, image);
             }
 
-            byte[] materialColorPixels = converter.convert(this, image);
+            byte[] MapColorPixels = converter.convert(this, image);
 
             for (ICaptureComponent component : components) {
                 component.teardown(this);
             }
 
             for (ICaptureComponent component : components) {
-                component.save(materialColorPixels, image.getWidth(), image.getHeight(), getFilmType());
+                component.save(MapColorPixels, image.getWidth(), image.getHeight(), getFilmType());
             }
 
             LastExposures.add(exposureId);

@@ -6,25 +6,23 @@ import com.google.gson.JsonParseException;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
-import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.ShapedRecipe;
-import net.minecraft.world.item.crafting.ShapelessRecipe;
+import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
 
 public class PhotographCloningRecipe extends ShapelessRecipe {
     public PhotographCloningRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
-        super(id, group, result, ingredients);
+        super(id, group, CraftingBookCategory.MISC, result, ingredients);
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer container) {
+    public @NotNull ItemStack assemble(CraftingContainer container, RegistryAccess access) {
         for (int index = 0; index < container.getContainerSize(); index++) {
             ItemStack itemStack = container.getItem(index);
 
@@ -102,7 +100,7 @@ public class PhotographCloningRecipe extends ShapelessRecipe {
 
         public void toNetwork(FriendlyByteBuf buffer, PhotographCloningRecipe recipe) {
             buffer.writeUtf(recipe.getGroup());
-            buffer.writeItemStack(recipe.getResultItem(), false);
+            buffer.writeItemStack(recipe.result, false);
             buffer.writeVarInt(recipe.getIngredients().size());
 
             for(Ingredient ingredient : recipe.getIngredients()) {

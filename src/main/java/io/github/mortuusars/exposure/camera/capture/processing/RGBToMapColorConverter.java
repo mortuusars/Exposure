@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.camera.capture.processing;
 
-import net.minecraft.world.level.material.MaterialColor;
+import net.minecraft.world.level.material.MapColor;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,7 +11,7 @@ public class RGBToMapColorConverter {
     public static byte[] convert(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        MaterialColor[] mapColors = Arrays.stream(getMaterialColors()).filter(Objects::nonNull).toArray(MaterialColor[]::new);
+        MapColor[] mapColors = Arrays.stream(getMapColors()).filter(Objects::nonNull).toArray(MapColor[]::new);
         byte[] bytes = new byte[width * height];
 
         for (int x = 0; x < width; x++) {
@@ -25,10 +25,10 @@ public class RGBToMapColorConverter {
         return bytes;
     }
 
-    public static MaterialColor[] getMaterialColors(){
-        MaterialColor[] colors = new MaterialColor[64];
+    public static MapColor[] getMapColors(){
+        MapColor[] colors = new MapColor[64];
         for (int i = 0; i<= 63; i++){
-            colors[i] = MaterialColor.byId(i);
+            colors[i] = MapColor.byId(i);
         }
         return colors;
     }
@@ -40,7 +40,7 @@ public class RGBToMapColorConverter {
         return new double[] { color[0] * coeff, color[1] * coeff, color[2] * coeff };
     }
 
-    private static int nearestColor(MaterialColor[] colors, Color imageColor) {
+    private static int nearestColor(MapColor[] colors, Color imageColor) {
         double[] imageVec = { (double) imageColor.getRed() / 255.0, (double) imageColor.getGreen() / 255.0,
                 (double) imageColor.getBlue() / 255.0 };
         int best_color = 0;

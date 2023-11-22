@@ -10,6 +10,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -20,6 +21,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
@@ -78,7 +80,7 @@ public class PhotographEntity extends HangingEntity {
     }
 
     @Override
-    public @NotNull Packet<?> getAddEntityPacket() {
+    public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket() {
         return new ClientboundAddEntityPacket(this, this.direction.get3DDataValue(), this.getPos());
     }
 
@@ -144,13 +146,13 @@ public class PhotographEntity extends HangingEntity {
 
     @Override
     public boolean survives() {
-        if (!this.level.noCollision(this)) {
+        if (!this.level().noCollision(this)) {
             return false;
         } else {
-            BlockState blockstate = this.level.getBlockState(this.pos.relative(this.direction.getOpposite()));
-            return (blockstate.getMaterial().isSolid() || this.direction.getAxis().isHorizontal()
+            BlockState blockstate = this.level().getBlockState(this.pos.relative(this.direction.getOpposite()));
+            return (blockstate.isSolid() || this.direction.getAxis().isHorizontal()
                     && DiodeBlock.isDiode(blockstate))
-                    && this.level.getEntities(this, this.getBoundingBox(), HANGING_ENTITY).isEmpty();
+                    && this.level().getEntities(this, this.getBoundingBox(), HANGING_ENTITY).isEmpty();
         }
     }
 
@@ -243,10 +245,10 @@ public class PhotographEntity extends HangingEntity {
     public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack itemInHand = player.getItemInHand(hand);
         if (!isInvisible() && itemInHand.canPerformAction(ToolActions.SHEARS_CARVE)) {
-            if (!level.isClientSide) {
+            if (!level().isClientSide) {
                 setInvisible(true);
                 itemInHand.hurtAndBreak(1, player, (pl) -> pl.broadcastBreakEvent(hand));
-                playSound(SoundEvents.SHEEP_SHEAR, 1f, level.getRandom().nextFloat() * 0.2f + 0.9f);
+                playSound(SoundEvents.SHEEP_SHEAR, 1f, level().getRandom().nextFloat() * 0.2f + 0.9f);
             }
 
             return InteractionResult.SUCCESS;
@@ -255,13 +257,13 @@ public class PhotographEntity extends HangingEntity {
         if (itemInHand.is(Items.GLOW_INK_SAC)) {
             setGlowing(true);
             itemInHand.shrink(1);
-            if (!level.isClientSide)
+            if (!level().isClientSide)
                 playSound(SoundEvents.GLOW_INK_SAC_USE);
             return InteractionResult.SUCCESS;
         }
 
-        if (!level.isClientSide) {
-            this.playSound(getRotateSound(), 1.0F, level.getRandom().nextFloat() * 0.2f + 0.9f);
+        if (!level().isClientSide) {
+            this.playSound(getRotateSound(), 1.0F, level().getRandom().nextFloat() * 0.2f + 0.9f);
             this.setRotation(getRotation() + 1);
         }
 
@@ -273,8 +275,8 @@ public class PhotographEntity extends HangingEntity {
         if (this.isInvulnerableTo(damageSource))
             return false;
 
-        if (!this.isRemoved() && !this.level.isClientSide && !damageSource.isExplosion()) {
-            if (!getItem().isEmpty())
+        if (!this.isRemoved() && !this.level().isClientSide) {
+            if (!getItem().isEmpty() && !damageSource.is(DamageTypes.EXPLOSION))
                 this.dropItem(damageSource.getEntity());
 
             this.kill();
@@ -286,7 +288,7 @@ public class PhotographEntity extends HangingEntity {
 
     @Override
     public void dropItem(@Nullable Entity breaker) {
-        this.playSound(this.getBreakSound(), 1.0F, level.getRandom().nextFloat() * 0.3f + 0.6f);
+        this.playSound(this.getBreakSound(), 1.0F, level().getRandom().nextFloat() * 0.3f + 0.6f);
 
         if ((breaker instanceof Player player && player.isCreative()))
             return;
@@ -297,22 +299,22 @@ public class PhotographEntity extends HangingEntity {
 
     @Override
     public void tick() {
-        if (level.isClientSide && isGlowing() && level.getRandom().nextFloat() < 0.01f) {
+        if (level().isClientSide && isGlowing() && level().getRandom().nextFloat() < 0.01f) {
             AABB bb = getBoundingBox();
             Vec3i normal = getDirection().getNormal();
-            level.addParticle(ParticleTypes.END_ROD,
-                    position().x + (level.getRandom().nextFloat() * (bb.getXsize() * 0.75f) - bb.getXsize() * 0.75f / 2),
-                    position().y + (level.getRandom().nextFloat() * (bb.getYsize() * 0.75f) - bb.getYsize() * 0.75f / 2),
-                    position().z + (level.getRandom().nextFloat() * (bb.getZsize() * 0.75f) - bb.getZsize() * 0.75f / 2),
-                    level.getRandom().nextFloat() * 0.02f * normal.getX(),
-                    level.getRandom().nextFloat() * 0.02f * normal.getY(),
-                    level.getRandom().nextFloat() * 0.02f * normal.getZ());
+            level().addParticle(ParticleTypes.END_ROD,
+                    position().x + (level().getRandom().nextFloat() * (bb.getXsize() * 0.75f) - bb.getXsize() * 0.75f / 2),
+                    position().y + (level().getRandom().nextFloat() * (bb.getYsize() * 0.75f) - bb.getYsize() * 0.75f / 2),
+                    position().z + (level().getRandom().nextFloat() * (bb.getZsize() * 0.75f) - bb.getZsize() * 0.75f / 2),
+                    level().getRandom().nextFloat() * 0.02f * normal.getX(),
+                    level().getRandom().nextFloat() * 0.02f * normal.getY(),
+                    level().getRandom().nextFloat() * 0.02f * normal.getZ());
         }
     }
 
     @Override
     public void playPlacementSound() {
-        this.playSound(this.getPlaceSound(), 1.0F, level.getRandom().nextFloat() * 0.3f + 0.9f);
+        this.playSound(this.getPlaceSound(), 1.0F, level().getRandom().nextFloat() * 0.3f + 0.9f);
     }
 
     public SoundEvent getPlaceSound() {

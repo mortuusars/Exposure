@@ -128,7 +128,7 @@ public class LightroomMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
-        Preconditions.checkState(!player.level.isClientSide, "This should be server-side only.");
+        Preconditions.checkState(!player.level().isClientSide, "This should be server-side only.");
 
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = lightroomBlockEntity.getItem(LightroomBlockEntity.FILM_SLOT);
@@ -189,7 +189,7 @@ public class LightroomMenu extends AbstractContainerMenu {
     private static LightroomBlockEntity getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
-        final BlockEntity blockEntityAtPos = playerInventory.player.level.getBlockEntity(data.readBlockPos());
+        final BlockEntity blockEntityAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
         if (blockEntityAtPos instanceof LightroomBlockEntity blockEntity)
             return blockEntity;
         throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);

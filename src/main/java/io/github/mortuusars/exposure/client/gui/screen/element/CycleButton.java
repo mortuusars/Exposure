@@ -1,11 +1,14 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
+import io.github.mortuusars.exposure.client.gui.screen.IElementWithTooltip;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
-public abstract class CycleButton extends ImageButton {
+public abstract class CycleButton extends ImageButton implements IElementWithTooltip {
     protected final Screen screen;
     protected int count = 1;
     protected int currentIndex = 0;
@@ -15,6 +18,18 @@ public abstract class CycleButton extends ImageButton {
         super(x, y, width, height, u, v, yDiffTex, texture, button -> {});
         this.screen = screen;
     }
+
+    @Override
+    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float pPartialTick) {
+        super.render(guiGraphics, mouseX, mouseY, pPartialTick);
+    }
+
+    public void renderToolTip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) { }
 
     public void setupButtonElements(int count, int startingIndex) {
         this.count = count;

@@ -55,7 +55,7 @@ public class TestCommand {
             }
 
             if (testingResult.failed().size() == 0)
-                context.getSource().sendSuccess(message, false);
+                context.getSource().sendSuccess(() -> message, false);
             else
                 context.getSource().sendFailure(message);
 
