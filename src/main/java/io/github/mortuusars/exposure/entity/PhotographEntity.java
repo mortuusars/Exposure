@@ -299,6 +299,7 @@ public class PhotographEntity extends HangingEntity {
 
     @Override
     public void tick() {
+        super.tick();
         if (level().isClientSide && isGlowing() && level().getRandom().nextFloat() < 0.01f) {
             AABB bb = getBoundingBox();
             Vec3i normal = getDirection().getNormal();
