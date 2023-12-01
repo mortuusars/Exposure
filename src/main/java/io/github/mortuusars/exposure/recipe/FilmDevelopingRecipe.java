@@ -15,9 +15,15 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.crafting.*;
+import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
-public class FilmDevelopingRecipe extends ShapelessRecipe {
+/*
+    Implements IShapedRecipe because we need to exclude it from Create's Shapeless mixing (can't FilmRollItem#develop with it).
+    But at the same time keep the ability to craft it in Mechanical Crafter.
+    And default functionality is the same - it still a shapeless recipe.
+ */
+public class FilmDevelopingRecipe extends ShapelessRecipe implements IShapedRecipe<CraftingContainer> {
     public FilmDevelopingRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
         super(id, group, CraftingBookCategory.MISC, result, ingredients);
     }
@@ -52,6 +58,16 @@ public class FilmDevelopingRecipe extends ShapelessRecipe {
         }
 
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public int getRecipeWidth() {
+        return 0;
+    }
+
+    @Override
+    public int getRecipeHeight() {
+        return 0;
     }
 
     public static class Serializer implements RecipeSerializer<FilmDevelopingRecipe> {

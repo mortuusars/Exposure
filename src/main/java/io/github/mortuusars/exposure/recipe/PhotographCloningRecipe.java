@@ -14,9 +14,10 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.item.crafting.*;
+import net.minecraftforge.common.crafting.IShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
-public class PhotographCloningRecipe extends ShapelessRecipe {
+public class PhotographCloningRecipe extends ShapelessRecipe implements IShapedRecipe<CraftingContainer> {
     public PhotographCloningRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
         super(id, group, CraftingBookCategory.MISC, result, ingredients);
     }
@@ -58,6 +59,16 @@ public class PhotographCloningRecipe extends ShapelessRecipe {
 
     public boolean canCraftInDimensions(int pWidth, int pHeight) {
         return pWidth >= 3 && pHeight >= 3;
+    }
+
+    @Override
+    public int getRecipeWidth() {
+        return 0;
+    }
+
+    @Override
+    public int getRecipeHeight() {
+        return 0;
     }
 
     public static class Serializer implements RecipeSerializer<PhotographCloningRecipe> {
