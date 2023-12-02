@@ -10,7 +10,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Supplier;
 
-public record ShowExposureClientboundPacket(String exposureId, boolean negative) {
+public record ShowExposureClientboundPacket(String path, boolean isTexture, boolean negative) {
     public static void register(SimpleChannel channel, int id) {
         channel.messageBuilder(ShowExposureClientboundPacket.class, id, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(ShowExposureClientboundPacket::toBuffer)
@@ -20,12 +20,13 @@ public record ShowExposureClientboundPacket(String exposureId, boolean negative)
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
-        buffer.writeUtf(exposureId);
+        buffer.writeUtf(path);
+        buffer.writeBoolean(isTexture);
         buffer.writeBoolean(negative);
     }
 
     public static ShowExposureClientboundPacket fromBuffer(FriendlyByteBuf buffer) {
-        return new ShowExposureClientboundPacket(buffer.readUtf(), buffer.readBoolean());
+        return new ShowExposureClientboundPacket(buffer.readUtf(), buffer.readBoolean(), buffer.readBoolean());
     }
 
     @SuppressWarnings("UnusedReturnValue")

@@ -48,11 +48,11 @@ public class PhotographItem extends Item {
         if (stack.getTag() == null)
             return null;
 
-        String id = stack.getTag().getString("Id");
+        String id = stack.getTag().getString(FrameData.ID);
         if (id.length() > 0)
             return Either.left(id);
 
-        String resource = stack.getTag().getString("Resource");
+        String resource = stack.getTag().getString(FrameData.TEXTURE);
         if (resource.length() > 0)
             return Either.right(new ResourceLocation(resource));
 
@@ -76,11 +76,11 @@ public class PhotographItem extends Item {
 
     public void setId(ItemStack stack, @NotNull String id) {
         Preconditions.checkState(!StringUtil.isNullOrEmpty(id), "'id' cannot be null or empty.");
-        stack.getOrCreateTag().putString("Id", id);
+        stack.getOrCreateTag().putString(FrameData.ID, id);
     }
 
-    public void setResource(ItemStack stack, @NotNull ResourceLocation resourceLocation) {
-        stack.getOrCreateTag().putString("Resource", resourceLocation.toString());
+    public void setTexture(ItemStack stack, @NotNull ResourceLocation resourceLocation) {
+        stack.getOrCreateTag().putString(FrameData.TEXTURE, resourceLocation.toString());
     }
 
     public void setNote(ItemStack stack, List<Component> note) {

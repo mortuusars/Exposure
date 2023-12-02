@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.data.generation.provider;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.data.generation.recipe.FilmDevelopingFinishedRecipe;
 import io.github.mortuusars.exposure.data.generation.recipe.PhotographCloningFinishedRecipe;
 import net.minecraft.advancements.Advancement;
@@ -72,7 +73,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .requirements(RequirementsStrategy.OR);
 
         CompoundTag bwTag = new CompoundTag();
-        bwTag.putString("FilmType", FilmType.BLACK_AND_WHITE.getSerializedName());
+        bwTag.putString(FrameData.FILM_TYPE, FilmType.BLACK_AND_WHITE.getSerializedName());
 
         recipeConsumer.accept(new PhotographCloningFinishedRecipe(bwPhotoCloningRecipeId,
                 Exposure.Items.PHOTOGRAPH.get(), 1, "",
@@ -91,7 +92,7 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .requirements(RequirementsStrategy.OR);
 
         CompoundTag colorTag = new CompoundTag();
-        colorTag.putString("FilmType", FilmType.COLOR.getSerializedName());
+        colorTag.putString(FrameData.FILM_TYPE, FilmType.COLOR.getSerializedName());
 
         recipeConsumer.accept(new PhotographCloningFinishedRecipe(colorPhotoCloningRecipeId,
                 Exposure.Items.PHOTOGRAPH.get(), 1, "",

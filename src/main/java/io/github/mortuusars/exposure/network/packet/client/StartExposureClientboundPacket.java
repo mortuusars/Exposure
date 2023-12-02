@@ -29,7 +29,7 @@ public record StartExposureClientboundPacket(@NotNull String exposureId, @NotNul
     }
 
     public void toBuffer(FriendlyByteBuf buffer) {
-        Preconditions.checkState(exposureId.length() > 0, "exposureId cannot be empty.");
+        Preconditions.checkState(exposureId.length() > 0, "path cannot be empty.");
 
         buffer.writeUtf(exposureId);
         buffer.writeEnum(activeHand);

@@ -6,6 +6,7 @@ import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.item.IFilmItem;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.Mth;
@@ -20,6 +21,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -109,8 +111,8 @@ public class LightroomMenu extends AbstractContainerMenu {
         return frames;
     }
 
-    public String getFrameIdByIndex(int index) {
-        return index >= 0 && index < getExposedFrames().size() ? getExposedFrames().getCompound(index).getString("Id") : "";
+    public @Nullable CompoundTag getFrameIdByIndex(int index) {
+        return index >= 0 && index < getExposedFrames().size() ? getExposedFrames().getCompound(index) : null;
     }
 
     public boolean isColorFilm() {

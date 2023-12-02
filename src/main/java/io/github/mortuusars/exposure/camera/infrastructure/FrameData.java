@@ -1,7 +1,13 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
+import com.mojang.datafixers.util.Either;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+
 public class FrameData {
     public static final String ID = "Id";
+    public static final String TEXTURE = "Texture";
     public static final String FILM_TYPE = "FilmType";
     public static final String SHUTTER_SPEED_MS = "ShutterSpeedMS";
     public static final String FOCAL_LENGTH = "FocalLength";
@@ -22,4 +28,20 @@ public class FrameData {
     public static final String ENTITY_ID = "Id";
     public static final String ENTITY_POSITION = "Pos";
     public static final String ENTITY_DISTANCE = "Distance";
+
+    /**
+     * If both are defined - 'Id' takes priority.
+     * @return 'Either.left("")' if not found.
+     */
+    public static Either<String, ResourceLocation> getIdOrTexture(@NotNull CompoundTag tag) {
+        String id = tag.getString(ID);
+        if (id.length() > 0)
+            return Either.left(id);
+
+        String texture = tag.getString(TEXTURE);
+        if (texture.length() > 0)
+            return Either.right(new ResourceLocation(texture));
+
+        return Either.left("");
+    }
 }

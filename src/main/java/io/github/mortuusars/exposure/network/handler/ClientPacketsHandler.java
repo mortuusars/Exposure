@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.network.handler;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
@@ -10,13 +11,13 @@ import io.github.mortuusars.exposure.camera.capture.component.ExposureStorageSav
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConverter;
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.NegativeExposureScreen;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.packet.client.ApplyShaderClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.client.ShowExposureClientboundPacket;
 import io.github.mortuusars.exposure.network.packet.client.StartExposureClientboundPacket;
-import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
@@ -25,6 +26,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -68,7 +70,7 @@ public class ClientPacketsHandler {
         LocalPlayer player = Minecraft.getInstance().player;
         if (StringUtil.isNullOrEmpty(exposureId)) {
             if (player == null)
-                throw new IllegalStateException("Cannot load exposure: exposureId is null or empty and player is null.");
+                throw new IllegalStateException("Cannot load exposure: path is null or empty and player is null.");
             exposureId = player.getName().getString() + player.level().getGameTime();
         }
 
@@ -92,7 +94,7 @@ public class ClientPacketsHandler {
                         .converter(dither ? new DitheringColorConverter() : new SimpleColorConverter());
                 capture.processImage(image);
 
-                Exposure.LOGGER.info("Loaded exposure from file '" + path + "' with exposureId: '" + finalExposureId + "'.");
+                Exposure.LOGGER.info("Loaded exposure from file '" + path + "' with path: '" + finalExposureId + "'.");
                 Objects.requireNonNull(Minecraft.getInstance().player).displayClientMessage(
                         Component.translatable("command.exposure.load_from_file.success", finalExposureId)
                                 .withStyle(ChatFormatting.GREEN), false);
@@ -107,12 +109,13 @@ public class ClientPacketsHandler {
 
     public static void showExposure(ShowExposureClientboundPacket packet) {
         if (packet.negative()) {
-            Minecraft.getInstance().setScreen(new NegativeExposureScreen(packet.exposureId()));
+            Minecraft.getInstance().setScreen(new NegativeExposureScreen(
+                    packet.isTexture() ? Either.right(new ResourceLocation(packet.path())) : Either.left(packet.path())));
         }
         else {
             ItemStack stack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
             CompoundTag tag = new CompoundTag();
-            tag.putString("Id", packet.exposureId());
+            tag.putString(FrameData.ID, packet.path());
             stack.setTag(tag);
 
             ClientGUI.openPhotographScreen(List.of(new ItemAndStack<>(stack)));

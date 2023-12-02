@@ -426,45 +426,45 @@ public class CameraItem extends Item {
 
         CompoundTag tag = new CompoundTag();
 
-        tag.putString("Id", exposureId);
+        tag.putString(FrameData.ID, exposureId);
         if (flash)
-            tag.putBoolean("Flash", true);
-        tag.putString("Timestamp", Util.getFilenameFormattedDateTime());
-        tag.putString("Photographer", player.getScoreboardName());
-        tag.putUUID("PhotographerId", player.getUUID());
+            tag.putBoolean(FrameData.FLASH, true);
+        tag.putString(FrameData.TIMESTAMP, Util.getFilenameFormattedDateTime());
+        tag.putString(FrameData.PHOTOGRAPHER, player.getScoreboardName());
+        tag.putUUID(FrameData.PHOTOGRAPHER_ID, player.getUUID());
 
         ListTag pos = new ListTag();
         pos.add(IntTag.valueOf(player.blockPosition().getX()));
         pos.add(IntTag.valueOf(player.blockPosition().getY()));
         pos.add(IntTag.valueOf(player.blockPosition().getZ()));
-        tag.put("Pos", pos);
+        tag.put(FrameData.POSITION, pos);
 
-        tag.putString("Dimension", player.level().dimension().location().toString());
+        tag.putString(FrameData.DIMENSION, player.level().dimension().location().toString());
 
         player.level().getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location)
-                .ifPresent(biome -> tag.putString("Biome", biome.toString()));
+                .ifPresent(biome -> tag.putString(FrameData.BIOME, biome.toString()));
 
         int surfaceHeight = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, player.getBlockX(), player.getBlockZ());
         level.updateSkyBrightness();
         int skyLight = level.getBrightness(LightLayer.SKY, player.blockPosition());
 
         if (player.isUnderWater())
-            tag.putBoolean("Underwater", true);
+            tag.putBoolean(FrameData.UNDERWATER, true);
 
         if (player.getBlockY() < surfaceHeight && skyLight < 4)
-            tag.putBoolean("InCave", true);
+            tag.putBoolean(FrameData.IN_CAVE, true);
         else if (!player.isUnderWater()){
             Biome.Precipitation precipitation = level.getBiome(player.blockPosition()).value().getPrecipitationAt(player.blockPosition());
             if (level.isThundering() && precipitation != Biome.Precipitation.NONE)
-                tag.putString("Weather", precipitation == Biome.Precipitation.SNOW ? "Snowstorm" : "Thunder");
+                tag.putString(FrameData.WEATHER, precipitation == Biome.Precipitation.SNOW ? "Snowstorm" : "Thunder");
             else if (level.isRaining() && precipitation != Biome.Precipitation.NONE)
-                tag.putString("Weather", precipitation == Biome.Precipitation.SNOW ? "Snow" : "Rain");
+                tag.putString(FrameData.WEATHER, precipitation == Biome.Precipitation.SNOW ? "Snow" : "Rain");
             else
-                tag.putString("Weather", "Clear");
+                tag.putString(FrameData.WEATHER, "Clear");
         }
 
-        tag.putInt("LightLevel", lightLevel);
-        tag.putFloat("SunPosition", level.getSunAngle(0));
+        tag.putInt(FrameData.LIGHT_LEVEL, lightLevel);
+        tag.putFloat(FrameData.SUN_ANGLE, level.getSunAngle(0));
 
         List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
         if (entitiesInFrame.size() > 0) {
@@ -479,11 +479,11 @@ public class CameraItem extends Item {
 
                 // Duplicate entity id as a separate field in the tag.
                 // Can then be used by FTBQuests nbt matching (it's hard to match from a list), for example.
-                tag.putBoolean(entityInfoTag.getString("Id"), true);
+                tag.putBoolean(entityInfoTag.getString(FrameData.ENTITY_ID), true);
             }
 
             if (entities.size() > 0)
-                tag.put("Entities", entities);
+                tag.put(FrameData.ENTITIES_IN_FRAME, entities);
         }
 
         return tag;

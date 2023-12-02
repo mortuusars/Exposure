@@ -1,12 +1,18 @@
 package io.github.mortuusars.exposure;
 
-import io.github.mortuusars.exposure.client.renderer.ExposureRenderer;
+import io.github.mortuusars.exposure.client.renderer.NewExposureRenderer;
+import io.github.mortuusars.exposure.client.renderer.ExposureOnPaperRenderer;
 
 public class ExposureClient {
-    private static final ExposureRenderer exposureRenderer = new ExposureRenderer();
+    private static final NewExposureRenderer exposureRenderer = new NewExposureRenderer();
+    private static final ExposureOnPaperRenderer exposureOnPaperRenderer = new ExposureOnPaperRenderer(exposureRenderer);
     public static void init() {}
 
-    public static ExposureRenderer getExposureRenderer() {
+    public static NewExposureRenderer getExposureRenderer() {
         return exposureRenderer;
+    }
+
+    public static ExposureOnPaperRenderer getExposureOnPaperRenderer() {
+        return exposureOnPaperRenderer;
     }
 }

@@ -22,11 +22,11 @@ public class PhotographRenderer {
     public static void render(@NotNull Either<String, ResourceLocation> idOrTexture, PoseStack poseStack, MultiBufferSource bufferSource,
                               float minX, float minY, float maxX, float maxY,
                               float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
-        idOrTexture.ifLeft(id -> Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
-                        ExposureClient.getExposureRenderer().render(id, exposureData, poseStack, bufferSource,
-                                minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a)))
-                .ifRight(resource -> renderTexture(resource, poseStack, bufferSource,
-                        minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a));
+//        idOrTexture.ifLeft(id -> Exposure.getStorage().getOrQuery(id).ifPresent(exposureData ->
+//                        ExposureClient.getExposureRenderer().render(id, exposureData, poseStack, bufferSource,
+//                                minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a)))
+//                .ifRight(resource -> renderTexture(resource, poseStack, bufferSource,
+//                        minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a));
     }
 
     public static void render(@NotNull Either<String, ResourceLocation> idOrTexture, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
@@ -34,13 +34,13 @@ public class PhotographRenderer {
     }
 
     public static void renderOnPaper(@Nullable Either<String, ResourceLocation> idOrTexture, PoseStack poseStack,
-                                     MultiBufferSource bufferSource, int packedLight, int r, int g, int b, int a, boolean backside) {
+                                     MultiBufferSource bufferSource, int packedLight, int r, int g, int b, int a, boolean renderBackside) {
 
         renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
                 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
                 packedLight, r, g, b, a);
 
-        if (backside) {
+        if (renderBackside) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
             poseStack.translate(-SIZE, 0, -0.5);

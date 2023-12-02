@@ -5,9 +5,14 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
+import io.github.mortuusars.exposure.item.DevelopedFilmItem;
+import io.github.mortuusars.exposure.item.FilmRollItem;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.storage.ExposureStorage;
 import io.github.mortuusars.exposure.util.Navigation;
@@ -21,12 +26,16 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,48 +123,51 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             return;
         }
 
+        ItemStack filmStack = getMenu().getSlot(LightroomBlockEntity.FILM_SLOT).getItem();
+        if (!(filmStack.getItem() instanceof DevelopedFilmItem film))
+            return;
+
+        FilmType negative = film.getType();
+
         int selectedFrame = getMenu().getSelectedFrame();
-        String leftFrame = getMenu().getFrameIdByIndex(selectedFrame - 1);
-        String centerFrame = getMenu().getFrameIdByIndex(selectedFrame);
-        String rightFrame = getMenu().getFrameIdByIndex(selectedFrame + 1);
+        @Nullable CompoundTag leftFrame = getMenu().getFrameIdByIndex(selectedFrame - 1);
+        @Nullable CompoundTag centerFrame = getMenu().getFrameIdByIndex(selectedFrame);
+        @Nullable CompoundTag rightFrame = getMenu().getFrameIdByIndex(selectedFrame + 1);
 
-        boolean colorFilm = getMenu().isColorFilm();
-
-        if (colorFilm)
-            RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
+        RenderSystem.setShaderColor(negative.filmR, negative.filmG, negative.filmB, negative.filmA);
 
         // Left film part
-        guiGraphics.blit(FILM_OVERLAYS_TEXTURE, leftPos + 1, topPos + 15, 0, leftFrame.length() > 0 ? 68 : 0, 54, 68);
+        guiGraphics.blit(FILM_OVERLAYS_TEXTURE, leftPos + 1, topPos + 15, 0, leftFrame != null ? 68 : 0, 54, 68);
         // Center film part
-        guiGraphics.blit(FILM_OVERLAYS_TEXTURE, leftPos + 55, topPos + 15, 55, rightFrame.length() > 0 ? 0 : 68, 64, 68);
+        guiGraphics.blit(FILM_OVERLAYS_TEXTURE, leftPos + 55, topPos + 15, 55, rightFrame != null ? 0 : 68, 64, 68);
         // Right film part
-        if (rightFrame.length() > 0) {
+        if (rightFrame != null) {
             boolean hasMoreFrames = selectedFrame + 2 < frames.size();
             guiGraphics.blit(FILM_OVERLAYS_TEXTURE, leftPos + 119, topPos + 15, 120, hasMoreFrames ? 68 : 0, 56, 68);
         }
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        PoseStack poseStack = guiGraphics.pose();
 
-        if (leftFrame.length() > 0)
-            renderFrame(leftFrame, guiGraphics, leftPos + 6, topPos + 22, isOverLeftFrame(mouseX, mouseY) ? 0.8f : 0.25f, colorFilm);
-        if (centerFrame.length() > 0)
-            renderFrame(centerFrame, guiGraphics, leftPos + 61, topPos + 22, 0.9f, colorFilm);
-        if (rightFrame.length() > 0)
-            renderFrame(rightFrame, guiGraphics, leftPos + 116, topPos + 22, isOverRightFrame(mouseX, mouseY) ? 0.8f : 0.25f, colorFilm);
+        if (leftFrame != null)
+            renderFrame(leftFrame, poseStack, leftPos + 6, topPos + 22, FRAME_SIZE, isOverLeftFrame(mouseX, mouseY) ? 0.8f : 0.25f, negative);
+        if (centerFrame != null)
+            renderFrame(centerFrame, poseStack, leftPos + 61, topPos + 22, FRAME_SIZE, 0.9f, negative);
+        if (rightFrame != null)
+            renderFrame(rightFrame, poseStack, leftPos + 116, topPos + 22, FRAME_SIZE, isOverRightFrame(mouseX, mouseY) ? 0.8f : 0.25f, negative);
 
-        if (colorFilm)
-            RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
+        RenderSystem.setShaderColor(negative.filmR, negative.filmG, negative.filmB, negative.filmA);
 
         if (getMenu().getBlockEntity().isAdvancingFrameOnPrint()) {
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, 800);
+            poseStack.pushPose();
+            poseStack.translate(0, 0, 800);
 
             if (selectedFrame < getMenu().getTotalFrames() - 1)
                 guiGraphics.blit(MAIN_TEXTURE, leftPos + 111, topPos + 44, 200, 0, 10, 10);
             else
                 guiGraphics.blit(MAIN_TEXTURE, leftPos + 111, topPos + 44, 210, 0, 10, 10);
 
-            guiGraphics.pose().popPose();
+            poseStack.popPose();
         }
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -172,26 +184,35 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         if (isOverLeftFrame(mouseX, mouseY)) {
             tooltipLines.add(Component.translatable("gui.exposure.lightroom.previous_frame"));
             if (advancedTooltips) {
-                String id = getMenu().getFrameIdByIndex(selectedFrame - 1);
-                tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
+                addFrameInfoToAdvancedTooltip(selectedFrame - 1, tooltipLines);
             }
         } else if (isOverCenterFrame(mouseX, mouseY)) {
             tooltipLines.add(Component.translatable("gui.exposure.lightroom.current_frame", Integer.toString(getMenu().getSelectedFrame() + 1)));
             tooltipLines.add(Component.translatable("gui.exposure.lightroom.zoom_in.tooltip")
                     .withStyle(ChatFormatting.GRAY));
             if (advancedTooltips) {
-                String id = getMenu().getFrameIdByIndex(selectedFrame);
-                tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
+                addFrameInfoToAdvancedTooltip(selectedFrame, tooltipLines);
             }
         } else if (isOverRightFrame(mouseX, mouseY)) {
             tooltipLines.add(Component.translatable("gui.exposure.lightroom.next_frame"));
             if (advancedTooltips) {
-                String id = getMenu().getFrameIdByIndex(selectedFrame - 1);
-                tooltipLines.add(Component.literal("Exposure Id: " + id).withStyle(ChatFormatting.DARK_GRAY));
+                addFrameInfoToAdvancedTooltip(selectedFrame + 1, tooltipLines);
             }
         }
 
         guiGraphics.renderTooltip(Minecraft.getInstance().font, tooltipLines, Optional.empty(), mouseX, mouseY);
+    }
+
+    private void addFrameInfoToAdvancedTooltip(int frameIndex, List<Component> tooltipLines) {
+        @Nullable CompoundTag frame = getMenu().getFrameIdByIndex(frameIndex);
+        if (frame != null) {
+            Either<String, ResourceLocation> idOrTexture = FrameData.getIdOrTexture(frame);
+            MutableComponent component = idOrTexture.map(
+                            id -> id.length() > 0 ? Component.literal("Id: " + id) : Component.empty(),
+                            texture -> Component.literal("Texture: " + texture))
+                    .withStyle(ChatFormatting.DARK_GRAY);
+            tooltipLines.add(component);
+        }
     }
 
     private boolean isOverLeftFrame(int mouseX, int mouseY) {
@@ -212,29 +233,21 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         return selectedFrame + 1 >= 0 && selectedFrame + 1 < frames.size() && isHovering(116, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
-    private void renderFrame(String exposureId, GuiGraphics guiGraphics, float x, float y, float alpha, boolean colorFilm) {
-        if (exposureId.length() == 0)
+    public void renderFrame(@Nullable CompoundTag frame, PoseStack poseStack, float x, float y, float size, float alpha, FilmType negative) {
+        if (frame == null)
             return;
 
-        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(x, y, 0);
+        poseStack.pushPose();
+        poseStack.translate(x, y, 0);
 
-            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance()
-                    .getBuilder());
-            if (colorFilm)
-                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, guiGraphics.pose(),
-                        bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 180, 130, 110,
-                        Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
-            else
-                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, guiGraphics.pose(),
-                        bufferSource, FRAME_SIZE, FRAME_SIZE, LightTexture.FULL_BRIGHT, 255, 255, 255,
-                        Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        Either<String, ResourceLocation> idOrTexture = FrameData.getIdOrTexture(frame);
+        ExposureClient.getExposureRenderer().render(idOrTexture, true, true, poseStack, bufferSource,
+                0, 0, size, size, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
+                negative.frameR, negative.frameG, negative.frameB, Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
 
-            bufferSource.endBatch();
-
-            guiGraphics.pose().popPose();
-        });
+        bufferSource.endBatch();
+        poseStack.popPose();
     }
 
     @Override

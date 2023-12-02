@@ -43,29 +43,37 @@ public class ExposureCommands {
                         .then(Commands.argument("size", IntegerArgumentType.integer(1, 2048))
                                 .executes(context -> takeScreenshot(context.getSource(), IntegerArgumentType.getInteger(context, "size")))))
                 .then(Commands.literal("show")
-                        .then(Commands.argument("exposure_id", StringArgumentType.string())
-                                .executes(context -> showExposure(context.getSource(),
-                                        StringArgumentType.getString(context, "exposure_id"), false))
-                                .then(Commands.literal("negative")
+                        .then(Commands.literal("exposure")
+                                .then(Commands.argument("id", StringArgumentType.string())
                                         .executes(context -> showExposure(context.getSource(),
-                                                StringArgumentType.getString(context, "exposure_id"), true))))));
+                                                StringArgumentType.getString(context, "id"), false, false))
+                                        .then(Commands.literal("negative")
+                                                .executes(context -> showExposure(context.getSource(),
+                                                        StringArgumentType.getString(context, "id"), false, true)))))
+                        .then(Commands.literal("texture")
+                                .then(Commands.argument("path", StringArgumentType.string())
+                                        .executes(context -> showExposure(context.getSource(),
+                                                StringArgumentType.getString(context, "path"), true, false))
+                                        .then(Commands.literal("negative")
+                                                .executes(context -> showExposure(context.getSource(),
+                                                        StringArgumentType.getString(context, "path"), true, true)))))));
     }
 
-    private static int showExposure(CommandSourceStack stack, String exposureId, boolean negative) {
+    private static int showExposure(CommandSourceStack stack, String idOrPath, boolean isTexture, boolean negative) {
         ServerPlayer player = stack.getPlayer();
         if (player == null) {
             stack.sendFailure(Component.translatable("command.exposure.show.error.not_a_player"));
             return 0;
         }
 
-        Optional<ExposureSavedData> exposureData = Exposure.getStorage().getOrQuery(exposureId);
+        Optional<ExposureSavedData> exposureData = Exposure.getStorage().getOrQuery(idOrPath);
         if (exposureData.isEmpty()) {
-            stack.sendFailure(Component.translatable("command.exposure.show.error.not_found", exposureId));
+            stack.sendFailure(Component.translatable("command.exposure.show.error.not_found", idOrPath));
             return 0;
         }
 
-        ExposureSender.sendToClient(exposureId, exposureData.get(), player);
-        Packets.sendToClient(new ShowExposureClientboundPacket(exposureId, negative), player);
+        ExposureSender.sendToClient(idOrPath, exposureData.get(), player);
+        Packets.sendToClient(new ShowExposureClientboundPacket(idOrPath, isTexture, negative), player);
 
         return 0;
     }

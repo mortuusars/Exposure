@@ -1,12 +1,16 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -16,11 +20,12 @@ public class NegativeExposureScreen extends ZoomableScreen {
     public static final int BG_SIZE = 78;
     public static final int FRAME_SIZE = 54;
 
-    private final String exposureId;
+    private final Either<String, ResourceLocation> idOrTexture;
+    private FilmType type = FilmType.BLACK_AND_WHITE;
 
-    public NegativeExposureScreen(String exposureId) {
+    public NegativeExposureScreen(@NotNull Either<String, ResourceLocation> idOrTexture) {
         super(Component.empty());
-        this.exposureId = exposureId;
+        this.idOrTexture = idOrTexture;
 
         zoom.step = 2f;
         zoom.defaultZoom = 1f;
@@ -46,43 +51,40 @@ public class NegativeExposureScreen extends ZoomableScreen {
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        Exposure.getStorage().getOrQuery(exposureId).ifPresent(exposureData -> {
-            int width = exposureData.getWidth();
-            int height = exposureData.getHeight();
-            boolean colorFilm = exposureData.getType() == FilmType.COLOR;
+        type = idOrTexture.map(
+                id -> Exposure.getStorage().getOrQuery(id).map(ExposureSavedData::getType).orElse(FilmType.BLACK_AND_WHITE),
+                texture -> (texture.getPath().endsWith("_black_and_white") || texture.getPath().endsWith("_bw")) ? FilmType.COLOR : FilmType.BLACK_AND_WHITE);
+
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(Math.round(x + this.width / 2f), Math.round(y + this.height / 2f), 0);
+        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().translate(-Math.round(width / 2f), -Math.round(height / 2f), 0);
+
+        {
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShaderTexture(0, TEXTURE);
 
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(Math.round(x + this.width / 2f), Math.round(y + this.height / 2f), 0);
+            float scale = Math.max((float) width / (FRAME_SIZE), (float) height / (FRAME_SIZE));
             guiGraphics.pose().scale(scale, scale, scale);
-            guiGraphics.pose().translate(-Math.round(width / 2f), -Math.round(height / 2f), 0);
+            guiGraphics.pose().translate(-12, -12, 0);
 
-            {
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                RenderSystem.setShaderTexture(0, TEXTURE);
+            GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
 
-                guiGraphics.pose().pushPose();
-                float scale = Math.max((float) width / (FRAME_SIZE), (float) height / (FRAME_SIZE));
-                guiGraphics.pose().scale(scale, scale, scale);
-                guiGraphics.pose().translate(-12, -12, 0);
+            RenderSystem.setShaderColor(type.filmR, type.filmG, type.filmB, type.filmA);
+            GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
 
-                GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
-                if (colorFilm)
-                    RenderSystem.setShaderColor(1.2F, 0.96F, 0.75F, 1.0F);
-                GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
-                RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-                guiGraphics.pose().popPose();
-            }
-
-            if (colorFilm)
-                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, guiGraphics.pose(),
-                        width, height, LightTexture.FULL_BRIGHT, 180, 130, 110, 255);
-            else
-                ExposureClient.getExposureRenderer().renderNegative(exposureId, exposureData, true, guiGraphics.pose(),
-                        width, height, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             guiGraphics.pose().popPose();
-        });
+        }
+
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        ExposureClient.getExposureRenderer().render(idOrTexture, true, true, guiGraphics.pose(), bufferSource,
+                0, 0, FRAME_SIZE, FRAME_SIZE, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
+                type.frameR, type.frameG, type.frameB, 255);
+
+        guiGraphics.pose().popPose();
     }
 }
