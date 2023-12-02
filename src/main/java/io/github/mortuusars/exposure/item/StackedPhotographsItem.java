@@ -160,7 +160,7 @@ public class StackedPhotographsItem extends Item {
             return true;
         }
 
-        if (slotItem.getItem() instanceof PhotographItem) {
+        if (slotItem.getItem() instanceof PhotographItem && canAddPhotograph(stack)) {
             addPhotographToBottom(stack, slotItem);
             slot.set(ItemStack.EMPTY);
 
@@ -192,20 +192,26 @@ public class StackedPhotographsItem extends Item {
         }
 
         if (other.getItem() instanceof PhotographItem) {
-            addPhotographOnTop(stack, other);
-            access.set(ItemStack.EMPTY);
+            if (canAddPhotograph(stack)) {
+                addPhotographOnTop(stack, other);
+                access.set(ItemStack.EMPTY);
 
-            playAddSoundClientside(player);
+                playAddSoundClientside(player);
 
-            return true;
+                return true;
+            }
+            else
+                return false;
         }
 
         if (other.getItem() instanceof StackedPhotographsItem otherStackedItem) {
             int otherCount = otherStackedItem.getPhotographsCount(other);
+            int addedCount = 0;
             for (int i = 0; i < otherCount; i++) {
                 if (canAddPhotograph(stack)) {
                     ItemAndStack<PhotographItem> photograph = otherStackedItem.removeBottomPhotograph(other);
                     addPhotographOnTop(stack, photograph.getStack());
+                    addedCount++;
                 }
             }
 
@@ -214,7 +220,8 @@ public class StackedPhotographsItem extends Item {
             else if (otherStackedItem.getPhotographsCount(other) == 1)
                 access.set(otherStackedItem.removeTopPhotograph(other).getStack());
 
-            playAddSoundClientside(player);
+            if (addedCount > 0)
+                playAddSoundClientside(player);
 
             return true;
         }
@@ -233,10 +240,10 @@ public class StackedPhotographsItem extends Item {
         if (itemInHand.getItem() != this || getPhotographsCount(itemInHand) == 0)
             return InteractionResult.FAIL;
 
-        ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(itemInHand);
-
         if (player == null || player.level().isOutsideBuildHeight(resultPos) || !player.mayUseItemAt(resultPos, direction, itemInHand))
             return InteractionResult.FAIL;
+
+        ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(itemInHand);
 
         Level level = context.getLevel();
         PhotographEntity photographEntity = new PhotographEntity(level, resultPos, direction, topPhotograph.getStack().copy());
