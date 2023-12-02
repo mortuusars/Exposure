@@ -115,7 +115,7 @@ public class ClientPacketsHandler {
         else {
             ItemStack stack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
             CompoundTag tag = new CompoundTag();
-            tag.putString(FrameData.ID, packet.path());
+            tag.putString(packet.isTexture() ? FrameData.TEXTURE : FrameData.ID, packet.path());
             stack.setTag(tag);
 
             ClientGUI.openPhotographScreen(List.of(new ItemAndStack<>(stack)));

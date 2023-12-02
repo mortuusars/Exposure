@@ -1,8 +1,9 @@
-package io.github.mortuusars.exposure.client.renderer;
+package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.resources.ResourceLocation;
@@ -35,7 +36,7 @@ public class ItemFramePhotographRenderer {
         poseStack.mulPose(Axis.ZP.rotationDegrees(45 * entity.getRotation()));
         int packedLight = entity.getType() == EntityType.GLOW_ITEM_FRAME ? LightTexture.FULL_BRIGHT : event.getPackedLight();
 
-        float size = PhotographRenderer.SIZE;
+        float size = ExposureRenderer.SIZE;
 
         float scale = 1f / size;
         float pixelScale = scale / 16f;
@@ -46,7 +47,9 @@ public class ItemFramePhotographRenderer {
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, 10);
 
-        PhotographRenderer.render(idOrTexture, poseStack, event.getMultiBufferSource(), packedLight);
+        ExposureClient.getExposureRenderer().render(idOrTexture, false, false, poseStack, event.getMultiBufferSource(),
+                0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                packedLight, 255, 255, 255, 255);
         poseStack.popPose();
 
         event.setCanceled(true);

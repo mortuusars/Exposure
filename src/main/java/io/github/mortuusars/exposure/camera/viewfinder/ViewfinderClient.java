@@ -33,7 +33,7 @@ public class ViewfinderClient {
     public static final float ZOOM_STEP = 8f;
     public static final float ZOOM_PRECISE_MODIFIER = 0.25f;
     private static boolean isOpen;
-    private static long closedAt = 0;
+//    private static long closedAt = 0;
 
     private static FocalRange focalRange = FocalRange.FULL;
     private static double targetFov = 90f;

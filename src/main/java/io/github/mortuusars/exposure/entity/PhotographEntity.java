@@ -144,6 +144,7 @@ public class PhotographEntity extends HangingEntity {
         return getItem().copy();
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean survives() {
         if (!this.level().noCollision(this)) {

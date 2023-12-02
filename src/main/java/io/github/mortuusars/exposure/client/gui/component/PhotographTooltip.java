@@ -3,7 +3,8 @@ package io.github.mortuusars.exposure.client.gui.component;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
-import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
+import io.github.mortuusars.exposure.ExposureClient;
+import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -48,7 +49,7 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
 
         guiGraphics.pose().pushPose();
         guiGraphics.pose().translate(mouseX, mouseY, 0);
-        float scale = SIZE / (float) PhotographRenderer.SIZE;
+        float scale = SIZE / (float) ExposureRenderer.SIZE;
         float nextPhotographOffset = 0.03125f;
         scale *= 1f - (additionalPhotographs * nextPhotographOffset);
         guiGraphics.pose().scale(scale, scale, 1f);
@@ -57,10 +58,10 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
 
         // Rendering paper bottom to top:
         for (int i = additionalPhotographs; i > 0; i--) {
-            float posOffset = PhotographRenderer.SIZE * (nextPhotographOffset * i);
+            float posOffset = ExposureRenderer.SIZE * (nextPhotographOffset * i);
             int brightness = Mth.clamp((int)((1f - (0.2f * i)) * 255), 0, 255);
 
-            float rotateOffset = PhotographRenderer.SIZE / 2f;
+            float rotateOffset = ExposureRenderer.SIZE / 2f;
 
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(posOffset, posOffset, 0);
@@ -69,14 +70,24 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
             guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 90 + 90));
             guiGraphics.pose().translate(-rotateOffset, -rotateOffset, 0);
 
-            PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, guiGraphics.pose(),
-                    bufferSource, 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
+            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(),
+                    bufferSource, 0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, brightness, brightness, brightness, 255);
 
             guiGraphics.pose().popPose();
         }
 
-        PhotographRenderer.renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, false);
+        if (idOrTexture != null) {
+            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource,
+                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                    LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
+        }
+        else {
+            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(), bufferSource,
+                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                    LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+        }
+
         bufferSource.endBatch();
 
 
@@ -89,8 +100,8 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
             int fontWidth = Minecraft.getInstance().font.width(count);
             float fontScale = 1.6f;
             guiGraphics.pose().translate(
-                    mouseX + PhotographRenderer.SIZE * scale - 2 - fontWidth * fontScale,
-                    mouseY + PhotographRenderer.SIZE * scale - 2 - 8 * fontScale,
+                    mouseX + ExposureRenderer.SIZE * scale - 2 - fontWidth * fontScale,
+                    mouseY + ExposureRenderer.SIZE * scale - 2 - 8 * fontScale,
                     10);
             guiGraphics.pose().scale(fontScale, fontScale, fontScale);
             guiGraphics.drawString(font, count, 0, 0, 0xFFFFFFFF);

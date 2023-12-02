@@ -66,13 +66,16 @@ public class ExposureCommands {
             return 0;
         }
 
-        Optional<ExposureSavedData> exposureData = Exposure.getStorage().getOrQuery(idOrPath);
-        if (exposureData.isEmpty()) {
-            stack.sendFailure(Component.translatable("command.exposure.show.error.not_found", idOrPath));
-            return 0;
+        if (!isTexture) {
+            Optional<ExposureSavedData> exposureData = Exposure.getStorage().getOrQuery(idOrPath);
+            if (exposureData.isEmpty()) {
+                stack.sendFailure(Component.translatable("command.exposure.show.error.not_found", idOrPath));
+                return 0;
+            }
+
+            ExposureSender.sendToClient(idOrPath, exposureData.get(), player);
         }
 
-        ExposureSender.sendToClient(idOrPath, exposureData.get(), player);
         Packets.sendToClient(new ShowExposureClientboundPacket(idOrPath, isTexture, negative), player);
 
         return 0;

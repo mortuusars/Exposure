@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.util;
 
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.fml.util.thread.SidedThreadGroups;
 

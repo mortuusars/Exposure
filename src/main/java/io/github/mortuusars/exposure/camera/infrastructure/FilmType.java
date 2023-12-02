@@ -1,14 +1,12 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
 import net.minecraft.util.StringRepresentable;
-import net.minecraftforge.client.event.RenderTooltipEvent;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.awt.*;
 
 public enum FilmType implements StringRepresentable {
-    BLACK_AND_WHITE("black_and_white", 180, 130, 110, 1.2F, 0.96F, 0.75F, 1.0F),
+    BLACK_AND_WHITE("black_and_white", 255, 255, 255, 1.0F, 1.0F, 1.0F, 1.0F),
     COLOR("color", 180, 130, 110, 1.2F, 0.96F, 0.75F, 1.0F);
 
     @SuppressWarnings("deprecation")

@@ -1,10 +1,7 @@
-package io.github.mortuusars.exposure.client.renderer;
+package io.github.mortuusars.exposure.client.render;
 
-import io.github.mortuusars.exposure.Exposure;
+import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.storage.ExposureSavedData;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.material.MapColor;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,7 +12,7 @@ public class ExposureImage {
     @Nullable
     private final ExposureSavedData exposureData;
     @Nullable
-    private final TextureAtlasSprite texture;
+    private final ExposureTexture texture;
 
     public ExposureImage(String name, @NotNull ExposureSavedData exposureData) {
         this.name = name;
@@ -23,10 +20,14 @@ public class ExposureImage {
         this.texture = null;
     }
 
-    public ExposureImage(String name, @NotNull TextureAtlasSprite texture) {
+    public ExposureImage(String name, @NotNull ExposureTexture texture) {
         this.name = name;
         this.exposureData = null;
         this.texture = texture;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int getWidth() {
@@ -34,7 +35,8 @@ public class ExposureImage {
             return exposureData.getWidth();
         }
         else if (texture != null){
-            return texture.contents().width();
+            @Nullable NativeImage image = texture.getImage();
+            return image != null ? image.getWidth() : 1;
         }
         throw new IllegalStateException("Neither exposureData nor texture was specified.");
     }
@@ -44,7 +46,8 @@ public class ExposureImage {
             return exposureData.getHeight();
         }
         else if (texture != null){
-            return texture.contents().height();
+            @Nullable NativeImage image = texture.getImage();
+            return image != null ? image.getHeight() : 1;
         }
         throw new IllegalStateException("Neither exposureData nor texture was specified.");
     }
@@ -54,17 +57,9 @@ public class ExposureImage {
             return MapColor.getColorFromPackedId(exposureData.getPixel(x, y));
         }
         else if (texture != null){
-            return texture.getPixelRGBA(0, x, y);
+            @Nullable NativeImage image = texture.getImage();
+            return image != null ? image.getPixelRGBA(x, y) : 0x00000000;
         }
         throw new IllegalStateException("Neither exposureData nor texture was specified.");
-    }
-
-    public void validate() {
-        if (texture != null) {
-            ResourceLocation name = texture.contents().name();
-            if (name.toString().equals("minecraft:missingno")) {
-                Exposure.LOGGER.warn("Texture [" + this.name + "] is not found.");
-            }
-        }
     }
 }

@@ -1,42 +1,30 @@
 package io.github.mortuusars.exposure.data.generation.provider;
 
-import com.google.common.collect.Sets;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.advancement.BooleanPredicate;
 import io.github.mortuusars.exposure.advancement.predicate.EntityInFramePredicate;
 import io.github.mortuusars.exposure.advancement.predicate.ExposurePredicate;
 import io.github.mortuusars.exposure.advancement.trigger.CameraFilmFrameExposedTrigger;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
-import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.advancements.Advancement;
-import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.FrameType;
 import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.*;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DataProvider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
-import net.minecraft.world.level.material.MapColor;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.ForgeAdvancementProvider;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.ParametersAreNonnullByDefault;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 

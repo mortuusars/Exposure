@@ -59,7 +59,7 @@ public class ShutterSpeedButton extends CycleButton {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
 
         ShutterSpeed shutterSpeed = shutterSpeeds.get(currentIndex);

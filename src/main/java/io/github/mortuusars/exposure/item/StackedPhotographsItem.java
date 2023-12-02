@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.item;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
@@ -118,11 +119,11 @@ public class StackedPhotographsItem extends Item {
             return null;
 
         CompoundTag first = listTag.getCompound(0).getCompound("tag");
-        String id = first.getString("Id");
+        String id = first.getString(FrameData.ID);
         if (id.length() > 0)
             return Either.left(id);
 
-        String resource = first.getString("Resource");
+        String resource = first.getString(FrameData.TEXTURE);
         if (resource.length() > 0)
             return Either.right(new ResourceLocation(resource));
 

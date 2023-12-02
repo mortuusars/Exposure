@@ -70,11 +70,6 @@ public class BrightnessComponent implements ICaptureComponent {
                 Mth.clamp((int) ((b + rdst[2]) / 2), 0, 255));
     }
 
-//    @Override
-//    public void teardown(Capture capture) {
-//        GammaModifier.setAdditionalBrightness(0f);
-//    }
-
     @Override
     public void screenshotTaken(Capture capture, NativeImage screenshot) {
         GammaModifier.setAdditionalBrightness(0f);

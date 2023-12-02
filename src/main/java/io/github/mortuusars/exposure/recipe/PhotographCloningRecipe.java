@@ -23,7 +23,7 @@ public class PhotographCloningRecipe extends ShapelessRecipe implements IShapedR
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, RegistryAccess access) {
+    public @NotNull ItemStack assemble(CraftingContainer container, @NotNull RegistryAccess access) {
         for (int index = 0; index < container.getContainerSize(); index++) {
             ItemStack itemStack = container.getItem(index);
 

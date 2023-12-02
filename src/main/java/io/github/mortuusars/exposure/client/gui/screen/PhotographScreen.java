@@ -8,8 +8,9 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
-import io.github.mortuusars.exposure.client.renderer.PhotographRenderer;
+import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Navigation;
@@ -66,7 +67,7 @@ public class PhotographScreen extends ZoomableScreen {
     protected void init() {
         super.init();
 
-        zoomFactor = (float) height / PhotographRenderer.SIZE;
+        zoomFactor = (float) height / ExposureRenderer.SIZE;
 
         if (photographs.size() > 1) {
             previousButton = new ImageButton(0, (int) (height / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
@@ -102,7 +103,7 @@ public class PhotographScreen extends ZoomableScreen {
         guiGraphics.pose().translate(x, y, 0);
         guiGraphics.pose().translate(width / 2f, height / 2f, 0);
         guiGraphics.pose().scale(scale, scale, scale);
-        guiGraphics.pose().translate(PhotographRenderer.SIZE / -2f, PhotographRenderer.SIZE / -2f, 0);
+        guiGraphics.pose().translate(ExposureRenderer.SIZE / -2f, ExposureRenderer.SIZE / -2f, 0);
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
@@ -111,7 +112,7 @@ public class PhotographScreen extends ZoomableScreen {
             float posOffset = 4 * i;
             int brightness = Mth.clamp(255 - 50 * i, 0, 255);
 
-            float rotateOffset = PhotographRenderer.SIZE / 2f;
+            float rotateOffset = ExposureRenderer.SIZE / 2f;
 
             guiGraphics.pose().pushPose();
             guiGraphics.pose().translate(posOffset, posOffset, 0);
@@ -120,8 +121,8 @@ public class PhotographScreen extends ZoomableScreen {
             guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 90 + 90));
             guiGraphics.pose().translate(-rotateOffset, -rotateOffset, 0);
 
-            PhotographRenderer.renderTexture(PhotographRenderer.PHOTOGRAPH_TEXTURE, guiGraphics.pose(),
-                    bufferSource, 0, 0, PhotographRenderer.SIZE, PhotographRenderer.SIZE, 0, 0, 1, 1,
+            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(),
+                    bufferSource, 0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, brightness, brightness, brightness, 255);
 
             guiGraphics.pose().popPose();
@@ -129,7 +130,16 @@ public class PhotographScreen extends ZoomableScreen {
 
         ItemAndStack<PhotographItem> photograph = photographs.get(currentIndex);
         @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
-        PhotographRenderer.renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, false);
+        if (idOrTexture != null) {
+            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource,
+                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                    LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
+        }
+        else {
+            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(), bufferSource,
+                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                    LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+        }
         bufferSource.endBatch();
 
         guiGraphics.pose().popPose();
