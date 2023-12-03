@@ -1,5 +1,5 @@
-### 1.0.2 
-- Fixed Hanging Photograph no dropping when the block it's attached to is broken.
+### 1.0.2 - 2023-12-03
+- Fixed Hanging Photograph not dropping when the block it's attached to is broken.
 - Fixed crash when trying to add more than 16 photographs to the Stacked Photographs item.
 
 ### 1.0.1 - 2023-12-01
