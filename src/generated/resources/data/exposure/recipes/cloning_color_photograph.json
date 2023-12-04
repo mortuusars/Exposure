@@ -2,9 +2,7 @@
   "type": "exposure:photograph_cloning",
   "ingredients": [
     {
-      "type": "forge:partial_nbt",
-      "item": "exposure:photograph",
-      "nbt": "{FilmType:\"color\"}"
+      "item": "exposure:photograph"
     },
     {
       "tag": "exposure:photo_papers"

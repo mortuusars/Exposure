@@ -91,12 +91,9 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
                 .rewards(AdvancementRewards.Builder.recipe(colorPhotoCloningRecipeId))
                 .requirements(RequirementsStrategy.OR);
 
-        CompoundTag colorTag = new CompoundTag();
-        colorTag.putString(FrameData.FILM_TYPE, FilmType.COLOR.getSerializedName());
-
         recipeConsumer.accept(new PhotographCloningFinishedRecipe(colorPhotoCloningRecipeId,
                 Exposure.Items.PHOTOGRAPH.get(), 1, "",
-                List.of(PartialNBTIngredient.of(Exposure.Items.PHOTOGRAPH.get(), colorTag),
+                List.of(Ingredient.of(Exposure.Items.PHOTOGRAPH.get()),
                         Ingredient.of(Exposure.Tags.Items.PHOTO_PAPERS),
                         Ingredient.of(Exposure.Tags.Items.BLACK_PRINTING_DYES),
                         Ingredient.of(Exposure.Tags.Items.CYAN_PRINTING_DYES),

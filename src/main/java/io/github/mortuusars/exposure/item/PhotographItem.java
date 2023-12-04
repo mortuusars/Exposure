@@ -192,7 +192,7 @@ public class PhotographItem extends Item {
 
     public ItemStack copy(ItemStack original) {
         ItemStack newPhotographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-        CompoundTag compoundtag = Objects.requireNonNull(original.getTag()).copy();
+        CompoundTag compoundtag = original.getTag() != null ? original.getTag().copy() : new CompoundTag();
         compoundtag.putInt("generation", Math.min(WrittenBookItem.getGeneration(original) + 1, 2));
         newPhotographStack.setTag(compoundtag);
         return newPhotographStack;

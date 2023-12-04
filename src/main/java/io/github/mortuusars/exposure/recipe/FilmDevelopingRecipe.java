@@ -62,12 +62,12 @@ public class FilmDevelopingRecipe extends ShapelessRecipe implements IShapedReci
 
     @Override
     public int getRecipeWidth() {
-        return 0;
+        return 3;
     }
 
     @Override
     public int getRecipeHeight() {
-        return 0;
+        return 3;
     }
 
     public static class Serializer implements RecipeSerializer<FilmDevelopingRecipe> {
