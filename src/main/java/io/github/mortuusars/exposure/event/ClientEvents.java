@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.event;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
+import io.github.mortuusars.exposure.client.MouseHandler;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
@@ -91,6 +92,12 @@ public class ClientEvents {
                 if (player != null)
                     CameraInHand.deactivate(player);
             }
+        }
+
+        @SubscribeEvent
+        public static void onMouseButtonPre(InputEvent.MouseButton.Pre event) {
+            if (MouseHandler.handleMouseButtonPress(event.getButton(), event.getAction(), event.getModifiers()))
+                event.setCanceled(true);
         }
 
         @SubscribeEvent

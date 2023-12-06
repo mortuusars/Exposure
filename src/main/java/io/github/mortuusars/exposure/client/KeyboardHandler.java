@@ -8,11 +8,13 @@ import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.Nullable;
 
 public class KeyboardHandler {
     public static boolean handleViewfinderKeyPress(long windowId, int key, int scanCode, int action, int modifiers) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null || !ViewfinderClient.isLookingThrough())
+        @Nullable LocalPlayer player = Minecraft.getInstance().player;
+
+        if (player == null || !CameraInHand.isActive(player) || !ViewfinderClient.isLookingThrough())
             return false;
 
         if (key == InputConstants.KEY_ESCAPE || Minecraft.getInstance().options.keyInventory.matches(key, scanCode)) {

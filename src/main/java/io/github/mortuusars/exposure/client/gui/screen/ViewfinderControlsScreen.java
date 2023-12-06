@@ -7,6 +7,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
+import io.github.mortuusars.exposure.client.MouseHandler;
 import io.github.mortuusars.exposure.client.gui.screen.element.*;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
@@ -116,7 +117,14 @@ public class ViewfinderControlsScreen extends Screen {
     private void refreshMovementKeys() {
         Options opt = Minecraft.getInstance().options;
         long windowId = Minecraft.getInstance().getWindow().getWindow();
-        Consumer<KeyMapping> update = keyMapping -> keyMapping.setDown(InputConstants.isKeyDown(windowId, keyMapping.getKey().getValue()));
+        Consumer<KeyMapping> update = keyMapping -> {
+            if (keyMapping.getKey().getType() == InputConstants.Type.MOUSE) {
+                keyMapping.setDown(MouseHandler.isMouseButtonHeld(keyMapping.getKey().getValue()));
+            }
+            else {
+                keyMapping.setDown(InputConstants.isKeyDown(windowId, keyMapping.getKey().getValue()));
+            }
+        };
 
         update.accept(opt.keyUp);
         update.accept(opt.keyDown);
@@ -182,6 +190,18 @@ public class ViewfinderControlsScreen extends Screen {
         }
 
         return handled;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (Minecraft.getInstance().options.keyShift.matchesMouse(button)) {
+            if (level.getGameTime() - openedAtTimestamp >= 5)
+                this.onClose();
+
+            return false;
+        }
+
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
