@@ -1,8 +1,8 @@
-### 1.2.0
+### 1.2.0 - 2023-12-07
 - Added selfies. Press F5 (by default) to be the star of the show. 
 
-- Fix errors in log about developing and cloning recipes
 - Fixed Viewfinder Controls not showing up when sneak is bound to one of the mouse buttons.
+- Fixed errors in log about developing and cloning recipes
 
 ### 1.0.2 - 2023-12-03
 - Fixed Hanging Photograph not dropping when the block it's attached to is broken.
