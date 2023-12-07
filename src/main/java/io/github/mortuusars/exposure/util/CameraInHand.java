@@ -67,7 +67,7 @@ public class CameraInHand {
     public static CameraInHand getActive(Player player) {
         @Nullable InteractionHand activeHand = getActiveHand(player);
         if (activeHand == null)
-            return new CameraInHand(null, null);
+            return EMPTY;
 
         return new CameraInHand(new ItemAndStack<>(player.getItemInHand(activeHand)), activeHand);
     }

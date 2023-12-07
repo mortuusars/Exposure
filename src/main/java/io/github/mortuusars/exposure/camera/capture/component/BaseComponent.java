@@ -7,37 +7,37 @@ import net.minecraft.client.Minecraft;
 
 public class BaseComponent implements ICaptureComponent {
     private final boolean hideGuiValue;
-    private final CameraType cameraTypeValue;
-    private boolean guiHidden;
-    private CameraType cameraType;
+    private boolean storedGuiHidden;
+    private CameraType storedCameraType;
 
-    public BaseComponent(boolean hideGuiValue, CameraType cameraTypeValue) {
-        this.hideGuiValue = hideGuiValue;
-        this.cameraTypeValue = cameraTypeValue;
-        guiHidden = false;
-        cameraType = CameraType.FIRST_PERSON;
+    public BaseComponent(boolean hideGuiOnCapture) {
+        this.hideGuiValue = hideGuiOnCapture;
+        storedGuiHidden = false;
+        storedCameraType = CameraType.FIRST_PERSON;
     }
 
     public BaseComponent() {
-        this(true, CameraType.FIRST_PERSON);
+        this(true);
     }
 
     @Override
     public void onDelayFrame(Capture capture, int delayFramesLeft) {
         if (delayFramesLeft == 0) { // Right before capturing
             Minecraft mc = Minecraft.getInstance();
-            guiHidden = mc.options.hideGui;
-            cameraType = mc.options.getCameraType();
+            storedGuiHidden = mc.options.hideGui;
+            storedCameraType = mc.options.getCameraType();
 
             mc.options.hideGui = hideGuiValue;
-            mc.options.setCameraType(cameraTypeValue);
+            CameraType cameraType = Minecraft.getInstance().options.getCameraType()
+                    == CameraType.THIRD_PERSON_FRONT ? CameraType.THIRD_PERSON_FRONT : CameraType.FIRST_PERSON;
+            mc.options.setCameraType(cameraType);
         }
     }
 
     @Override
     public void screenshotTaken(Capture capture, NativeImage screenshot) {
         Minecraft mc = Minecraft.getInstance();
-        mc.options.hideGui = guiHidden;
-        mc.options.setCameraType(cameraType);
+        mc.options.hideGui = storedGuiHidden;
+        mc.options.setCameraType(storedCameraType);
     }
 }

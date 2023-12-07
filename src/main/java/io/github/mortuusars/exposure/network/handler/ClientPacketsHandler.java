@@ -60,7 +60,7 @@ public class ClientPacketsHandler {
                 .size(size)
                 .cropFactor(1f)
                 .components(
-                        new BaseComponent(),
+                        new BaseComponent(true),
                         FileSaveComponent.withDefaultFolders(Util.getFilenameFormattedDateTime()))
                 .converter(new DitheringColorConverter());
         CaptureManager.enqueue(capture);

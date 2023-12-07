@@ -129,6 +129,7 @@ public class CameraItem extends Item {
 
     public void setActive(ItemStack stack, boolean active) {
         stack.getOrCreateTag().putBoolean("Active", active);
+        setSelfieMode(stack, false);
     }
 
     public void activate(Player player, ItemStack stack) {
@@ -145,6 +146,19 @@ public class CameraItem extends Item {
             player.gameEvent(GameEvent.EQUIP);
             playCameraSound(player, Exposure.SoundEvents.VIEWFINDER_CLOSE.get(), 0.35f, 0.9f, 0.2f);
         }
+    }
+
+    public boolean isInSelfieMode(ItemStack stack) {
+        return stack.getTag() != null && stack.getTag().getBoolean("Selfie");
+    }
+
+    public void setSelfieMode(ItemStack stack, boolean selfie) {
+        stack.getOrCreateTag().putBoolean("Selfie", selfie);
+    }
+
+    public void setSelfieModeWithEffects(Player player, ItemStack stack, boolean selfie) {
+        setSelfieMode(stack, selfie);
+        player.level().playSound(player, player, Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(),  SoundSource.PLAYERS, 1f, 1.5f);
     }
 
     public boolean isShutterOpen(ItemStack stack) {

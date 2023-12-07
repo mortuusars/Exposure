@@ -33,7 +33,6 @@ public class ViewfinderClient {
     public static final float ZOOM_STEP = 8f;
     public static final float ZOOM_PRECISE_MODIFIER = 0.25f;
     private static boolean isOpen;
-//    private static long closedAt = 0;
 
     private static FocalRange focalRange = FocalRange.FULL;
     private static double targetFov = 90f;
@@ -47,7 +46,8 @@ public class ViewfinderClient {
     }
 
     public static boolean isLookingThrough() {
-        return isOpen() && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON;
+        return isOpen() && (Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON
+                || Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_FRONT);
     }
 
     public static void open() {
@@ -78,22 +78,12 @@ public class ViewfinderClient {
             Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure", "shaders/post/" + itemName + ".json"));
         });
 
+        SelfieClient.update(camera, activeHand, false);
+
         ViewfinderOverlay.setup();
     }
 
     public static void close() {
-//        if (!isOpen())
-//            return;
-
-//        // This method sometimes gets called twice: from regular closing and from playerTick.
-//        // And isOpen is true the second time for some reason.
-//        // I'm not sure if this fixes it, but leaving it just in case.
-//        if (Util.getMillis() - closedAt < 100) {
-//            isOpen = false;
-//            return;
-//        }
-//        closedAt = Util.getMillis();
-
         isOpen = false;
         targetFov = Minecraft.getInstance().options.fov().get();
 
@@ -110,6 +100,10 @@ public class ViewfinderClient {
 
     public static double getCurrentFov() {
         return currentFov;
+    }
+
+    public static float getSelfieCameraDistance() {
+        return 1.75f;
     }
 
     public static void zoom(ZoomDirection direction, boolean precise) {

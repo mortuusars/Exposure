@@ -33,6 +33,7 @@ public class Packets {
         CameraSetFlashModeServerboundPacket.register(CHANNEL, id++);
         CameraSetShutterSpeedServerboundPacket.register(CHANNEL, id++);
         CameraInHandAddFrameServerboundPacket.register(CHANNEL, id++);
+        CameraSelfieModeServerboundPacket.register(CHANNEL, id++);
         SetItemInHandServerboundPacket.register(CHANNEL, id++);
         QueryExposureDataServerboundPacket.register(CHANNEL, id++);
 

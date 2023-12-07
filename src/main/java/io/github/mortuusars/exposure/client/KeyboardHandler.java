@@ -2,24 +2,47 @@ package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
+import io.github.mortuusars.exposure.camera.viewfinder.SelfieClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.util.CameraInHand;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.Nullable;
 
 public class KeyboardHandler {
     public static boolean handleViewfinderKeyPress(long windowId, int key, int scanCode, int action, int modifiers) {
-        @Nullable LocalPlayer player = Minecraft.getInstance().player;
+        Minecraft minecraft = Minecraft.getInstance();
+        @Nullable LocalPlayer player = minecraft.player;
 
-        if (player == null || !CameraInHand.isActive(player) || !ViewfinderClient.isLookingThrough())
+        if (player == null || !CameraInHand.isActive(player))
             return false;
 
-        if (key == InputConstants.KEY_ESCAPE || Minecraft.getInstance().options.keyInventory.matches(key, scanCode)) {
+        if (minecraft.options.keyTogglePerspective.matches(key, scanCode)) {
+            if (action == InputConstants.PRESS)
+                return true;
+
+            CameraType currentCameraType = minecraft.options.getCameraType();
+            CameraType newCameraType = currentCameraType == CameraType.FIRST_PERSON ? CameraType.THIRD_PERSON_FRONT
+                    : CameraType.FIRST_PERSON;
+
+            minecraft.options.setCameraType(newCameraType);
+
+            CameraInHand camera = CameraInHand.getActive(player);
+
+            SelfieClient.update(camera.getCamera(), camera.getHand(), true);
+
+            return true;
+        }
+
+        if (!ViewfinderClient.isLookingThrough())
+            return false;
+
+        if (key == InputConstants.KEY_ESCAPE || minecraft.options.keyInventory.matches(key, scanCode)) {
             if (action == 0) { // Release
-                if (Minecraft.getInstance().screen instanceof ViewfinderControlsScreen viewfinderControlsScreen)
+                if (minecraft.screen instanceof ViewfinderControlsScreen viewfinderControlsScreen)
                     viewfinderControlsScreen.onClose();
                 else
                     CameraInHand.deactivate(player);
@@ -27,8 +50,8 @@ public class KeyboardHandler {
             return true;
         }
 
-        if (!(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
-            if (Minecraft.getInstance().options.keyShift.matches(key, scanCode)) {
+        if (!(minecraft.screen instanceof ViewfinderControlsScreen)) {
+            if (minecraft.options.keyShift.matches(key, scanCode)) {
                 ClientGUI.openViewfinderControlsScreen();
                 return false; // Do not handle to keep sneaking
             }

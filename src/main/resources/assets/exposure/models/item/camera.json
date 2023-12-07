@@ -15,6 +15,18 @@
         "camera_state": 0.1
       },
       "model": "exposure:item/camera_active"
+    },
+    {
+      "predicate": {
+        "camera_state": 0.2
+      },
+      "model": "exposure:item/camera_selfie"
+    },
+    {
+      "predicate": {
+        "camera_state": 0.3
+      },
+      "model": "exposure:item/camera_selfie_outside"
     }
   ]
 }
