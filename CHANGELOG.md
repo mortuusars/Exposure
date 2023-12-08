@@ -1,3 +1,6 @@
+### 1.1.1 - 2023-12-08
+- Fixed third-person camera distance being closer when not looking through the Viewfinder.
+
 ### 1.1.0 - 2023-12-07
 - Added selfies. Press F5 (by default) to be the star of the show. 
 
