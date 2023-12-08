@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://i.imgur.com/wZsCewy.png" width="256">
+  <img src="https://i.imgur.com/twOn0Uf.png" width="256">
     <br>
   <img src="https://img.shields.io/badge/Forge-1.19.2/1.20.1-e04e14" alt="Forge 1.19.2/1.20.1">
     <br>
