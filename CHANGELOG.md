@@ -1,4 +1,4 @@
-### 1.2.0 - 2023-12-07
+### 1.1.0 - 2023-12-07
 - Added selfies. Press F5 (by default) to be the star of the show. 
 
 - Fixed Viewfinder Controls not showing up when sneak is bound to one of the mouse buttons.
