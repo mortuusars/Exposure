@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "package": "io.github.mortuusars.exposure.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "DrawViewfinderOverlayMixin",
+    "ExposureLightTextureMixin",
+    "HideCrosshairMixin",
+    "KeyboardHandlerMixin",
+    "KeyMappingMixin",
+    "PhotographInHandRendererMixin",
+    "SelfieCameraMixin",
+    "ToggleKeyMappingMixin",
+    "ViewfinderSensitivityMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

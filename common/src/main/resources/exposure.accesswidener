@@ -1,0 +1,18 @@
+accessWidener   v2  named
+
+accessible method net/minecraft/advancements/CriteriaTriggers register (Lnet/minecraft/advancements/CriterionTrigger;)Lnet/minecraft/advancements/CriterionTrigger;
+
+accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platform/InputConstants$Key;
+accessible field net/minecraft/client/KeyMapping isDown Z
+
+accessible method net/minecraft/client/Minecraft handleKeybinds ()V
+accessible field net/minecraft/client/gui/screens/Screen renderables Ljava/util/List;
+accessible field net/minecraft/client/renderer/texture/TextureManager byPath Ljava/util/Map;
+accessible method net/minecraft/client/renderer/GameRenderer loadEffect (Lnet/minecraft/resources/ResourceLocation;)V
+
+accessible field net/minecraft/world/item/crafting/ShapelessRecipe result Lnet/minecraft/world/item/ItemStack;
+
+accessible field net/minecraft/world/entity/decoration/ItemFrame DATA_ITEM Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible field net/minecraft/world/entity/decoration/ItemFrame DATA_ROTATION Lnet/minecraft/network/syncher/EntityDataAccessor;
+accessible method net/minecraft/world/entity/decoration/ItemFrame setRotation (IZ)V
+accessible field net/minecraft/world/entity/decoration/ItemFrame fixed Z
