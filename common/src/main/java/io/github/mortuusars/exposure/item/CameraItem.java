@@ -63,6 +63,13 @@ import java.util.function.Predicate;
 
 public class CameraItem extends Item {
     public record AttachmentType(String id, int slot, Predicate<ItemStack> stackValidator) {
+        @Override
+        public String toString() {
+            return "AttachmentType{" +
+                    "id='" + id + '\'' +
+                    ", slot=" + slot +
+                    '}';
+        }
     }
 
     public static final AttachmentType FILM_ATTACHMENT = new AttachmentType("Film", 0, stack -> stack.getItem() instanceof FilmRollItem);
