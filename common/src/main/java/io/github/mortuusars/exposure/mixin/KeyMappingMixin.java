@@ -15,6 +15,7 @@ public class KeyMappingMixin {
 
     /**
      * Allows moving when ControlsScreen is open.
+     * This should also handle {@link net.minecraft.client.ToggleKeyMapping} on fabric (forge has separate mixin for it).
      */
     @Inject(method = "isDown", at = @At(value = "HEAD"), cancellable = true)
     private void isDown(CallbackInfoReturnable<Boolean> cir) {
