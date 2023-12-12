@@ -19,11 +19,13 @@ loom {
     }
 
     runs {
-        client2 {
-            inherit client
-            programArgs "--username", "AnotherDev"
-        }
+        create("client2") {
+            inherit(getByName("client"))
+            name("Second Client")
+            programArgs("--username", "AnotherDev")
 
+            client()
+        }
     }
 }
 
