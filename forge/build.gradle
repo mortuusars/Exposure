@@ -17,6 +17,14 @@ loom {
         mixinConfig "exposure-common.mixins.json"
         mixinConfig "exposure.mixins.json"
     }
+
+    runs {
+        client2 {
+            inherit client
+            programArgs "--username", "AnotherDev"
+        }
+
+    }
 }
 
 configurations {
