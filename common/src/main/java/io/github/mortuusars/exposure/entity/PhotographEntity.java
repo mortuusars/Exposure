@@ -3,8 +3,8 @@ package io.github.mortuusars.exposure.entity;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -271,9 +271,8 @@ public class PhotographEntity extends HangingEntity {
         return InteractionResult.SUCCESS;
     }
 
-    @ExpectPlatform
-    static boolean canShear(ItemStack stack) {
-        throw new AssertionError();
+    public boolean canShear(ItemStack stack) {
+        return PlatformHelper.canShear(stack);
     }
 
     @Override

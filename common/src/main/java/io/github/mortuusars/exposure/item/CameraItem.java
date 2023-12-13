@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.block.FlashBlock;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
@@ -11,6 +12,7 @@ import io.github.mortuusars.exposure.camera.capture.component.*;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConverter;
 import io.github.mortuusars.exposure.camera.infrastructure.*;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
+import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.client.StartExposureS2CP;
 import io.github.mortuusars.exposure.network.packet.server.CameraInHandAddFrameC2SP;
@@ -41,8 +43,11 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
@@ -539,13 +544,21 @@ public class CameraItem extends Item {
     protected void openCameraAttachmentsGUI(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             ItemStack cameraStack = player.getItemInHand(hand);
-            openMenu(serverPlayer, cameraStack);
-        }
-    }
 
-    @ExpectPlatform
-    static void openMenu(ServerPlayer serverPlayer, ItemStack cameraStack) {
-        throw new AssertionError();
+            MenuProvider menuProvider = new MenuProvider() {
+                @Override
+                public @NotNull Component getDisplayName() {
+                    return cameraStack.getHoverName();
+                }
+
+                @Override
+                public @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
+                    return new CameraAttachmentsMenu(containerId, playerInventory, cameraStack);
+                }
+            };
+
+            PlatformHelper.openMenu(serverPlayer, menuProvider, player.blockPosition());
+        }
     }
 
     protected String createExposureId(Player player) {

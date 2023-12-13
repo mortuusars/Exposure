@@ -70,14 +70,14 @@ public class CommonEvents {
             TestCommand.register(event.getDispatcher());
         }
 
-        @SubscribeEvent
-        public static void playerTick(TickEvent.PlayerTickEvent event) {
-            Player player = event.player;
-            if (event.phase != TickEvent.Phase.END || !player.level().isClientSide || !player.equals(Minecraft.getInstance().player))
-                return;
-
-            ViewfinderClient.onPlayerTick(player);
-        }
+//        @SubscribeEvent
+//        public static void playerTick(TickEvent.PlayerTickEvent event) {
+//            Player player = event.player;
+//            if (event.phase != TickEvent.Phase.END || !player.level().isClientSide || !player.equals(Minecraft.getInstance().player))
+//                return;
+//
+//            ViewfinderClient.onPlayerTick(player);
+//        }
 
         // IDK why but LevelTickEvent is fired 3 times on the server per 1 on the client.
         // So the solution is to use specific events. This seems to work properly.

@@ -1,44 +1,15 @@
-package io.github.mortuusars.exposure.item.forge;
+package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.item.CameraItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AnimationUtils;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import org.jetbrains.annotations.Nullable;
 
-public class CameraItemClientExtensions implements IClientItemExtensions {
-    public static final CameraItemClientExtensions INSTANCE = new CameraItemClientExtensions();
-
-    private CameraItemClientExtensions() {
-    }
-
-    public final HumanoidModel.ArmPose CAMERA_ARM_POSE = HumanoidModel.ArmPose.create("camera", true,
-            CameraItemClientExtensions::applyDefaultHoldingPose);
-    public final HumanoidModel.ArmPose CAMERA_SELFIE_POSE = HumanoidModel.ArmPose.create("camera_selfie", false,
-            CameraItemClientExtensions::applySelfieHoldingPose);
-
-    @Override
-    public HumanoidModel.@Nullable ArmPose getArmPose(LivingEntity entityLiving, InteractionHand hand, ItemStack itemStack) {
-        if (entityLiving instanceof Player
-                && itemStack.getItem() instanceof CameraItem cameraItem
-                && cameraItem.isActive(itemStack)) {
-            if (cameraItem.isInSelfieMode(itemStack))
-                return CAMERA_SELFIE_POSE;
-            else
-                return CAMERA_ARM_POSE;
-        }
-
-        return HumanoidModel.ArmPose.ITEM;
-    }
-
+public class CameraItemClientExtensions {
     public static void applyDefaultHoldingPose(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm) {
         model.head.xRot += 0.4; // If we turn head down completely - arms will be too low.
         if (arm == HumanoidArm.RIGHT) {
@@ -58,7 +29,7 @@ public class CameraItemClientExtensions implements IClientItemExtensions {
         cameraArm.zRot = 0f;
 
         // Undo arm bobbing:
-        AnimationUtils.bobModelPart(cameraArm, entity.tickCount + Minecraft.getInstance().getPartialTick(),
+        AnimationUtils.bobModelPart(cameraArm, entity.tickCount + Minecraft.getInstance().getFrameTime(),
                 arm == HumanoidArm.LEFT ? 1.0F : -1.0F);
     }
 

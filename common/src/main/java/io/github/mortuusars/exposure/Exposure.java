@@ -23,6 +23,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatFormatter;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
+import net.minecraft.util.profiling.jfr.event.ServerTickTimeEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
@@ -214,8 +215,6 @@ public class Exposure {
         public static void register() {
             CriteriaTriggers.register(FILM_FRAME_EXPOSED);
         }
-
-        static void init() {}
     }
 
     public static class Tags {

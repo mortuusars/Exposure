@@ -14,7 +14,8 @@ import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
 import io.github.mortuusars.exposure.command.ClientCommands;
-import io.github.mortuusars.exposure.item.forge.CameraItemClientExtensions;
+import io.github.mortuusars.exposure.item.CameraItemClientExtensions;
+import io.github.mortuusars.exposure.item.forge.CameraItemForgeClientExtensions;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
@@ -36,16 +37,6 @@ public class ClientEvents {
                 Exposure.initClient();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
-
-                //noinspection deprecation
-                ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
-                ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
-                        (pStack, pLevel, pEntity, pSeed) -> {
-                            if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
-                                return stackedPhotographsItem.getPhotographsCount(pStack);
-                            }
-                            return 0f;
-                        });
             });
         }
 
@@ -81,26 +72,26 @@ public class ClientEvents {
             ExposureClient.getExposureStorage().clear();
         }
 
-        @SubscribeEvent
-        public static void renderOverlay(RenderGuiOverlayEvent.Pre event) {
-            if (ViewfinderClient.isLookingThrough())
-                event.setCanceled(true);
-        }
+//        @SubscribeEvent
+//        public static void renderOverlay(RenderGuiOverlayEvent.Pre event) {
+//            if (ViewfinderClient.isLookingThrough())
+//                event.setCanceled(true);
+//        }
 
-        @SubscribeEvent
-        public static void renderHand(RenderHandEvent event) {
-            if (ViewfinderClient.isLookingThrough())
-                event.setCanceled(true);
-        }
+//        @SubscribeEvent
+//        public static void renderHand(RenderHandEvent event) {
+//            if (ViewfinderClient.isLookingThrough())
+//                event.setCanceled(true);
+//        }
 
-        @SubscribeEvent
-        public static void onGuiOpen(ScreenEvent.Opening event) {
-            if (ViewfinderClient.isOpen() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
-                LocalPlayer player = Minecraft.getInstance().player;
-                if (player != null)
-                    CameraInHand.deactivate(player);
-            }
-        }
+//        @SubscribeEvent
+//        public static void onGuiOpen(ScreenEvent.Opening event) {
+//            if (ViewfinderClient.isOpen() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
+//                LocalPlayer player = Minecraft.getInstance().player;
+//                if (player != null)
+//                    CameraInHand.deactivate(player);
+//            }
+//        }
 
         @SubscribeEvent
         public static void mouseScroll(InputEvent.MouseScrollingEvent event) {

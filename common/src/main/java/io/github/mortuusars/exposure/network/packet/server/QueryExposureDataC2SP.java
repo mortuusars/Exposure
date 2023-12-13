@@ -2,19 +2,29 @@ package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureServer;
 import io.github.mortuusars.exposure.data.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.network.PacketDirection;
 import io.github.mortuusars.exposure.network.packet.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
 public record QueryExposureDataC2SP(String id) implements IPacket<QueryExposureDataC2SP> {
-    public void toBuffer(FriendlyByteBuf friendlyByteBuf) {
-        friendlyByteBuf.writeUtf(id);
+    public static final ResourceLocation ID = Exposure.resource("query_exposure_data");
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    public FriendlyByteBuf toBuffer(FriendlyByteBuf buffer) {
+        buffer.writeUtf(id);
+        return buffer;
     }
 
     public static QueryExposureDataC2SP fromBuffer(FriendlyByteBuf buffer) {

@@ -1,25 +1,34 @@
 package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.PacketDirection;
 import io.github.mortuusars.exposure.network.packet.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record CameraSelfieModeC2SP(InteractionHand hand, boolean isInSelfieMode, boolean effects) implements IPacket<CameraSelfieModeC2SP> {
+public record CameraSetSelfieModeC2SP(InteractionHand hand, boolean isInSelfieMode, boolean effects) implements IPacket<CameraSetSelfieModeC2SP> {
+    public static final ResourceLocation ID = Exposure.resource("camera_set_selfie_mode");
 
-    public void toBuffer(FriendlyByteBuf buffer) {
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    public FriendlyByteBuf toBuffer(FriendlyByteBuf buffer) {
         buffer.writeEnum(hand);
         buffer.writeBoolean(isInSelfieMode);
         buffer.writeBoolean(effects);
+        return buffer;
     }
 
-    public static CameraSelfieModeC2SP fromBuffer(FriendlyByteBuf buffer) {
-        return new CameraSelfieModeC2SP(buffer.readEnum(InteractionHand.class), buffer.readBoolean(), buffer.readBoolean());
+    public static CameraSetSelfieModeC2SP fromBuffer(FriendlyByteBuf buffer) {
+        return new CameraSetSelfieModeC2SP(buffer.readEnum(InteractionHand.class), buffer.readBoolean(), buffer.readBoolean());
     }
 
     @Override

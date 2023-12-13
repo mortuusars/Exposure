@@ -28,9 +28,17 @@ import java.util.List;
 import java.util.Map;
 
 public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) implements IPacket<CameraInHandAddFrameC2SP> {
-    public void toBuffer(FriendlyByteBuf buffer) {
+    public static final ResourceLocation ID = Exposure.resource("camera_in_hand_add_frame");
+
+    @Override
+    public ResourceLocation getId() {
+        return ID;
+    }
+
+    public FriendlyByteBuf toBuffer(FriendlyByteBuf buffer) {
         buffer.writeEnum(hand);
         buffer.writeNbt(frame);
+        return buffer;
     }
 
     public static CameraInHandAddFrameC2SP fromBuffer(FriendlyByteBuf buffer) {

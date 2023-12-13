@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.forge.mixin;
 
 import io.github.mortuusars.exposure.item.CameraItem;
-import io.github.mortuusars.exposure.item.forge.CameraItemClientExtensions;
+import io.github.mortuusars.exposure.item.forge.CameraItemForgeClientExtensions;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -46,6 +46,6 @@ public abstract class CameraItemForgeMixin extends Item implements IForgeItem {
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-        consumer.accept(CameraItemClientExtensions.INSTANCE);
+        consumer.accept(CameraItemForgeClientExtensions.INSTANCE);
     }
 }

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.block;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.block.entity.Lightroom;
 import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
@@ -119,9 +119,8 @@ public class LightroomBlock extends Block implements EntityBlock {
 
         player.awardStat(Exposure.Stats.INTERACT_WITH_LIGHTROOM);
 
-        if (player instanceof ServerPlayer serverPlayer) {
-            openMenu(serverPlayer, lightroomBlockEntity, pos);
-        }
+        if (player instanceof ServerPlayer serverPlayer)
+            PlatformHelper.openMenu(serverPlayer, lightroomBlockEntity, pos);
 
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
@@ -165,10 +164,5 @@ public class LightroomBlock extends Block implements EntityBlock {
             return LightroomBlockEntity::serverTick;
 
         return null;
-    }
-
-    @ExpectPlatform
-    public static void openMenu(ServerPlayer serverPlayer, LightroomBlockEntity lightroomBlockEntity, @NotNull BlockPos pos) {
-        throw new AssertionError();
     }
 }

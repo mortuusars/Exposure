@@ -9,7 +9,10 @@
     "HideCrosshairMixin",
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
+    "LocalPlayerTickMixin",
+    "MinecraftMixin",
     "PhotographInHandRendererMixin",
+    "PlayerTickMixin",
     "SelfieCameraMixin",
     "ViewfinderSensitivityMixin"
   ],

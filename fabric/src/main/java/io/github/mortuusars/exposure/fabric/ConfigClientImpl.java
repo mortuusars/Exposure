@@ -1,49 +1,49 @@
 package io.github.mortuusars.exposure.fabric;
 
-import org.apache.commons.lang3.NotImplementedException;
+import io.github.mortuusars.exposure.Config;
 
 public class ConfigClientImpl {
     // UI
     public static boolean CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP() {
-        throw new NotImplementedException();
+        return true;
     }
 
     public static boolean PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP() {
-        throw new NotImplementedException();
+        return false;
     }
 
     public static boolean PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR() {
-        throw new NotImplementedException();
+        return true;
     }
 
     // CAPTURE
     public static int FLASH_CAPTURE_DELAY_TICKS() {
-        throw new NotImplementedException();
+        return 3;
     }
 
     // VIEWFINDER
     public static double VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER() {
-        throw new NotImplementedException();
+        return 0.048;
     }
 
     public static int VIEWFINDER_BACKGROUND_COLOR() {
-        throw new NotImplementedException();
+        return Config.Client.getColorFromHex("FA1F1D1B");
     }
 
     public static int VIEWFINDER_FONT_MAIN_COLOR() {
-        throw new NotImplementedException();
+        return Config.Client.getColorFromHex("FF2B2622");
     }
 
     public static int VIEWFINDER_FONT_SECONDARY_COLOR() {
-        throw new NotImplementedException();
+        return Config.Client.getColorFromHex("FF7A736C");
     }
 
     // IMAGE SAVING
     public static boolean EXPOSURE_SAVING() {
-        throw new NotImplementedException();
+        return true;
     }
 
     public static boolean EXPOSURE_SAVING_LEVEL_SUBFOLDER() {
-        throw new NotImplementedException();
+        return true;
     }
 }

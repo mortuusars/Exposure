@@ -17,11 +17,13 @@
   "entrypoints": {
     "main": [
       "io.github.mortuusars.exposure.fabric.ExposureFabric"
+    ],
+    "client": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabricClient"
     ]
   },
   "mixins": [
-    "exposure.mixins.json",
-    "exposure-common.mixins.json"
+    "exposure.mixins.json"
   ],
   "depends": {
     "fabric": "*",

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.Packets;
-import io.github.mortuusars.exposure.network.packet.server.CameraSelfieModeC2SP;
+import io.github.mortuusars.exposure.network.packet.server.CameraSetSelfieModeC2SP;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -20,6 +20,6 @@ public class SelfieClient {
         else
             camera.getItem().setSelfieMode(camera.getStack(), selfieMode);
 
-        Packets.sendToServer(new CameraSelfieModeC2SP(activeHand, selfieMode, effects));
+        Packets.sendToServer(new CameraSetSelfieModeC2SP(activeHand, selfieMode, effects));
     }
 }

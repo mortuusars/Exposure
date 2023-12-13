@@ -8,15 +8,12 @@ import io.github.mortuusars.exposure.network.packet.client.*;
 import io.github.mortuusars.exposure.network.packet.server.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
-import net.minecraftforge.server.ServerLifecycleHooks;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class PacketsImpl {
@@ -68,9 +65,9 @@ public class PacketsImpl {
                 .decoder(CameraInHandAddFrameC2SP::fromBuffer)
                 .consumerMainThread(PacketsImpl::handlePacket)
                 .add();
-        CHANNEL.messageBuilder(CameraSelfieModeC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(CameraSelfieModeC2SP::toBuffer)
-                .decoder(CameraSelfieModeC2SP::fromBuffer)
+        CHANNEL.messageBuilder(CameraSetSelfieModeC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(CameraSetSelfieModeC2SP::toBuffer)
+                .decoder(CameraSetSelfieModeC2SP::fromBuffer)
                 .consumerMainThread(PacketsImpl::handlePacket)
                 .add();
         CHANNEL.messageBuilder(QueryExposureDataC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
@@ -117,12 +114,12 @@ public class PacketsImpl {
                 .add();
     }
 
-    public static <MSG> void sendToServer(MSG message) {
-        CHANNEL.sendToServer(message);
+    public static void sendToServer(IPacket<?> packet) {
+        CHANNEL.sendToServer(packet);
     }
 
-    public static <MSG> void sendToClient(MSG message, ServerPlayer player) {
-        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), message);
+    public static void sendToClient(IPacket<?> packet, ServerPlayer player) {
+        CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 
     private static <T extends IPacket<T>> void handlePacket(T packet, Supplier<NetworkEvent.Context> contextSupplier) {
