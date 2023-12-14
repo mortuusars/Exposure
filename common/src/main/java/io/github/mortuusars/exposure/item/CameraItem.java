@@ -557,7 +557,7 @@ public class CameraItem extends Item {
                 }
             };
 
-            PlatformHelper.openMenu(serverPlayer, menuProvider, player.blockPosition());
+            PlatformHelper.openMenu(serverPlayer, menuProvider, buffer -> buffer.writeItem(cameraStack));
         }
     }
 

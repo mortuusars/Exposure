@@ -1,0 +1,18 @@
+{
+  "type": "exposure:film_developing",
+  "ingredients": [
+    {
+      "item": "exposure:black_and_white_film"
+    },
+    {
+      "fabric:type": "fabric:nbt",
+      "base": {
+        "item": "minecraft:potion"
+      },
+      "nbt": "{Potion:\"minecraft:water\"}"
+    }
+  ],
+  "result": {
+    "item": "exposure:developed_black_and_white_film"
+  }
+}

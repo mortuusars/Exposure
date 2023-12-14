@@ -120,7 +120,7 @@ public class LightroomBlock extends Block implements EntityBlock {
         player.awardStat(Exposure.Stats.INTERACT_WITH_LIGHTROOM);
 
         if (player instanceof ServerPlayer serverPlayer)
-            PlatformHelper.openMenu(serverPlayer, lightroomBlockEntity, pos);
+            PlatformHelper.openMenu(serverPlayer, lightroomBlockEntity, buffer -> buffer.writeBlockPos(pos));
 
         return InteractionResult.sidedSuccess(level.isClientSide);
     }

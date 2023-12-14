@@ -23,7 +23,8 @@
     ]
   },
   "mixins": [
-    "exposure.mixins.json"
+    "exposure.mixins.json",
+    "exposure-common.mixins.json"
   ],
   "depends": {
     "fabric": "*",

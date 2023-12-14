@@ -1,22 +1,19 @@
 package io.github.mortuusars.exposure.event;
 
+import io.github.mortuusars.exposure.CommonFunctionality;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.command.ExposureCommands;
 import io.github.mortuusars.exposure.command.ShaderCommand;
 import io.github.mortuusars.exposure.command.TestCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
-import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.network.forge.PacketsImpl;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ScheduledTasks;
-import net.minecraft.client.Minecraft;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.TickEvent;
@@ -108,9 +105,7 @@ public class CommonEvents {
 
         @SubscribeEvent
         public static void onItemToss(ItemTossEvent event) {
-            ItemStack stack = event.getEntity().getItem();
-            if (stack.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(stack))
-                cameraItem.deactivate(event.getPlayer(), stack);
+            CommonFunctionality.handleItemDrop(event.getPlayer(), event.getEntity());
         }
     }
 }

@@ -12,11 +12,11 @@
     "LocalPlayerTickMixin",
     "MinecraftMixin",
     "PhotographInHandRendererMixin",
-    "PlayerTickMixin",
     "SelfieCameraMixin",
     "ViewfinderSensitivityMixin"
   ],
   "mixins": [
+    "PlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

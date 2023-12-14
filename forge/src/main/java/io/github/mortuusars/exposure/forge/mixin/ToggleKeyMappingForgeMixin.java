@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ToggleKeyMapping.class)
-public abstract class ToggleKeyMappingMixin extends KeyMapping {
-    public ToggleKeyMappingMixin(String pName, int pKeyCode, String pCategory) {
+public abstract class ToggleKeyMappingForgeMixin extends KeyMapping {
+    public ToggleKeyMappingForgeMixin(String pName, int pKeyCode, String pCategory) {
         super(pName, pKeyCode, pCategory);
     }
 

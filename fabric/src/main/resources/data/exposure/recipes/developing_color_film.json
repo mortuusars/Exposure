@@ -1,0 +1,32 @@
+{
+  "type": "exposure:film_developing",
+  "ingredients": [
+    {
+      "item": "exposure:color_film"
+    },
+    {
+      "fabric:type": "fabric:nbt",
+      "base": {
+        "item": "minecraft:potion"
+      },
+      "nbt": "{Potion:\"minecraft:awkward\"}"
+    },
+    {
+      "fabric:type": "fabric:nbt",
+      "base": {
+        "item": "minecraft:potion"
+      },
+      "nbt": "{Potion:\"minecraft:mundane\"}"
+    },
+    {
+      "fabric:type": "fabric:nbt",
+      "base": {
+        "item": "minecraft:potion"
+      },
+      "nbt": "{Potion:\"minecraft:thick\"}"
+    }
+  ],
+  "result": {
+    "item": "exposure:developed_color_film"
+  }
+}

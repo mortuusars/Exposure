@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.mixin;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -19,17 +18,7 @@ public abstract class LocalPlayerTickMixin extends Player {
     }
 
     @Inject(method = "tick", at = @At(value = "TAIL"))
-    private void onPostPlayerTick(CallbackInfo ci) {
-        LogUtils.getLogger().error("I'M FUCKING TICKING HERE");
+    private void onPlayerTickEnd(CallbackInfo ci) {
         ViewfinderClient.onPlayerTick(this);
     }
 }
-
-//@Mixin(LocalPlayer.class)
-//public class PlayerTickMixin {
-//    @Inject(method = "tick", at = @At(value = "RETURN"))
-//    void onPlayerTick(CallbackInfo ci) {
-//        Player player = (Player)(Object)this;
-//        ViewfinderClient.onPlayerTick(player);
-//    }
-//}

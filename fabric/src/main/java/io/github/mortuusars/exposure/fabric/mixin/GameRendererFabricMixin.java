@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GameRenderer.class)
-public abstract class GameRendererMixin {
+public abstract class GameRendererFabricMixin {
     @Inject(method = "render", at = @At(value = "RETURN"))
     void render(float partialTicks, long nanoTime, boolean renderLevel, CallbackInfo ci) {
         CaptureManager.onRenderTickEnd();
