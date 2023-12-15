@@ -20,6 +20,9 @@
     ],
     "client": [
       "io.github.mortuusars.exposure.fabric.ExposureFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "io.github.mortuusars.exposure.integration.jei.ExposureJeiPlugin"
     ]
   },
   "mixins": [
