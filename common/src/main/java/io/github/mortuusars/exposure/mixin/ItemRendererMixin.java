@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.fabric.mixin;
+package io.github.mortuusars.exposure.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
@@ -23,7 +23,7 @@ public class ItemRendererMixin {
             BakedModel guiModel = Minecraft.getInstance().getModelManager()
                     .getModel(new ModelResourceLocation("exposure", "camera_gui", "inventory"));
 
-            return guiModel.getOverrides().resolve(model, itemStack, Minecraft.getInstance().level, null, 0);
+            return guiModel.getOverrides().resolve(guiModel, itemStack, Minecraft.getInstance().level, null, 0);
         }
         return model;
     }

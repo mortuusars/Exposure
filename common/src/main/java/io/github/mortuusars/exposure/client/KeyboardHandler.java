@@ -37,8 +37,6 @@ public class KeyboardHandler {
             return true;
         }
 
-        if (!ViewfinderClient.isLookingThrough())
-            return false;
 
         if (key == InputConstants.KEY_ESCAPE || minecraft.options.keyInventory.matches(key, scanCode)) {
             if (action == 0) { // Release
@@ -49,6 +47,9 @@ public class KeyboardHandler {
             }
             return true;
         }
+
+        if (!ViewfinderClient.isLookingThrough())
+            return false;
 
         if (!(minecraft.screen instanceof ViewfinderControlsScreen)) {
             if (minecraft.options.keyShift.matches(key, scanCode)) {
