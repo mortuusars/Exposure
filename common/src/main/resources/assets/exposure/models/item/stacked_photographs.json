@@ -6,13 +6,13 @@
   "overrides": [
     {
       "predicate": {
-        "count": 2
+        "count": 0.02
       },
       "model": "exposure:item/stacked_photographs_two"
     },
     {
       "predicate": {
-        "count": 3
+        "count": 0.03
       },
       "model": "exposure:item/stacked_photographs_three"
     }

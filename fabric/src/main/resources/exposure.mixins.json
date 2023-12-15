@@ -6,6 +6,7 @@
   "client": [
     "GameRendererFabricMixin",
     "ItemFrameRendererFabricMixin",
+    "ItemRendererMixin",
     "MouseHandlerFabricMixin"
   ],
   "mixins": [

@@ -19,11 +19,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.entity.EntityRenderers;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
-import org.jetbrains.annotations.Nullable;
 
 public class ExposureClient {
     private static final IExposureStorage exposureStorage = new ClientsideExposureStorage();
@@ -43,7 +40,7 @@ public class ExposureClient {
         ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
                 (pStack, pLevel, pEntity, pSeed) -> {
                     if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
-                        return stackedPhotographsItem.getPhotographsCount(pStack);
+                        return stackedPhotographsItem.getPhotographsCount(pStack) / 100f;
                     }
                     return 0f;
                 });

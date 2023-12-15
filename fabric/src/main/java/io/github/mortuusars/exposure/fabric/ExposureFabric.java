@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.fabric;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.network.fabric.PacketsImpl;
+import mezz.jei.api.JeiPlugin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;

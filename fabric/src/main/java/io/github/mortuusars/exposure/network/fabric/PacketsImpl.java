@@ -64,7 +64,7 @@ public class PacketsImpl {
         @Override
         public void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
             IPacket<?> packet = decodeFunction.apply(buf);
-            packet.handle(PacketDirection.TO_SERVER, null);
+            packet.handle(PacketDirection.TO_CLIENT, null);
         }
     }
 }
