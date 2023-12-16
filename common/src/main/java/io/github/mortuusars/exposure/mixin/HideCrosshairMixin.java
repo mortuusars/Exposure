@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
-public class HideCrosshairMixin {
+public abstract class HideCrosshairMixin {
     @Inject(method = "renderCrosshair", at = @At(value = "HEAD"), cancellable = true)
     private void renderCrosshair(GuiGraphics guiGraphics, CallbackInfo ci) {
         Minecraft mc = Minecraft.getInstance();

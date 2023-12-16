@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(MouseHandler.class)
-public class ViewfinderSensitivityMixin {
+public abstract class ViewfinderSensitivityMixin {
     @ModifyVariable(method = "turnPlayer", at = @At(value = "STORE"), ordinal = 3)
     private double modifySensitivity(double sensitivity) {
         return ViewfinderClient.modifyMouseSensitivity(sensitivity);

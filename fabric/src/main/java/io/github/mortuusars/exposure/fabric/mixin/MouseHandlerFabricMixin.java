@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(MouseHandler.class)
-public class MouseHandlerFabricMixin {
+public abstract class MouseHandlerFabricMixin {
     @SuppressWarnings("InvalidInjectorMethodSignature") // It's valid. I checked. It works.
     @Inject(method = "onScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;isSpectator()Z"),
             cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
