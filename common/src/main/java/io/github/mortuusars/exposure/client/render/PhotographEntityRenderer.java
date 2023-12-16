@@ -7,6 +7,7 @@ import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -26,6 +27,11 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
     }
 
     @Override
+    public boolean shouldRender(T livingEntity, Frustum camera, double camX, double camY, double camZ) {
+        return super.shouldRender(livingEntity, camera, camX, camY, camZ);
+    }
+
+    @Override
     public void render(@NotNull T entity, float entityYaw, float partialTick, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
         super.render(entity, entityYaw, partialTick, poseStack, bufferSource, packedLight);
 
@@ -38,7 +44,7 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
         poseStack.mulPose(Axis.ZP.rotationDegrees((entity.getRotation() * 360.0F / 4.0F)));
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
 
-        poseStack.translate(-0.5, -0.5, 1f / 32f - 0.001);
+        poseStack.translate(-0.5, -0.5, 1f / 32f - 0.005);
         float scale = 1f / ExposureRenderer.SIZE;
         poseStack.scale(scale, scale, -scale);
 

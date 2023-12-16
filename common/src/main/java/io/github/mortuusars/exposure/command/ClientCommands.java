@@ -27,7 +27,7 @@ public class ClientCommands {
                                 .executes(ClientCommands::showLatest))));
     }
 
-    private static int showLatest(CommandContext<CommandSourceStack> context) {
+    public static int showLatest(CommandContext<CommandSourceStack> context) {
         Collection<String> exposureIds = LastExposures.get();
         if (exposureIds.size() == 0) {
             context.getSource().sendFailure(Component.translatable("command.exposure.show.latest.error.no_exposures"));

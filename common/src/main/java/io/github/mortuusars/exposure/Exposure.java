@@ -136,7 +136,7 @@ public class Exposure {
 
     public static class EntityTypes {
         public static final Supplier<EntityType<PhotographEntity>> PHOTOGRAPH = Register.entityType("photograph",
-                PhotographEntity::new, MobCategory.MISC, 0.5F, 0.5F, 10, false, Integer.MAX_VALUE);
+                PhotographEntity::new, MobCategory.MISC, 0.5F, 0.5F, 128, false, Integer.MAX_VALUE);
         static void init() {}
     }
 

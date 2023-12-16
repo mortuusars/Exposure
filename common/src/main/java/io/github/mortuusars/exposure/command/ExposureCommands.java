@@ -17,6 +17,7 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
 
+@SuppressWarnings("SameReturnValue")
 public class ExposureCommands {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("exposure")
@@ -42,40 +43,65 @@ public class ExposureCommands {
                         .then(Commands.argument("size", IntegerArgumentType.integer(1, 2048))
                                 .executes(context -> takeScreenshot(context.getSource(), IntegerArgumentType.getInteger(context, "size")))))
                 .then(Commands.literal("show")
+                        .then(Commands.literal("latest")
+                                .executes(context -> showLatest(context.getSource(), false))
+                                .then(Commands.literal("negative")
+                                        .executes(context -> showLatest(context.getSource(), true))))
                         .then(Commands.literal("exposure")
                                 .then(Commands.argument("id", StringArgumentType.string())
                                         .executes(context -> showExposure(context.getSource(),
-                                                StringArgumentType.getString(context, "id"), false, false))
+                                                StringArgumentType.getString(context, "id"), false))
                                         .then(Commands.literal("negative")
                                                 .executes(context -> showExposure(context.getSource(),
-                                                        StringArgumentType.getString(context, "id"), false, true)))))
+                                                        StringArgumentType.getString(context, "id"), true)))))
                         .then(Commands.literal("texture")
                                 .then(Commands.argument("path", StringArgumentType.string())
-                                        .executes(context -> showExposure(context.getSource(),
-                                                StringArgumentType.getString(context, "path"), true, false))
+                                        .executes(context -> showTexture(context.getSource(),
+                                                StringArgumentType.getString(context, "path"), false))
                                         .then(Commands.literal("negative")
-                                                .executes(context -> showExposure(context.getSource(),
-                                                        StringArgumentType.getString(context, "path"), true, true)))))));
+                                                .executes(context -> showTexture(context.getSource(),
+                                                        StringArgumentType.getString(context, "path"), true)))))));
     }
 
-    private static int showExposure(CommandSourceStack stack, String idOrPath, boolean isTexture, boolean negative) {
+    private static int showLatest(CommandSourceStack stack, boolean negative) {
         ServerPlayer player = stack.getPlayer();
         if (player == null) {
             stack.sendFailure(Component.translatable("command.exposure.show.error.not_a_player"));
+            return 1;
+        }
+
+        Packets.sendToClient(ShowExposureS2CP.latest(negative), player);
+        return 0;
+    }
+
+    private static int showExposure(CommandSourceStack stack, String id, boolean negative) {
+        ServerPlayer player = stack.getPlayer();
+        if (player == null) {
+            stack.sendFailure(Component.translatable("command.exposure.show.error.not_a_player"));
+            return 1;
+        }
+
+        Optional<ExposureSavedData> exposureData = ExposureServer.getExposureStorage().getOrQuery(id);
+        if (exposureData.isEmpty()) {
+            stack.sendFailure(Component.translatable("command.exposure.show.error.not_found", id));
             return 0;
         }
 
-        if (!isTexture) {
-            Optional<ExposureSavedData> exposureData = ExposureServer.getExposureStorage().getOrQuery(idOrPath);
-            if (exposureData.isEmpty()) {
-                stack.sendFailure(Component.translatable("command.exposure.show.error.not_found", idOrPath));
-                return 0;
-            }
+        ExposureServer.getExposureSender().sendTo(player, id, exposureData.get());
 
-            ExposureServer.getExposureSender().sendTo(player, idOrPath, exposureData.get());
+        Packets.sendToClient(ShowExposureS2CP.id(id, negative), player);
+
+        return 0;
+    }
+
+    private static int showTexture(CommandSourceStack stack, String path, boolean negative) {
+        ServerPlayer player = stack.getPlayer();
+        if (player == null) {
+            stack.sendFailure(Component.translatable("command.exposure.show.error.not_a_player"));
+            return 1;
         }
 
-        Packets.sendToClient(new ShowExposureS2CP(idOrPath, isTexture, negative), player);
+        Packets.sendToClient(ShowExposureS2CP.texture(path, negative), player);
 
         return 0;
     }

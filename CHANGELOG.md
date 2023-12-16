@@ -1,5 +1,6 @@
 ### 1.2.0 - 
 - Pressing Inventory Key or Esc in thirdperson-back camera mode (when viewfinder is not visible) will now deactivate camera instead of opening inventory or pause menu.
+- Slightly reduced z-fighting of the Hanging Photograph at greater distances.
 
 ### 1.1.1 - 2023-12-08
 - Fixed third-person camera distance being closer when not looking through the Viewfinder.

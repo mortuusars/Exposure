@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
+import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
@@ -18,22 +19,26 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 public class NegativeExposureScreen extends ZoomableScreen {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/film_frame_inspect.png");
     public static final int BG_SIZE = 78;
     public static final int FRAME_SIZE = 54;
 
-    private final Either<String, ResourceLocation> idOrTexture;
+    private final List<Either<String, ResourceLocation>> exposures;
+    protected int currentExposure;
 
-    public NegativeExposureScreen(@NotNull Either<String, ResourceLocation> idOrTexture) {
+    public NegativeExposureScreen(List<Either<String, ResourceLocation>> exposures) {
         super(Component.empty());
-        this.idOrTexture = idOrTexture;
+        this.exposures = exposures;
+        Preconditions.checkArgument(exposures != null && !exposures.isEmpty());
 
         zoom.step = 2f;
         zoom.defaultZoom = 1f;
         zoom.targetZoom = 1f;
-        zoom.minZoom = zoom.defaultZoom / (float)Math.pow(zoom.step, 3f);
-        zoom.maxZoom = zoom.defaultZoom * (float)Math.pow(zoom.step, 3f);
+        zoom.minZoom = zoom.defaultZoom / (float)Math.pow(zoom.step, 1f);
+        zoom.maxZoom = zoom.defaultZoom * (float)Math.pow(zoom.step, 5f);
     }
 
     @Override
@@ -44,7 +49,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
     @Override
     protected void init() {
         super.init();
-        zoomFactor = 1f / minecraft.options.guiScale().get();
+        zoomFactor = 1f / (minecraft.options.guiScale().get() + 1);
     }
 
     @Override
@@ -52,6 +57,8 @@ public class NegativeExposureScreen extends ZoomableScreen {
         renderBackground(guiGraphics);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        Either<String, ResourceLocation> idOrTexture = exposures.get(currentExposure);
 
         FilmType type = idOrTexture.map(
                 id -> ExposureClient.getExposureStorage().getOrQuery(id).map(ExposureSavedData::getType)
@@ -78,9 +85,9 @@ public class NegativeExposureScreen extends ZoomableScreen {
         int height = exposure.getHeight();
 
         guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(Math.round(x + this.width / 2f), Math.round(y + this.height / 2f), 0);
+        guiGraphics.pose().translate(x + this.width / 2f, y + this.height / 2f, 0);
         guiGraphics.pose().scale(scale, scale, scale);
-        guiGraphics.pose().translate(-Math.round(width / 2f), -Math.round(height / 2f), 0);
+        guiGraphics.pose().translate(-width / 2f, -height / 2f, 0);
 
         {
             RenderSystem.enableBlend();

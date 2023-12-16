@@ -61,6 +61,14 @@ public class PhotographEntity extends HangingEntity {
 
     // Entity:
 
+
+    @Override
+    public boolean shouldRenderAtSqrDistance(double distance) {
+        double d = 16.0;
+        d *= 64.0 * getViewScale();
+        return distance < d * d;
+    }
+
     protected void defineSynchedData() {
         this.getEntityData().define(DATA_ITEM, ItemStack.EMPTY);
         this.getEntityData().define(DATA_GLOWING, false);

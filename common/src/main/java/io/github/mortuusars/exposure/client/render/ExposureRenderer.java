@@ -72,7 +72,7 @@ public class ExposureRenderer implements AutoCloseable {
 
         poseStack.pushPose();
         float offset = SIZE * 0.0625f;
-        poseStack.translate(offset, offset, 0.2);
+        poseStack.translate(offset, offset, 1);
         poseStack.scale(0.875f, 0.875f, 0.875f);
         render(idOrTexture, false, false, poseStack, bufferSource,
                 minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
