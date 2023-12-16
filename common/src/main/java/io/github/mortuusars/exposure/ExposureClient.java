@@ -35,9 +35,6 @@ public class ExposureClient {
         exposureSender = new ExposureSender((packet, player) -> Packets.sendToServer(packet));
         exposureReceiver = new ExposureReceiver(exposureStorage);
 
-        MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
-        MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
-
         ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
         ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
                 (pStack, pLevel, pEntity, pSeed) -> {
