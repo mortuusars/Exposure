@@ -1,4 +1,5 @@
 ### 1.2.0 - 
+- Fixed Camera Attachments menu not opening from offhand.
 - Pressing Inventory Key or Esc in thirdperson-back camera mode (when viewfinder is not visible) will now deactivate camera instead of opening inventory or pause menu.
 - Slightly reduced z-fighting of the Hanging Photograph at greater distances.
 

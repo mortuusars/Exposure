@@ -11,6 +11,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -183,7 +184,8 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(@NotNull Player player) {
-        return !CameraInHand.isActive(player) && player.getInventory().getSelected().getItem() instanceof CameraItem;
+        return player.getMainHandItem().getItem() instanceof CameraItem
+                || player.getOffhandItem().getItem() instanceof CameraItem;
     }
 
     public static CameraAttachmentsMenu fromBuffer(int containerId, Inventory playerInventory, FriendlyByteBuf buffer) {

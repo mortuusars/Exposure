@@ -12,6 +12,7 @@
     "KeyMappingMixin",
     "LocalPlayerTickMixin",
     "MinecraftMixin",
+    "MultiPlayerGameModeMixin",
     "PhotographInHandRendererMixin",
     "SelfieCameraMixin",
     "ViewfinderSensitivityMixin"

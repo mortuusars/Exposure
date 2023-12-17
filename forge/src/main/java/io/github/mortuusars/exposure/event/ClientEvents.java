@@ -49,11 +49,6 @@ public class ClientEvents {
 
     public static class ForgeBus {
         @SubscribeEvent
-        public static void registerClientCommands(RegisterClientCommandsEvent event) {
-            ClientCommands.register(event.getDispatcher());
-        }
-
-        @SubscribeEvent
         public static void onLevelClear(LevelEvent.Unload event) {
             ExposureClient.getExposureRenderer().clearData();
         }

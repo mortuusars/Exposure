@@ -15,7 +15,6 @@ import io.github.mortuusars.exposure.camera.capture.component.ICaptureComponent;
 import io.github.mortuusars.exposure.camera.capture.converter.DitheringColorConverter;
 import io.github.mortuusars.exposure.camera.capture.converter.SimpleColorConverter;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
-import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.screen.NegativeExposureScreen;
 import io.github.mortuusars.exposure.client.gui.screen.PhotographScreen;
 import io.github.mortuusars.exposure.item.CameraItem;
@@ -25,7 +24,6 @@ import io.github.mortuusars.exposure.network.packet.client.ShowExposureS2CP;
 import io.github.mortuusars.exposure.network.packet.client.StartExposureS2CP;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import io.github.mortuusars.exposure.util.ItemAndStack;
-import io.github.mortuusars.exposure.util.ScheduledTasks;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -163,9 +161,7 @@ public class ClientPacketsHandler {
         }
 
         if (screen != null) {
-            Minecraft.getInstance().execute((() -> {
-                Minecraft.getInstance().setScreen(screen);
-            }));
+            Minecraft.getInstance().execute((() -> Minecraft.getInstance().setScreen(screen)));
         }
     }
 

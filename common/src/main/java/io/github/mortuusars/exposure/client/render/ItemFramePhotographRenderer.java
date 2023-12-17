@@ -31,6 +31,8 @@ public class ItemFramePhotographRenderer {
         if (itemFrameEntity.getType() == EntityType.GLOW_ITEM_FRAME)
             packedLight = LightTexture.FULL_BRIGHT;
 
+        poseStack.pushPose();
+
         // Snap to 90 degrees like a map.
         poseStack.mulPose(Axis.ZP.rotationDegrees(45 * itemFrameEntity.getRotation()));
 
@@ -40,7 +42,6 @@ public class ItemFramePhotographRenderer {
         float pixelScale = scale / 16f;
         scale -= pixelScale * 6;
 
-        poseStack.pushPose();
         poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, 10);

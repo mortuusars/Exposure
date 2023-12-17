@@ -90,18 +90,18 @@ public class CommonEvents {
                 ScheduledTasks.tickClient();
         }
 
-        @SubscribeEvent
-        public static void entityInteract(PlayerInteractEvent.EntityInteractSpecific event) {
-            Player player = event.getEntity();
-
-            // Interacting with entity when trying to shoot is annoying
-            CameraInHand camera = CameraInHand.getActive(player);
-            if (!camera.isEmpty()) {
-                event.setCanceled(true);
-                event.setCancellationResult(InteractionResult.SUCCESS);
-                camera.getStack().use(player.level(), player, camera.getHand());
-            }
-        }
+//        @SubscribeEvent
+//        public static void entityInteract(PlayerInteractEvent.EntityInteractSpecific event) {
+//            Player player = event.getEntity();
+//
+//            // Interacting with entity when trying to shoot is annoying
+//            CameraInHand camera = CameraInHand.getActive(player);
+//            if (!camera.isEmpty()) {
+//                event.setCanceled(true);
+//                event.setCancellationResult(InteractionResult.SUCCESS);
+//                camera.getStack().use(player.level(), player, camera.getHand());
+//            }
+//        }
 
         @SubscribeEvent
         public static void onItemToss(ItemTossEvent event) {
