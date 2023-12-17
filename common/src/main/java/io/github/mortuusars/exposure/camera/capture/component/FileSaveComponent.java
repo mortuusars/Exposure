@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.camera.capture.component;
 
 import com.mojang.logging.LogUtils;
-import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
@@ -27,7 +26,7 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     public static FileSaveComponent withDefaultFolders(String exposureId) {
-        return new FileSaveComponent(exposureId, "exposures", Config.Client.EXPOSURE_SAVING_LEVEL_SUBFOLDER());
+        return new FileSaveComponent(exposureId, "exposures", Config.Client.EXPOSURE_SAVING_LEVEL_SUBFOLDER.get());
     }
 
     @Override

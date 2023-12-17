@@ -1,26 +1,30 @@
 package io.github.mortuusars.exposure.fabric;
 
+import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.command.ExposureCommands;
 import io.github.mortuusars.exposure.command.ShaderCommand;
 import io.github.mortuusars.exposure.command.TestCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
 import io.github.mortuusars.exposure.network.fabric.PacketsImpl;
-import mezz.jei.api.JeiPlugin;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
-import net.minecraft.client.MouseHandler;
-import net.minecraft.commands.synchronization.ArgumentTypeInfos;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraftforge.fml.config.ModConfig;
 
 public class ExposureFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         Exposure.init();
+
+        ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
+        ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         ArgumentTypeRegistry.registerArgumentType(Exposure.resource("shader_location"),
                 ShaderLocationArgument.class, SingletonArgumentInfo.contextFree(ShaderLocationArgument::new));

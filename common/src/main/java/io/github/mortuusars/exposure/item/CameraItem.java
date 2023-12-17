@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
-import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.PlatformHelper;
@@ -125,7 +124,7 @@ public class CameraItem extends Item {
 
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag isAdvanced) {
-        if (Config.Client.CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP()) {
+        if (Config.Client.CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP.get()) {
             components.add(Component.translatable("item.exposure.camera.sneak_to_open_tooltip").withStyle(ChatFormatting.GRAY));
         }
     }
@@ -306,7 +305,6 @@ public class CameraItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         if (hand == InteractionHand.MAIN_HAND && CameraInHand.getActiveHand(player) == InteractionHand.OFF_HAND)
             return InteractionResultHolder.pass(player.getItemInHand(hand));
-
 
         useCamera(player, hand);
         return InteractionResultHolder.consume(player.getItemInHand(hand));
@@ -569,7 +567,7 @@ public class CameraItem extends Item {
 
     public FocalRange getFocalRange(ItemStack cameraStack) {
         return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55)
-                : new FocalRange(Config.Common.CAMERA_SPYGLASS_SUPERZOOM() ? 18 : 55, 200);
+                : new FocalRange(Config.Common.CAMERA_SPYGLASS_SUPERZOOM.get() ? 18 : 55, 200);
     }
 
     @SuppressWarnings("unused")

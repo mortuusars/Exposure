@@ -173,8 +173,8 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             return;
 
         printTime = developedFilmItem.getType() == FilmType.COLOR ?
-                Config.Common.LIGHTROOM_COLOR_FILM_PRINT_TIME() :
-                Config.Common.LIGHTROOM_BW_FILM_PRINT_TIME();
+                Config.Common.LIGHTROOM_COLOR_FILM_PRINT_TIME.get() :
+                Config.Common.LIGHTROOM_BW_FILM_PRINT_TIME.get();
         this.advanceFrame = advanceFrame;
         if (level != null) {
             level.setBlock(getBlockPos(), level.getBlockState(getBlockPos())
@@ -297,7 +297,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         if (level == null || level.isClientSide)
             return;
 
-        int xpPerPrint = Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT();
+        int xpPerPrint = Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT.get();
         if (xpPerPrint > 0) {
             for (int i = 0; i < printedPhotographsCount; i++) {
                 ExperienceOrb.award(((ServerLevel) level), player != null ? player.position() : Vec3.atCenterOf(getBlockPos()), xpPerPrint - 1 + level.getRandom()

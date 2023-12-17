@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.forge;
 
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
@@ -17,8 +18,8 @@ public class ExposureForge {
     public ExposureForge() {
         Exposure.init();
 
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigForge.Common.SPEC);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigForge.Client.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.Common.SPEC);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         RegisterImpl.BLOCKS.register(modEventBus);

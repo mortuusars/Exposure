@@ -20,8 +20,8 @@ public class FocalLengthButton extends ImageButton implements IElementWithToolti
 
     public FocalLengthButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
         super(x, y, width, height, u, v, height, texture, 256, 256, button -> {}, Component.empty());
-        secondaryFontColor = Config.Client.VIEWFINDER_FONT_SECONDARY_COLOR();
-        mainFontColor = Config.Client.VIEWFINDER_FONT_MAIN_COLOR();
+        secondaryFontColor = Config.Client.getSecondaryFontColor();
+        mainFontColor = Config.Client.getMainFontColor();
     }
 
     @Override

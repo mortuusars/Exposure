@@ -148,7 +148,7 @@ public class PhotographScreen extends ZoomableScreen {
     }
 
     private void trySaveToFile(ItemAndStack<PhotographItem> photograph, @Nullable Either<String, ResourceLocation> idOrTexture) {
-        if (!Config.Client.EXPOSURE_SAVING() || idOrTexture == null || Minecraft.getInstance().player == null)
+        if (!Config.Client.EXPOSURE_SAVING.get() || idOrTexture == null || Minecraft.getInstance().player == null)
             return;
 
         CompoundTag tag = photograph.getStack().getTag();

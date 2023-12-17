@@ -48,8 +48,8 @@ public class ShutterSpeedButton extends CycleButton {
         }
 
         setupButtonElements(shutterSpeeds.size(), currentShutterSpeedIndex);
-        secondaryFontColor = Config.Client.VIEWFINDER_FONT_SECONDARY_COLOR();
-        mainFontColor = Config.Client.VIEWFINDER_FONT_MAIN_COLOR();
+        secondaryFontColor = Config.Client.getSecondaryFontColor();
+        mainFontColor = Config.Client.getMainFontColor();
     }
 
     @Override

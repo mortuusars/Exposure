@@ -111,7 +111,7 @@ public class PhotographItem extends Item {
                         .withStyle(ChatFormatting.GRAY));
 
             String photographerName = stack.getTag().getString(FrameData.PHOTOGRAPHER);
-            if (photographerName.length() > 0 && Config.Client.PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP()) {
+            if (photographerName.length() > 0 && Config.Client.PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP.get()) {
                 tooltipComponents.add(Component.translatable("item.exposure.photograph.photographer_tooltip",
                                 Component.literal(photographerName).withStyle(ChatFormatting.WHITE))
                         .withStyle(ChatFormatting.GRAY));

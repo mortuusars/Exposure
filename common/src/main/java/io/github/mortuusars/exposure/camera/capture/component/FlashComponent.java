@@ -2,9 +2,8 @@ package io.github.mortuusars.exposure.camera.capture.component;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.logging.LogUtils;
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.Config;
+import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -12,7 +11,7 @@ import net.minecraft.client.player.LocalPlayer;
 public class FlashComponent implements ICaptureComponent {
     @Override
     public int getTicksDelay(Capture capture) {
-        return Config.Client.FLASH_CAPTURE_DELAY_TICKS();
+        return Config.Client.FLASH_CAPTURE_DELAY_TICKS.get();
     }
 
     @Override

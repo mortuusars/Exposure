@@ -128,7 +128,7 @@ public class ViewfinderClient {
         if (!isLookingThrough())
             return sensitivity;
 
-        double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER()
+        double modifier = Mth.clamp(1f - (Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER.get()
                 * ((Minecraft.getInstance().options.fov().get() - currentFov) / 5f)), 0.01, 2f);
         return sensitivity * modifier;
     }
