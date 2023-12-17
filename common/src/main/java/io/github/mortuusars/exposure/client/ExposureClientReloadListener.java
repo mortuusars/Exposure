@@ -15,5 +15,6 @@ public class ExposureClientReloadListener extends SimplePreparableReloadListener
     @Override
     protected void apply(Boolean object, ResourceManager resourceManager, ProfilerFiller profiler) {
         ExposureClient.getExposureStorage().clear();
+        ExposureClient.getExposureRenderer().clearData();
     }
 }
