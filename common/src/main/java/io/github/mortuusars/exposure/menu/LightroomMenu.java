@@ -211,6 +211,67 @@ public class LightroomMenu extends AbstractContainerMenu {
         return returnedStack;
     }
 
+    /**
+     * Fixed method to respect slot stack limit.
+     */
+    @Override
+    protected boolean moveItemStackTo(ItemStack movedStack, int startIndex, int endIndex, boolean reverseDirection) {
+        boolean hasRemainder = false;
+        int i = startIndex;
+        if (reverseDirection) {
+            i = endIndex - 1;
+        }
+        if (movedStack.isStackable()) {
+            while (!movedStack.isEmpty() && !(!reverseDirection ? i >= endIndex : i < startIndex)) {
+                Slot slot = this.slots.get(i);
+                ItemStack slotStack = slot.getItem();
+                if (!slotStack.isEmpty() && ItemStack.isSameItemSameTags(movedStack, slotStack)) {
+                    int maxSize;
+                    int j = slotStack.getCount() + movedStack.getCount();
+                    if (j <= (maxSize = Math.min(slot.getMaxStackSize(), movedStack.getMaxStackSize()))) {
+                        movedStack.setCount(0);
+                        slotStack.setCount(j);
+                        slot.setChanged();
+                        hasRemainder = true;
+                    } else if (slotStack.getCount() < maxSize) {
+                        movedStack.shrink(maxSize - slotStack.getCount());
+                        slotStack.setCount(maxSize);
+                        slot.setChanged();
+                        hasRemainder = true;
+                    }
+                }
+                if (reverseDirection) {
+                    --i;
+                    continue;
+                }
+                ++i;
+            }
+        }
+        if (!movedStack.isEmpty()) {
+            i = reverseDirection ? endIndex - 1 : startIndex;
+            while (!(!reverseDirection ? i >= endIndex : i < startIndex)) {
+                Slot slot1 = this.slots.get(i);
+                ItemStack itemmovedStack1 = slot1.getItem();
+                if (itemmovedStack1.isEmpty() && slot1.mayPlace(movedStack)) {
+                    if (movedStack.getCount() > slot1.getMaxStackSize()) {
+                        slot1.setByPlayer(movedStack.split(slot1.getMaxStackSize()));
+                    } else {
+                        slot1.setByPlayer(movedStack.split(movedStack.getCount()));
+                    }
+                    slot1.setChanged();
+                    hasRemainder = true;
+                    break;
+                }
+                if (reverseDirection) {
+                    --i;
+                    continue;
+                }
+                ++i;
+            }
+        }
+        return hasRemainder;
+    }
+
     @Override
     public boolean stillValid(@NotNull Player player) {
         return lightroomBlockEntity.stillValid(player);

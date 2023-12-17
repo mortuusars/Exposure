@@ -28,7 +28,6 @@ public class CompositionGuideButton extends CycleButton {
         super(screen, x, y, width, height, u, v, height, texture);
         guides = CompositionGuides.getGuides();
 
-
         CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
         Preconditions.checkState(!camera.isEmpty(), "Player must hold an active camera at this point.");
         CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());

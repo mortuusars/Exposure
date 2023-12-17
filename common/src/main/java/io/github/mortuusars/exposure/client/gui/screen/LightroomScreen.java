@@ -326,4 +326,10 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         Objects.requireNonNull(Minecraft.getInstance().player)
                 .playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 1.3f);
     }
+
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
+        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)
+                && hoveredSlot == null;
+    }
 }
