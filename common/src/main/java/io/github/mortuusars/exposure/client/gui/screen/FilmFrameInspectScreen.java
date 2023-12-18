@@ -37,7 +37,7 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
         super(Component.empty());
         this.lightroomScreen = lightroomScreen;
         this.lightroomMenu = lightroomMenu;
-        zoom.minZoom = zoom.defaultZoom / (float)Math.pow(zoom.step, 2f);
+        zoom.minZoom = zoom.defaultZoom / (float) Math.pow(zoom.step, 2f);
     }
 
     @Override
@@ -133,16 +133,14 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
-        if (handled)
-            return true;
-
-        if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT)
+        if (keyCode == InputConstants.KEY_ESCAPE || minecraft.options.keyInventory.matches(keyCode, scanCode))
+            zoom.set(0f);
+        else if (minecraft.options.keyLeft.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_LEFT)
             lightroomScreen.changeFrame(PagingDirection.PREVIOUS);
         else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT)
             lightroomScreen.changeFrame(PagingDirection.NEXT);
         else
-            return false;
+            return super.keyPressed(keyCode, scanCode, modifiers);
 
         return true;
     }
