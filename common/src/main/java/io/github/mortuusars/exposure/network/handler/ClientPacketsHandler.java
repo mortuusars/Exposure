@@ -49,11 +49,13 @@ import java.util.Objects;
 public class ClientPacketsHandler {
     public static void applyShader(ApplyShaderS2CP packet) {
         Minecraft mc = Minecraft.getInstance();
-        if (packet.shaderLocation().getPath().equals("none")) {
-            mc.gameRenderer.shutdownEffect();
-        } else {
-            mc.gameRenderer.loadEffect(packet.shaderLocation());
-        }
+        mc.execute(() -> {
+            if (packet.shaderLocation().getPath().equals("none")) {
+                mc.gameRenderer.shutdownEffect();
+            } else {
+                mc.gameRenderer.loadEffect(packet.shaderLocation());
+            }
+        });
     }
 
     public static void exposeScreenshot(int size) {
