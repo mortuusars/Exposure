@@ -8,7 +8,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.util.GuiUtil;
-import io.github.mortuusars.exposure.util.Navigation;
+import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -66,9 +66,9 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
 
     private void buttonPressed(Button button) {
         if (button == previousButton)
-            lightroomScreen.changeFrame(Navigation.PREVIOUS);
+            lightroomScreen.changeFrame(PagingDirection.PREVIOUS);
         else if (button == nextButton)
-            lightroomScreen.changeFrame(Navigation.NEXT);
+            lightroomScreen.changeFrame(PagingDirection.NEXT);
     }
 
     public void close() {
@@ -138,9 +138,9 @@ public class FilmFrameInspectScreen extends ZoomableScreen {
             return true;
 
         if (minecraft.options.keyLeft.matches(keyCode, scanCode)|| keyCode == InputConstants.KEY_LEFT)
-            lightroomScreen.changeFrame(Navigation.PREVIOUS);
+            lightroomScreen.changeFrame(PagingDirection.PREVIOUS);
         else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT)
-            lightroomScreen.changeFrame(Navigation.NEXT);
+            lightroomScreen.changeFrame(PagingDirection.NEXT);
         else
             return false;
 

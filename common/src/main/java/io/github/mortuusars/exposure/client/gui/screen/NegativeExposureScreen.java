@@ -26,8 +26,8 @@ public class NegativeExposureScreen extends ZoomableScreen {
     public static final int BG_SIZE = 78;
     public static final int FRAME_SIZE = 54;
 
+    private final Pager pager = new Pager(PhotographScreen.WIDGETS_TEXTURE);
     private final List<Either<String, ResourceLocation>> exposures;
-    protected int currentExposure;
 
     public NegativeExposureScreen(List<Either<String, ResourceLocation>> exposures) {
         super(Component.empty());
@@ -50,15 +50,18 @@ public class NegativeExposureScreen extends ZoomableScreen {
     protected void init() {
         super.init();
         zoomFactor = 1f / (minecraft.options.guiScale().get() + 1);
+        pager.init(width, height, exposures.size(), true, this::addRenderableWidget);
     }
 
     @Override
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        pager.update();
+
         renderBackground(guiGraphics);
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        Either<String, ResourceLocation> idOrTexture = exposures.get(currentExposure);
+        Either<String, ResourceLocation> idOrTexture = exposures.get(pager.getCurrentPageIndex());
 
         FilmType type = idOrTexture.map(
                 id -> ExposureClient.getExposureStorage().getOrQuery(id).map(ExposureSavedData::getType)
@@ -116,5 +119,15 @@ public class NegativeExposureScreen extends ZoomableScreen {
         bufferSource.endBatch();
 
         guiGraphics.pose().popPose();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return pager.handleKeyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        return pager.handleKeyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
     }
 }

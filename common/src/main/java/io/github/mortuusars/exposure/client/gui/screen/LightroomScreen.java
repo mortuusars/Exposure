@@ -14,7 +14,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
-import io.github.mortuusars.exposure.util.Navigation;
+import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -257,10 +257,10 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         Preconditions.checkState(minecraft.gameMode != null);
 
         if (minecraft.options.keyLeft.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_LEFT) {
-            changeFrame(Navigation.PREVIOUS);
+            changeFrame(PagingDirection.PREVIOUS);
             handled = true;
         } else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT) {
-            changeFrame(Navigation.NEXT);
+            changeFrame(PagingDirection.NEXT);
             handled = true;
         }
 
@@ -291,12 +291,12 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             }
 
             if (isOverLeftFrame((int) mouseX, (int) mouseY)) {
-                changeFrame(Navigation.PREVIOUS);
+                changeFrame(PagingDirection.PREVIOUS);
                 return true;
             }
 
             if (isOverRightFrame((int) mouseX, (int) mouseY)) {
-                changeFrame(Navigation.NEXT);
+                changeFrame(PagingDirection.NEXT);
                 return true;
             }
         }
@@ -304,21 +304,21 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    public void changeFrame(Navigation navigation) {
-        if ((navigation == Navigation.PREVIOUS && getMenu().getSelectedFrame() == 0)
-                || (navigation == Navigation.NEXT && getMenu().getSelectedFrame() == getMenu().getTotalFrames() - 1))
+    public void changeFrame(PagingDirection navigation) {
+        if ((navigation == PagingDirection.PREVIOUS && getMenu().getSelectedFrame() == 0)
+                || (navigation == PagingDirection.NEXT && getMenu().getSelectedFrame() == getMenu().getTotalFrames() - 1))
             return;
 
         Preconditions.checkState(minecraft != null);
         Preconditions.checkState(minecraft.player != null);
         Preconditions.checkState(minecraft.gameMode != null);
-        int buttonId = navigation == Navigation.NEXT ? LightroomMenu.NEXT_FRAME_BUTTON_ID : LightroomMenu.PREVIOUS_FRAME_BUTTON_ID;
+        int buttonId = navigation == PagingDirection.NEXT ? LightroomMenu.NEXT_FRAME_BUTTON_ID : LightroomMenu.PREVIOUS_FRAME_BUTTON_ID;
         minecraft.gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
         minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, minecraft.player.level()
                 .getRandom().nextFloat() * 0.4f + 0.8f);
 
         // Update block entity clientside to faster update advance frame arrows:
-        getMenu().getBlockEntity().setSelectedFrame(getMenu().getBlockEntity().getSelectedFrame() + (navigation == Navigation.NEXT ? 1 : -1));
+        getMenu().getBlockEntity().setSelectedFrame(getMenu().getBlockEntity().getSelectedFrame() + (navigation == PagingDirection.NEXT ? 1 : -1));
     }
 
     private void enterFrameInspectMode() {
