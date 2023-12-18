@@ -12,7 +12,6 @@ import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
-import io.github.mortuusars.exposure.command.ClientCommands;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
