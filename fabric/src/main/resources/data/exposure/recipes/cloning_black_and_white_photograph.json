@@ -1,13 +1,13 @@
 {
   "type": "exposure:photograph_cloning",
-  "ingredients": [
-    {
-      "fabric:type": "fabric:nbt",
-      "base": {
-        "item": "exposure:photograph"
-      },
-      "nbt": "{FilmType:\"black_and_white\"}"
+  "photograph": {
+    "fabric:type": "fabric:nbt",
+    "base": {
+      "item": "exposure:photograph"
     },
+    "nbt": "{FilmType:\"black_and_white\"}"
+  },
+  "ingredients": [
     {
       "tag": "exposure:photo_papers"
     },

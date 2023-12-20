@@ -23,7 +23,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatFormatter;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
-import net.minecraft.util.profiling.jfr.event.ServerTickTimeEvent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
@@ -87,7 +86,9 @@ public class Exposure {
                         .noOcclusion()
                         .noCollission()
                         .lightLevel(state -> 15)));
-        static void init() {}
+
+        static void init() {
+        }
     }
 
     public static class BlockEntityTypes {
@@ -96,7 +97,9 @@ public class Exposure {
 
         public static final Supplier<BlockEntityType<FlashBlockEntity>> FLASH =
                 Register.blockEntityType("flash", () -> Register.newBlockEntityType(FlashBlockEntity::new, Blocks.FLASH.get()));
-        static void init() {}
+
+        static void init() {
+        }
     }
 
     public static class Items {
@@ -107,7 +110,7 @@ public class Exposure {
         public static final Supplier<FilmRollItem> BLACK_AND_WHITE_FILM = Register.item("black_and_white_film",
                 () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, Exposure.DEFAULT_FILM_SIZE, Mth.color(0.8F, 0.8F, 0.9F),
                         new Item.Properties()
-                        .stacksTo(16)));
+                                .stacksTo(16)));
 
         public static final Supplier<FilmRollItem> COLOR_FILM = Register.item("color_film",
                 () -> new FilmRollItem(FilmType.COLOR, Exposure.DEFAULT_FILM_SIZE, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
@@ -131,19 +134,25 @@ public class Exposure {
 
         public static final Supplier<BlockItem> LIGHTROOM = Register.item("lightroom",
                 () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));
-        static void init() {}
+
+        static void init() {
+        }
     }
 
     public static class EntityTypes {
         public static final Supplier<EntityType<PhotographEntity>> PHOTOGRAPH = Register.entityType("photograph",
                 PhotographEntity::new, MobCategory.MISC, 0.5F, 0.5F, 128, false, Integer.MAX_VALUE);
-        static void init() {}
+
+        static void init() {
+        }
     }
 
     public static class MenuTypes {
         public static final Supplier<MenuType<CameraAttachmentsMenu>> CAMERA = Register.menuType("camera", CameraAttachmentsMenu::fromBuffer);
         public static final Supplier<MenuType<LightroomMenu>> LIGHTROOM = Register.menuType("lightroom", LightroomMenu::fromBuffer);
-        static void init() {}
+
+        static void init() {
+        }
     }
 
     public static class RecipeSerializers {
@@ -151,7 +160,9 @@ public class Exposure {
                 FilmDevelopingRecipe.Serializer::new);
         public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_CLONING = Register.recipeSerializer("photograph_cloning",
                 PhotographCloningRecipe.Serializer::new);
-        static void init() {}
+
+        static void init() {
+        }
     }
 
     public static class SoundEvents {
@@ -182,7 +193,8 @@ public class Exposure {
             return Register.soundEvent(path, () -> SoundEvent.createVariableRangeEvent(Exposure.resource(path)));
         }
 
-        static void init() {}
+        static void init() {
+        }
     }
 
     public static class Stats {

@@ -13,7 +13,6 @@ import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -31,14 +30,16 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.WrittenBookItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class PhotographItem extends Item {
     public PhotographItem(Properties properties) {
@@ -189,13 +190,5 @@ public class PhotographItem extends Item {
         }
 
         return false;
-    }
-
-    public ItemStack copy(ItemStack original) {
-        ItemStack newPhotographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-        CompoundTag compoundtag = original.getTag() != null ? original.getTag().copy() : new CompoundTag();
-        compoundtag.putInt("generation", Math.min(WrittenBookItem.getGeneration(original) + 1, 2));
-        newPhotographStack.setTag(compoundtag);
-        return newPhotographStack;
     }
 }

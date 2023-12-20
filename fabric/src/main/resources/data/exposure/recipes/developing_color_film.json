@@ -1,9 +1,9 @@
 {
   "type": "exposure:film_developing",
+  "film": {
+    "item": "exposure:color_film"
+  },
   "ingredients": [
-    {
-      "item": "exposure:color_film"
-    },
     {
       "fabric:type": "fabric:nbt",
       "base": {

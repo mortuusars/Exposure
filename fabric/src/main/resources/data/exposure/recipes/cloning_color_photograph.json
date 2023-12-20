@@ -1,9 +1,9 @@
 {
   "type": "exposure:photograph_cloning",
+  "photograph": {
+    "item": "exposure:photograph"
+  },
   "ingredients": [
-    {
-      "item": "exposure:photograph"
-    },
     {
       "tag": "exposure:photo_papers"
     },

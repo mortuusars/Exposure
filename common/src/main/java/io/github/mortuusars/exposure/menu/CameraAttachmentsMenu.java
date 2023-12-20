@@ -105,7 +105,6 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
 
     protected void onItemInSlotChanged(FilteredSlot.SlotChangedArgs args) {
         if (!level.isClientSide) {
-            LogUtils.getLogger().warn("Changed");
             camera.getItem().getAttachmentTypeForSlot(camera.getStack(), args.slot().getSlotId())
                     .ifPresent(attachmentType -> camera.getItem()
                             .setAttachment(camera.getStack(), attachmentType, args.newStack()));

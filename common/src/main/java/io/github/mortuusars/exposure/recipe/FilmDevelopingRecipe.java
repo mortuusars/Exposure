@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.item.FilmRollItem;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -14,24 +12,26 @@ import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.PotionItem;
-import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
-/*
-    Implements IShapedRecipe because we need to exclude it from Create's Shapeless mixing (can't FilmRollItem#develop with it).
-    But at the same time keep the ability to craft it in Mechanical Crafter.
-    And default functionality is the same - it still a shapeless recipe.
- */
-public class FilmDevelopingRecipe extends ShapelessRecipe {
-    public FilmDevelopingRecipe(ResourceLocation id, String group, ItemStack result, NonNullList<Ingredient> ingredients) {
-        super(id, group, CraftingBookCategory.MISC, result, ingredients);
+public class FilmDevelopingRecipe extends AbstractNbtTransferringRecipe {
+    public FilmDevelopingRecipe(ResourceLocation id, Ingredient filmIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+        super(id, filmIngredient, ingredients, result);
+    }
+
+    @Override
+    public @NotNull RecipeSerializer<?> getSerializer() {
+        return Exposure.RecipeSerializers.FILM_DEVELOPING.get();
     }
 
     @Override
     public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingContainer container) {
         NonNullList<ItemStack> remainingItems = super.getRemainingItems(container);
 
-        for(int i = 0; i < container.getContainerSize(); ++i) {
+        for (int i = 0; i < container.getContainerSize(); ++i) {
             ItemStack item = container.getItem(i);
             if (item.getItem() instanceof PotionItem) {
                 remainingItems.set(i, new ItemStack(Items.GLASS_BOTTLE));
@@ -41,36 +41,44 @@ public class FilmDevelopingRecipe extends ShapelessRecipe {
         return remainingItems;
     }
 
-    @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return Exposure.RecipeSerializers.FILM_DEVELOPING.get();
-    }
-
-    @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, @NotNull RegistryAccess registryAccess) {
-        for (int index = 0; index < container.getContainerSize(); index++) {
-            ItemStack itemStack = container.getItem(index);
-
-            if (itemStack.getItem() instanceof FilmRollItem filmRollItem) {
-                return filmRollItem.develop(itemStack).getStack();
-            }
-        }
-
-        return ItemStack.EMPTY;
-    }
-
     public static class Serializer implements RecipeSerializer<FilmDevelopingRecipe> {
-        public @NotNull FilmDevelopingRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject json) {
-            String group = GsonHelper.getAsString(json, "group", "");
-            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result"));
-            return new FilmDevelopingRecipe(recipeId, group, result, getIngredients(json));
+        @Override
+        public @NotNull FilmDevelopingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
+            Ingredient filmIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "film"));
+            NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
+            ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
+
+            if (filmIngredient.isEmpty())
+                throw new JsonParseException("Recipe should have 'film' ingredient.");
+
+            return new FilmDevelopingRecipe(recipeId, filmIngredient, ingredients, result);
         }
 
-        private NonNullList<Ingredient> getIngredients(JsonObject json) {
-            JsonArray jsonArray = GsonHelper.getAsJsonArray(json, "ingredients");
+        @Override
+        public @NotNull FilmDevelopingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+            Ingredient transferredIngredient = Ingredient.fromNetwork(buffer);
+            int ingredientsCount = buffer.readVarInt();
+            NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientsCount, Ingredient.EMPTY);
+            ingredients.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
+            ItemStack result = buffer.readItem();
+
+            return new FilmDevelopingRecipe(recipeId, transferredIngredient, ingredients, result);
+        }
+
+        @Override
+        public void toNetwork(FriendlyByteBuf buffer, FilmDevelopingRecipe recipe) {
+            recipe.getTransferIngredient().toNetwork(buffer);
+            buffer.writeVarInt(recipe.getIngredients().size());
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                ingredient.toNetwork(buffer);
+            }
+            buffer.writeItem(recipe.getResult());
+        }
+
+        private NonNullList<Ingredient> getIngredients(JsonArray jsonArray) {
             NonNullList<Ingredient> ingredients = NonNullList.create();
 
-            for(int i = 0; i < jsonArray.size(); ++i) {
+            for (int i = 0; i < jsonArray.size(); ++i) {
                 Ingredient ingredient = Ingredient.fromJson(jsonArray.get(i));
                 if (!ingredient.isEmpty())
                     ingredients.add(ingredient);
@@ -81,30 +89,6 @@ public class FilmDevelopingRecipe extends ShapelessRecipe {
             else if (ingredients.size() > 3 * 3)
                 throw new JsonParseException("Too many ingredients for a recipe. The maximum is 9.");
             return ingredients;
-        }
-
-        public @NotNull FilmDevelopingRecipe fromNetwork(@NotNull ResourceLocation recipeID, FriendlyByteBuf buffer) {
-            String group = buffer.readUtf();
-            ItemStack result = buffer.readItem();
-            int ingredientsCount = buffer.readVarInt();
-            NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientsCount, Ingredient.EMPTY);
-
-            //noinspection Java8ListReplaceAll
-            for(int i = 0; i < ingredients.size(); ++i) {
-                ingredients.set(i, Ingredient.fromNetwork(buffer));
-            }
-
-            return new FilmDevelopingRecipe(recipeID, group, result, ingredients);
-        }
-
-        public void toNetwork(FriendlyByteBuf buffer, FilmDevelopingRecipe recipe) {
-            buffer.writeUtf(recipe.getGroup());
-            buffer.writeItem(recipe.result);
-            buffer.writeVarInt(recipe.getIngredients().size());
-
-            for(Ingredient ingredient : recipe.getIngredients()) {
-                ingredient.toNetwork(buffer);
-            }
         }
     }
 }
