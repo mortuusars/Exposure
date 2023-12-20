@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.data.generation.recipe;
+package io.github.mortuusars.exposure.forge.data.generation.recipe;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -16,9 +16,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * "Copy" of the ShapelessRecipeBuilder.Result class to change serializer to FILM_DEVELOPING. Needed to datagen film developing recipes.
+ * "Copy" of the ShapelessRecipeBuilder.Result class to change serializer to PHOTOGRAPH_CLONING. Needed to datagen film developing recipes.
  */
-public class FilmDevelopingFinishedRecipe implements FinishedRecipe {
+public class PhotographCopyingFinishedRecipe implements FinishedRecipe {
     private final ResourceLocation id;
     private final Item result;
     private final int count;
@@ -27,8 +27,8 @@ public class FilmDevelopingFinishedRecipe implements FinishedRecipe {
     private final Advancement.Builder advancement;
     private final ResourceLocation advancementId;
 
-    public FilmDevelopingFinishedRecipe(ResourceLocation id, Item result, int count, String group, List<Ingredient> ingredients,
-                                        Advancement.Builder advancement, ResourceLocation advancementId) {
+    public PhotographCopyingFinishedRecipe(ResourceLocation id, Item result, int count, String group, List<Ingredient> ingredients,
+                                           Advancement.Builder advancement, ResourceLocation advancementId) {
         this.id = id;
         this.result = result;
         this.count = count;
@@ -60,7 +60,7 @@ public class FilmDevelopingFinishedRecipe implements FinishedRecipe {
     }
 
     public @NotNull RecipeSerializer<?> getType() {
-        return Exposure.RecipeSerializers.FILM_DEVELOPING.get();
+        return Exposure.RecipeSerializers.PHOTOGRAPH_CLONING.get();
     }
 
     /**

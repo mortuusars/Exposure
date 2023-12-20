@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.forge.mixin;
 
 import io.github.mortuusars.exposure.item.CameraItem;
-import io.github.mortuusars.exposure.item.forge.CameraItemForgeClientExtensions;
+import io.github.mortuusars.exposure.forge.item.CameraItemForgeClientExtensions;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;

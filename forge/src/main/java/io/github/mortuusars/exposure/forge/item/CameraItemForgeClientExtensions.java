@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.item.forge;
+package io.github.mortuusars.exposure.forge.item;
 
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.item.CameraItemClientExtensions;

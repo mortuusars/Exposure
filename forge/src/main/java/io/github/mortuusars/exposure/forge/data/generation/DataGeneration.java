@@ -1,7 +1,7 @@
-package io.github.mortuusars.exposure.data.generation;
+package io.github.mortuusars.exposure.forge.data.generation;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.data.generation.provider.*;
+import io.github.mortuusars.exposure.forge.data.generation.provider.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.ExistingFileHelper;

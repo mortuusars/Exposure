@@ -1,9 +1,6 @@
 package io.github.mortuusars.exposure.fabric;
 
-import com.mojang.logging.LogUtils;
-import io.github.mortuusars.exposure.block.entity.LightroomBlockEntity;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -43,9 +40,5 @@ public class PlatformHelperImpl {
         };
 
         serverPlayer.openMenu(extendedScreenHandlerFactory);
-    }
-
-    public static void openLightroomMenu(ServerPlayer serverPlayer, LightroomBlockEntity lightroomBlockEntity, BlockPos pos) {
-        LogUtils.getLogger().error("NOT IMPLEMENTED");
     }
 }

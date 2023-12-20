@@ -1,10 +1,10 @@
-package io.github.mortuusars.exposure.data.generation.provider;
+package io.github.mortuusars.exposure.forge.data.generation.provider;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
-import io.github.mortuusars.exposure.data.generation.recipe.FilmDevelopingFinishedRecipe;
-import io.github.mortuusars.exposure.data.generation.recipe.PhotographCopyingFinishedRecipe;
+import io.github.mortuusars.exposure.forge.data.generation.recipe.FilmDevelopingFinishedRecipe;
+import io.github.mortuusars.exposure.forge.data.generation.recipe.PhotographCopyingFinishedRecipe;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementRewards;
 import net.minecraft.advancements.RequirementsStrategy;

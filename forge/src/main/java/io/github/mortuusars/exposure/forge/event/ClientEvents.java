@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.event;
+package io.github.mortuusars.exposure.forge.event;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;

@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.data.generation.provider;
+package io.github.mortuusars.exposure.forge.data.generation.provider;
 
 import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.core.HolderLookup;
