@@ -4,6 +4,7 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.forge.event.ClientEvents;
 import io.github.mortuusars.exposure.forge.event.CommonEvents;
+import io.github.mortuusars.exposure.forge.integration.create.CreateFilmDeveloping;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;

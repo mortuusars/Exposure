@@ -5,11 +5,11 @@
   "minVersion": "0.8",
   "client": [
     "ToggleKeyMappingForgeMixin",
-    "CreateJEICompatMixin"
+    "create.CreateJEICompatMixin"
   ],
   "mixins": [
     "CameraItemForgeMixin",
-    "SpoutDevelopingMixin"
+    "create.SpoutDevelopingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

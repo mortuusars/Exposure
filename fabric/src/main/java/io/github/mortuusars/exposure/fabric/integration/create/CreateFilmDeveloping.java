@@ -1,14 +1,14 @@
-package io.github.mortuusars.exposure.forge;
+package io.github.mortuusars.exposure.fabric.integration.create;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.logging.LogUtils;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.item.FilmRollItem;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fluids.FluidStack;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -65,7 +65,7 @@ public class CreateFilmDeveloping {
         return fillingSteps.get(Math.max(1, nextStep) - 1);
     }
 
-    public static ItemStack fillFilmStack(ItemStack stack, int requiredAmount, FluidStack availableFluid) {
+    public static ItemStack fillFilmStack(ItemStack stack, long requiredAmount, FluidStack availableFluid) {
         if (!(stack.getItem() instanceof FilmRollItem filmRollItem))
             throw new IllegalArgumentException("Filling to develop film can only be used on FilmRollItem. Got: " + stack);
 

@@ -1,9 +1,9 @@
-package io.github.mortuusars.exposure.forge.mixin;
+package io.github.mortuusars.exposure.forge.mixin.create;
 
 import com.simibubi.create.content.fluids.spout.FillingBySpout;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.forge.CreateFilmDeveloping;
+import io.github.mortuusars.exposure.forge.integration.create.CreateFilmDeveloping;
 import io.github.mortuusars.exposure.item.FilmRollItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;

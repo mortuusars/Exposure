@@ -13,6 +13,7 @@ import net.minecraft.world.item.ShearsItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class PlatformHelperImpl {
@@ -40,5 +41,17 @@ public class PlatformHelperImpl {
         };
 
         serverPlayer.openMenu(extendedScreenHandlerFactory);
+    }
+
+    public static List<String> getDefaultSpoutDevelopmentColorSteps() {
+        return List.of(
+                "{FluidName:\"create:potion\",Amount:27000,Tag:{Potion:\"minecraft:awkward\"}}",
+                "{FluidName:\"create:potion\",Amount:27000,Tag:{Potion:\"minecraft:thick\"}}",
+                "{FluidName:\"create:potion\",Amount:27000,Tag:{Potion:\"minecraft:mundane\"}}");
+    }
+
+    public static List<String> getDefaultSpoutDevelopmentBWSteps() {
+        return List.of(
+                "{FluidName:\"minecraft:water\",Amount:27000}");
     }
 }

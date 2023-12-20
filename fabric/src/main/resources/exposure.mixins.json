@@ -7,9 +7,12 @@
     "GameRendererFabricMixin",
     "HumanoidModelMixin",
     "ItemFrameRendererFabricMixin",
-    "MouseHandlerFabricMixin"
+    "MouseHandlerFabricMixin",
+    "create.CreateJEICompatMixin"
   ],
   "mixins": [
+    "create.RecipeTypesMixin",
+    "create.SpoutDevelopingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

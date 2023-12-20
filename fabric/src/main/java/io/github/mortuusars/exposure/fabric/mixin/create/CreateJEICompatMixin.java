@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.forge.mixin;
+package io.github.mortuusars.exposure.fabric.mixin.create;
 
 import com.simibubi.create.Create;
 import com.simibubi.create.compat.jei.CreateJEI;
@@ -6,12 +6,12 @@ import com.simibubi.create.content.fluids.transfer.FillingRecipe;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipe;
 import com.simibubi.create.content.processing.sequenced.SequencedAssemblyRecipeBuilder;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
-import io.github.mortuusars.exposure.forge.CreateFilmDeveloping;
+import io.github.mortuusars.exposure.fabric.integration.create.CreateFilmDeveloping;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeRegistration;
-import net.minecraftforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;

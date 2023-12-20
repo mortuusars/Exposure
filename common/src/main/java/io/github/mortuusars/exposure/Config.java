@@ -60,14 +60,10 @@ public class Config {
                                 .define("Enabled", true);
                         CREATE_SPOUT_DEVELOPING_STEPS_COLOR = builder
                                 .comment("Fluid spouting steps required to develop color film.")
-                                .define("ColorFilmSteps", List.of(
-                                        "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:awkward\"}}",
-                                        "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:thick\"}}",
-                                        "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:mundane\"}}"));
+                                .define("ColorFilmSteps", PlatformHelper.getDefaultSpoutDevelopmentColorSteps());
                         CREATE_SPOUT_DEVELOPING_STEPS_BW = builder
                                 .comment("Fluid spouting steps required to develop black and white film.")
-                                .define("BlackAndWhiteFilmSteps", List.of(
-                                        "{FluidName:\"minecraft:water\",Amount:250}"));
+                                .define("BlackAndWhiteFilmSteps", PlatformHelper.getDefaultSpoutDevelopmentBWSteps());
                     }
                     builder.pop();
                 }

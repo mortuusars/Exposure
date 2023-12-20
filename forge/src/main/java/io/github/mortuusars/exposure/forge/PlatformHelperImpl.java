@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ToolActions;
 import net.minecraftforge.network.NetworkHooks;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class PlatformHelperImpl {
@@ -16,5 +17,17 @@ public class PlatformHelperImpl {
 
     public static void openMenu(ServerPlayer serverPlayer, MenuProvider menuProvider, Consumer<FriendlyByteBuf> extraDataWriter) {
         NetworkHooks.openScreen(serverPlayer, menuProvider, extraDataWriter);
+    }
+
+    public static List<String> getDefaultSpoutDevelopmentColorSteps() {
+        return List.of(
+                "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:awkward\"}}",
+                "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:thick\"}}",
+                "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:mundane\"}}");
+    }
+
+    public static List<String> getDefaultSpoutDevelopmentBWSteps() {
+        return List.of(
+                "{FluidName:\"minecraft:water\",Amount:250}");
     }
 }
