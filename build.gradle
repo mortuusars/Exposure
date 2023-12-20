@@ -55,6 +55,10 @@ allprojects {
             url = "https://dvs1.progwml6.com/files/maven/"
         }
         maven {
+            name = 'tterrag maven'
+            url = 'https://maven.tterrag.com/'
+        }
+        maven {
             // location of the maven that hosts JEI files since January 2023
             name = "Jared's maven"
             url = "https://maven.blamejared.com/"
@@ -63,6 +67,9 @@ allprojects {
             // location of a maven mirror for JEI files, as a fallback
             name = "ModMaven"
             url = "https://modmaven.dev"
+        }
+        maven {
+            url = "https://cursemaven.com"
         }
     }
 

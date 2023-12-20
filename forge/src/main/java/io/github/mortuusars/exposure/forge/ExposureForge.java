@@ -1,17 +1,30 @@
 package io.github.mortuusars.exposure.forge;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.exposure.event.CommonEvents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.TagParser;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(Exposure.ID)
 public class ExposureForge {
@@ -22,6 +35,9 @@ public class ExposureForge {
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        modEventBus.addListener(this::onConfigLoad);
+
         RegisterImpl.BLOCKS.register(modEventBus);
         RegisterImpl.BLOCK_ENTITY_TYPES.register(modEventBus);
         RegisterImpl.ITEMS.register(modEventBus);
@@ -37,5 +53,10 @@ public class ExposureForge {
             modEventBus.register(ClientEvents.ModBus.class);
             MinecraftForge.EVENT_BUS.register(ClientEvents.ForgeBus.class);
         });
+    }
+
+    private void onConfigLoad(ModConfigEvent.Reloading event) {
+        if (ModList.get().isLoaded("create"))
+            CreateFilmDeveloping.clearCachedData();
     }
 }

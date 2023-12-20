@@ -21,6 +21,7 @@ loom {
     runs {
         create("client2") {
             inherit(getByName("client"))
+
             name("Second Client")
             programArgs("--username", "AnotherDev")
 
@@ -37,6 +38,25 @@ configurations {
     developmentForge.extendsFrom common
 }
 
+repositories {
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+    maven {
+        // Location of the maven for mixed mappings, Registrate, and Flywheel
+        name 'tterrag maven'
+        url 'https://maven.tterrag.com'
+    }
+    maven {
+        url 'https://www.cursemaven.com'
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
 dependencies {
     forge "net.minecraftforge:forge:${rootProject.forge_version}"
     // Remove the next line if you don't want to depend on the API
@@ -47,6 +67,14 @@ dependencies {
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
     // at runtime, use the full JEI jar for Fabric
     modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+
+    modCompileOnly("com.simibubi.create:create-1.20.1:0.5.1.f-26:slim") { transitive = false }
+    modCompileOnly("com.jozufozu.flywheel:flywheel-forge-1.20.1:0.6.10-7")
+    modCompileOnly("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
+
+    modRuntimeOnly("com.simibubi.create:create-1.20.1:0.5.1.f-26:slim") { transitive = false }
+    modRuntimeOnly("com.jozufozu.flywheel:flywheel-forge-1.20.1:0.6.10-7")
+    modRuntimeOnly("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

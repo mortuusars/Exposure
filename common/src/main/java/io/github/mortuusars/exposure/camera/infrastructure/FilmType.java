@@ -1,6 +1,8 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
+import io.github.mortuusars.exposure.Exposure;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,5 +40,13 @@ public enum FilmType implements StringRepresentable {
     @Nullable
     public static FilmType byName(@Nullable String name) {
         return CODEC.byName(name);
+    }
+
+    public ItemStack createItemStack() {
+        return new ItemStack(this == COLOR ? Exposure.Items.COLOR_FILM.get() : Exposure.Items.BLACK_AND_WHITE_FILM.get());
+    }
+
+    public ItemStack createDevelopedItemStack() {
+        return new ItemStack(this == COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM.get() : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
     }
 }

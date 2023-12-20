@@ -1,13 +1,13 @@
 package io.github.mortuusars.exposure.item;
 
-import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
-import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -79,18 +79,6 @@ public class FilmRollItem extends Item implements IFilmItem {
         return filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND).size() < getMaxFrameCount(filmStack);
     }
 
-    public ItemAndStack<DevelopedFilmItem> develop(ItemStack filmStack) {
-        DevelopedFilmItem developedItem = getType() == FilmType.COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM.get()
-                : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get();
-
-        ListTag framesTag = filmStack.getTag() != null ?
-                filmStack.getOrCreateTag().getList("Frames", Tag.TAG_COMPOUND) : new ListTag();
-
-        ItemStack developedItemStack = new ItemStack(developedItem);
-        developedItemStack.getOrCreateTag().put("Frames", framesTag);
-        return new ItemAndStack<>(developedItemStack);
-    }
-
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> tooltipComponents, @NotNull TooltipFlag isAdvanced) {
         int exposedFrames = getExposedFramesCount(stack);
@@ -105,6 +93,26 @@ public class FilmRollItem extends Item implements IFilmItem {
             tooltipComponents.add(Component.translatable("item.exposure.film_roll.tooltip.frame_size",
                     Component.literal(String.format("%.1f", frameSize / 10f)))
                             .withStyle(ChatFormatting.GRAY));
+        }
+
+        // Create compat:
+        int developingStep = stack.getTag() != null ? stack.getTag().getInt("CurrentDevelopingStep") : 0;
+        if (Config.Common.CREATE_SPOUT_DEVELOPING_ENABLED.get() && developingStep > 0) {
+            List<String> totalSteps = getType() == FilmType.COLOR ? Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_COLOR.get() :
+                    Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_BW.get();
+
+            MutableComponent stepsComponent = Component.literal("");
+
+            for (int i = 0; i < developingStep; i++) {
+                stepsComponent.append(Component.literal("I").withStyle(ChatFormatting.GOLD));
+            }
+
+            for (int i = developingStep; i < totalSteps.size(); i++) {
+                stepsComponent.append(Component.literal("I").withStyle(ChatFormatting.DARK_GRAY));
+            }
+
+            tooltipComponents.add(Component.translatable("item.exposure.film_roll.tooltip.developing_step", stepsComponent)
+                    .withStyle(ChatFormatting.GOLD));
         }
     }
 }

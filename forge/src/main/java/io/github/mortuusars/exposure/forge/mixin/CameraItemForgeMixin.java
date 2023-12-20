@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.Shadow;
 
 import java.util.function.Consumer;
 
-@Mixin(CameraItem.class)
+@Mixin(value = CameraItem.class, remap = false)
 public abstract class CameraItemForgeMixin extends Item implements IForgeItem {
     public CameraItemForgeMixin(Properties properties) {
         super(properties);

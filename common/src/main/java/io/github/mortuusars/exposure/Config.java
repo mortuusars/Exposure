@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.awt.*;
+import java.util.List;
 
 /**
  * Using ForgeConfigApiPort on fabric allows using forge config in both environments and without extra dependencies on forge.
@@ -17,30 +18,61 @@ public class Config {
         public static final ForgeConfigSpec.IntValue LIGHTROOM_COLOR_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_EXPERIENCE_PER_PRINT;
 
+        // Compat
+        public static final ForgeConfigSpec.BooleanValue CREATE_SPOUT_DEVELOPING_ENABLED;
+        public static final ForgeConfigSpec.ConfigValue<List<String>> CREATE_SPOUT_DEVELOPING_STEPS_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<List<String>> CREATE_SPOUT_DEVELOPING_STEPS_BW;
+
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
 
             builder.push("Camera");
-
-            CAMERA_SPYGLASS_SUPERZOOM = builder
-                    .comment("Spyglass will function like a superzoom lens instead of a teleconverter, allowing for a full range of focal lengths (18-200).",
-                             "Using it as a teleconverter allows only 55-200")
-                    .define("SpyglassSuperzoom", false);
-
+            {
+                CAMERA_SPYGLASS_SUPERZOOM = builder
+                        .comment("Spyglass will function like a superzoom lens instead of a teleconverter, allowing for a full range of focal lengths (18-200).",
+                                "Using it as a teleconverter allows only 55-200")
+                        .define("SpyglassSuperzoom", false);
+            }
             builder.pop();
 
             builder.push("Lightroom");
+            {
+                LIGHTROOM_BW_FILM_PRINT_TIME = builder
+                        .comment("Time in ticks to print black and white photograph.")
+                        .defineInRange("BlackAndWhitePrintTime", 80, 1, Integer.MAX_VALUE);
+                LIGHTROOM_COLOR_FILM_PRINT_TIME = builder
+                        .comment("Time in ticks to print color photograph.")
+                        .defineInRange("ColorPrintTime", 200, 1, Integer.MAX_VALUE);
+                LIGHTROOM_EXPERIENCE_PER_PRINT = builder
+                        .comment("Amount of experience awarded per printed Photograph. Set to 0 to disable.")
+                        .defineInRange("ExperiencePerPrint", 4, 0, 32767);
+            }
+            builder.pop();
 
-            LIGHTROOM_BW_FILM_PRINT_TIME = builder
-                    .comment("Time in ticks to print black and white photograph.")
-                    .defineInRange("BlackAndWhitePrintTime", 80, 1, Integer.MAX_VALUE);
-            LIGHTROOM_COLOR_FILM_PRINT_TIME = builder
-                    .comment("Time in ticks to print color photograph.")
-                    .defineInRange("ColorPrintTime", 200, 1, Integer.MAX_VALUE);
-            LIGHTROOM_EXPERIENCE_PER_PRINT = builder
-                    .comment("Amount of experience awarded per printed Photograph. Set to 0 to disable.")
-                    .defineInRange("ExperiencePerPrint", 4, 0, 32767);
-
+            builder.push("Integration");
+            {
+                builder.push("Create");
+                {
+                    builder.push("SequencedSpoutFilmDeveloping");
+                    {
+                        CREATE_SPOUT_DEVELOPING_ENABLED = builder
+                                .comment("Film can be developed with create Spout Filling. Default: true")
+                                .define("Enabled", true);
+                        CREATE_SPOUT_DEVELOPING_STEPS_COLOR = builder
+                                .comment("Fluid spouting steps required to develop color film.")
+                                .define("ColorFilmSteps", List.of(
+                                        "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:awkward\"}}",
+                                        "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:thick\"}}",
+                                        "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:mundane\"}}"));
+                        CREATE_SPOUT_DEVELOPING_STEPS_BW = builder
+                                .comment("Fluid spouting steps required to develop black and white film.")
+                                .define("BlackAndWhiteFilmSteps", List.of(
+                                        "{FluidName:\"minecraft:water\",Amount:250}"));
+                    }
+                    builder.pop();
+                }
+                builder.pop();
+            }
             builder.pop();
 
             SPEC = builder.build();
@@ -136,7 +168,7 @@ public class Config {
         }
 
         private static int getColorFromHex(String hexColor) {
-            return new Color((int)Long.parseLong(hexColor.replace("#", ""), 16), true).getRGB();
+            return new Color((int) Long.parseLong(hexColor.replace("#", ""), 16), true).getRGB();
         }
     }
 }

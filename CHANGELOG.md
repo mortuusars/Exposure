@@ -1,4 +1,10 @@
 ### 1.2.0 - 
+Developing Recipe:
+- Developing recipes will not show in vanilla Recipe Book due to the book not working well with this type of recipes (like to cloning written books or dyeing armor)   
+- Developing can now be done with Create's Spouts.  
+- Films no longer can be developed with Create's Mechanical Crafter
+
+Misc:
 - Fixed Camera Attachments menu not opening from offhand.
 - Pressing Inventory Key or Esc in thirdperson-back camera mode (when viewfinder is not visible) will now deactivate camera instead of opening inventory or pause menu.
 - Slightly reduced z-fighting of the Hanging Photograph at greater distances.
