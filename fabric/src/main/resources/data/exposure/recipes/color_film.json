@@ -6,7 +6,7 @@
       "item": "minecraft:gold_nugget"
     },
     "I": {
-      "tag": "c:iron_ingots"
+      "item": "minecraft:iron_ingot"
     },
     "K": {
       "item": "minecraft:dried_kelp"

@@ -10,7 +10,7 @@
       "item": "minecraft:glass_pane"
     },
     "I": {
-      "tag": "c:iron_ingots"
+      "item": "minecraft:iron_ingot"
     },
     "L": {
       "item": "minecraft:lever"

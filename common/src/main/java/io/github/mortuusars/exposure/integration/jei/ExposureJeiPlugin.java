@@ -5,14 +5,18 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.integration.jei.category.PhotographPrintingCategory;
 import io.github.mortuusars.exposure.integration.jei.category.PhotographStackingCategory;
+import io.github.mortuusars.exposure.integration.jei.recipe.NbtTransferringShapelessExtension;
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographPrintingJeiRecipe;
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographStackingJeiRecipe;
+import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
+import io.github.mortuusars.exposure.recipe.PhotographCloningRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
+import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -54,5 +58,13 @@ public class ExposureJeiPlugin implements IModPlugin {
                 new PhotographStackingJeiRecipe(PhotographStackingJeiRecipe.STACKING),
                 new PhotographStackingJeiRecipe(PhotographStackingJeiRecipe.REMOVING)
         ));
+    }
+
+    @Override
+    public void registerVanillaCategoryExtensions(IVanillaCategoryExtensionRegistration registration) {
+        registration.getCraftingCategory()
+                .addCategoryExtension(FilmDevelopingRecipe.class, NbtTransferringShapelessExtension::new);
+        registration.getCraftingCategory()
+                .addCategoryExtension(PhotographCloningRecipe.class, NbtTransferringShapelessExtension::new);
     }
 }

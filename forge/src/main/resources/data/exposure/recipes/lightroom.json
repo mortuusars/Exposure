@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "L": {
+      "item": "minecraft:lantern"
+    },
+    "P": {
+      "tag": "minecraft:planks"
+    },
+    "T": {
+      "item": "minecraft:redstone_torch"
+    }
+  },
+  "pattern": [
+    "LT ",
+    "PP ",
+    "PP "
+  ],
+  "result": {
+    "item": "exposure:lightroom"
+  },
+  "show_notification": true
+}
