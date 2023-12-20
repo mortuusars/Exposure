@@ -1,5 +1,5 @@
 {
-  "type": "exposure:photograph_cloning",
+  "type": "exposure:photograph_copying",
   "photograph": {
     "type": "forge:partial_nbt",
     "item": "exposure:photograph",

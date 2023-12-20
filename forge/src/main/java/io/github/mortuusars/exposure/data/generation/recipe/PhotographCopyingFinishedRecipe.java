@@ -18,7 +18,7 @@ import java.util.Objects;
 /**
  * "Copy" of the ShapelessRecipeBuilder.Result class to change serializer to PHOTOGRAPH_CLONING. Needed to datagen film developing recipes.
  */
-public class PhotographCloningFinishedRecipe implements FinishedRecipe {
+public class PhotographCopyingFinishedRecipe implements FinishedRecipe {
     private final ResourceLocation id;
     private final Item result;
     private final int count;
@@ -27,7 +27,7 @@ public class PhotographCloningFinishedRecipe implements FinishedRecipe {
     private final Advancement.Builder advancement;
     private final ResourceLocation advancementId;
 
-    public PhotographCloningFinishedRecipe(ResourceLocation id, Item result, int count, String group, List<Ingredient> ingredients,
+    public PhotographCopyingFinishedRecipe(ResourceLocation id, Item result, int count, String group, List<Ingredient> ingredients,
                                            Advancement.Builder advancement, ResourceLocation advancementId) {
         this.id = id;
         this.result = result;

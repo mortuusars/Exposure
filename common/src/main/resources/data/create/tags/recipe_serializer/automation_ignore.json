@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "exposure:film_developing",
+      "required": false
+    },
+    {
+      "id": "exposure:photograph_copying",
+      "required": false
+    }
+  ]
+}

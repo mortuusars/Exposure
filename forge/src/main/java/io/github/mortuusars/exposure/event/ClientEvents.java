@@ -13,6 +13,7 @@ import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -44,6 +45,11 @@ public class ClientEvents {
         public static void registerResourceReloadListeners(RegisterClientReloadListenersEvent event) {
             event.registerReloadListener(new ExposureClientReloadListener());
         }
+
+        @SubscribeEvent
+        public static void registerModels(ModelEvent.RegisterAdditional event) {
+            event.register(new ModelResourceLocation("exposure", "camera_gui", "inventory"));
+        }
     }
 
     public static class ForgeBus {
@@ -57,11 +63,11 @@ public class ClientEvents {
             ExposureClient.getExposureStorage().clear();
         }
 
-//        @SubscribeEvent
-//        public static void renderOverlay(RenderGuiOverlayEvent.Pre event) {
-//            if (ViewfinderClient.isLookingThrough())
-//                event.setCanceled(true);
-//        }
+        @SubscribeEvent
+        public static void renderOverlay(RenderGuiOverlayEvent.Pre event) {
+            if (ViewfinderClient.isLookingThrough())
+                event.setCanceled(true);
+        }
 
 //        @SubscribeEvent
 //        public static void renderHand(RenderHandEvent event) {

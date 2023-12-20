@@ -9,7 +9,7 @@ import io.github.mortuusars.exposure.integration.jei.recipe.NbtTransferringShape
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographPrintingJeiRecipe;
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographStackingJeiRecipe;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
-import io.github.mortuusars.exposure.recipe.PhotographCloningRecipe;
+import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.RecipeType;
@@ -65,6 +65,6 @@ public class ExposureJeiPlugin implements IModPlugin {
         registration.getCraftingCategory()
                 .addCategoryExtension(FilmDevelopingRecipe.class, NbtTransferringShapelessExtension::new);
         registration.getCraftingCategory()
-                .addCategoryExtension(PhotographCloningRecipe.class, NbtTransferringShapelessExtension::new);
+                .addCategoryExtension(PhotographCopyingRecipe.class, NbtTransferringShapelessExtension::new);
     }
 }

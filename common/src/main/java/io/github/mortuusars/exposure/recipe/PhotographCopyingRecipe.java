@@ -20,8 +20,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
-public class PhotographCloningRecipe extends AbstractNbtTransferringRecipe {
-    public PhotographCloningRecipe(ResourceLocation id, Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+public class PhotographCopyingRecipe extends AbstractNbtTransferringRecipe {
+    public PhotographCopyingRecipe(ResourceLocation id, Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
         super(id, transferIngredient, ingredients, result);
     }
 
@@ -61,9 +61,9 @@ public class PhotographCloningRecipe extends AbstractNbtTransferringRecipe {
         return nonnulllist;
     }
 
-    public static class Serializer implements RecipeSerializer<PhotographCloningRecipe> {
+    public static class Serializer implements RecipeSerializer<PhotographCopyingRecipe> {
         @Override
-        public @NotNull PhotographCloningRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
+        public @NotNull PhotographCopyingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
             Ingredient photographIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "photograph"));
             NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
@@ -71,22 +71,22 @@ public class PhotographCloningRecipe extends AbstractNbtTransferringRecipe {
             if (photographIngredient.isEmpty())
                 throw new JsonParseException("Recipe should have 'photograph' ingredient.");
 
-            return new PhotographCloningRecipe(recipeId, photographIngredient, ingredients, result);
+            return new PhotographCopyingRecipe(recipeId, photographIngredient, ingredients, result);
         }
 
         @Override
-        public @NotNull PhotographCloningRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @NotNull PhotographCopyingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             Ingredient transferredIngredient = Ingredient.fromNetwork(buffer);
             int ingredientsCount = buffer.readVarInt();
             NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientsCount, Ingredient.EMPTY);
             ingredients.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
             ItemStack result = buffer.readItem();
 
-            return new PhotographCloningRecipe(recipeId, transferredIngredient, ingredients, result);
+            return new PhotographCopyingRecipe(recipeId, transferredIngredient, ingredients, result);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, PhotographCloningRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, PhotographCopyingRecipe recipe) {
             recipe.getTransferIngredient().toNetwork(buffer);
             buffer.writeVarInt(recipe.getIngredients().size());
             for (Ingredient ingredient : recipe.getIngredients()) {

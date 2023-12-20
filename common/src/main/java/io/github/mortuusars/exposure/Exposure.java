@@ -12,7 +12,7 @@ import io.github.mortuusars.exposure.item.*;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
-import io.github.mortuusars.exposure.recipe.PhotographCloningRecipe;
+import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -158,8 +158,8 @@ public class Exposure {
     public static class RecipeSerializers {
         public static final Supplier<RecipeSerializer<?>> FILM_DEVELOPING = Register.recipeSerializer("film_developing",
                 FilmDevelopingRecipe.Serializer::new);
-        public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_CLONING = Register.recipeSerializer("photograph_cloning",
-                PhotographCloningRecipe.Serializer::new);
+        public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_CLONING = Register.recipeSerializer("photograph_copying",
+                PhotographCopyingRecipe.Serializer::new);
 
         static void init() {
         }
