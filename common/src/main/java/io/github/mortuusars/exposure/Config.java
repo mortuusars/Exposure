@@ -1,20 +1,47 @@
 package io.github.mortuusars.exposure;
 
+import com.mojang.datafixers.util.Pair;
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.camera.infrastructure.FocalRange;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.config.ModConfig;
 
 import java.awt.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Using ForgeConfigApiPort on fabric allows using forge config in both environments and without extra dependencies on forge.
  */
 public class Config {
+    public static void loading(ModConfig.Type type) {
+        update(type);
+    }
+
+    public static void reloading(ModConfig.Type type) {
+        update(type);
+    }
+
+    private static void update(ModConfig.Type type) {
+        if (type == ModConfig.Type.COMMON)
+            Common.update();
+    }
+
     public static class Common {
         public static final ForgeConfigSpec SPEC;
 
-        public static final ForgeConfigSpec.BooleanValue CAMERA_SPYGLASS_SUPERZOOM;
+        // Camera
+        public static final ForgeConfigSpec.ConfigValue<String> CAMERA_DEFAULT_FOCAL_RANGE;
+        public static final ForgeConfigSpec.ConfigValue<List<? extends String>> CAMERA_LENS_FOCAL_RANGES;
+        public static Map<Item, FocalRange> CAMERA_LENSES = new HashMap<>();
 
+        // Lightroom
         public static final ForgeConfigSpec.IntValue LIGHTROOM_BW_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_COLOR_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_EXPERIENCE_PER_PRINT;
@@ -29,10 +56,16 @@ public class Config {
 
             builder.push("Camera");
             {
-                CAMERA_SPYGLASS_SUPERZOOM = builder
-                        .comment("Spyglass will function like a superzoom lens instead of a teleconverter, allowing for a full range of focal lengths (18-200).",
-                                "Using it as a teleconverter allows only 55-200")
-                        .define("SpyglassSuperzoom", false);
+                CAMERA_DEFAULT_FOCAL_RANGE = builder
+                        .comment("Default focal range of the camera (with built in lens). Default: 18-55")
+                        .define("DefaultFocalRange", "18-55");
+
+                CAMERA_LENS_FOCAL_RANGES = builder
+                        .comment("Focal Range per lens. Item ID and min-max (or single number for primes) focal lengths. " +
+                                    "Separated by a comma. Allowed range: 10-200",
+                                "Default: [\"minecraft:spyglass,55-200\"]")
+                        .defineListAllowEmpty(List.of("LensFocalRanges"), () ->
+                                List.of("minecraft:spyglass,55-200"), Common::validateLensProperties);
             }
             builder.pop();
 
@@ -73,11 +106,45 @@ public class Config {
             builder.pop();
 
             SPEC = builder.build();
+        }
 
+        private static boolean validateLensProperties(Object o) {
+            String value = (String) o;
+            try {
+                @SuppressWarnings("unused") Pair<Item, FocalRange> unused = parseLensFocalRange(value);
+                return true;
+            } catch (Exception e) {
+                LogUtils.getLogger().error("Lens property '" + value + "' is not a valid. " + e);
+                return false;
+            }
+        }
+
+        private static Pair<Item, FocalRange> parseLensFocalRange(String value) {
+            String[] split = value.split(",");
+            if (split.length != 2)
+                throw new IllegalStateException(value + " is not a valid lens property. Exactly two parts, separated by a comma, are required.");
+
+            ResourceLocation id = new ResourceLocation(split[0]);
+            Item item = BuiltInRegistries.ITEM.get(id);
+
+            if (item == Items.AIR)
+                throw new IllegalStateException(item + " is not a valid item for lens property. Value: " + value);
+
+            FocalRange focalRange = FocalRange.parse(split[1]);
+
+            return Pair.of(item, focalRange);
         }
 
         public static ForgeConfigSpec.ConfigValue<List<? extends String>> spoutDevelopingSequence(FilmType filmType) {
             return filmType == FilmType.COLOR ? CREATE_SPOUT_DEVELOPING_SEQUENCE_COLOR : CREATE_SPOUT_DEVELOPING_SEQUENCE_BW;
+        }
+
+        public static void update() {
+            List<? extends String> strings = CAMERA_LENS_FOCAL_RANGES.get();
+            for (String value : strings) {
+                Pair<Item, FocalRange> lens = parseLensFocalRange(value);
+                CAMERA_LENSES.put(lens.getFirst(), lens.getSecond());
+            }
         }
     }
 

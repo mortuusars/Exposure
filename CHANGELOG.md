@@ -1,7 +1,10 @@
 ### 1.2.0 - 
+- Added `exposure:flashes` and `exposure:lenses` tags, allowing customization of items that can be attached to the camera. 
+- Added Focal Length config options, allowing to configure default camera range and range per specific lens.
+
 Developing Recipe:
 - Developing recipes will not show in vanilla Recipe Book due to the book not working well with this type of recipes (like to cloning written books or dyeing armor)   
-- Developing can now be done with Create's Spouts.  
+- Developing can now be done with Create's Spouts. Configurable.
 - Films no longer can be developed with Create's Mechanical Crafter
 
 Misc:

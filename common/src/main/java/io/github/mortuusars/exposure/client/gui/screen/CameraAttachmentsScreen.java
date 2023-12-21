@@ -2,8 +2,10 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.camera.infrastructure.FocalRange;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -14,8 +16,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttachmentsMenu> {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/camera_attachments.png");
@@ -94,5 +99,15 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<CameraAttac
         }
 
         RenderSystem.disableBlend();
+    }
+
+    @Override
+    protected @NotNull List<Component> getTooltipFromContainerItem(ItemStack stack) {
+        List<Component> tooltip = super.getTooltipFromContainerItem(stack);
+        if (stack.is(Exposure.Tags.Items.LENSES) && hoveredSlot != null && hoveredSlot.getItem().equals(stack)) {
+            tooltip.add(Component.translatable("gui.exposure.viewfinder.focal_length", FocalRange.fromStack(stack).getSerializedName())
+                    .withStyle(ChatFormatting.GOLD));
+        }
+        return tooltip;
     }
 }

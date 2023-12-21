@@ -238,6 +238,8 @@ public class Exposure {
             public static final TagKey<Item> YELLOW_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("yellow_printing_dyes"));
             public static final TagKey<Item> BLACK_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("black_printing_dyes"));
             public static final TagKey<Item> PHOTO_PAPERS = TagKey.create(Registries.ITEM, Exposure.resource("photo_papers"));
+            public static final TagKey<Item> FLASHES = TagKey.create(Registries.ITEM, Exposure.resource("flashes"));
+            public static final TagKey<Item> LENSES = TagKey.create(Registries.ITEM, Exposure.resource("lenses"));
             public static final TagKey<Item> FILTERS = TagKey.create(Registries.ITEM, Exposure.resource("filters"));
         }
     }

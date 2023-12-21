@@ -32,8 +32,13 @@ public class ExposureFabric implements ModInitializer {
         ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         ModConfigEvents.reloading(Exposure.ID).register(config -> {
+            Config.reloading(config.getType());
             if (config.getType() == ModConfig.Type.COMMON && FabricLoader.getInstance().isModLoaded("create"))
                 CreateFilmDeveloping.clearCachedData();
+        });
+
+        ModConfigEvents.loading(Exposure.ID).register(config -> {
+            Config.loading(config.getType());
         });
 
         ArgumentTypeRegistry.registerArgumentType(Exposure.resource("shader_location"),

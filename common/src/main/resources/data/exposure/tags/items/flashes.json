@@ -1,0 +1,9 @@
+{
+  "values": [
+    "minecraft:redstone_lamp",
+    {
+      "id": "immersiveengineering:light_bulb",
+      "required": false
+    }
+  ]
+}

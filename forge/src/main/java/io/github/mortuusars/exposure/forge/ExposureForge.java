@@ -26,7 +26,8 @@ public class ExposureForge {
 
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
-        modEventBus.addListener(this::onConfigLoad);
+        modEventBus.addListener(this::onConfigLoading);
+        modEventBus.addListener(this::onConfigReloading);
 
         RegisterImpl.BLOCKS.register(modEventBus);
         RegisterImpl.BLOCK_ENTITY_TYPES.register(modEventBus);
@@ -45,8 +46,15 @@ public class ExposureForge {
         });
     }
 
-    private void onConfigLoad(ModConfigEvent.Reloading event) {
-        if (ModList.get().isLoaded("create"))
+    private void onConfigLoading(ModConfigEvent.Loading event) {
+        Config.loading(event.getConfig().getType());
+        if (event.getConfig().getType() == ModConfig.Type.COMMON && ModList.get().isLoaded("create"))
+            CreateFilmDeveloping.clearCachedData();
+    }
+
+    private void onConfigReloading(ModConfigEvent.Reloading event) {
+        Config.reloading(event.getConfig().getType());
+        if (event.getConfig().getType() == ModConfig.Type.COMMON && ModList.get().isLoaded("create"))
             CreateFilmDeveloping.clearCachedData();
     }
 }

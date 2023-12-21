@@ -77,8 +77,8 @@ public class CameraItem extends Item {
     }
 
     public static final AttachmentType FILM_ATTACHMENT = new AttachmentType("Film", 0, stack -> stack.getItem() instanceof FilmRollItem);
-    public static final AttachmentType FLASH_ATTACHMENT = new AttachmentType("Flash", 1, stack -> stack.is(Items.REDSTONE_LAMP));
-    public static final AttachmentType LENS_ATTACHMENT = new AttachmentType("Lens", 2, stack -> stack.getItem() instanceof SpyglassItem);
+    public static final AttachmentType FLASH_ATTACHMENT = new AttachmentType("Flash", 1, stack -> stack.is(Exposure.Tags.Items.FLASHES));
+    public static final AttachmentType LENS_ATTACHMENT = new AttachmentType("Lens", 2, stack -> stack.is(Exposure.Tags.Items.LENSES));
     public static final AttachmentType FILTER_ATTACHMENT = new AttachmentType("Filter", 3, stack -> stack.is(Exposure.Tags.Items.FILTERS));
     public static final List<AttachmentType> ATTACHMENTS = List.of(
             FILM_ATTACHMENT,
@@ -566,8 +566,11 @@ public class CameraItem extends Item {
     }
 
     public FocalRange getFocalRange(ItemStack cameraStack) {
-        return getAttachment(cameraStack, LENS_ATTACHMENT).isEmpty() ? new FocalRange(18, 55)
-                : new FocalRange(Config.Common.CAMERA_SPYGLASS_SUPERZOOM.get() ? 18 : 55, 200);
+        return getAttachment(cameraStack, LENS_ATTACHMENT).map(FocalRange::fromStack).orElse(getDefaultFocalRange());
+    }
+
+    public FocalRange getDefaultFocalRange() {
+        return FocalRange.getDefault();
     }
 
     @SuppressWarnings("unused")
@@ -662,13 +665,8 @@ public class CameraItem extends Item {
             cameraStack.getOrCreateTag().put(attachmentType.id, attachmentStack.save(new CompoundTag()));
         }
 
-        if (attachmentType == LENS_ATTACHMENT) {
-            float prevZoom = getFocalLength(cameraStack);
-            FocalRange prevFocalRange = getFocalRange(cameraStack);
-            FocalRange newFocalRange = attachmentStack.isEmpty() ? FocalRange.SHORT : FocalRange.LONG;
-            float adjustedZoom = Mth.map(prevZoom, prevFocalRange.min(), prevFocalRange.max(), newFocalRange.min(), newFocalRange.max());
-            setZoom(cameraStack, adjustedZoom);
-        }
+        if (attachmentType == LENS_ATTACHMENT)
+            setZoom(cameraStack, getFocalRange(cameraStack).min());
     }
 
     // ---
