@@ -58,23 +58,21 @@ repositories {
 }
 
 dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    // Remove the next line if you don't want to depend on the API
+    forge "net.minecraftforge:forge:${forge_version}"
+    // Exposure does not depend on Architectury API:
     // modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
 
-    // compile against the JEI API but do not include it at runtime
-//    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    // at runtime, use the full JEI jar for Fabric
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+//    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
+    modRuntimeOnly("me.shedaniel:RoughlyEnoughItems-forge:${rei_version}")
 
-    modCompileOnly("com.simibubi.create:create-1.20.1:0.5.1.f-26:slim") { transitive = false }
-    modCompileOnly("com.jozufozu.flywheel:flywheel-forge-1.20.1:0.6.10-7")
-    modCompileOnly("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
+    modCompileOnly("com.simibubi.create:create-${create_forge_version}") { transitive = false }
+    modCompileOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
+    modCompileOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
 
-    modRuntimeOnly("com.simibubi.create:create-1.20.1:0.5.1.f-26:slim") { transitive = false }
-    modRuntimeOnly("com.jozufozu.flywheel:flywheel-forge-1.20.1:0.6.10-7")
-    modRuntimeOnly("com.tterrag.registrate:Registrate:MC1.20-1.3.3")
+    modRuntimeOnly("com.simibubi.create:create-${create_forge_version}") { transitive = false }
+    modRuntimeOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
+    modRuntimeOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }

@@ -1,10 +1,7 @@
 package io.github.mortuusars.exposure.fabric;
 
-import com.simibubi.create.Create;
-import com.simibubi.create.content.kinetics.mixer.MechanicalMixerBlockEntity;
 import fuzs.forgeconfigapiport.api.config.v2.ForgeConfigRegistry;
 import fuzs.forgeconfigapiport.api.config.v2.ModConfigEvents;
-import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.command.ExposureCommands;
@@ -27,7 +24,6 @@ public class ExposureFabric implements ModInitializer {
     @Override
     public void onInitialize() {
         Exposure.init();
-
 
         ModConfigEvents.reloading(Exposure.ID).register(config -> {
             Config.reloading(config.getType());
