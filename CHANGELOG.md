@@ -7,7 +7,8 @@ Developing Recipe:
 - Developing can now be done with Create's Spouts. Configurable.
 - Films no longer can be developed with Create's Mechanical Crafter
 
-Misc:
+Misc: 
+- Items can now be extracted from any side of a Lightroom block. And inserted through all but bottom side.
 - Fixed Camera Attachments menu not opening from offhand.
 - Pressing Inventory Key or Esc in thirdperson-back camera mode (when viewfinder is not visible) will now deactivate camera instead of opening inventory or pause menu.
 - Slightly reduced z-fighting of the Hanging Photograph at greater distances.

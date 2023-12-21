@@ -350,9 +350,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
     @Override
     public int @NotNull [] getSlotsForFace(@NotNull Direction face) {
-        if (face == Direction.DOWN)
-            return Lightroom.OUTPUT_SLOTS;
-        return new int[0];
+        return Lightroom.ALL_SLOTS;
     }
 
     @Override
@@ -360,6 +358,11 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         if (direction == Direction.DOWN)
             return false;
         return canPlaceItem(index, itemStack);
+    }
+
+    @Override
+    public boolean canPlaceItem(int index, ItemStack stack) {
+        return  index != Lightroom.RESULT_SLOT && isItemValidForSlot(index, stack) && super.canPlaceItem(index, stack);
     }
 
     @Override

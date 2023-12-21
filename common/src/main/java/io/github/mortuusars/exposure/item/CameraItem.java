@@ -112,16 +112,6 @@ public class CameraItem extends Item {
         return 1000;
     }
 
-//    @Override
-//    public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
-//        return UseAnim.CUSTOM;
-//    }
-//
-//    @Override
-//    public void initializeClient(Consumer<IClientItemExtensions> consumer) {
-//        consumer.accept(CameraItemClient.INSTANCE);
-//    }
-
     @Override
     public void appendHoverText(@NotNull ItemStack stack, @Nullable Level level, @NotNull List<Component> components, @NotNull TooltipFlag isAdvanced) {
         if (Config.Client.CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP.get()) {
@@ -268,25 +258,6 @@ public class CameraItem extends Item {
             deactivate(player, stack);
         }
     }
-
-//    @Override
-//    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-//        return !oldStack.getItem().equals(newStack.getItem());
-//    }
-//
-//    @Override
-//    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
-//        Player player = context.getPlayer();
-//        if (player != null) {
-//            InteractionHand hand = context.getHand();
-//            if (hand == InteractionHand.MAIN_HAND && CameraInHand.getActiveHand(player) == InteractionHand.OFF_HAND)
-//                return InteractionResult.PASS;
-//
-//            return useCamera(player, hand);
-//        }
-//        return InteractionResult.CONSUME; // To not play attack animation.
-//    }
-
 
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {

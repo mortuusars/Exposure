@@ -9,6 +9,7 @@
   ],
   "mixins": [
     "CameraItemForgeMixin",
+    "LightroomBlockEntityForgeMixin",
     "create.SpoutDevelopingMixin"
   ],
   "injectors": {

@@ -40,6 +40,11 @@ public abstract class CameraItemForgeMixin extends Item implements IForgeItem {
     }
 
     @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        return !oldStack.getItem().equals(newStack.getItem());
+    }
+
+    @Override
     public @NotNull UseAnim getUseAnimation(@NotNull ItemStack stack) {
         return UseAnim.CUSTOM;
     }
