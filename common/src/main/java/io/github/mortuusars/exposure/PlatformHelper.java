@@ -21,12 +21,12 @@ public class PlatformHelper {
     }
 
     @ExpectPlatform
-    public static List<String> getDefaultSpoutDevelopmentColorSteps() {
+    public static List<String> getDefaultSpoutDevelopmentColorSequence() {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static List<String> getDefaultSpoutDevelopmentBWSteps() {
+    public static List<String> getDefaultSpoutDevelopmentBWSequence() {
         throw new AssertionError();
     }
 }

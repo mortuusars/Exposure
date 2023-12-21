@@ -98,8 +98,7 @@ public class FilmRollItem extends Item implements IFilmItem {
         // Create compat:
         int developingStep = stack.getTag() != null ? stack.getTag().getInt("CurrentDevelopingStep") : 0;
         if (Config.Common.CREATE_SPOUT_DEVELOPING_ENABLED.get() && developingStep > 0) {
-            List<String> totalSteps = getType() == FilmType.COLOR ? Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_COLOR.get() :
-                    Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_BW.get();
+            List<? extends String> totalSteps = Config.Common.spoutDevelopingSequence(getType()).get();
 
             MutableComponent stepsComponent = Component.literal("");
 

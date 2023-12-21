@@ -25,7 +25,7 @@ public class PlatformHelperImpl {
         ExtendedScreenHandlerFactory extendedScreenHandlerFactory = new ExtendedScreenHandlerFactory() {
             @Nullable
             @Override
-            public AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+            public AbstractContainerMenu createMenu(int i, @NotNull Inventory inventory, @NotNull Player player) {
                 return menuProvider.createMenu(i, inventory, player);
             }
 
@@ -43,14 +43,14 @@ public class PlatformHelperImpl {
         serverPlayer.openMenu(extendedScreenHandlerFactory);
     }
 
-    public static List<String> getDefaultSpoutDevelopmentColorSteps() {
+    public static List<String> getDefaultSpoutDevelopmentColorSequence() {
         return List.of(
                 "{FluidName:\"create:potion\",Amount:27000,Tag:{Potion:\"minecraft:awkward\"}}",
                 "{FluidName:\"create:potion\",Amount:27000,Tag:{Potion:\"minecraft:thick\"}}",
                 "{FluidName:\"create:potion\",Amount:27000,Tag:{Potion:\"minecraft:mundane\"}}");
     }
 
-    public static List<String> getDefaultSpoutDevelopmentBWSteps() {
+    public static List<String> getDefaultSpoutDevelopmentBWSequence() {
         return List.of(
                 "{FluidName:\"minecraft:water\",Amount:27000}");
     }

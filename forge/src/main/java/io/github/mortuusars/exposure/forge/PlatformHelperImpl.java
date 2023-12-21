@@ -19,14 +19,14 @@ public class PlatformHelperImpl {
         NetworkHooks.openScreen(serverPlayer, menuProvider, extraDataWriter);
     }
 
-    public static List<String> getDefaultSpoutDevelopmentColorSteps() {
+    public static List<String> getDefaultSpoutDevelopmentColorSequence() {
         return List.of(
                 "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:awkward\"}}",
                 "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:thick\"}}",
                 "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:mundane\"}}");
     }
 
-    public static List<String> getDefaultSpoutDevelopmentBWSteps() {
+    public static List<String> getDefaultSpoutDevelopmentBWSequence() {
         return List.of(
                 "{FluidName:\"minecraft:water\",Amount:250}");
     }

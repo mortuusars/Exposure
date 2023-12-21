@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure;
 
+import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 import java.awt.*;
@@ -20,8 +21,8 @@ public class Config {
 
         // Compat
         public static final ForgeConfigSpec.BooleanValue CREATE_SPOUT_DEVELOPING_ENABLED;
-        public static final ForgeConfigSpec.ConfigValue<List<String>> CREATE_SPOUT_DEVELOPING_STEPS_COLOR;
-        public static final ForgeConfigSpec.ConfigValue<List<String>> CREATE_SPOUT_DEVELOPING_STEPS_BW;
+        public static final ForgeConfigSpec.ConfigValue<List<? extends String>> CREATE_SPOUT_DEVELOPING_SEQUENCE_COLOR;
+        public static final ForgeConfigSpec.ConfigValue<List<? extends String>> CREATE_SPOUT_DEVELOPING_SEQUENCE_BW;
 
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
@@ -58,12 +59,12 @@ public class Config {
                         CREATE_SPOUT_DEVELOPING_ENABLED = builder
                                 .comment("Film can be developed with create Spout Filling. Default: true")
                                 .define("Enabled", true);
-                        CREATE_SPOUT_DEVELOPING_STEPS_COLOR = builder
-                                .comment("Fluid spouting steps required to develop color film.")
-                                .define("ColorFilmSteps", PlatformHelper.getDefaultSpoutDevelopmentColorSteps());
-                        CREATE_SPOUT_DEVELOPING_STEPS_BW = builder
-                                .comment("Fluid spouting steps required to develop black and white film.")
-                                .define("BlackAndWhiteFilmSteps", PlatformHelper.getDefaultSpoutDevelopmentBWSteps());
+                        CREATE_SPOUT_DEVELOPING_SEQUENCE_COLOR = builder
+                                .comment("Fluid spouting sequence required to develop color film.")
+                                .defineList("ColorFilmSequence", PlatformHelper.getDefaultSpoutDevelopmentColorSequence(), o -> true);
+                        CREATE_SPOUT_DEVELOPING_SEQUENCE_BW = builder
+                                .comment("Fluid spouting sequence required to develop black and white film.")
+                                .defineList("BlackAndWhiteFilmSequence", PlatformHelper.getDefaultSpoutDevelopmentBWSequence(), o -> true);
                     }
                     builder.pop();
                 }
@@ -72,6 +73,11 @@ public class Config {
             builder.pop();
 
             SPEC = builder.build();
+
+        }
+
+        public static ForgeConfigSpec.ConfigValue<List<? extends String>> spoutDevelopingSequence(FilmType filmType) {
+            return filmType == FilmType.COLOR ? CREATE_SPOUT_DEVELOPING_SEQUENCE_COLOR : CREATE_SPOUT_DEVELOPING_SEQUENCE_BW;
         }
     }
 

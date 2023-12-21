@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.forge.event;
 
-import io.github.mortuusars.exposure.CommonFunctionality;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.command.ExposureCommands;
 import io.github.mortuusars.exposure.command.ShaderCommand;
@@ -12,7 +11,6 @@ import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.item.ItemTossEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
@@ -60,10 +58,5 @@ public class CommonEvents {
             ShaderCommand.register(event.getDispatcher());
             TestCommand.register(event.getDispatcher());
         }
-
-//        @SubscribeEvent
-//        public static void onItemToss(ItemTossEvent event) {
-//            CommonFunctionality.handleItemDrop(event.getPlayer(), event.getEntity());
-//        }
     }
 }

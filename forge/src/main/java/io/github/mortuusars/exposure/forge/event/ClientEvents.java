@@ -69,21 +69,6 @@ public class ClientEvents {
                 event.setCanceled(true);
         }
 
-//        @SubscribeEvent
-//        public static void renderHand(RenderHandEvent event) {
-//            if (ViewfinderClient.isLookingThrough())
-//                event.setCanceled(true);
-//        }
-
-//        @SubscribeEvent
-//        public static void onGuiOpen(ScreenEvent.Opening event) {
-//            if (ViewfinderClient.isOpen() && !(event.getNewScreen() instanceof ViewfinderControlsScreen)) {
-//                LocalPlayer player = Minecraft.getInstance().player;
-//                if (player != null)
-//                    CameraInHand.deactivate(player);
-//            }
-//        }
-
         @SubscribeEvent
         public static void mouseScroll(InputEvent.MouseScrollingEvent event) {
             if (ViewfinderClient.handleMouseScroll(event.getScrollDelta() > 0d ? ZoomDirection.IN : ZoomDirection.OUT))

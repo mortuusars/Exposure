@@ -24,9 +24,7 @@ public class CreateFilmDeveloping {
         if (cache.containsKey(filmType))
             return cache.get(filmType);
 
-        List<String> steps = filmType == FilmType.COLOR ? Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_COLOR.get()
-                : Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_BW.get();
-
+        List<? extends String> steps = Config.Common.spoutDevelopingSequence(filmType).get();
         List<FluidStack> fluidStacks = loadStacks(steps);
 
         if (!fluidStacks.isEmpty()) {
@@ -35,9 +33,7 @@ public class CreateFilmDeveloping {
         } else {
             LogUtils.getLogger().warn("Create Film Developing should have at least one step. Defaults will be loaded.");
 
-            List<String> defaultSteps = filmType == FilmType.COLOR ? Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_COLOR.getDefault()
-                    : Config.Common.CREATE_SPOUT_DEVELOPING_STEPS_BW.getDefault();
-
+            List<? extends String> defaultSteps = Config.Common.spoutDevelopingSequence(filmType).getDefault();
             List<FluidStack> defaultFluidStacks = loadStacks(defaultSteps);
 
             if (defaultFluidStacks.isEmpty())
@@ -110,7 +106,7 @@ public class CreateFilmDeveloping {
         cache.clear();
     }
 
-    private static List<FluidStack> loadStacks(List<String> strings) {
+    private static List<FluidStack> loadStacks(List<? extends String> strings) {
         List<FluidStack> stacks = new ArrayList<>();
 
         for (String step : strings) {
