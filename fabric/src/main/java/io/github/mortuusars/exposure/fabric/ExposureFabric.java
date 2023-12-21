@@ -28,18 +28,20 @@ public class ExposureFabric implements ModInitializer {
     public void onInitialize() {
         Exposure.init();
 
-        ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
-        ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         ModConfigEvents.reloading(Exposure.ID).register(config -> {
             Config.reloading(config.getType());
-            if (config.getType() == ModConfig.Type.COMMON && FabricLoader.getInstance().isModLoaded("create"))
+            if (config.getType() == ModConfig.Type.COMMON && FabricLoader.getInstance().isModLoaded("create")) {
                 CreateFilmDeveloping.clearCachedData();
+            }
         });
 
         ModConfigEvents.loading(Exposure.ID).register(config -> {
             Config.loading(config.getType());
         });
+
+        ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
+        ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         ArgumentTypeRegistry.registerArgumentType(Exposure.resource("shader_location"),
                 ShaderLocationArgument.class, SingletonArgumentInfo.contextFree(ShaderLocationArgument::new));

@@ -145,6 +145,9 @@ public class Config {
                 Pair<Item, FocalRange> lens = parseLensFocalRange(value);
                 CAMERA_LENSES.put(lens.getFirst(), lens.getSecond());
             }
+
+            LogUtils.getLogger().info("Exposure: Config updated.\n"
+                    + "Camera Lenses: " + CAMERA_LENSES.toString());
         }
     }
 

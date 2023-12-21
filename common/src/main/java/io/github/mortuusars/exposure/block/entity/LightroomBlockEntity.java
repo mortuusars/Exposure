@@ -362,7 +362,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
     @Override
     public boolean canPlaceItem(int index, ItemStack stack) {
-        return  index != Lightroom.RESULT_SLOT && isItemValidForSlot(index, stack) && super.canPlaceItem(index, stack);
+        return index != Lightroom.RESULT_SLOT && isItemValidForSlot(index, stack) && super.canPlaceItem(index, stack);
     }
 
     @Override
