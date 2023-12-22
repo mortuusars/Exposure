@@ -1,4 +1,4 @@
-### 1.2.0 - 
+### 1.2.0 - 2023-12-22
 - Added `exposure:flashes` and `exposure:lenses` tags, allowing customization of items that can be attached to the camera. 
 - Added Focal Length config options, allowing to configure default camera range and range per specific lens.
 
@@ -8,6 +8,8 @@ Developing Recipe:
 - Films no longer can be developed with Create's Mechanical Crafter
 
 Misc: 
+- Added zh_cn localization provided by 'IwasConfused'
+- When JEI is not present, tooltips will be shown describing Developing and Photograph Copying recipes.
 - Items can now be extracted from any side of a Lightroom block. And inserted through all but bottom side.
 - Fixed Camera Attachments menu not opening from offhand.
 - Pressing Inventory Key or Esc in thirdperson-back camera mode (when viewfinder is not visible) will now deactivate camera instead of opening inventory or pause menu.
