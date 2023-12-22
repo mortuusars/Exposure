@@ -109,6 +109,7 @@ shadowJar {
 }
 
 remapJar {
+    archiveClassifier = "forge"
     input.set shadowJar.archiveFile
     dependsOn shadowJar
 }

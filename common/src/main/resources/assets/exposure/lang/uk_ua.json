@@ -1,4 +1,6 @@
 {
+  "tooltip.exposure.hold_for_details": "§8Утримуйте [§7Shift§8] для подробиць",
+
   "block.exposure.lightroom": "Лайтрум",
 
   "item.exposure.camera": "Фотокамера",
@@ -6,8 +8,11 @@
   "item.exposure.camera.camera_attachments.fail.shutter_open": "Неможливо розібрати фотокамеру, коли затвор відкритий.",
   "item.exposure.black_and_white_film": "Чорно-біла плівка",
   "item.exposure.color_film": "Кольорова плівка",
+
+  "item.exposure.developed_film.tooltip.frame_count": "Кадри: %s",
   "item.exposure.developed_black_and_white_film": "Проявлена чорно-біла плівка",
   "item.exposure.developed_color_film": "Проявлена кольорова плівка",
+
   "item.exposure.photograph": "Фотографія",
   "item.exposure.photograph.photographer_tooltip": "Автор: %s",
   "item.exposure.photograph.generation.0": "Оригінал",
@@ -16,11 +21,12 @@
   "item.exposure.photograph.generation.3": "Потерта",
   "item.exposure.photograph.message.no_data": "Папір зовсім чистий. На ньому нічого немає, навіть якщо колись було.",
   "item.exposure.stacked_photographs": "Фотографії",
+  "item.exposure.photograph.tooltip.details.copy": "Копіюється за допомогою крафту з:",
 
   "item.exposure.film_roll.tooltip.frame_count": "%s/%s",
   "item.exposure.film_roll.tooltip.frame_size": "Розмір: %sмм",
   "item.exposure.film_roll.tooltip.developing_step": "Проявка: %s",
-  "item.exposure.developed_film.tooltip.frame_count": "Кадри: %s",
+  "item.exposure.film_roll.tooltip.details.develop": "Проявляється за допомогою крафту з:",
 
   "entity.exposure.photograph": "Фотографія",
 

@@ -33,7 +33,7 @@ allprojects {
     apply plugin: "maven-publish"
 
     base {
-        archivesName = rootProject.mod_id
+        archivesName = "${mod_id}-${minecraft_version}"
     }
 
     version = rootProject.mod_version
