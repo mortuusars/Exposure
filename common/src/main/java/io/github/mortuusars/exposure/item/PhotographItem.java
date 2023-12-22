@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
@@ -118,6 +119,10 @@ public class PhotographItem extends Item {
                         .withStyle(ChatFormatting.GRAY));
             }
 
+            if (generation < 2 && !PlatformHelper.isModLoaded("jei") && Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
+                ClientGUI.addPhotographCopyingTooltip(stack, level, tooltipComponents, isAdvanced);
+            }
+
             if (isAdvanced.isAdvanced()) {
                 @Nullable Either<String, ResourceLocation> idOrTexture = getIdOrTexture(stack);
                 if (idOrTexture != null) {
@@ -125,6 +130,7 @@ public class PhotographItem extends Item {
                     tooltipComponents.add(Component.literal(text).withStyle(ChatFormatting.DARK_GRAY));
                 }
             }
+
         }
     }
 

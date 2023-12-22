@@ -1,6 +1,8 @@
 package io.github.mortuusars.exposure.fabric;
 
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.impl.FabricLoaderImpl;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,5 +55,9 @@ public class PlatformHelperImpl {
     public static List<String> getDefaultSpoutDevelopmentBWSequence() {
         return List.of(
                 "{FluidName:\"minecraft:water\",Amount:27000}");
+    }
+
+    public static boolean isModLoaded(String modId) {
+        return FabricLoader.getInstance().isModLoaded(modId);
     }
 }

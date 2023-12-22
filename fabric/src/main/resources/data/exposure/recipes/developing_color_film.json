@@ -16,14 +16,14 @@
       "base": {
         "item": "minecraft:potion"
       },
-      "nbt": "{Potion:\"minecraft:mundane\"}"
+      "nbt": "{Potion:\"minecraft:thick\"}"
     },
     {
       "fabric:type": "fabric:nbt",
       "base": {
         "item": "minecraft:potion"
       },
-      "nbt": "{Potion:\"minecraft:thick\"}"
+      "nbt": "{Potion:\"minecraft:mundane\"}"
     }
   ],
   "result": {

@@ -7,17 +7,17 @@
     {
       "type": "forge:partial_nbt",
       "item": "minecraft:potion",
-      "nbt": "{Potion:\"minecraft:mundane\"}"
-    },
-    {
-      "type": "forge:partial_nbt",
-      "item": "minecraft:potion",
       "nbt": "{Potion:\"minecraft:awkward\"}"
     },
     {
       "type": "forge:partial_nbt",
       "item": "minecraft:potion",
       "nbt": "{Potion:\"minecraft:thick\"}"
+    },
+    {
+      "type": "forge:partial_nbt",
+      "item": "minecraft:potion",
+      "nbt": "{Potion:\"minecraft:mundane\"}"
     }
   ],
   "result": {

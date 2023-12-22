@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.network.NetworkHooks;
 
 import java.util.List;
@@ -29,5 +30,9 @@ public class PlatformHelperImpl {
     public static List<String> getDefaultSpoutDevelopmentBWSequence() {
         return List.of(
                 "{FluidName:\"minecraft:water\",Amount:250}");
+    }
+
+    public static boolean isModLoaded(String modId) {
+        return ModList.get().isLoaded(modId);
     }
 }

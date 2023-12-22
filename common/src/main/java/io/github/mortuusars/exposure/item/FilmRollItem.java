@@ -1,7 +1,9 @@
 package io.github.mortuusars.exposure.item;
 
 import io.github.mortuusars.exposure.Config;
+import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -95,6 +97,7 @@ public class FilmRollItem extends Item implements IFilmItem {
                             .withStyle(ChatFormatting.GRAY));
         }
 
+
         // Create compat:
         int developingStep = stack.getTag() != null ? stack.getTag().getInt("CurrentDevelopingStep") : 0;
         if (Config.Common.CREATE_SPOUT_DEVELOPING_ENABLED.get() && developingStep > 0) {
@@ -112,6 +115,10 @@ public class FilmRollItem extends Item implements IFilmItem {
 
             tooltipComponents.add(Component.translatable("item.exposure.film_roll.tooltip.developing_step", stepsComponent)
                     .withStyle(ChatFormatting.GOLD));
+        }
+
+        if (exposedFrames > 0 && !PlatformHelper.isModLoaded("jei") && Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
+            ClientGUI.addFilmRollDevelopingTooltip(stack, level, tooltipComponents, isAdvanced);
         }
     }
 }

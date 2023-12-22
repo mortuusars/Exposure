@@ -29,4 +29,9 @@ public class PlatformHelper {
     public static List<String> getDefaultSpoutDevelopmentBWSequence() {
         throw new AssertionError();
     }
+
+    @ExpectPlatform
+    public static boolean isModLoaded(String modId) {
+        throw new AssertionError();
+    }
 }

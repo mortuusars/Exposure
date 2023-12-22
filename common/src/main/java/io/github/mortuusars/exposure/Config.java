@@ -155,6 +155,7 @@ public class Config {
         public static final ForgeConfigSpec SPEC;
 
         // UI
+        public static final ForgeConfigSpec.BooleanValue RECIPE_TOOLTIPS_WITHOUT_JEI;
         public static final ForgeConfigSpec.BooleanValue CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP;
         public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP;
         public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
@@ -177,6 +178,11 @@ public class Config {
 
             {
                 builder.push("UI");
+
+                RECIPE_TOOLTIPS_WITHOUT_JEI = builder
+                        .comment("Tooltips for Developing Film Rolls and Copying Photographs will be shown on Film Rolls and Photographs respectively, describing the crafting recipe. ",
+                                "Only when JEI is not installed. (Only JEI shows these recipes, not REI or EMI)")
+                        .define("RecipeTooltipsWithoutJei", true);
 
                 CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP = builder
                         .comment("'Use while sneaking to open' message will be shown in Camera item tooltip.")
