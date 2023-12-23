@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(ItemRenderer.class)
 public abstract class ItemRendererMixin {
-
     @ModifyVariable(method = "render", at = @At("HEAD"), argsOnly = true)
     BakedModel renderItem(BakedModel model, ItemStack itemStack, ItemDisplayContext displayContext, boolean leftHand,
                           PoseStack poseStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay) {

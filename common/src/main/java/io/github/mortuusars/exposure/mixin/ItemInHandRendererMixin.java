@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ItemInHandRenderer.class)
-public abstract class PhotographInHandRendererMixin {
+public abstract class ItemInHandRendererMixin {
     @Shadow
     private ItemStack mainHandItem;
     @Shadow
@@ -40,6 +40,7 @@ public abstract class PhotographInHandRendererMixin {
                                   float swingProgress, ItemStack stack, float equipProgress, PoseStack poseStack,
                                   MultiBufferSource buffer, int combinedLight, CallbackInfo ci, boolean isMainHand, HumanoidArm arm) {
         if (ViewfinderClient.isLookingThrough()) {
+            poseStack.popPose();
             ci.cancel();
             return;
         }

@@ -1,3 +1,6 @@
+### 1.2.1 - 2023-12-24
+- Fixed water not rendering properly with shaders when looking through Viewfinder.
+
 ### 1.2.0 - 2023-12-22
 - Added `exposure:flashes` and `exposure:lenses` tags, allowing customization of items that can be attached to the camera. 
 - Added Focal Length config options, allowing to configure default camera range and range per specific lens.

@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
-public abstract class HideCrosshairMixin {
+public abstract class GuiMixin {
     @Inject(method = "render", at = @At(value = "HEAD"), cancellable = true)
     private void renderGui(GuiGraphics guiGraphics, float partialTick, CallbackInfo ci) {
         if (ViewfinderClient.isLookingThrough())
