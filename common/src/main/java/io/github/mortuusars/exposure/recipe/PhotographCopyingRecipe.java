@@ -64,7 +64,7 @@ public class PhotographCopyingRecipe extends AbstractNbtTransferringRecipe {
     public static class Serializer implements RecipeSerializer<PhotographCopyingRecipe> {
         @Override
         public @NotNull PhotographCopyingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            Ingredient photographIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "photograph"));
+            Ingredient photographIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(serializedRecipe, "photograph"));
             NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
 

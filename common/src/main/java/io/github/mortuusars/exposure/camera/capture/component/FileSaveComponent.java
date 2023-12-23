@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.util.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.MaterialColor;
 import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
@@ -52,7 +52,7 @@ public class FileSaveComponent implements ICaptureComponent {
 
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                int bgr = MapColor.getColorFromPackedId(MapColorPixels[x + y * width]); // Mojang returns BGR color
+                int bgr = MaterialColor.getColorFromPackedId(MapColorPixels[x + y * width]); // Mojang returns BGR color
                 int rgb = ColorUtils.BGRtoRGB(bgr);
                 img.setRGB(x, y, rgb);
             }

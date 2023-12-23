@@ -44,7 +44,7 @@ public class FilmDevelopingRecipe extends AbstractNbtTransferringRecipe {
     public static class Serializer implements RecipeSerializer<FilmDevelopingRecipe> {
         @Override
         public @NotNull FilmDevelopingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            Ingredient filmIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "film"));
+            Ingredient filmIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(serializedRecipe, "film"));
             NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
 

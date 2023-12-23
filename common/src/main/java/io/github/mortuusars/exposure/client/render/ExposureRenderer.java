@@ -4,7 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Axis;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import net.minecraft.client.Minecraft;
@@ -16,7 +17,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class ExposureRenderer implements AutoCloseable {
 
         if (renderBackside) {
             poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(180));
+            poseStack.mulPose(Vector3f.YP.rotationDegrees(180));
             poseStack.translate(-SIZE, 0, -0.5);
 
             renderTexture(PHOTOGRAPH_TEXTURE, poseStack, bufferSource,

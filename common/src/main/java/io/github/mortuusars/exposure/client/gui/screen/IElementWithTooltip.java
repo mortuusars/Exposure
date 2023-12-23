@@ -1,8 +1,8 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
-import net.minecraft.client.gui.GuiGraphics;
+import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
 
 public interface IElementWithTooltip {
-    void renderToolTip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY);
+    void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY);
 }

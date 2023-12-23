@@ -1,13 +1,14 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FlashMode;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -52,17 +53,17 @@ public class FlashModeButton extends CycleButton {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         // Icon
-        guiGraphics.blit(Exposure.resource("textures/gui/viewfinder/icon/flash_mode/" + flashModes.get(currentIndex).getId() + ".png"),
-                getX(), getY() + 4, 0, 0, 0, 15, 14, 15, 14);
+        RenderSystem.setShaderTexture(0, Exposure.resource("textures/gui/viewfinder/icon/flash_mode/" + flashModes.get(currentIndex).getId() + ".png"));
+        blit(poseStack, x, y + 4, 0, 0, 0, 15, 14, 15, 14);
     }
 
     @Override
-    public void renderToolTip(@NotNull GuiGraphics pGuiGraphics, int mouseX, int mouseY) {
-        pGuiGraphics.renderTooltip(Minecraft.getInstance().font, List.of(Component.translatable("gui.exposure.viewfinder.flash_mode.tooltip"),
+    public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
+        screen.renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.viewfinder.flash_mode.tooltip"),
                 ((MutableComponent) getMessage()).withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
     }
 

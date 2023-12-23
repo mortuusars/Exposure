@@ -4,7 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.FocalRange;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -125,7 +125,7 @@ public class Config {
                 throw new IllegalStateException(value + " is not a valid lens property. Exactly two parts, separated by a comma, are required.");
 
             ResourceLocation id = new ResourceLocation(split[0]);
-            Item item = BuiltInRegistries.ITEM.get(id);
+            Item item = Registry.ITEM.get(id);
 
             if (item == Items.AIR)
                 throw new IllegalStateException(item + " is not a valid item for lens property. Value: " + value);

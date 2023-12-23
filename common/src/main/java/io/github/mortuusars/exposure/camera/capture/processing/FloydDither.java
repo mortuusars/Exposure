@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.camera.capture.processing;
 
 import net.minecraft.util.Mth;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.MaterialColor;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -15,7 +15,7 @@ public class FloydDither {
         int width = image.getWidth();
         int height = image.getHeight();
         int[][] pixels = convertToPixelArray(image);
-        MapColor[] mapColors = Arrays.stream(getMapColors()).filter(Objects::nonNull).toArray(MapColor[]::new);
+        MaterialColor[] mapColors = Arrays.stream(getMaterialColors()).filter(Objects::nonNull).toArray(MaterialColor[]::new);
 
         byte[] bytes = new byte[width * height];
 
@@ -29,7 +29,7 @@ public class FloydDither {
 
         return bytes;
     }
-    private static int floydDither(MapColor[] mapColors, int[][] pixels, int x, int y, Color imageColor) {
+    private static int floydDither(MaterialColor[] mapColors, int[][] pixels, int x, int y, Color imageColor) {
         int colorIndex = nearestColor(mapColors, imageColor);
         Color palletedColor = mapColorToRGBColor(mapColors, colorIndex);
         NegatableColor error = new NegatableColor(imageColor.getRed() - palletedColor.getRed(),
@@ -61,17 +61,17 @@ public class FloydDither {
         return new Color(pR, pG, pB, pixelColor.getAlpha()).getRGB();
     }
 
-    private static Color mapColorToRGBColor(MapColor[] colors, int color) {
+    private static Color mapColorToRGBColor(MaterialColor[] colors, int color) {
         Color mcColor = new Color(colors[color >> 2].col);
         double[] mcColorVec = { mcColor.getRed(), mcColor.getGreen(), mcColor.getBlue() };
         double coeff = shadeCoeffs[color & 3];
         return new Color((int) (mcColorVec[0] * coeff), (int) (mcColorVec[1] * coeff), (int) (mcColorVec[2] * coeff));
     }
 
-    public static MapColor[] getMapColors(){
-        MapColor[] colors = new MapColor[64];
+    public static MaterialColor[] getMaterialColors(){
+        MaterialColor[] colors = new MaterialColor[64];
         for (int i = 0; i<= 63; i++){
-            colors[i] = MapColor.byId(i);
+            colors[i] = MaterialColor.byId(i);
         }
         return colors;
     }
@@ -83,7 +83,7 @@ public class FloydDither {
         return new double[] { color[0] * coeff, color[1] * coeff, color[2] * coeff };
     }
 
-    private static int nearestColor(MapColor[] colors, Color imageColor) {
+    private static int nearestColor(MaterialColor[] colors, Color imageColor) {
         double[] imageVec = { (double) imageColor.getRed() / 255.0, (double) imageColor.getGreen() / 255.0,
                 (double) imageColor.getBlue() / 255.0 };
         int best_color = 0;

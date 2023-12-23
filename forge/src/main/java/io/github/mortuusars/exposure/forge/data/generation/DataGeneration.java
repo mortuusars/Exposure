@@ -16,17 +16,17 @@ public class DataGeneration
 {
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
-        DataGenerator generator = event.getGenerator();
-        ExistingFileHelper helper = event.getExistingFileHelper();
-        CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
-
-        generator.addProvider(event.includeServer(), new AdvancementsProvider(generator, provider, helper));
-        generator.addProvider(event.includeServer(), new LootTablesProvider(generator));
-        generator.addProvider(event.includeServer(), new RecipesProvider(generator));
-        BlockTagsProvider blockTags = new BlockTagsProvider(generator, provider, helper);
-        generator.addProvider(event.includeServer(), blockTags);
-        generator.addProvider(event.includeServer(), new ItemTagsProvider(generator, provider, blockTags, helper));
-
-        generator.addProvider(event.includeClient(), new SoundsProvider(generator, helper));
+//        DataGenerator generator = event.getGenerator();
+//        ExistingFileHelper helper = event.getExistingFileHelper();
+//        CompletableFuture<HolderLookup.Provider> provider = event.getLookupProvider();
+//
+//        generator.addProvider(event.includeServer(), new AdvancementsProvider(generator, provider, helper));
+//        generator.addProvider(event.includeServer(), new LootTablesProvider(generator));
+//        generator.addProvider(event.includeServer(), new RecipesProvider(generator));
+//        BlockTagsProvider blockTags = new BlockTagsProvider(generator, provider, helper);
+//        generator.addProvider(event.includeServer(), blockTags);
+//        generator.addProvider(event.includeServer(), new ItemTagsProvider(generator, provider, blockTags, helper));
+//
+//        generator.addProvider(event.includeClient(), new SoundsProvider(generator, helper));
     }
 }

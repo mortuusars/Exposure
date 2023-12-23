@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
 import net.minecraft.client.renderer.GameRenderer;
-import org.joml.Matrix4f;
 
 public class GuiUtil {
     public static void blit(PoseStack poseStack, float minX, float maxX, float minY, float maxY, float blitOffset, float minU, float maxU, float minV, float maxV) {

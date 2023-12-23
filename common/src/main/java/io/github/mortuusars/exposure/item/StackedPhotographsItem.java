@@ -241,7 +241,7 @@ public class StackedPhotographsItem extends Item {
         if (itemInHand.getItem() != this || getPhotographsCount(itemInHand) == 0)
             return InteractionResult.FAIL;
 
-        if (player == null || player.level().isOutsideBuildHeight(resultPos) || !player.mayUseItemAt(resultPos, direction, itemInHand))
+        if (player == null || player.getLevel().isOutsideBuildHeight(resultPos) || !player.mayUseItemAt(resultPos, direction, itemInHand))
             return InteractionResult.FAIL;
 
         if (player.isSecondaryUseActive()) {
@@ -317,8 +317,8 @@ public class StackedPhotographsItem extends Item {
         ItemAndStack<PhotographItem> topPhotograph = removeTopPhotograph(stack);
         addPhotographToBottom(stack, topPhotograph.getStack());
         if (player != null) {
-            player.level().playSound(player, player, Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 0.6f,
-                player.level().getRandom().nextFloat() * 0.2f + 1.2f);
+            player.getLevel().playSound(player, player, Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), SoundSource.PLAYERS, 0.6f,
+                player.getLevel().getRandom().nextFloat() * 0.2f + 1.2f);
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         }
 
@@ -326,14 +326,14 @@ public class StackedPhotographsItem extends Item {
     }
 
     public static void playAddSoundClientside(Player player) {
-        if (player.level().isClientSide)
+        if (player.getLevel().isClientSide)
             player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f,
-                    player.level().getRandom().nextFloat() * 0.2f + 1.2f);
+                    player.getLevel().getRandom().nextFloat() * 0.2f + 1.2f);
     }
 
     public static void playRemoveSoundClientside(Player player) {
-        if (player.level().isClientSide)
+        if (player.getLevel().isClientSide)
             player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.75f,
-                    player.level().getRandom().nextFloat() * 0.2f + 0.75f);
+                    player.getLevel().getRandom().nextFloat() * 0.2f + 0.75f);
     }
 }

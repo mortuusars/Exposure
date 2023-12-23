@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.data.storage.ExposureSavedData;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.MaterialColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,7 +53,7 @@ public class ExposureImage {
 
     public int getPixelABGR(int x, int y) {
         if (exposureData != null) {
-            return MapColor.getColorFromPackedId(exposureData.getPixel(x, y));
+            return MaterialColor.getColorFromPackedId(exposureData.getPixel(x, y));
         }
         else if (texture != null){
             @Nullable NativeImage image = texture.getImage();

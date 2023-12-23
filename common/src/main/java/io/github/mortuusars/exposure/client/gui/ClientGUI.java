@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.client.gui;
 
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.client.gui.screen.PhotographScreen;
 import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.item.PhotographItem;

@@ -18,7 +18,7 @@ public class CameraFilmFrameExposedTrigger extends SimpleCriterionTrigger<Camera
     }
 
     @Override
-    protected @NotNull TriggerInstance createInstance(JsonObject json, @NotNull ContextAwarePredicate predicate,
+    protected @NotNull TriggerInstance createInstance(JsonObject json, @NotNull EntityPredicate.Composite predicate,
                                                       @NotNull DeserializationContext deserializationContext) {
         LocationPredicate location = LocationPredicate.fromJson(json.get("location"));
         ExposurePredicate exposure = ExposurePredicate.fromJson(json.get("exposure"));
@@ -33,14 +33,14 @@ public class CameraFilmFrameExposedTrigger extends SimpleCriterionTrigger<Camera
         private final LocationPredicate locationPredicate;
         private final ExposurePredicate exposurePredicate;
 
-        public TriggerInstance(ContextAwarePredicate predicate, LocationPredicate locationPredicate, ExposurePredicate exposurePredicate) {
+        public TriggerInstance(EntityPredicate.Composite predicate, LocationPredicate locationPredicate, ExposurePredicate exposurePredicate) {
             super(ID, predicate);
             this.locationPredicate = locationPredicate;
             this.exposurePredicate = exposurePredicate;
         }
 
         public boolean matches(ServerPlayer player, ItemAndStack<CameraItem> camera, CompoundTag frame) {
-            if (!locationPredicate.matches(player.serverLevel(), player.getX(), player.getY(), player.getZ()))
+            if (!locationPredicate.matches(player.getLevel(), player.getX(), player.getY(), player.getZ()))
                 return false;
 
             return exposurePredicate.matches(player, frame);

@@ -141,7 +141,7 @@ public class PhotographItem extends Item {
         BlockPos resultPos = clickedPos.relative(direction);
         Player player = context.getPlayer();
         ItemStack itemStack = context.getItemInHand();
-        if (player == null || player.level().isOutsideBuildHeight(resultPos) || !player.mayUseItemAt(resultPos, direction, itemStack))
+        if (player == null || player.getLevel().isOutsideBuildHeight(resultPos) || !player.mayUseItemAt(resultPos, direction, itemStack))
             return InteractionResult.FAIL;
 
         Level level = context.getLevel();

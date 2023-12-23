@@ -10,7 +10,7 @@ import net.minecraft.world.entity.player.Player;
 
 public class OnePerPlayerSounds {
     public static void play(Player sourcePlayer, SoundEvent soundEvent, SoundSource source, float volume, float pitch) {
-        if (sourcePlayer.level().isClientSide) {
+        if (sourcePlayer.getLevel().isClientSide) {
             OnePerPlayerSoundsClient.play(sourcePlayer, soundEvent, source, volume, pitch);
         }
         else if (sourcePlayer instanceof ServerPlayer serverSourcePlayer) {
@@ -22,7 +22,7 @@ public class OnePerPlayerSounds {
     }
 
     public static void stop(Player sourcePlayer, SoundEvent soundEvent) {
-        if (sourcePlayer.level().isClientSide) {
+        if (sourcePlayer.getLevel().isClientSide) {
             OnePerPlayerSoundsClient.stop(sourcePlayer, soundEvent);
         }
         else if (sourcePlayer instanceof ServerPlayer serverSourcePlayer) {

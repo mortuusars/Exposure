@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.client.renderer.LightTexture;
@@ -34,7 +34,7 @@ public class ItemFramePhotographRenderer {
         poseStack.pushPose();
 
         // Snap to 90 degrees like a map.
-        poseStack.mulPose(Axis.ZP.rotationDegrees(45 * itemFrameEntity.getRotation()));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(45 * itemFrameEntity.getRotation()));
 
         float size = ExposureRenderer.SIZE;
 
@@ -42,7 +42,7 @@ public class ItemFramePhotographRenderer {
         float pixelScale = scale / 16f;
         scale -= pixelScale * 6;
 
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, 10);
 

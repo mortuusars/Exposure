@@ -18,7 +18,7 @@ public class OnePerPlayerSoundsClient {
     private static final Map<Player, List<SoundInstance>> instances = new HashMap<>();
 
     public static void play(Player sourcePlayer, SoundEvent soundEvent, SoundSource source, float volume, float pitch) {
-        Level level = sourcePlayer.level();
+        Level level = sourcePlayer.getLevel();
         stop(sourcePlayer, soundEvent);
 
         SoundInstance soundInstance = createSoundInstance(sourcePlayer, soundEvent, source, volume, pitch, level);
@@ -50,7 +50,7 @@ public class OnePerPlayerSoundsClient {
     @NotNull
     private static SoundInstance createSoundInstance(Player sourcePlayer, SoundEvent soundEvent, SoundSource source, float volume, float pitch, Level level) {
         if (soundEvent == Exposure.SoundEvents.SHUTTER_TICKING.get())
-            return new ShutterTimerTickingSoundInstance(sourcePlayer, soundEvent, source, volume, pitch, sourcePlayer.level().getRandom());
+            return new ShutterTimerTickingSoundInstance(sourcePlayer, soundEvent, source, volume, pitch, sourcePlayer.getLevel().getRandom());
 
         return new EntityBoundSoundInstance(soundEvent, source, volume, pitch, sourcePlayer, level.getRandom().nextLong());
     }

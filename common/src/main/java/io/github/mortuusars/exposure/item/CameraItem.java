@@ -23,8 +23,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Registry;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
@@ -37,7 +37,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -154,7 +153,7 @@ public class CameraItem extends Item {
 
     public void setSelfieModeWithEffects(Player player, ItemStack stack, boolean selfie) {
         setSelfieMode(stack, selfie);
-        player.level().playSound(player, player, Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(),  SoundSource.PLAYERS, 1f, 1.5f);
+        player.getLevel().playSound(player, player, Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(),  SoundSource.PLAYERS, 1f, 1.5f);
     }
 
     public boolean isShutterOpen(ItemStack stack) {
@@ -184,7 +183,7 @@ public class CameraItem extends Item {
     }
 
     public void openShutter(Player player, ItemStack stack, ShutterSpeed shutterSpeed, boolean exposingFrame, boolean flashHasFired) {
-        setShutterOpen(player.level(), stack, shutterSpeed, exposingFrame, flashHasFired);
+        setShutterOpen(player.getLevel(), stack, shutterSpeed, exposingFrame, flashHasFired);
 
         player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
         playCameraSound(player, Exposure.SoundEvents.SHUTTER_OPEN.get(), exposingFrame ? 0.7f : 0.5f,
@@ -200,7 +199,7 @@ public class CameraItem extends Item {
 
         setShutterClosed(stack);
 
-        if (player.level().getGameTime() - closedAtTimestamp < 50) { // Skip effects if shutter "was closed" long ago
+        if (player.getLevel().getGameTime() - closedAtTimestamp < 50) { // Skip effects if shutter "was closed" long ago
             player.gameEvent(GameEvent.ITEM_INTERACT_FINISH);
             player.getCooldowns().addCooldown(this, flashHasFired ? 10 : 2);
             playCameraSound(player, Exposure.SoundEvents.SHUTTER_CLOSE.get(), 0.7f, 1.1f, 0.2f);
@@ -228,7 +227,7 @@ public class CameraItem extends Item {
     public void playCameraSound(Player player, SoundEvent sound, float volume, float pitch, float pitchVariety) {
         if (pitchVariety > 0f)
             pitch = pitch - (pitchVariety / 2f) + (player.getRandom().nextFloat() * pitchVariety);
-        player.level().playSound(player, player, sound, SoundSource.PLAYERS, volume, pitch);
+        player.getLevel().playSound(player, player, sound, SoundSource.PLAYERS, volume, pitch);
     }
 
     @Override
@@ -324,7 +323,7 @@ public class CameraItem extends Item {
         if (isShutterOpen(stack))
             return InteractionResult.FAIL;
 
-        int lightLevel = LevelUtil.getLightLevelAt(player.level(), player.blockPosition());
+        int lightLevel = LevelUtil.getLightLevelAt(player.getLevel(), player.blockPosition());
 
         boolean flashHasFired = shouldFlashFire(player, stack) && tryUseFlash(player, stack);
 
@@ -342,7 +341,7 @@ public class CameraItem extends Item {
     }
 
     public void exposeFrameClientside(Player player, InteractionHand hand, String exposureId, boolean flashHasFired, int lightLevel) {
-        Preconditions.checkState(player.level().isClientSide, "Should only be called on client.");
+        Preconditions.checkState(player.getLevel().isClientSide, "Should only be called on client.");
 
         ItemStack cameraStack = player.getItemInHand(hand);
 
@@ -371,13 +370,13 @@ public class CameraItem extends Item {
         return switch (getFlashMode(cameraStack)) {
             case OFF -> false;
             case ON -> true;
-            case AUTO -> LevelUtil.getLightLevelAt(player.level(), player.blockPosition()) < 8;
+            case AUTO -> LevelUtil.getLightLevelAt(player.getLevel(), player.blockPosition()) < 8;
         };
     }
 
     @SuppressWarnings("unused")
     public boolean tryUseFlash(Player player, ItemStack cameraStack) {
-        Level level = player.level();
+        Level level = player.getLevel();
         BlockPos playerHeadPos = player.blockPosition().above();
         @Nullable BlockPos flashPos = null;
 
@@ -425,7 +424,7 @@ public class CameraItem extends Item {
     }
 
     protected CompoundTag createFrameTag(Player player, ItemStack cameraStack, String exposureId, Capture capture, boolean flash, int lightLevel) {
-        Level level = player.level();
+        Level level = player.getLevel();
 
         CompoundTag tag = new CompoundTag();
 
@@ -442,9 +441,9 @@ public class CameraItem extends Item {
         pos.add(IntTag.valueOf(player.blockPosition().getZ()));
         tag.put(FrameData.POSITION, pos);
 
-        tag.putString(FrameData.DIMENSION, player.level().dimension().location().toString());
+        tag.putString(FrameData.DIMENSION, player.getLevel().dimension().location().toString());
 
-        player.level().getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location)
+        player.getLevel().getBiome(player.blockPosition()).unwrapKey().map(ResourceKey::location)
                 .ifPresent(biome -> tag.putString(FrameData.BIOME, biome.toString()));
 
         int surfaceHeight = level.getHeight(Heightmap.Types.WORLD_SURFACE_WG, player.getBlockX(), player.getBlockZ());
@@ -457,7 +456,7 @@ public class CameraItem extends Item {
         if (player.getBlockY() < surfaceHeight && skyLight < 4)
             tag.putBoolean(FrameData.IN_CAVE, true);
         else if (!player.isUnderWater()){
-            Biome.Precipitation precipitation = level.getBiome(player.blockPosition()).value().getPrecipitationAt(player.blockPosition());
+            Biome.Precipitation precipitation = level.getBiome(player.blockPosition()).value().getPrecipitation();
             if (level.isThundering() && precipitation != Biome.Precipitation.NONE)
                 tag.putString(FrameData.WEATHER, precipitation == Biome.Precipitation.SNOW ? "Snowstorm" : "Thunder");
             else if (level.isRaining() && precipitation != Biome.Precipitation.NONE)
@@ -495,7 +494,7 @@ public class CameraItem extends Item {
     @SuppressWarnings("unused")
     protected CompoundTag createEntityInFrameInfo(Entity entity, Player player, ItemStack cameraStack, Capture capture) {
         CompoundTag tag = new CompoundTag();
-        ResourceLocation entityRL = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+        ResourceLocation entityRL = Registry.ENTITY_TYPE.getKey(entity.getType());
 
         tag.putString("Id", entityRL.toString());
 
@@ -533,7 +532,7 @@ public class CameraItem extends Item {
     protected String createExposureId(Player player) {
         // This method is called only server-side and then gets sent to client in a packet
         // because gameTime is different between client/server, and IDs won't match.
-        return player.getName().getString() + "_" + player.level().getGameTime();
+        return player.getName().getString() + "_" + player.getLevel().getGameTime();
     }
 
     public FocalRange getFocalRange(ItemStack cameraStack) {
@@ -574,8 +573,8 @@ public class CameraItem extends Item {
      */
     @SuppressWarnings("unused")
     public void spawnClientsideFlashEffects(@NotNull Player player, ItemStack cameraStack) {
-        Preconditions.checkState(player.level().isClientSide, "This methods should only be called client-side.");
-        Level level = player.level();
+        Preconditions.checkState(player.getLevel().isClientSide, "This methods should only be called client-side.");
+        Level level = player.getLevel();
         Vec3 pos = player.position();
         Vec3 lookAngle = player.getLookAngle();
         pos = pos.add(0, 1, 0).add(lookAngle.multiply(0.8f, 0.8f, 0.8f));

@@ -21,17 +21,18 @@ dependencies {
     // modApi "dev.architectury:architectury:${rootProject.architectury_version}"
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api:${rei_version}")
-    modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rei_version}")
 
-    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
-        exclude group: 'net.fabricmc.fabric-api'
-    }
+//    modCompileOnlyApi("me.shedaniel:RoughlyEnoughItems-api:${rei_version}")
+//    modCompileOnly("me.shedaniel:RoughlyEnoughItems-default-plugin:${rei_version}")
+
+//    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+//        exclude group: 'net.fabricmc.fabric-api'
+//    }
 
     //modImplementation("curse.maven:roughly-enough-items-310111:4440734")
-    modCompileOnly("curse.maven:architectury-${architectury_cf_version}")
+//    modCompileOnly("curse.maven:architectury-${architectury_cf_version}")
 
-    api "fuzs.forgeconfigapiport:forgeconfigapiport-common:${forge_config_api_version}"
+    compileOnly "net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_version}"
 }
 
 publishing {

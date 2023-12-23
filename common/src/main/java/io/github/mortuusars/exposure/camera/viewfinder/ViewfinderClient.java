@@ -15,7 +15,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -50,7 +50,7 @@ public class ViewfinderClient {
     public static void open() {
         LocalPlayer player = Minecraft.getInstance().player;
         Preconditions.checkState(player != null, "Player should not be null");
-        Preconditions.checkState(player.level().isClientSide(), "This should be called only client-side.");
+        Preconditions.checkState(player.getLevel().isClientSide(), "This should be called only client-side.");
 
         if (isOpen())
             return;
@@ -71,7 +71,7 @@ public class ViewfinderClient {
             if (effect != null)
                 previousShaderEffect = effect.getName();
 
-            String itemName = BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath();
+            String itemName = Registry.ITEM.getKey(stack.getItem()).getPath();
             Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure", "shaders/post/" + itemName + ".json"));
         });
 

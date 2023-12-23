@@ -8,7 +8,7 @@ import io.github.mortuusars.exposure.network.packet.IPacket;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.data.BuiltinRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
@@ -66,18 +66,18 @@ public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) 
     }
 
     private void addStructuresInfo(@NotNull ServerPlayer player) {
-        Map<Structure, LongSet> allStructuresAt = player.serverLevel().structureManager().getAllStructuresAt(player.blockPosition());
+        Map<Structure, LongSet> allStructuresAt = player.getLevel().structureManager().getAllStructuresAt(player.blockPosition());
 
         List<Structure> inside = new ArrayList<>();
 
         for (Structure structure : allStructuresAt.keySet()) {
-            StructureStart structureAt = player.serverLevel().structureManager().getStructureAt(player.blockPosition(), structure);
+            StructureStart structureAt = player.getLevel().structureManager().getStructureAt(player.blockPosition(), structure);
             if (structureAt.isValid()) {
                 inside.add(structure);
             }
         }
 
-        Registry<Structure> structures = player.serverLevel().registryAccess().registryOrThrow(Registries.STRUCTURE);
+        Registry<Structure> structures = player.getLevel().registryAccess().registryOrThrow(BuiltinRegistries.STRUCTURES.key());
         ListTag structuresTag = new ListTag();
 
         for (Structure structure : inside) {

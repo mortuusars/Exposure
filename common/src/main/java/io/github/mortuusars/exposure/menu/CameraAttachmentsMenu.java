@@ -1,17 +1,14 @@
 package io.github.mortuusars.exposure.menu;
 
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
-import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +33,7 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
     public CameraAttachmentsMenu(int containerId, Inventory playerInventory, ItemStack cameraStack) {
         super(Exposure.MenuTypes.CAMERA.get(), containerId);
         player = playerInventory.player;
-        level = playerInventory.player.level();
+        level = playerInventory.player.getLevel();
         camera = new ItemAndStack<>(cameraStack);
         attachmentTypes = camera.getItem().getAttachmentTypes(camera.getStack());
 
@@ -215,9 +212,9 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
                 ItemStack itemmovedStack1 = slot1.getItem();
                 if (itemmovedStack1.isEmpty() && slot1.mayPlace(movedStack)) {
                     if (movedStack.getCount() > slot1.getMaxStackSize()) {
-                        slot1.setByPlayer(movedStack.split(slot1.getMaxStackSize()));
+                        slot1.set(movedStack.split(slot1.getMaxStackSize()));
                     } else {
-                        slot1.setByPlayer(movedStack.split(movedStack.getCount()));
+                        slot1.set(movedStack.split(movedStack.getCount()));
                     }
                     slot1.setChanged();
                     hasRemainder = true;

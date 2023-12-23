@@ -43,7 +43,7 @@ public class ShaderCommand {
         ResourceLocation shaderLocation = new ResourceLocation("minecraft:none");
         for (ServerPlayer targetPlayer : getTargetPlayers(context)) {
             Packets.sendToClient(new ApplyShaderS2CP(shaderLocation), targetPlayer);
-            context.getSource().sendSuccess(() -> Component.translatable("command.exposure.shader.removed"), false);
+            context.getSource().sendSuccess(Component.translatable("command.exposure.shader.removed"), false);
         }
         return 0;
     }

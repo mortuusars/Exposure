@@ -6,7 +6,6 @@ import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityT
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
@@ -24,12 +23,12 @@ import java.util.function.Supplier;
 
 public class RegisterImpl {
     public static <T extends Block> Supplier<T> block(String id, Supplier<T> supplier) {
-        T obj = Registry.register(BuiltInRegistries.BLOCK, Exposure.resource(id), supplier.get());
+        T obj = Registry.register(Registry.BLOCK, Exposure.resource(id), supplier.get());
         return () -> obj;
     }
 
     public static <T extends BlockEntityType<E>, E extends BlockEntity> Supplier<T> blockEntityType(String id, Supplier<T> supplier) {
-        T obj = Registry.register(BuiltInRegistries.BLOCK_ENTITY_TYPE, Exposure.resource(id), supplier.get());
+        T obj = Registry.register(Registry.BLOCK_ENTITY_TYPE, Exposure.resource(id), supplier.get());
         return () -> obj;
     }
 
@@ -38,14 +37,14 @@ public class RegisterImpl {
     }
 
     public static <T extends Item> Supplier<T> item(String id, Supplier<T> supplier) {
-        T obj = Registry.register(BuiltInRegistries.ITEM, Exposure.resource(id), supplier.get());
+        T obj = Registry.register(Registry.ITEM, Exposure.resource(id), supplier.get());
         return () -> obj;
     }
 
     public static <T extends Entity> Supplier<EntityType<T>> entityType(String id, EntityType.EntityFactory<T> factory,
                                                                         MobCategory category, float width, float height,
                                                                         int clientTrackingRange, boolean velocityUpdates, int updateInterval) {
-        EntityType<T> type = Registry.register(BuiltInRegistries.ENTITY_TYPE, Exposure.resource(id),
+        EntityType<T> type = Registry.register(Registry.ENTITY_TYPE, Exposure.resource(id),
                 FabricEntityTypeBuilder.create(category, factory)
                         .dimensions(EntityDimensions.fixed(width, height))
                         .trackRangeBlocks(clientTrackingRange)
@@ -56,17 +55,17 @@ public class RegisterImpl {
     }
 
     public static <T extends SoundEvent> Supplier<T> soundEvent(String id, Supplier<T> supplier) {
-        T obj = Registry.register(BuiltInRegistries.SOUND_EVENT, Exposure.resource(id), supplier.get());
+        T obj = Registry.register(Registry.SOUND_EVENT, Exposure.resource(id), supplier.get());
         return () -> obj;
     }
 
     public static <T extends MenuType<E>, E extends AbstractContainerMenu> Supplier<MenuType<E>> menuType(String id, Register.MenuTypeSupplier<E> supplier) {
-        ExtendedScreenHandlerType<E> type = Registry.register(BuiltInRegistries.MENU, Exposure.resource(id), new ExtendedScreenHandlerType<>(supplier::create));
+        ExtendedScreenHandlerType<E> type = Registry.register(Registry.MENU, Exposure.resource(id), new ExtendedScreenHandlerType<>(supplier::create));
         return () -> type;
     }
 
     public static Supplier<RecipeSerializer<?>> recipeSerializer(String id, Supplier<RecipeSerializer<?>> supplier) {
-        RecipeSerializer<?> obj = Registry.register(BuiltInRegistries.RECIPE_SERIALIZER, Exposure.resource(id), supplier.get());
+        RecipeSerializer<?> obj = Registry.register(Registry.RECIPE_SERIALIZER, Exposure.resource(id), supplier.get());
         return () -> obj;
     }
 }

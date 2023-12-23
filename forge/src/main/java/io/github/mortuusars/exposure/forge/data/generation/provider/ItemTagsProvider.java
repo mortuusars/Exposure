@@ -12,8 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.concurrent.CompletableFuture;
 
-public class ItemTagsProvider extends net.minecraft.data.tags.ItemTagsProvider {
-    public ItemTagsProvider(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTagsProvider, @Nullable ExistingFileHelper existingFileHelper) {
+public class ItemTagsProvider /*extends net.minecraft.data.tags.ItemTagsProvider*/ {
+    /*public ItemTagsProvider(DataGenerator generator, CompletableFuture<HolderLookup.Provider> lookupProvider, BlockTagsProvider blockTagsProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(generator.getPackOutput(), lookupProvider, blockTagsProvider.contentsGetter(), Exposure.ID, existingFileHelper);
     }
 
@@ -39,5 +39,5 @@ public class ItemTagsProvider extends net.minecraft.data.tags.ItemTagsProvider {
         for (String item : items) {
             tag.addOptional(new ResourceLocation(namespace, item));
         }
-    }
+    }*/
 }

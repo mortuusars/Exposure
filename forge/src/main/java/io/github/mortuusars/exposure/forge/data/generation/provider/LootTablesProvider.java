@@ -9,7 +9,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.level.storage.loot.LootDataType;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
@@ -29,8 +28,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-public class LootTablesProvider extends LootTableProvider {
-    private static final Logger LOGGER = LogManager.getLogger();
+public class LootTablesProvider /*extends LootTableProvider*/ {
+    /*private static final Logger LOGGER = LogManager.getLogger();
     private final DataGenerator generator;
 
     public LootTablesProvider(DataGenerator generator) {
@@ -84,5 +83,5 @@ public class LootTablesProvider extends LootTableProvider {
         } catch (Exception e) {
             LOGGER.error("Couldn't write loot lootTable {}", path, e);
         }
-    }
+    }*/
 }

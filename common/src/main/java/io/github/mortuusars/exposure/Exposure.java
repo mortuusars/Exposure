@@ -15,8 +15,6 @@ import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
@@ -27,12 +25,14 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -72,8 +72,8 @@ public class Exposure {
 
     public static class Blocks {
         public static final Supplier<LightroomBlock> LIGHTROOM = Register.block("lightroom",
-                () -> new LightroomBlock(BlockBehaviour.Properties.of()
-                        .mapColor(MapColor.COLOR_BROWN)
+                () -> new LightroomBlock(BlockBehaviour.Properties.of(Material.WOOD)
+                        .color(MaterialColor.COLOR_BROWN)
                         .strength(2.5f)
                         .sound(SoundType.WOOD)
                         .lightLevel(state -> 15)));
@@ -82,7 +82,7 @@ public class Exposure {
                 () -> new FlashBlock(BlockBehaviour.Properties.copy(net.minecraft.world.level.block.Blocks.AIR)
                         .strength(-1.0F, 3600000.8F)
                         .noLootTable()
-                        .mapColor(MapColor.NONE)
+                        .color(MaterialColor.NONE)
                         .noOcclusion()
                         .noCollission()
                         .lightLevel(state -> 15)));
@@ -105,35 +105,43 @@ public class Exposure {
     public static class Items {
         public static final Supplier<CameraItem> CAMERA = Register.item("camera",
                 () -> new CameraItem(new Item.Properties()
-                        .stacksTo(1)));
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<FilmRollItem> BLACK_AND_WHITE_FILM = Register.item("black_and_white_film",
                 () -> new FilmRollItem(FilmType.BLACK_AND_WHITE, Exposure.DEFAULT_FILM_SIZE, Mth.color(0.8F, 0.8F, 0.9F),
                         new Item.Properties()
-                                .stacksTo(16)));
+                                .stacksTo(16)
+                                .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<FilmRollItem> COLOR_FILM = Register.item("color_film",
                 () -> new FilmRollItem(FilmType.COLOR, Exposure.DEFAULT_FILM_SIZE, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
-                        .stacksTo(16)));
+                        .stacksTo(16)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = Register.item("developed_black_and_white_film",
                 () -> new DevelopedFilmItem(FilmType.BLACK_AND_WHITE, new Item.Properties()
-                        .stacksTo(1)));
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<DevelopedFilmItem> DEVELOPED_COLOR_FILM = Register.item("developed_color_film",
                 () -> new DevelopedFilmItem(FilmType.COLOR, new Item.Properties()
-                        .stacksTo(1)));
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<PhotographItem> PHOTOGRAPH = Register.item("photograph",
                 () -> new PhotographItem(new Item.Properties()
-                        .stacksTo(1)));
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<StackedPhotographsItem> STACKED_PHOTOGRAPHS = Register.item("stacked_photographs",
                 () -> new StackedPhotographsItem(16, new Item.Properties()
-                        .stacksTo(1)));
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<BlockItem> LIGHTROOM = Register.item("lightroom",
-                () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));
+                () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()
+                        .tab(CreativeModeTab.TAB_DECORATIONS)));
 
         static void init() {
         }
@@ -190,7 +198,7 @@ public class Exposure {
             Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");
             Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
             String path = category + "." + key;
-            return Register.soundEvent(path, () -> SoundEvent.createVariableRangeEvent(Exposure.resource(path)));
+            return Register.soundEvent(path, () -> new SoundEvent(Exposure.resource(path), 16f));
         }
 
         static void init() {
@@ -215,7 +223,7 @@ public class Exposure {
 
         public static void register() {
             STATS.forEach((location, formatter) -> {
-                Registry.register(BuiltInRegistries.CUSTOM_STAT, location, location);
+                Registry.register(Registry.CUSTOM_STAT, location, location);
                 net.minecraft.stats.Stats.CUSTOM.get(location, formatter);
             });
         }
@@ -231,16 +239,16 @@ public class Exposure {
 
     public static class Tags {
         public static class Items {
-            public static final TagKey<Item> FILM_ROLLS = TagKey.create(Registries.ITEM, Exposure.resource("film_rolls"));
-            public static final TagKey<Item> DEVELOPED_FILM_ROLLS = TagKey.create(Registries.ITEM, Exposure.resource("developed_film_rolls"));
-            public static final TagKey<Item> CYAN_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("cyan_printing_dyes"));
-            public static final TagKey<Item> MAGENTA_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("magenta_printing_dyes"));
-            public static final TagKey<Item> YELLOW_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("yellow_printing_dyes"));
-            public static final TagKey<Item> BLACK_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("black_printing_dyes"));
-            public static final TagKey<Item> PHOTO_PAPERS = TagKey.create(Registries.ITEM, Exposure.resource("photo_papers"));
-            public static final TagKey<Item> FLASHES = TagKey.create(Registries.ITEM, Exposure.resource("flashes"));
-            public static final TagKey<Item> LENSES = TagKey.create(Registries.ITEM, Exposure.resource("lenses"));
-            public static final TagKey<Item> FILTERS = TagKey.create(Registries.ITEM, Exposure.resource("filters"));
+            public static final TagKey<Item> FILM_ROLLS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("film_rolls"));
+            public static final TagKey<Item> DEVELOPED_FILM_ROLLS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("developed_film_rolls"));
+            public static final TagKey<Item> CYAN_PRINTING_DYES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("cyan_printing_dyes"));
+            public static final TagKey<Item> MAGENTA_PRINTING_DYES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("magenta_printing_dyes"));
+            public static final TagKey<Item> YELLOW_PRINTING_DYES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("yellow_printing_dyes"));
+            public static final TagKey<Item> BLACK_PRINTING_DYES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("black_printing_dyes"));
+            public static final TagKey<Item> PHOTO_PAPERS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("photo_papers"));
+            public static final TagKey<Item> FLASHES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("flashes"));
+            public static final TagKey<Item> LENSES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("lenses"));
+            public static final TagKey<Item> FILTERS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("filters"));
         }
     }
 }

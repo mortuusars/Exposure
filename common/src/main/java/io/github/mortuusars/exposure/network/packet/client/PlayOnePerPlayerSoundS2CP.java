@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.network.PacketDirection;
 import io.github.mortuusars.exposure.network.packet.IPacket;
 import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
@@ -38,9 +38,9 @@ public record PlayOnePerPlayerSoundS2CP(UUID sourcePlayerId, SoundEvent soundEve
     public static PlayOnePerPlayerSoundS2CP fromBuffer(FriendlyByteBuf buffer) {
         UUID uuid = buffer.readUUID();
         ResourceLocation soundEventLocation = buffer.readResourceLocation();
-        @Nullable SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(soundEventLocation);
+        @Nullable SoundEvent soundEvent = Registry.SOUND_EVENT.get(soundEventLocation);
         if (soundEvent == null)
-            soundEvent = SoundEvents.NOTE_BLOCK_BASS.value();
+            soundEvent = SoundEvents.NOTE_BLOCK_BASS;
 
         return new PlayOnePerPlayerSoundS2CP(uuid, soundEvent, buffer.readEnum(SoundSource.class),
                 buffer.readFloat(), buffer.readFloat());

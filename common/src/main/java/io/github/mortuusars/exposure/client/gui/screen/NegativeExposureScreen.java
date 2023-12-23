@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
@@ -11,7 +12,7 @@ import io.github.mortuusars.exposure.client.render.ExposureImage;
 import io.github.mortuusars.exposure.client.render.ExposureTexture;
 import io.github.mortuusars.exposure.data.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.util.GuiUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -39,6 +40,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
         zoom.targetZoom = 1f;
         zoom.minZoom = zoom.defaultZoom / (float)Math.pow(zoom.step, 1f);
         zoom.maxZoom = zoom.defaultZoom * (float)Math.pow(zoom.step, 5f);
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -54,12 +56,12 @@ public class NegativeExposureScreen extends ZoomableScreen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         pager.update();
 
-        renderBackground(guiGraphics);
+        renderBackground(poseStack);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.render(poseStack, mouseX, mouseY, partialTick);
 
         Either<String, ResourceLocation> idOrTexture = exposures.get(pager.getCurrentPageIndex());
 
@@ -87,38 +89,38 @@ public class NegativeExposureScreen extends ZoomableScreen {
         int width = exposure.getWidth();
         int height = exposure.getHeight();
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(x + this.width / 2f, y + this.height / 2f, 0);
-        guiGraphics.pose().scale(scale, scale, scale);
-        guiGraphics.pose().translate(-width / 2f, -height / 2f, 0);
+        poseStack.pushPose();
+        poseStack.translate(x + this.width / 2f, y + this.height / 2f, 0);
+        poseStack.scale(scale, scale, scale);
+        poseStack.translate(-width / 2f, -height / 2f, 0);
 
         {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.setShaderTexture(0, TEXTURE);
 
-            guiGraphics.pose().pushPose();
+            poseStack.pushPose();
             float scale = Math.max((float) width / (FRAME_SIZE), (float) height / (FRAME_SIZE));
-            guiGraphics.pose().scale(scale, scale, scale);
-            guiGraphics.pose().translate(-12, -12, 0);
+            poseStack.scale(scale, scale, scale);
+            poseStack.translate(-12, -12, 0);
 
-            GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
+            GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
 
             RenderSystem.setShaderColor(type.filmR, type.filmG, type.filmB, type.filmA);
-            GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
+            GuiUtil.blit(poseStack, 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
 
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            guiGraphics.pose().popPose();
+            poseStack.popPose();
         }
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        ExposureClient.getExposureRenderer().render(idOrTexture, true, true, guiGraphics.pose(), bufferSource,
+        ExposureClient.getExposureRenderer().render(idOrTexture, true, true, poseStack, bufferSource,
                 0, 0, width, height, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
                 type.frameR, type.frameG, type.frameB, 255);
         bufferSource.endBatch();
 
-        guiGraphics.pose().popPose();
+        poseStack.popPose();
     }
 
     @Override

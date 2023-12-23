@@ -11,7 +11,6 @@ import net.minecraft.advancements.RequirementsStrategy;
 import net.minecraft.advancements.critereon.RecipeUnlockedTrigger;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -28,8 +27,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
-    public RecipesProvider(DataGenerator generator) {
+public class RecipesProvider /*extends net.minecraft.data.recipes.RecipeProvider*/ {
+    /*public RecipesProvider(DataGenerator generator) {
         super(generator.getPackOutput());
     }
 
@@ -155,5 +154,5 @@ public class RecipesProvider extends net.minecraft.data.recipes.RecipeProvider {
         CompoundTag tag = new CompoundTag();
         tag.putString("Potion", Objects.requireNonNull(ForgeRegistries.POTIONS.getKey(potion)).toString());
         return PartialNBTIngredient.of(Items.POTION, tag);
-    }
+    }*/
 }

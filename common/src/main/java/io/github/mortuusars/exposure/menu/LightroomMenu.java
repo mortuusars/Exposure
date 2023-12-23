@@ -158,7 +158,7 @@ public class LightroomMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int buttonId) {
-        Preconditions.checkState(!player.level().isClientSide, "This should be server-side only.");
+        Preconditions.checkState(!player.getLevel().isClientSide, "This should be server-side only.");
 
         if (buttonId == PREVIOUS_FRAME_BUTTON_ID || buttonId == NEXT_FRAME_BUTTON_ID) {
             ItemStack filmStack = lightroomBlockEntity.getItem(Lightroom.FILM_SLOT);
@@ -254,9 +254,9 @@ public class LightroomMenu extends AbstractContainerMenu {
                 ItemStack itemmovedStack1 = slot1.getItem();
                 if (itemmovedStack1.isEmpty() && slot1.mayPlace(movedStack)) {
                     if (movedStack.getCount() > slot1.getMaxStackSize()) {
-                        slot1.setByPlayer(movedStack.split(slot1.getMaxStackSize()));
+                        slot1.set(movedStack.split(slot1.getMaxStackSize()));
                     } else {
-                        slot1.setByPlayer(movedStack.split(movedStack.getCount()));
+                        slot1.set(movedStack.split(movedStack.getCount()));
                     }
                     slot1.setChanged();
                     hasRemainder = true;
@@ -280,7 +280,7 @@ public class LightroomMenu extends AbstractContainerMenu {
     private static LightroomBlockEntity getBlockEntity(final Inventory playerInventory, final FriendlyByteBuf data) {
         Objects.requireNonNull(playerInventory, "playerInventory cannot be null");
         Objects.requireNonNull(data, "data cannot be null");
-        final BlockEntity blockEntityAtPos = playerInventory.player.level().getBlockEntity(data.readBlockPos());
+        final BlockEntity blockEntityAtPos = playerInventory.player.getLevel().getBlockEntity(data.readBlockPos());
         if (blockEntityAtPos instanceof LightroomBlockEntity blockEntity)
             return blockEntity;
         throw new IllegalStateException("Block entity is not correct! " + blockEntityAtPos);

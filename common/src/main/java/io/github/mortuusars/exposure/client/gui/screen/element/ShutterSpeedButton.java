@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.ShutterSpeed;
@@ -8,7 +9,6 @@ import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInH
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -59,8 +59,8 @@ public class ShutterSpeedButton extends CycleButton {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+        super.renderButton(poseStack, mouseX, mouseY, partialTick);
 
         ShutterSpeed shutterSpeed = shutterSpeeds.get(currentIndex);
         String text = shutterSpeed.toString();
@@ -72,13 +72,13 @@ public class ShutterSpeedButton extends CycleButton {
         int textWidth = font.width(text);
         int xPos = 35 - (textWidth / 2);
 
-        guiGraphics.drawString(font, text, getX() + xPos, getY() + 4, secondaryFontColor, false);
-        guiGraphics.drawString(font, text, getX() + xPos, getY() + 3, mainFontColor, false);
+        font.draw(poseStack, text, x + xPos, y + 4, secondaryFontColor);
+        font.draw(poseStack, text, x + xPos, y + 3, mainFontColor);
     }
 
     @Override
-    public void renderToolTip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.renderTooltip(Minecraft.getInstance().font, Component.translatable("gui.exposure.viewfinder.shutter_speed.tooltip"), mouseX, mouseY);
+    public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
+        screen.renderTooltip(poseStack, Component.translatable("gui.exposure.viewfinder.shutter_speed.tooltip"), mouseX, mouseY);
     }
 
     @Override

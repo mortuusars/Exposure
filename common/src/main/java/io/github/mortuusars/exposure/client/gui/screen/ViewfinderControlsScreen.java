@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
@@ -14,10 +15,9 @@ import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Renderable;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.GameRenderer;
@@ -44,6 +44,7 @@ public class ViewfinderControlsScreen extends Screen {
         level = Minecraft.getInstance().level;
         assert level != null;
         openedAtTimestamp = level.getGameTime();
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -136,7 +137,7 @@ public class ViewfinderControlsScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         if (!ViewfinderClient.isLookingThrough()) {
             this.onClose();
             return;
@@ -145,13 +146,13 @@ public class ViewfinderControlsScreen extends Screen {
         if (Minecraft.getInstance().options.hideGui)
             return;
 
-        guiGraphics.pose().pushPose();
+        poseStack.pushPose();
 
         float viewfinderScale = ViewfinderOverlay.getScale();
         if (viewfinderScale != 1.0f) {
-            guiGraphics.pose().translate(width / 2f, height / 2f, 0);
-            guiGraphics.pose().scale(viewfinderScale, viewfinderScale, viewfinderScale);
-            guiGraphics.pose().translate(-width / 2f, -height / 2f, 0);
+            poseStack.translate(width / 2f, height / 2f, 0);
+            poseStack.scale(viewfinderScale, viewfinderScale, viewfinderScale);
+            poseStack.translate(-width / 2f, -height / 2f, 0);
         }
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -160,17 +161,17 @@ public class ViewfinderControlsScreen extends Screen {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.render(poseStack, mouseX, mouseY, partialTick);
 
-        for(Renderable renderable : this.renderables) {
+        for(Widget renderable : this.renderables) {
             if (renderable instanceof IElementWithTooltip tooltipElement && renderable instanceof AbstractWidget widget
                 && widget.visible && widget.isHoveredOrFocused()) {
-                tooltipElement.renderToolTip(guiGraphics, mouseX, mouseY);
+                tooltipElement.renderToolTip(poseStack, mouseX, mouseY);
                 break;
             }
         }
 
-        guiGraphics.pose().popPose();
+        poseStack.popPose();
     }
 
     @Override

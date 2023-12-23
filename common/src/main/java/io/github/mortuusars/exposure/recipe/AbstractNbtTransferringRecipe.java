@@ -1,12 +1,10 @@
 package io.github.mortuusars.exposure.recipe;
 
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -22,7 +20,7 @@ public abstract class AbstractNbtTransferringRecipe extends CustomRecipe {
     private final NonNullList<Ingredient> ingredients;
 
     public AbstractNbtTransferringRecipe(ResourceLocation id, Ingredient transferIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
-        super(id, CraftingBookCategory.MISC);
+        super(id);
         this.transferIngredient = transferIngredient;
         this.ingredients = ingredients;
         this.result = result;
@@ -38,7 +36,7 @@ public abstract class AbstractNbtTransferringRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull ItemStack getResultItem(RegistryAccess registryAccess) {
+    public @NotNull ItemStack getResultItem() {
         return getResult();
     }
 
@@ -78,16 +76,16 @@ public abstract class AbstractNbtTransferringRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull ItemStack assemble(CraftingContainer container, @NotNull RegistryAccess registryAccess) {
+    public @NotNull ItemStack assemble(CraftingContainer container) {
         for (int index = 0; index < container.getContainerSize(); index++) {
             ItemStack itemStack = container.getItem(index);
 
             if (getTransferIngredient().test(itemStack)) {
-                return transferNbt(itemStack, getResultItem(registryAccess).copy());
+                return transferNbt(itemStack, getResultItem().copy());
             }
         }
 
-        return getResultItem(registryAccess);
+        return getResultItem();
     }
 
     public @NotNull ItemStack transferNbt(ItemStack transferIngredientStack, ItemStack recipeResultStack) {

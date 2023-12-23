@@ -86,7 +86,7 @@ public class ClientPacketsHandler {
         if (StringUtil.isNullOrEmpty(exposureId)) {
             if (player == null)
                 throw new IllegalStateException("Cannot load exposure: path is null or empty and player is null.");
-            exposureId = player.getName().getString() + player.level().getGameTime();
+            exposureId = player.getName().getString() + player.getLevel().getGameTime();
         }
 
         String finalExposureId = exposureId;
