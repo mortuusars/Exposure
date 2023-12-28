@@ -30,20 +30,23 @@ public class FileSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(byte[] mapColorPixels, int width, int height, CompoundTag properties) {
+    public boolean save(byte[] mapColorPixels, int width, int height, CompoundTag properties) {
         BufferedImage img = convertToBufferedImage(mapColorPixels, width, height);
 
         File outputFile = new File(folder + "/" + (levelNameSubfolder ? getLevelName() + "/" : "") + exposureId + ".png");
         try {
-            if (outputFile.exists())
-                return;
+            //TODO: Overwrite or not to overwrite?
+//            if (outputFile.exists())
+//                return ;
 
             //noinspection ResultOfMethodCallIgnored
             outputFile.mkdirs();
             ImageIO.write(img, "png", outputFile);
             LogUtils.getLogger().info("Exposure saved: " + outputFile);
+            return true;
         } catch (IOException e) {
             LogUtils.getLogger().error("Exposure file was not saved: " + e);
+            return false;
         }
     }
 

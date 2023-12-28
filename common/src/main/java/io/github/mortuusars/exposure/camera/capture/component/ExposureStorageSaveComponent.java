@@ -14,11 +14,13 @@ public class ExposureStorageSaveComponent implements ICaptureComponent {
     }
 
     @Override
-    public void save(byte[] pixels, int width, int height, CompoundTag properties) {
+    public boolean save(byte[] pixels, int width, int height, CompoundTag properties) {
         ExposureSavedData exposureSavedData = new ExposureSavedData(width, height, pixels, properties);
 
         ExposureClient.getExposureStorage().put(exposureId, exposureSavedData);
         if (sendToServer)
             ExposureClient.getExposureSender().send(exposureId, exposureSavedData);
+
+        return true;
     }
 }

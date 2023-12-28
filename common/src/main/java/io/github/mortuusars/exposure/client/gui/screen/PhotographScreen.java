@@ -83,7 +83,8 @@ public class PhotographScreen extends ZoomableScreen {
         guiGraphics.pose().scale(scale, scale, scale);
         guiGraphics.pose().translate(ExposureRenderer.SIZE / -2f, ExposureRenderer.SIZE / -2f, 0);
 
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance()
+                .getBuilder());
 
         // Rendering paper bottom to top:
         for (int i = Math.min(2, photographs.size() - 1); i > 0; i--) {
@@ -107,13 +108,13 @@ public class PhotographScreen extends ZoomableScreen {
         }
 
         ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
-        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()
+                .getIdOrTexture(photograph.getStack());
         if (idOrTexture != null) {
             ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource,
                     0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
-        }
-        else {
+        } else {
             ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(), bufferSource,
                     0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
@@ -132,7 +133,8 @@ public class PhotographScreen extends ZoomableScreen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_S) {
+        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_S
+                && Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
             ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
             Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
             if (idOrTexture != null) {

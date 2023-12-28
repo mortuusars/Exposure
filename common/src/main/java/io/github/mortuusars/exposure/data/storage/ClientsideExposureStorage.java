@@ -29,6 +29,11 @@ public class ClientsideExposureStorage implements IExposureStorage {
     }
 
     @Override
+    public List<String> getAllIds() {
+        return CACHE.keySet().stream().toList();
+    }
+
+    @Override
     public void clear() {
         CACHE.clear();
         QUERIED_IDS.clear();
