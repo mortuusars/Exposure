@@ -16,6 +16,8 @@ import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.multiplayer.MultiPlayerGameMode;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
@@ -132,21 +134,41 @@ public class PhotographScreen extends ZoomableScreen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_S
-                && Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (Screen.hasControlDown() && player != null && player.isCreative()) {
             ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
-            Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
-            if (idOrTexture != null) {
-                idOrTexture.ifLeft(id -> {
-                    if (savedExposures.contains(id))
-                        return;
+            @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
 
-                    ExposureClient.getExposureStorage().getOrQuery(id).ifPresent(exposure -> {
-                        savedExposures.add(id);
-                        new Thread(() -> FileSaveComponent.withDefaultFolders(id)
-                                .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight(), exposure.getProperties()), "ExposureSaving").start();
+            if (keyCode == InputConstants.KEY_S) {
+                if (idOrTexture != null) {
+                    idOrTexture.ifLeft(id -> {
+                        if (savedExposures.contains(id))
+                            return;
+
+                        ExposureClient.getExposureStorage().getOrQuery(id).ifPresent(exposure -> {
+                            savedExposures.add(id);
+                            new Thread(() -> FileSaveComponent.withDefaultFolders(id).save(exposure.getPixels(),
+                                    exposure.getWidth(), exposure.getHeight(), exposure.getProperties()), "ExposureSaving").start();
+                        });
                     });
-                });
+                }
+
+                return true;
+            }
+
+            if (keyCode == InputConstants.KEY_C) {
+                if (idOrTexture != null) {
+                    String text = idOrTexture.map(id -> id, ResourceLocation::toString);
+                    Minecraft.getInstance().keyboardHandler.setClipboard(text);
+                }
+                return true;
+            }
+
+            if (keyCode == InputConstants.KEY_P) {
+                @Nullable MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
+                if (idOrTexture != null && gameMode != null)
+                    gameMode.handleCreativeModeItemDrop(photograph.getStack().copy());
+                return true;
             }
         }
 
