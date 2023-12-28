@@ -1,3 +1,10 @@
+### 1.2.2 <>
+- Added `/exposure export` command. Allows exporting exposures to PNGs to `<world>/exposures` folder. Requires OP privileges.
+- Added some creative-mode tools to Photograph screen:
+  - **Ctrl+S** to save as PNG
+  - **Ctrl+C** to copy exposure id to clipboard
+  - **Ctrl+P** to give yourself current photograph in item form (useful when using commands to show the exposure)
+
 ### 1.2.1 - 2023-12-24
 - Fixed water not rendering properly with shaders when looking through Viewfinder.
 
