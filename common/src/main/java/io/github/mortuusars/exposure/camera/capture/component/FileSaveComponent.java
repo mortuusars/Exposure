@@ -41,6 +41,7 @@ public class FileSaveComponent implements ICaptureComponent {
             //noinspection ResultOfMethodCallIgnored
             outputFile.mkdirs();
             ImageIO.write(img, "png", outputFile);
+            LogUtils.getLogger().info("Exposure saved: " + outputFile);
         } catch (IOException e) {
             LogUtils.getLogger().error("Exposure file was not saved: " + e);
         }

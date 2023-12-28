@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.google.common.base.Preconditions;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -47,8 +48,6 @@ public class PhotographScreen extends ZoomableScreen {
             if (idOrTexture != null)
                 idOrTexture.ifLeft(id -> ExposureClient.getExposureStorage().getOrQuery(id));
         }
-
-        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -132,6 +131,23 @@ public class PhotographScreen extends ZoomableScreen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_S) {
+            ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
+            Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+            if (idOrTexture != null) {
+                idOrTexture.ifLeft(id -> {
+                    if (savedExposures.contains(id))
+                        return;
+
+                    ExposureClient.getExposureStorage().getOrQuery(id).ifPresent(exposure -> {
+                        savedExposures.add(id);
+                        new Thread(() -> FileSaveComponent.withDefaultFolders(id)
+                                .save(exposure.getPixels(), exposure.getWidth(), exposure.getHeight(), exposure.getProperties()), "ExposureSaving").start();
+                    });
+                });
+            }
+        }
+
         return pager.handleKeyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
     }
 
