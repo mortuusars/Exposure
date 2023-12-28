@@ -5,6 +5,8 @@
   - **Ctrl+C** to copy exposure id to clipboard
   - **Ctrl+P** to give yourself current photograph in item form (useful when using commands to show the exposure)
 
+- Fixed being able to copy `Copy of a copy` photograph.
+
 ### 1.2.1 - 2023-12-24
 - Fixed water not rendering properly with shaders when looking through Viewfinder.
 

@@ -40,7 +40,7 @@ public class PhotographCopyingRecipe extends AbstractNbtTransferringRecipe {
             return result;
         }
 
-        return super.transferNbt(photographStack, recipeResultStack);
+        return ItemStack.EMPTY;
     }
 
     public @NotNull NonNullList<ItemStack> getRemainingItems(CraftingContainer pInv) {
