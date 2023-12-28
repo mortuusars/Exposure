@@ -4,8 +4,12 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.world.level.storage.DimensionDataStorage;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -38,8 +42,32 @@ public class ServersideExposureStorage implements IExposureStorage {
             dataStorage.set(getSaveId(id), data);
             data.setDirty();
         }
-        else
-            LogUtils.getLogger().error("Exposure is not saved.");
+    }
+
+    public List<String> getAllIds() {
+        // Save exposures that are in cache and waiting to be saved:
+        levelStorageSupplier.get().save();
+
+        Path path = worldPathSupplier.get().resolve("data/" + EXPOSURE_DIR);
+        File folder = path.toFile();
+
+        @Nullable File[] listOfFiles = folder.listFiles();
+        if (listOfFiles == null)
+            return Collections.emptyList();
+
+        List<String> ids = new ArrayList<>();
+
+        for (File file : listOfFiles) {
+            if (file != null && file.isFile())
+                ids.add(com.google.common.io.Files.getNameWithoutExtension(file.getName()));
+        }
+
+        return ids;
+    }
+
+    @Override
+    public void clear() {
+        LogUtils.getLogger().warn("Clearing Server Exposure Storage is not implemented.");
     }
 
     private String getSaveId(String id) {
@@ -55,10 +83,5 @@ public class ServersideExposureStorage implements IExposureStorage {
             LogUtils.getLogger().error("Failed to create exposure storage directory: " + e);
             return false;
         }
-    }
-
-    @Override
-    public void clear() {
-        LogUtils.getLogger().warn("Clearing Server Exposure Storage is not implemented.");
     }
 }

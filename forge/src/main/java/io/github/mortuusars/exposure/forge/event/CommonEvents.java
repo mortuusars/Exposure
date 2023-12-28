@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.forge.event;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.command.ExposureCommands;
+import io.github.mortuusars.exposure.command.ExposureCommand;
 import io.github.mortuusars.exposure.command.ShaderCommand;
 import io.github.mortuusars.exposure.command.TestCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
@@ -35,7 +35,7 @@ public class CommonEvents {
         public static void registerCommands(RegisterCommandsEvent event) {
             ArgumentTypeInfos.registerByClass(ShaderLocationArgument.class, SingletonArgumentInfo.contextFree(ShaderLocationArgument::new));
 
-            ExposureCommands.register(event.getDispatcher());
+            ExposureCommand.register(event.getDispatcher());
             ShaderCommand.register(event.getDispatcher());
             TestCommand.register(event.getDispatcher());
         }

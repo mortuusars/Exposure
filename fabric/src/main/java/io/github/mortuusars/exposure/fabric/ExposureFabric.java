@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.fabric;
 
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.command.ExposureCommands;
+import io.github.mortuusars.exposure.command.ExposureCommand;
 import io.github.mortuusars.exposure.command.ShaderCommand;
 import io.github.mortuusars.exposure.command.TestCommand;
 import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
@@ -41,7 +41,7 @@ public class ExposureFabric implements ModInitializer {
                 ShaderLocationArgument.class, SingletonArgumentInfo.contextFree(ShaderLocationArgument::new));
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
 
-            ExposureCommands.register(dispatcher);
+            ExposureCommand.register(dispatcher);
             ShaderCommand.register(dispatcher);
             TestCommand.register(dispatcher);
         });

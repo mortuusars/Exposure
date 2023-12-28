@@ -15,6 +15,7 @@ import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.nbt.CompoundTag;
@@ -131,7 +132,8 @@ public class PhotographScreen extends ZoomableScreen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_S) {
+        if (Screen.hasControlDown() && keyCode == InputConstants.KEY_S
+                && Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
             ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
             Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
             if (idOrTexture != null) {

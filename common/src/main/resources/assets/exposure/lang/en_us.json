@@ -28,7 +28,6 @@
   "item.exposure.film_roll.tooltip.developing_step": "Developing: %s",
   "item.exposure.film_roll.tooltip.details.develop": "Developed by crafting with:",
 
-
   "entity.exposure.photograph": "Photograph",
 
   "gui.exposure.composition_guide.none": "None",
@@ -57,6 +56,11 @@
   "command.exposure.shader.removed": "Shader removed",
   "command.exposure.load_from_file.success": "Exposure '%s' has been loaded.",
   "command.exposure.load_from_file.failure": "Cannot load exposure. See logs for more more information.",
+  "command.exposure.export.success.result": "Exported %s exposure(s) to %s.",
+  "command.exposure.export.success.saved_exposure_id": "Exported: [%s]",
+  "command.exposure.export.failure.cannot_get_all_ids": "Cannot get exposure IDs. No exposures are saved or some error occurred.",
+  "command.exposure.export.failure.none_saved": "No exposures were exported.",
+  "command.exposure.export.failure.not_found": "Cannot export exposure: Id [%s] is not found.",
   "command.exposure.show.error.not_a_player": "This command should be issued by the player.",
   "command.exposure.show.error.not_found": "Exposure with id '%s' is not found or cannot be loaded.",
   "command.exposure.show.latest.error.no_exposures": "There are no exposures stored.",
