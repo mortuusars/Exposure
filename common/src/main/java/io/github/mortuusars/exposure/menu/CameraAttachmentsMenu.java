@@ -54,6 +54,7 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
 
     @Override
     public void initializeContents(int stateId, List<ItemStack> items, ItemStack carried) {
+        contentsInitialized = false;
         super.initializeContents(stateId, items, carried);
         contentsInitialized = true;
     }
