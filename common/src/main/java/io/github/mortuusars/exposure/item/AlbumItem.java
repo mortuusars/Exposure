@@ -7,7 +7,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -26,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class AlbumItem extends Item {
-    public record AlbumPage(ItemStack photo, Component[] note) {
+    public record Page(ItemStack photo, List<Component> note) {
         public static final String PHOTOGRAPH_TAG = "Photo";
         public static final String NOTE_TAG = "Note";
     }
@@ -37,7 +36,7 @@ public class AlbumItem extends Item {
         super(properties);
     }
 
-    public List<AlbumPage> getPages(ItemStack albumStack) {
+    public List<Page> getPages(ItemStack albumStack) {
         CompoundTag tag = albumStack.getTag();
         if (tag == null || tag.isEmpty() || !tag.contains(PAGES_TAG, Tag.TAG_LIST))
             return Collections.emptyList();
@@ -46,21 +45,21 @@ public class AlbumItem extends Item {
         if (pagesTag.isEmpty())
             return Collections.emptyList();
 
-        List<AlbumPage> pages = new ArrayList<>();
+        List<Page> pages = new ArrayList<>();
 
         for (int i = 0; i < pagesTag.size(); i++) {
             CompoundTag page = pagesTag.getCompound(i);
-            ItemStack photoStack = ItemStack.of(page.getCompound(AlbumPage.PHOTOGRAPH_TAG));
+            ItemStack photoStack = ItemStack.of(page.getCompound(Page.PHOTOGRAPH_TAG));
 
-            ListTag noteList = page.getList(AlbumPage.NOTE_TAG, Tag.TAG_STRING);
-            Component[] note = new Component[noteList.size()];
+            ListTag noteList = page.getList(Page.NOTE_TAG, Tag.TAG_STRING);
+            List<Component> note = new ArrayList<>();
 
             for (int j = 0; j < noteList.size(); j++) {
                 String noteString = noteList.getString(j);
-                note[j] = noteString.isEmpty() ? Component.empty() : Component.Serializer.fromJson(noteString);
+                note.add(j, noteString.isEmpty() ? Component.empty() : Component.Serializer.fromJson(noteString));
             }
 
-            pages.add(new AlbumPage(photoStack, note));
+            pages.add(new Page(photoStack, note));
         }
 
         return pages;

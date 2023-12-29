@@ -48,6 +48,9 @@
   "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Shutter Speed",
 
+  "gui.exposure.album.previous_page": "Previous Page",
+  "gui.exposure.album.next_page": "Next Page",
+
   "gui.exposure.lightroom.previous_frame": "Previous Frame",
   "gui.exposure.lightroom.current_frame": "Frame: %s",
   "gui.exposure.lightroom.zoom_in.tooltip": "Left Click or Scroll Up to zoom in",
