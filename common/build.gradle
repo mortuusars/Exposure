@@ -29,8 +29,7 @@ dependencies {
 //        exclude group: 'net.fabricmc.fabric-api'
 //    }
 
-    //modImplementation("curse.maven:roughly-enough-items-310111:4440734")
-//    modCompileOnly("curse.maven:architectury-${architectury_cf_version}")
+    // modCompileOnly("curse.maven:architectury-${architectury_cf_version}")
 
     compileOnly "net.minecraftforge:forgeconfigapiport-fabric:${forge_config_api_version}"
 }
