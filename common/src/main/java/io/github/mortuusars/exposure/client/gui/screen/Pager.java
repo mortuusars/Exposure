@@ -9,6 +9,7 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 
 import java.util.function.Consumer;
@@ -85,8 +86,8 @@ public class Pager {
         changePage(PagingDirection.NEXT);
     }
 
-    protected void changePage(PagingDirection pagingDirection) {
-        if (Util.getMillis() - lastChangedAt < changeCooldownMS)
+    public void changePage(PagingDirection pagingDirection) {
+        if (pages < 2 || Util.getMillis() - lastChangedAt < changeCooldownMS)
             return;
 
         int prevIndex = currentPage;
@@ -109,6 +110,10 @@ public class Pager {
 
     protected void playChangeSound() {
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(
-                Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 0.8f, 1f));
+                getChangeSound(), 0.8f, 1f));
+    }
+
+    protected SoundEvent getChangeSound() {
+        return Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get();
     }
 }
