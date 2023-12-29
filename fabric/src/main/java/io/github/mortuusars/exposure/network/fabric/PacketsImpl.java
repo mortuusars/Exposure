@@ -26,6 +26,8 @@ public class PacketsImpl {
         ServerPlayNetworking.registerGlobalReceiver(CameraInHandAddFrameC2SP.ID, new ServerHandler(CameraInHandAddFrameC2SP::fromBuffer));
         ServerPlayNetworking.registerGlobalReceiver(CameraSetSelfieModeC2SP.ID, new ServerHandler(CameraSetSelfieModeC2SP::fromBuffer));
         ServerPlayNetworking.registerGlobalReceiver(QueryExposureDataC2SP.ID, new ServerHandler(QueryExposureDataC2SP::fromBuffer));
+
+        ServerPlayNetworking.registerGlobalReceiver(AlbumMovePhotoC2SP.ID, new ServerHandler(AlbumMovePhotoC2SP::fromBuffer));
     }
 
     public static void registerS2CPackets() {
