@@ -24,7 +24,7 @@ public class ItemAndStack<T extends Item> {
     @Override
     public String toString() {
         return "ItemAndStack{" +
-                "stack=" + stack +
+                "photo=" + stack +
                 '}';
     }
 }

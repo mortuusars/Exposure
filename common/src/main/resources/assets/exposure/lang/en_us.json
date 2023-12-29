@@ -8,6 +8,7 @@
   "item.exposure.camera.camera_attachments.fail.shutter_open": "Cannot disassemble the camera while shutter is open.",
   "item.exposure.black_and_white_film": "Black and White Film",
   "item.exposure.color_film": "Color Film",
+  "item.exposure.album": "Photo Album",
 
   "item.exposure.developed_black_and_white_film": "Developed Black and White Film",
   "item.exposure.developed_color_film": "Developed Color Film",

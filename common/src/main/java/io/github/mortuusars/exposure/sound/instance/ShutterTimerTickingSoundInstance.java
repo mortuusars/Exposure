@@ -40,7 +40,7 @@ public class ShutterTimerTickingSoundInstance extends AbstractTickableSoundInsta
             volume = Mth.lerp(0.2f, volume, originalVolume * 0.3f);
 
         if (!hasCameraWithOpenShutterInInventory(player)) {
-            // In multiplayer other players camera stack is not updated in time (sometimes)
+            // In multiplayer other players camera photo is not updated in time (sometimes)
             // This causes the sound to stop instantly
             if (!player.equals(Minecraft.getInstance().player) && delay > 0) {
                 delay--;

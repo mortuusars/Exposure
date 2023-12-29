@@ -297,7 +297,7 @@ public class CameraItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            openCameraAttachmentsGUI(player, hand);
+            openCameraAttachmentsMenu(player, hand);
             return InteractionResult.SUCCESS;
         }
 
@@ -509,7 +509,7 @@ public class CameraItem extends Item {
         return tag;
     }
 
-    protected void openCameraAttachmentsGUI(Player player, InteractionHand hand) {
+    protected void openCameraAttachmentsMenu(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             ItemStack cameraStack = player.getItemInHand(hand);
 

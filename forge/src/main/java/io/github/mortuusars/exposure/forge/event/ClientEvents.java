@@ -8,6 +8,7 @@ import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.ExposureClientReloadListener;
 import io.github.mortuusars.exposure.client.MouseHandler;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.client.gui.screen.AlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
@@ -32,6 +33,7 @@ public class ClientEvents {
                 Exposure.initClient();
 
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
+                MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
 
                 ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);

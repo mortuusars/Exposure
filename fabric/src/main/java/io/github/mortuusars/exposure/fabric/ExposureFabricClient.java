@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.fabric;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.client.gui.screen.AlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
@@ -25,6 +26,7 @@ public class ExposureFabricClient implements ClientModInitializer {
         Exposure.initClient();
 
         MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
+        MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
         MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
 
         ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
