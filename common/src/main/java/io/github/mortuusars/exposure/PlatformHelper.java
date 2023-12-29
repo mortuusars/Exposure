@@ -30,6 +30,7 @@ public class PlatformHelper {
         throw new AssertionError();
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     @ExpectPlatform
     public static boolean isModLoaded(String modId) {
         throw new AssertionError();

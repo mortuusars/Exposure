@@ -8,6 +8,7 @@
   "item.exposure.camera.camera_attachments.fail.shutter_open": "Неможливо розібрати фотокамеру, коли затвор відкритий.",
   "item.exposure.black_and_white_film": "Чорно-біла плівка",
   "item.exposure.color_film": "Кольорова плівка",
+  "item.exposure.album": "Фотоальбом",
 
   "item.exposure.developed_film.tooltip.frame_count": "Кадри: %s",
   "item.exposure.developed_black_and_white_film": "Проявлена чорно-біла плівка",

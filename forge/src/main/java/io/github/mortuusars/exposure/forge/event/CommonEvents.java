@@ -36,6 +36,7 @@ public class CommonEvents {
                 event.accept(Exposure.Items.DEVELOPED_COLOR_FILM.get());
                 event.accept(Exposure.Items.PHOTOGRAPH.get());
                 event.accept(Exposure.Items.STACKED_PHOTOGRAPHS.get());
+                event.accept(Exposure.Items.ALBUM.get());
             }
 
             if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {

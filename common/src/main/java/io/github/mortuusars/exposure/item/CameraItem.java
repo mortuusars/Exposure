@@ -37,7 +37,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -298,7 +297,7 @@ public class CameraItem extends Item {
                 return InteractionResult.FAIL;
             }
 
-            openCameraAttachmentsGUI(player, hand);
+            openCameraAttachmentsMenu(player, hand);
             return InteractionResult.SUCCESS;
         }
 
@@ -510,7 +509,7 @@ public class CameraItem extends Item {
         return tag;
     }
 
-    protected void openCameraAttachmentsGUI(Player player, InteractionHand hand) {
+    protected void openCameraAttachmentsMenu(Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             ItemStack cameraStack = player.getItemInHand(hand);
 

@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.integration.jei;
 import com.google.common.collect.ImmutableList;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.client.gui.screen.AlbumScreen;
 import io.github.mortuusars.exposure.integration.jei.category.PhotographPrintingCategory;
 import io.github.mortuusars.exposure.integration.jei.category.PhotographStackingCategory;
 import io.github.mortuusars.exposure.integration.jei.recipe.NbtTransferringShapelessExtension;
@@ -12,14 +13,16 @@ import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.handlers.IGuiContainerHandler;
 import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.registration.IRecipeCatalystRegistration;
-import mezz.jei.api.registration.IRecipeCategoryRegistration;
-import mezz.jei.api.registration.IRecipeRegistration;
-import mezz.jei.api.registration.IVanillaCategoryExtensionRegistration;
+import mezz.jei.api.registration.*;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 @JeiPlugin
 public class ExposureJeiPlugin implements IModPlugin {
@@ -66,5 +69,15 @@ public class ExposureJeiPlugin implements IModPlugin {
                 .addCategoryExtension(FilmDevelopingRecipe.class, NbtTransferringShapelessExtension::new);
         registration.getCraftingCategory()
                 .addCategoryExtension(PhotographCopyingRecipe.class, NbtTransferringShapelessExtension::new);
+    }
+
+    @Override
+    public void registerGuiHandlers(IGuiHandlerRegistration registration) {
+        registration.addGenericGuiContainerHandler(AlbumScreen.class, new IGuiContainerHandler<AlbumScreen>() {
+            @Override
+            public @NotNull List<Rect2i> getGuiExtraAreas(@NotNull AlbumScreen containerScreen) {
+                return List.of(new Rect2i(0, 0, Integer.MAX_VALUE, Integer.MAX_VALUE));
+            }
+        });
     }
 }

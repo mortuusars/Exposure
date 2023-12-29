@@ -75,7 +75,7 @@ public class StackedPhotographsItem extends Item {
 
     public void addPhotograph(ItemStack stack, ItemStack photographStack, int index) {
         Preconditions.checkState(index >= 0 && index <= getPhotographsCount(stack), index + " is out of bounds. Count: " + getPhotographsCount(stack));
-        Preconditions.checkState(canAddPhotograph(stack), "Cannot add more photographs than this stack can store. Max count: " + getMaxPhotographs());
+        Preconditions.checkState(canAddPhotograph(stack), "Cannot add more photographs than this photo can store. Max count: " + getMaxPhotographs());
         ListTag listTag = getOrCreatePhotographsListTag(stack);
         listTag.add(index, photographStack.save(new CompoundTag()));
         stack.getOrCreateTag().put(PHOTOGRAPHS_TAG, listTag);
@@ -270,7 +270,7 @@ public class StackedPhotographsItem extends Item {
             }
             else {
                 // Because in creative you don't get photograph back when breaking Photograph entity,
-                // we don't remove placed photograph from the stack.
+                // we don't remove placed photograph from the photo.
                 addPhotographOnTop(itemInHand, topPhotograph.getStack());
             }
         }
@@ -281,11 +281,11 @@ public class StackedPhotographsItem extends Item {
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
 //    @Override
-//    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context) {
+//    public InteractionResult onItemUseFirst(ItemStack photo, UseOnContext context) {
 //        if (!context.isSecondaryUseActive())
 //            return InteractionResult.PASS;
 //
-//        boolean result = cyclePhotographs(stack, context.getPlayer());
+//        boolean result = cyclePhotographs(photo, context.getPlayer());
 //        return result ? InteractionResult.SUCCESS : InteractionResult.FAIL;
 //
 

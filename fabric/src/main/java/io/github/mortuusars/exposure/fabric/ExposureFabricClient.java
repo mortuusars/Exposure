@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.fabric;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.client.gui.screen.AlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
@@ -11,7 +12,6 @@ import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
-import net.fabricmc.fabric.api.tag.client.v1.ClientTags;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -22,6 +22,7 @@ public class ExposureFabricClient implements ClientModInitializer {
         Exposure.initClient();
 
         MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
+        MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
         MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
 
         ModelLoadingPlugin.register(pluginContext ->

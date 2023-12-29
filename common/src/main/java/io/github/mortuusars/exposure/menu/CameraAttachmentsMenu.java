@@ -174,7 +174,7 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
     }
 
     /**
-     * Fixed method to respect slot stack limit.
+     * Fixed method to respect slot photo limit.
      */
     @Override
     protected boolean moveItemStackTo(ItemStack movedStack, int startIndex, int endIndex, boolean reverseDirection) {
