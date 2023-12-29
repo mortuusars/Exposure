@@ -24,12 +24,12 @@ public class AlbumMenu extends AbstractContainerMenu {
 //        public static final int CURRENT_PAGE_ID = 0;
 //
 //        @Override
-//        public int get(int index) {
+//        public int get(int slotIndex) {
 //            return 0;
 //        }
 //
 //        @Override
-//        public void set(int index, int value) {
+//        public void set(int slotIndex, int value) {
 //
 //        }
 //

@@ -8,6 +8,8 @@ import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.AlbumItem;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.server.AlbumMovePhotoC2SP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -111,7 +113,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         if (leftPage < pages.size()) {
             AlbumItem.Page page = pages.get(leftPage);
-            ItemStack photoStack = page.photo();
+            ItemStack photoStack = page.getPhotographStack();
 
             if (photoStack.getItem() instanceof PhotographItem photographItem) {
                 guiGraphics.blit(TEXTURE, leftPos + 25, topPos + 21, 0, 299, 0,
@@ -130,7 +132,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         if (rightPage < pages.size()) {
             AlbumItem.Page page = pages.get(rightPage);
-            ItemStack photoStack = page.photo();
+            ItemStack photoStack = page.getPhotographStack();
 
             if (photoStack.getItem() instanceof PhotographItem photographItem) {
                 guiGraphics.blit(TEXTURE, leftPos + 166, topPos + 21, 0, 299, 0,
@@ -159,6 +161,43 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         guiGraphics.drawString(font, rightPageNumber, leftPos + 212 + (8 - font.width(rightPageNumber) / 2),
                 topPos + 167, SECONDARY_FONT_COLOR, false);
+    }
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (mouseX >= 25 && mouseX < 132 && mouseY >= 21 && mouseY < 128) {
+            int currentSpreadIndex = pager.getCurrentPageIndex();
+            List<AlbumItem.Page> pages = getMenu().getPages();
+
+            int leftPage = currentSpreadIndex * 2;
+            if (leftPage < pages.size()) {
+                ItemStack photographStack = pages.get(leftPage).getPhotographStack();
+                if (photographStack.isEmpty()) {
+                    for (int i = 0; i < 40; i++) {
+                        ItemStack stack = Minecraft.getInstance().player.getInventory().getItem(i);
+                        if (stack.getItem() instanceof PhotographItem) {
+                            Minecraft.getInstance().player.getInventory().setItem(i, ItemStack.EMPTY);
+                            pages.get(leftPage).setPhotographStack(stack);
+                            Packets.sendToServer(new AlbumMovePhotoC2SP(i, leftPage, false));
+                            break;
+                        }
+                    }
+                }
+                else {
+                    ItemStack removedStack = pages.get(leftPage).setPhotographStack(ItemStack.EMPTY);
+                    boolean added = Minecraft.getInstance().player.getInventory().add(removedStack);
+                    if (!added) {
+                        Minecraft.getInstance().player.drop(removedStack, true, false);
+                    }
+                    pages.get(leftPage).setPhotographStack(ItemStack.EMPTY);
+                    Packets.sendToServer(new AlbumMovePhotoC2SP(-1, leftPage, true));
+                }
+
+                return true;
+            }
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
