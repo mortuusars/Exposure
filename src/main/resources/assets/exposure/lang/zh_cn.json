@@ -1,4 +1,6 @@
 {
+  "tooltip.exposure.hold_for_details": "§8按住[§7Shift§8]显示详细信息",
+
   "block.exposure.lightroom": "暗房",
 
   "item.exposure.camera": "相机",
@@ -6,20 +8,25 @@
   "item.exposure.camera.camera_attachments.fail.shutter_open": "快门打开时无法拆卸相机",
   "item.exposure.black_and_white_film": "黑白胶卷",
   "item.exposure.color_film": "彩色胶卷",
+
   "item.exposure.developed_black_and_white_film": "已冲洗的黑白胶卷",
   "item.exposure.developed_color_film": "已冲洗的彩色胶卷",
+  "item.exposure.developed_film.tooltip.frame_count": "照片数：%s",
+
   "item.exposure.photograph": "照片",
-  "item.exposure.photograph.photographer_tooltip": "由%s拍摄",
   "item.exposure.photograph.generation.0": "原件",
   "item.exposure.photograph.generation.1": "原件的副本",
   "item.exposure.photograph.generation.2": "副本的副本",
   "item.exposure.photograph.generation.3": "破烂不堪",
   "item.exposure.photograph.message.no_data": "纸上空无一物。找不到任何影像的痕迹，即便曾经有过",
+  "item.exposure.photograph.tooltip.details.copy": "与下列材料合成来复印：",
+  "item.exposure.photograph.photographer_tooltip": "由%s拍摄",
   "item.exposure.stacked_photographs": "一叠照片",
 
   "item.exposure.film_roll.tooltip.frame_count": "%s/%s",
-  "item.exposure.film_roll.tooltip.frame_size": "尺寸：%smm",
-  "item.exposure.developed_film.tooltip.frame_count": "帧数：%s",
+  "item.exposure.film_roll.tooltip.frame_size": "尺寸%smm",
+  "item.exposure.film_roll.tooltip.developing_step": "冲洗：%s",
+  "item.exposure.film_roll.tooltip.details.develop": "与下列材料合成来冲洗：",
 
   "entity.exposure.photograph": "照片",
 
@@ -35,28 +42,33 @@
   "gui.exposure.viewfinder.composition_guide.tooltip": "参考线",
   "gui.exposure.viewfinder.flash_mode.tooltip": "闪光灯",
   "gui.exposure.viewfinder.focal_length": "%smm",
-  "gui.exposure.viewfinder.film_frame_counter.tooltip": "胶卷帧数",
+  "gui.exposure.viewfinder.film_frame_counter.tooltip": "胶卷底片数",
   "gui.exposure.viewfinder.film_frame_counter.tooltip.no_film": "无胶卷",
   "gui.exposure.viewfinder.focal_length.tooltip": "焦距",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "快门速度",
 
-  "gui.exposure.lightroom.previous_frame": "前一帧",
-  "gui.exposure.lightroom.current_frame": "当前帧：%s",
+  "gui.exposure.lightroom.previous_frame": "前一张",
+  "gui.exposure.lightroom.current_frame": "当前：%s",
   "gui.exposure.lightroom.zoom_in.tooltip": "左键单击或滚轮向上以放大",
-  "gui.exposure.lightroom.next_frame": "后一帧",
+  "gui.exposure.lightroom.next_frame": "下一张",
   "gui.exposure.lightroom.print": "打印",
 
   "command.exposure.shader.removed": "已移除着色器",
   "command.exposure.load_from_file.success": "已加载底片“%s”",
   "command.exposure.load_from_file.failure": "无法加载底片，请参阅日志获取相关详细信息",
+  "command.exposure.export.success.result": "导出%s底片至%s.",
+  "command.exposure.export.success.saved_exposure_id": "已导出：[%s]",
+  "command.exposure.export.failure.cannot_get_all_ids": "无法获取底片ID。没有已储存的底片或发生了错误",
+  "command.exposure.export.failure.none_saved": "没有底片被导出",
+  "command.exposure.export.failure.not_found": "无法导出底片：未找到ID：[%s]",
   "command.exposure.show.error.not_a_player": "此命令应由玩家执行",
   "command.exposure.show.error.not_found": "未找到或无法加载id为“%s”的底片",
-  "command.exposure.show.latest.error.no_exposures": "没有存储任何底片",
+  "command.exposure.show.latest.error.no_exposures": "没有已储存的底片",
 
   "subtitle.exposure.camera.viewfinder_open": "相机取景器：打开",
   "subtitle.exposure.camera.viewfinder_close": "相机取景器：关闭",
   "subtitle.exposure.camera.shutter": "相机快门：咔嚓",
-  "subtitle.exposure.camera.film_advance": "胶卷：滚动至下一帧",
+  "subtitle.exposure.camera.film_advance": "胶卷：滚动至下一张",
   "subtitle.exposure.camera.film_advance_last": "胶卷：用尽",
   "subtitle.exposure.camera.button_click": "相机按钮：咔哒",
   "subtitle.exposure.camera.release_button_click" : "相机照相按钮：咔哒",
@@ -64,9 +76,9 @@
   "subtitle.exposure.camera.flash": "相机闪光灯：闪烁",
   "subtitle.exposure.lightroom.print": "暗房：打印照片",
 
-  "subtitle.exposure.photograph.place" : "照片：放置",
-  "subtitle.exposure.photograph.break" : "照片：破坏",
-  "subtitle.exposure.photograph.rustle" : "照片：旋转",
+  "subtitle.exposure.photograph.place" : "照片：被放置",
+  "subtitle.exposure.photograph.break" : "照片：被破坏",
+  "subtitle.exposure.photograph.rustle" : "照片：转到",
 
   "jei.exposure.photograph_printing.title": "打印",
   "jei.exposure.photograph_stacking.title": "叠放照片",
@@ -79,7 +91,7 @@
   "advancement.exposure.exposure.description": "使用相机曝光一张胶片",
   "advancement.exposure.void.title": "在虚空下，它是一个明亮的表面！",
   "advancement.exposure.void.description": "在末地拍摄一张照片",
-  "advancement.exposure.flash.title": "亮起来！",
+  "advancement.exposure.flash.title": "星星点灯!",
   "advancement.exposure.flash.description": "使用闪光灯在黑暗中拍照",
 
   "stat.exposure.interact_with_lightroom": "与暗房互动次数",
