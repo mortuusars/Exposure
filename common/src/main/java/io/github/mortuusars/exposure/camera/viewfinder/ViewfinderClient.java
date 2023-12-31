@@ -34,6 +34,7 @@ public class ViewfinderClient {
     private static FocalRange focalRange = new FocalRange(18, 55);
     private static double targetFov = 90f;
     private static double currentFov = targetFov;
+    private static boolean shouldRestoreFov;
 
     @Nullable
     private static String previousShaderEffect;
@@ -154,15 +155,18 @@ public class ViewfinderClient {
     }
 
     public static double modifyFov(double fov) {
-        if (isLookingThrough())
+        if (isLookingThrough()) {
             currentFov = Mth.lerp(Math.min(0.6f * Minecraft.getInstance().getDeltaFrameTime(), 0.6f), currentFov, targetFov);
-        else if (Math.abs(currentFov - fov) > 0.00001)
+            shouldRestoreFov = true;
+            return currentFov;
+        }
+        else if (shouldRestoreFov && Math.abs(currentFov - fov) > 0.00001) {
             currentFov = Mth.lerp(Math.min(0.8f * Minecraft.getInstance().getDeltaFrameTime(), 0.8f), currentFov, fov);
-        else {
+            return currentFov;
+        } else {
             currentFov = fov;
+            shouldRestoreFov = false;
             return fov;
         }
-
-        return currentFov;
     }
 }
