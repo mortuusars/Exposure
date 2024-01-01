@@ -94,7 +94,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         blit(poseStack, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         blit(poseStack, leftPos - 27, topPos + 34, 0, 208, 28, 31);
 
-
         // PLACEHOLDER ICONS
         if (!getMenu().slots.get(Lightroom.FILM_SLOT).hasItem())
             blit(poseStack, leftPos - 21, topPos + 41, 238, 0, 18, 18);
