@@ -57,8 +57,7 @@ public class ExportCommand {
                             exposureSavedData.getProperties());
 
             if (saved)
-                stack.sendSuccess(() ->
-                        Component.translatable("command.exposure.export.success.saved_exposure_id", id), true);
+                stack.sendSuccess(Component.translatable("command.exposure.export.success.saved_exposure_id", id), true);
 
             savedCount++;
         }
@@ -69,7 +68,7 @@ public class ExportCommand {
                     .withStyle(ChatFormatting.UNDERLINE)
                     .withStyle(arg -> arg.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, folderPath)));
             Component component = Component.translatable("command.exposure.export.success.result", savedCount, folderComponent);
-            stack.sendSuccess(() -> component, true);
+            stack.sendSuccess(component, true);
         } else
             stack.sendFailure(Component.translatable("command.exposure.export.failure.none_saved"));
 

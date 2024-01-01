@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
@@ -12,10 +13,8 @@ import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.server.AlbumMovePhotoC2SP;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
@@ -47,8 +46,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             nextButton = new ImageButton(leftPos + 275, topPos + 164, 13, 15,
                     420, 0, 15, texture, 512, 512, button -> onNextButtonPressed());
 
-            previousButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.previous_page")));
-            nextButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.next_page")));
+//            previousButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.previous_page")));
+//            nextButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.next_page")));
 
             addButtonAction.accept(previousButton);
             addButtonAction.accept(nextButton);
@@ -66,10 +65,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         super(menu, playerInventory, title);
     }
 
-    @Override
-    public void added() {
-        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 1f));
-    }
+//    @Override
+//    public void added() {
+//        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 1f));
+//    }
 
     @Override
     protected void init() {
@@ -86,82 +85,87 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        pager.update();
-        this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
+    protected void renderBg(PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
+
     }
 
-    @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, 0,
-                this.imageWidth, this.imageHeight, 512, 512);
-
-        int currentSpreadIndex = pager.getCurrentPageIndex();
-
-        drawPageNumbers(guiGraphics, currentSpreadIndex);
-
-        List<AlbumItem.Page> pages = getMenu().getPages();
-
-        int leftPage = currentSpreadIndex * 2;
-        int rightPage = leftPage + 1;
-
-        if (leftPage < pages.size()) {
-            AlbumItem.Page page = pages.get(leftPage);
-            ItemStack photoStack = page.getPhotographStack();
-
-            if (photoStack.getItem() instanceof PhotographItem photographItem) {
-                guiGraphics.blit(TEXTURE, leftPos + 25, topPos + 21, 0, 299, 0,
-                        108, 109, 512, 512);
-
-                @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photoStack);
-                if (idOrTexture != null) {
-                    MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                    ExposureClient.getExposureRenderer().render(idOrTexture, false, false, guiGraphics.pose(),
-                            bufferSource, this.leftPos + 31, this.topPos + 27, this.leftPos + 127, this.topPos + 123,
-                            0, 0, 1, 1, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-                    bufferSource.endBatch();
-                }
-            }
-        }
-
-        if (rightPage < pages.size()) {
-            AlbumItem.Page page = pages.get(rightPage);
-            ItemStack photoStack = page.getPhotographStack();
-
-            if (photoStack.getItem() instanceof PhotographItem photographItem) {
-                guiGraphics.blit(TEXTURE, leftPos + 166, topPos + 21, 0, 299, 0,
-                        108, 109, 512, 512);
-
-                @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photoStack);
-                if (idOrTexture != null) {
-                    MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-                    ExposureClient.getExposureRenderer().render(idOrTexture, false, false, guiGraphics.pose(),
-                            bufferSource, this.leftPos + 172, this.topPos + 27, this.leftPos + 268, this.topPos + 123,
-                            0, 0, 1, 1, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-                    bufferSource.endBatch();
-                }
-            }
-        }
-    }
-
-    protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {
-        Font font = Minecraft.getInstance().font;
-
-        String leftPageNumber = Integer.toString(currentSpreadIndex * 2 + 1);
-        String rightPageNumber = Integer.toString(currentSpreadIndex * 2 + 2);
-
-        guiGraphics.drawString(font, leftPageNumber, leftPos + 71 + (8 - font.width(leftPageNumber) / 2),
-                topPos + 167, SECONDARY_FONT_COLOR, false);
-
-        guiGraphics.drawString(font, rightPageNumber, leftPos + 212 + (8 - font.width(rightPageNumber) / 2),
-                topPos + 167, SECONDARY_FONT_COLOR, false);
-    }
+//    @Override
+//    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+//        pager.update();
+//        this.renderBackground(guiGraphics);
+//        super.render(guiGraphics, mouseX, mouseY, partialTick);
+//        this.renderTooltip(guiGraphics, mouseX, mouseY);
+//    }
+//
+//    @Override
+//    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+//        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+//        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//        RenderSystem.enableBlend();
+//        RenderSystem.defaultBlendFunc();
+//        guiGraphics.blit(TEXTURE, this.leftPos, this.topPos, 0, 0, 0,
+//                this.imageWidth, this.imageHeight, 512, 512);
+//
+//        int currentSpreadIndex = pager.getCurrentPageIndex();
+//
+//        drawPageNumbers(guiGraphics, currentSpreadIndex);
+//
+//        List<AlbumItem.Page> pages = getMenu().getPages();
+//
+//        int leftPage = currentSpreadIndex * 2;
+//        int rightPage = leftPage + 1;
+//
+//        if (leftPage < pages.size()) {
+//            AlbumItem.Page page = pages.get(leftPage);
+//            ItemStack photoStack = page.getPhotographStack();
+//
+//            if (photoStack.getItem() instanceof PhotographItem photographItem) {
+//                guiGraphics.blit(TEXTURE, leftPos + 25, topPos + 21, 0, 299, 0,
+//                        108, 109, 512, 512);
+//
+//                @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photoStack);
+//                if (idOrTexture != null) {
+//                    MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+//                    ExposureClient.getExposureRenderer().render(idOrTexture, false, false, guiGraphics.pose(),
+//                            bufferSource, this.leftPos + 31, this.topPos + 27, this.leftPos + 127, this.topPos + 123,
+//                            0, 0, 1, 1, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+//                    bufferSource.endBatch();
+//                }
+//            }
+//        }
+//
+//        if (rightPage < pages.size()) {
+//            AlbumItem.Page page = pages.get(rightPage);
+//            ItemStack photoStack = page.getPhotographStack();
+//
+//            if (photoStack.getItem() instanceof PhotographItem photographItem) {
+//                guiGraphics.blit(TEXTURE, leftPos + 166, topPos + 21, 0, 299, 0,
+//                        108, 109, 512, 512);
+//
+//                @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photoStack);
+//                if (idOrTexture != null) {
+//                    MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+//                    ExposureClient.getExposureRenderer().render(idOrTexture, false, false, guiGraphics.pose(),
+//                            bufferSource, this.leftPos + 172, this.topPos + 27, this.leftPos + 268, this.topPos + 123,
+//                            0, 0, 1, 1, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+//                    bufferSource.endBatch();
+//                }
+//            }
+//        }
+//    }
+//
+//    protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {
+//        Font font = Minecraft.getInstance().font;
+//
+//        String leftPageNumber = Integer.toString(currentSpreadIndex * 2 + 1);
+//        String rightPageNumber = Integer.toString(currentSpreadIndex * 2 + 2);
+//
+//        guiGraphics.drawString(font, leftPageNumber, leftPos + 71 + (8 - font.width(leftPageNumber) / 2),
+//                topPos + 167, SECONDARY_FONT_COLOR, false);
+//
+//        guiGraphics.drawString(font, rightPageNumber, leftPos + 212 + (8 - font.width(rightPageNumber) / 2),
+//                topPos + 167, SECONDARY_FONT_COLOR, false);
+//    }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
