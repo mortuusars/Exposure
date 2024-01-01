@@ -45,7 +45,7 @@ public record StopOnePerPlayerSoundS2CP(UUID sourcePlayerId, SoundEvent soundEve
         if (Minecraft.getInstance().level != null) {
             @Nullable Player sourcePlayer = Minecraft.getInstance().level.getPlayerByUUID(sourcePlayerId);
             if (sourcePlayer != null)
-                OnePerPlayerSounds.stop(sourcePlayer, soundEvent);
+                Minecraft.getInstance().execute(() -> OnePerPlayerSounds.stop(sourcePlayer, soundEvent));
             else
                 LogUtils.getLogger().debug("Cannot stop OnePerPlayer sound. SourcePlayer was not found by it's UUID.");
         }
