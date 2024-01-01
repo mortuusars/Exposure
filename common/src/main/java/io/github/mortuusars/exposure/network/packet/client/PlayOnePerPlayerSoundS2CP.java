@@ -51,7 +51,7 @@ public record PlayOnePerPlayerSoundS2CP(UUID sourcePlayerId, SoundEvent soundEve
         if (Minecraft.getInstance().level != null) {
             @Nullable Player sourcePlayer = Minecraft.getInstance().level.getPlayerByUUID(sourcePlayerId);
             if (sourcePlayer != null)
-                OnePerPlayerSounds.play(sourcePlayer, soundEvent, source, volume, pitch);
+                Minecraft.getInstance().execute(() -> OnePerPlayerSounds.play(sourcePlayer, soundEvent, source, volume, pitch));
             else
                 LogUtils.getLogger().debug("Cannot play OnePerPlayer sound. SourcePlayer was not found by it's UUID.");
         }

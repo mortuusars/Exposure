@@ -50,6 +50,9 @@ dependencies {
     modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
 //    modRuntimeOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
 
+    // C2ME
+    modImplementation("maven.modrinth:VSNURh3q:0.2.0+alpha.11.0+1.20.1")
+
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 }

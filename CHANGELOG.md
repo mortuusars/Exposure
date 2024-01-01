@@ -9,6 +9,7 @@
 
 - Fixed being able to copy `Copy of a copy` photograph.
 - Fixed fabric incompatibility with zoom mods.
+- Made some changes that may fix the crash with C2ME. 
 
 ## 1.2.1 - 2023-12-24
 - Fixed water not rendering properly with shaders when looking through Viewfinder.
