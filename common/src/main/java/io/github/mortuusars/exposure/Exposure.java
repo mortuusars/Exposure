@@ -140,9 +140,9 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
-        public static final Supplier<AlbumItem> ALBUM = Register.item("album",
-                () -> new AlbumItem(new Item.Properties()
-                        .stacksTo(1)));
+//        public static final Supplier<AlbumItem> ALBUM = Register.item("album",
+//                () -> new AlbumItem(new Item.Properties()
+//                        .stacksTo(1)));
 
         public static final Supplier<BlockItem> LIGHTROOM = Register.item("lightroom",
                 () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()
