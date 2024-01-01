@@ -1,14 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.2.2 - 2024-01-01
 - Added `/exposure export` command. Allows exporting exposures to PNGs to `<world>/exposures` folder. Requires OP privileges.
-- Added some creative-mode tools to Photograph screen:
+- Added some **creative-mode** tools to Photograph screen:
   - **Ctrl+S** to save as PNG
   - **Ctrl+C** to copy exposure id to clipboard
-  - **Ctrl+P** to give yourself current photograph in item form (useful when using commands to show the exposure)
+  - **Ctrl+P** to give yourself current photograph in item form
 
 - Fixed being able to copy `Copy of a copy` photograph.
-- Fixed fabric incompatibility with zoom mods.
+- Fixed fov related issue that was causing problems with zoom mods.
 - Fixed Lightroom Screen film bugging out when replacing Developed Film in slot with a film that has fewer frames than currently selected frame index.   
 - Made some changes that may fix the crash with C2ME. 
 

@@ -63,6 +63,7 @@ public class Config {
                 CAMERA_LENS_FOCAL_RANGES = builder
                         .comment("Focal Range per lens. Item ID and min-max (or single number for primes) focal lengths. " +
                                     "Separated by a comma. Allowed range: " + FocalRange.ALLOWED_MIN + "-" + FocalRange.ALLOWED_MAX,
+                                "Note: to attach the custom lens to the camera - it needs to be added to '#exposure:lenses' item tag.",
                                 "Default: [\"minecraft:spyglass,55-200\"]")
                         .defineListAllowEmpty(List.of("LensFocalRanges"), () ->
                                 List.of("minecraft:spyglass,55-200"), Common::validateLensProperties);
