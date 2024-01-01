@@ -9,6 +9,7 @@
 
 - Fixed being able to copy `Copy of a copy` photograph.
 - Fixed fabric incompatibility with zoom mods.
+- Fixed Lightroom Screen film bugging out when replacing Developed Film in slot with a film that has fewer frames than currently selected frame index.   
 - Made some changes that may fix the crash with C2ME. 
 
 ## 1.2.1 - 2023-12-24

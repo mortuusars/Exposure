@@ -92,7 +92,6 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         guiGraphics.blit(MAIN_TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
         guiGraphics.blit(MAIN_TEXTURE, leftPos - 27, topPos + 34, 0, 208, 28, 31);
 
-
         // PLACEHOLDER ICONS
         if (!getMenu().slots.get(Lightroom.FILM_SLOT).hasItem())
             guiGraphics.blit(MAIN_TEXTURE, leftPos - 21, topPos + 41, 238, 0, 18, 18);
