@@ -133,9 +133,12 @@ public class Exposure {
                 () -> new StackedPhotographsItem(16, new Item.Properties()
                         .stacksTo(1)));
 
-//        public static final Supplier<AlbumItem> ALBUM = Register.item("album",
-//                () -> new AlbumItem(new Item.Properties()
-//                        .stacksTo(1)));
+        public static final Supplier<AlbumItem> ALBUM = Register.item("album",
+                () -> new AlbumItem(new Item.Properties()
+                        .stacksTo(1)));
+        public static final Supplier<SignedAlbumItem> SIGNED_ALBUM = Register.item("signed_album",
+                () -> new SignedAlbumItem(new Item.Properties()
+                        .stacksTo(1)));
 
         public static final Supplier<BlockItem> LIGHTROOM = Register.item("lightroom",
                 () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));

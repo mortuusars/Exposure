@@ -113,7 +113,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
         }
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        ExposureClient.getExposureRenderer().render(idOrTexture, true, true, guiGraphics.pose(), bufferSource,
+        ExposureClient.getExposureRenderer().renderSimple(idOrTexture, true, true, guiGraphics.pose(), bufferSource,
                 0, 0, width, height, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
                 type.frameR, type.frameG, type.frameB, 255);
         bufferSource.endBatch();

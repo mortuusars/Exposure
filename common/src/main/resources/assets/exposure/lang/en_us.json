@@ -9,6 +9,8 @@
   "item.exposure.black_and_white_film": "Black and White Film",
   "item.exposure.color_film": "Color Film",
   "item.exposure.album": "Photo Album",
+  "item.exposure.signed_album": "Signed Photo Album",
+  "item.exposure.album.tooltip.photos_count": "§7Photos: %s",
 
   "item.exposure.developed_black_and_white_film": "Developed Black and White Film",
   "item.exposure.developed_color_film": "Developed Color Film",
@@ -50,6 +52,10 @@
 
   "gui.exposure.album.previous_page": "Previous Page",
   "gui.exposure.album.next_page": "Next Page",
+  "gui.exposure.album.add_photograph": "Add Photograph",
+  "gui.exposure.album.left_click_to_add": "§8[§7Left Click§8] to Add",
+  "gui.exposure.album.left_click_to_view": "§8[§7Left Click§8] to View",
+  "gui.exposure.album.right_click_to_remove": "§8[§7Right Click§8] to Remove",
 
   "gui.exposure.lightroom.previous_frame": "Previous Frame",
   "gui.exposure.lightroom.current_frame": "Frame: %s",

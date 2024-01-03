@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.client.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
@@ -9,6 +10,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -27,10 +29,20 @@ public class ExposureRenderer implements AutoCloseable {
 
     private final Map<String, ExposureInstance> cache = new HashMap<>();
 
-    public void render(@NotNull Either<String, ResourceLocation> idOrTexture, boolean negative, boolean simulateFilm,
-                       PoseStack poseStack, MultiBufferSource bufferSource,
-                       float minX, float minY, float maxX, float maxY,
-                       float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
+    public void renderSimple(@NotNull Either<String, ResourceLocation> idOrTexture, PoseStack poseStack,
+                             float x, float y, float width, float height) {
+        MultiBufferSource.BufferSource bufferSource =
+                MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        renderSimple(idOrTexture, false, false, poseStack,
+                bufferSource, x, y, x + width, y + height,
+                0, 0, 1, 1, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+        bufferSource.endBatch();
+    }
+
+    public void renderSimple(@NotNull Either<String, ResourceLocation> idOrTexture, boolean negative, boolean simulateFilm,
+                             PoseStack poseStack, MultiBufferSource bufferSource,
+                             float minX, float minY, float maxX, float maxY,
+                             float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
         @Nullable ExposureImage exposure = idOrTexture.map(
                 id -> ExposureClient.getExposureStorage().getOrQuery(id).map(data -> new ExposureImage(id, data)).orElse(null),
                 texture -> {
@@ -74,7 +86,7 @@ public class ExposureRenderer implements AutoCloseable {
         float offset = SIZE * 0.0625f;
         poseStack.translate(offset, offset, 1);
         poseStack.scale(0.875f, 0.875f, 0.875f);
-        render(idOrTexture, false, false, poseStack, bufferSource,
+        renderSimple(idOrTexture, false, false, poseStack, bufferSource,
                 minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
         poseStack.popPose();
     }
