@@ -86,11 +86,11 @@ public class Pager {
         changePage(PagingDirection.NEXT);
     }
 
-    public void changePage(PagingDirection pagingDirection) {
+    public boolean changePage(PagingDirection pagingDirection) {
         if (pages < 2 || Util.getMillis() - lastChangedAt < changeCooldownMS)
-            return;
+            return false;
 
-        int prevIndex = currentPage;
+        int prevPage = currentPage;
 
         currentPage += pagingDirection == PagingDirection.NEXT ? 1 : -1;
 
@@ -101,11 +101,17 @@ public class Pager {
         else if (!cycled)
             currentPage = Mth.clamp(currentPage, 0, pages - 1);
 
-        if (prevIndex != currentPage) {
-            lastChangedAt = Util.getMillis();
-            if (playSound)
-                playChangeSound();
-        }
+        if (prevPage == currentPage)
+            return false;
+
+        onPageChanged(pagingDirection, prevPage, currentPage);
+        return true;
+    }
+
+    public void onPageChanged(PagingDirection pagingDirection, int prevPage, int currentPage) {
+        lastChangedAt = Util.getMillis();
+        if (playSound)
+            playChangeSound();
     }
 
     protected void playChangeSound() {

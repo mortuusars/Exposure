@@ -242,7 +242,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         Either<String, ResourceLocation> idOrTexture = FrameData.getIdOrTexture(frame);
-        ExposureClient.getExposureRenderer().render(idOrTexture, true, true, poseStack, bufferSource,
+        ExposureClient.getExposureRenderer().renderSimple(idOrTexture, true, true, poseStack, bufferSource,
                 0, 0, size, size, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
                 negative.frameR, negative.frameG, negative.frameB, Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
 

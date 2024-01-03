@@ -61,7 +61,7 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
 
         if (idOrTexture != null) {
             if (invisible) {
-                ExposureClient.getExposureRenderer().render(idOrTexture, false, false, poseStack, bufferSource,
+                ExposureClient.getExposureRenderer().renderSimple(idOrTexture, false, false, poseStack, bufferSource,
                         0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                         packedLight, brightness, brightness, brightness, 255);
             } else {
