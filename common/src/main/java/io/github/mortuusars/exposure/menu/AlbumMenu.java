@@ -8,6 +8,7 @@ import io.github.mortuusars.exposure.item.AlbumPage;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.SignedAlbumItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
@@ -25,16 +26,6 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class AlbumMenu extends AbstractContainerMenu {
-    public enum Page {
-        LEFT, RIGHT;
-
-        public int getPageIndexFromSpread(int spreadIndex) {
-            return spreadIndex * 2 + (this == LEFT ? 0 : 1);
-        }
-    }
-
-    public static final int MAX_PAGES = 16;
-
     public static final int CANCEL_ADDING_PHOTO_BUTTON = -1;
     public static final int PREVIOUS_PAGE_BUTTON = 0;
     public static final int NEXT_PAGE_BUTTON = 1;
@@ -70,8 +61,8 @@ public class AlbumMenu extends AbstractContainerMenu {
             clickMenuButton(p, CANCEL_ADDING_PHOTO_BUTTON);
             setCurrentSpreadIndex(Math.min((getPages().size() - 1) / 2, getCurrentSpreadIndex() + 1));
         });
-        put(LEFT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Page.LEFT));
-        put(RIGHT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Page.RIGHT));
+        put(LEFT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Side.LEFT));
+        put(RIGHT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Side.RIGHT));
     }};
 
     public AlbumMenu(int containerId, Inventory playerInventory, ItemAndStack<AlbumItem> album) {
@@ -82,7 +73,7 @@ public class AlbumMenu extends AbstractContainerMenu {
         pages = isAlbumEditable() ? new ArrayList<>(albumPages) : albumPages;
 
         if (isAlbumEditable()) {
-            while (pages.size() < AlbumMenu.MAX_PAGES) {
+            while (pages.size() < album.getItem().getMaxPages()) {
                 addEmptyPage();
             }
         }
@@ -106,11 +97,11 @@ public class AlbumMenu extends AbstractContainerMenu {
     }
 
     public boolean isAlbumEditable() {
-        return !(album.getItem() instanceof SignedAlbumItem);
+        return album.getItem().isEditable();
     }
 
     protected void addEmptyPage() {
-        AlbumPage page = new AlbumPage(ItemStack.EMPTY, Collections.emptyList());
+        AlbumPage page = album.getItem().createEmptyPage();
         pages.add(page);
         album.getItem().addPage(album.getStack(), page);
     }
@@ -136,7 +127,7 @@ public class AlbumMenu extends AbstractContainerMenu {
             AlbumPage page = pages.get(i);
             ItemStack stack = container.getItem(i);
             page.setPhotographStack(stack);
-            album.getItem().setPhotoOnPage(album.getStack(), stack, i);
+            album.getItem().setPage(album.getStack(), page, i);
         }
     }
 
@@ -161,17 +152,17 @@ public class AlbumMenu extends AbstractContainerMenu {
         }
     }
 
-    private void onPhotoButtonPress(Player player, Page page) {
+    private void onPhotoButtonPress(Player player, Side side) {
         Preconditions.checkArgument(isAlbumEditable(),
                 "Photo Button should be disabled and hidden when Album is not editable. " + album.getStack());
 
-        Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(page);
+        Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(side);
         if (photographSlot.isEmpty())
             return;
 
         AlbumPhotographSlot slot = photographSlot.get();
         if (!slot.hasItem()) {
-            pageBeingAddedTo = page;
+            pageBeingAddedTo = side;
         }
         else {
             ItemStack stack = slot.getItem();
@@ -196,12 +187,16 @@ public class AlbumMenu extends AbstractContainerMenu {
         return pages;
     }
 
-    public Optional<AlbumPage> getLeftPage() {
-        return getPage(getCurrentSpreadIndex() * 2);
-    }
+//    public Optional<AlbumPage> getLeftPage() {
+//        return getPage(getCurrentSpreadIndex() * 2);
+//    }
+//
+//    public Optional<AlbumPage> getRightPage() {
+//        return getPage(getCurrentSpreadIndex() * 2 + 1);
+//    }
 
-    public Optional<AlbumPage> getRightPage() {
-        return getPage(getCurrentSpreadIndex() * 2 + 1);
+    public Optional<AlbumPage> getPage(Side side) {
+        return getPage(getCurrentSpreadIndex() * 2 + side.getIndex());
     }
 
     public Optional<AlbumPage> getPage(int pageIndex) {

@@ -2,26 +2,24 @@ package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.item.AlbumItem;
 import io.github.mortuusars.exposure.network.PacketDirection;
 import io.github.mortuusars.exposure.network.packet.IPacket;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record AlbumMovePhotoC2SP(int slotIndex, int pageIndex, boolean remove) implements IPacket<AlbumMovePhotoC2SP> {
-    public static final ResourceLocation ID = Exposure.resource("album_move_photo");
+public record AlbumUpdateNoteC2SP(int pageIndex, String text) implements IPacket<AlbumUpdateNoteC2SP> {
+    public static final ResourceLocation ID = Exposure.resource("album_update_note");
 
     @Override
     public ResourceLocation getId() {
         return ID;
     }
 
-    public static AlbumMovePhotoC2SP fromBuffer(FriendlyByteBuf buffer) {
-        return new AlbumMovePhotoC2SP(buffer.readInt(), buffer.readInt(), buffer.readBoolean());
+    public static AlbumUpdateNoteC2SP fromBuffer(FriendlyByteBuf buffer) {
+        return new AlbumUpdateNoteC2SP(buffer.readInt(), buffer.readInt(), buffer.readBoolean());
     }
 
     @Override

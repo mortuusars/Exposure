@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.gui.screen;
+package io.github.mortuusars.exposure.client.gui.screen.camera;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -9,7 +9,8 @@ import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
 import io.github.mortuusars.exposure.client.MouseHandler;
-import io.github.mortuusars.exposure.client.gui.screen.element.*;
+import io.github.mortuusars.exposure.client.gui.screen.element.IElementWithTooltip;
+import io.github.mortuusars.exposure.client.gui.screen.camera.button.*;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.KeyMapping;

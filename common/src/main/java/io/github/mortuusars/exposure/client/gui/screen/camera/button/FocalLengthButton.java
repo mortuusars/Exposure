@@ -1,9 +1,9 @@
-package io.github.mortuusars.exposure.client.gui.screen.element;
+package io.github.mortuusars.exposure.client.gui.screen.camera.button;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.client.gui.screen.IElementWithTooltip;
+import io.github.mortuusars.exposure.client.gui.screen.element.IElementWithTooltip;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

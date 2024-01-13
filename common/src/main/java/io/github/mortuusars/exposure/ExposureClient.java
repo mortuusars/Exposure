@@ -1,8 +1,7 @@
 package io.github.mortuusars.exposure;
 
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.client.gui.screen.camera.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.data.storage.ClientsideExposureStorage;
 import io.github.mortuusars.exposure.data.storage.IExposureStorage;
@@ -31,7 +30,14 @@ public class ExposureClient {
         exposureSender = new ExposureSender((packet, player) -> Packets.sendToServer(packet));
         exposureReceiver = new ExposureReceiver(exposureStorage);
 
-        LogUtils.getLogger().info("Exposure client initialized!");
+        ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
+        ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
+                (pStack, pLevel, pEntity, pSeed) -> {
+                    if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
+                        return stackedPhotographsItem.getPhotographsCount(pStack) / 100f;
+                    }
+                    return 0f;
+                });
     }
 
     public static IExposureStorage getExposureStorage() {

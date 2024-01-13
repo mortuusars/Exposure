@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.gui.screen.element;
+package io.github.mortuusars.exposure.client.gui.screen.camera.button;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.vertex.PoseStack;
