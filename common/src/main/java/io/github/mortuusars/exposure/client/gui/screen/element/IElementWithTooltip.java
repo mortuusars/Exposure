@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.gui.screen;
+package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import net.minecraft.client.gui.GuiGraphics;
 import org.jetbrains.annotations.NotNull;

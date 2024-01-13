@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.SelfieClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
-import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.client.gui.screen.camera.ViewfinderControlsScreen;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;

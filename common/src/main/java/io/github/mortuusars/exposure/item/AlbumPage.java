@@ -1,52 +1,73 @@
 package io.github.mortuusars.exposure.item;
 
+import com.mojang.datafixers.util.Either;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class AlbumPage {
     public static final String PHOTOGRAPH_TAG = "Photo";
     public static final String NOTE_TAG = "Note";
+    public static final String NOTE_COMPONENT_TAG = "NoteComponent";
     private ItemStack photographStack;
-    private List<Component> note;
+    private Either<String, Component> note;
 
-    public AlbumPage(ItemStack photo, List<Component> note) {
-        this.photographStack = photo;
+    public AlbumPage(ItemStack photographStack, Either<String, Component> note) {
+        this.photographStack = photographStack;
         this.note = note;
     }
 
-    public static AlbumPage fromTag(CompoundTag tag) {
-        ItemStack photo = tag.contains(PHOTOGRAPH_TAG, Tag.TAG_COMPOUND) ? ItemStack.of(tag.getCompound(PHOTOGRAPH_TAG)) : ItemStack.EMPTY;
-        ListTag noteList = tag.getList(NOTE_TAG, Tag.TAG_COMPOUND);
+    public static AlbumPage editable(ItemStack photographStack, String note) {
+        return new AlbumPage(photographStack, Either.left(note));
+    }
 
-        List<Component> note = new ArrayList<>();
+    public static AlbumPage signed(ItemStack photographStack, Component note) {
+        return new AlbumPage(photographStack, Either.right(note));
+    }
 
-        for (int j = 0; j < noteList.size(); j++) {
-            String noteString = noteList.getString(j);
-            note.add(j, noteString.isEmpty() ? Component.empty() : Component.Serializer.fromJson(noteString));
+    public boolean isEditable() {
+        return note.left().isPresent();
+    }
+
+    public static AlbumPage fromTag(CompoundTag tag, boolean editable) {
+        ItemStack photographStack = tag.contains(PHOTOGRAPH_TAG, Tag.TAG_COMPOUND)
+                ? ItemStack.of(tag.getCompound(PHOTOGRAPH_TAG)) : ItemStack.EMPTY;
+
+        if (editable) {
+            String note;
+            if (tag.contains(NOTE_TAG, Tag.TAG_STRING))
+                note = tag.getString(NOTE_TAG);
+            else if (tag.contains(NOTE_COMPONENT_TAG)) {
+                @Nullable MutableComponent component = Component.Serializer.fromJson(tag.getString(NOTE_COMPONENT_TAG));
+                note = component != null ? component.getString(512) : "";
+            } else
+                note = "";
+
+            return editable(photographStack, note);
+        } else {
+            Component note;
+            if (tag.contains(NOTE_COMPONENT_TAG, Tag.TAG_STRING))
+                note = Component.Serializer.fromJson(tag.getString(NOTE_COMPONENT_TAG));
+            else if (tag.contains(NOTE_TAG))
+                note = Component.literal(tag.getString(NOTE_TAG));
+            else
+                note = Component.empty();
+
+            return signed(photographStack, note);
         }
-
-        return new AlbumPage(photo, note);
     }
 
     public CompoundTag toTag(CompoundTag tag) {
         if (!photographStack.isEmpty())
             tag.put(PHOTOGRAPH_TAG, photographStack.save(new CompoundTag()));
 
-        if (note.size() > 0) {
-            ListTag noteList = new ListTag();
-            for (Component component : note) {
-                noteList.add(StringTag.valueOf(Component.Serializer.toJson(component)));
-            }
-            tag.put(NOTE_TAG, noteList);
-        }
+        note.ifLeft(string -> { if (!string.isEmpty()) tag.putString(NOTE_TAG, string);})
+            .ifRight(component -> tag.putString(NOTE_COMPONENT_TAG, Component.Serializer.toJson(component)));
 
         return tag;
     }
@@ -61,11 +82,11 @@ public class AlbumPage {
         return existingStack;
     }
 
-    public List<Component> getNote() {
+    public Either<String, Component> getNote() {
         return note;
     }
 
-    public void setNote(List<Component> note) {
+    public void setNote(Either<String, Component> note) {
         this.note = note;
     }
 

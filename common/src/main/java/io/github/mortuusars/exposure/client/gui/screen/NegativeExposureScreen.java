@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
+import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.render.ExposureImage;
 import io.github.mortuusars.exposure.client.render.ExposureTexture;
 import io.github.mortuusars.exposure.data.storage.ExposureSavedData;

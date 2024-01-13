@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.gui.screen;
+package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import net.minecraft.util.Mth;

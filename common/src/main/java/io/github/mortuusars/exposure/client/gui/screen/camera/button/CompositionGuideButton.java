@@ -1,8 +1,9 @@
-package io.github.mortuusars.exposure.client.gui.screen.element;
+package io.github.mortuusars.exposure.client.gui.screen.camera.button;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.camera.infrastructure.FlashMode;
+import io.github.mortuusars.exposure.camera.infrastructure.CompositionGuide;
+import io.github.mortuusars.exposure.camera.infrastructure.CompositionGuides;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.ChatFormatting;
@@ -16,33 +17,31 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-public class FlashModeButton extends CycleButton {
+public class CompositionGuideButton extends CycleButton {
+    private final List<CompositionGuide> guides;
 
-    private final List<FlashMode> flashModes;
-
-    public FlashModeButton(Screen screen, int x, int y, int width, int height, int u, int v, ResourceLocation texture) {
+    public CompositionGuideButton(Screen screen, int x, int y, int width, int height, int u, int v,  ResourceLocation texture) {
         super(screen, x, y, width, height, u, v, height, texture);
-        flashModes = Arrays.stream(FlashMode.values()).toList();
+        guides = CompositionGuides.getGuides();
 
         CameraInHand camera = CameraInHand.getActive(Minecraft.getInstance().player);
         Preconditions.checkState(!camera.isEmpty(), "Player must hold an active camera at this point.");
-        FlashMode guide = camera.getItem().getFlashMode(camera.getStack());
+        CompositionGuide guide = camera.getItem().getCompositionGuide(camera.getStack());
 
         int currentGuideIndex = 0;
 
-        for (int i = 0; i < flashModes.size(); i++) {
-            if (flashModes.get(i).getId().equals(guide.getId())) {
+        for (int i = 0; i < guides.size(); i++) {
+            if (guides.get(i).getId().equals(guide.getId())) {
                 currentGuideIndex = i;
                 break;
             }
         }
 
-        setupButtonElements(flashModes.size(), currentGuideIndex);
+        setupButtonElements(guides.size(), currentGuideIndex);
     }
 
     @Override
@@ -56,23 +55,23 @@ public class FlashModeButton extends CycleButton {
         super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
 
         // Icon
-        guiGraphics.blit(Exposure.resource("textures/gui/viewfinder/icon/flash_mode/" + flashModes.get(currentIndex).getId() + ".png"),
+        guiGraphics.blit(Exposure.resource("textures/gui/viewfinder/icon/composition_guide/" + guides.get(currentIndex).getId() + ".png"),
                 getX(), getY() + 4, 0, 0, 0, 15, 14, 15, 14);
     }
 
     @Override
-    public void renderToolTip(@NotNull GuiGraphics pGuiGraphics, int mouseX, int mouseY) {
-        pGuiGraphics.renderTooltip(Minecraft.getInstance().font, List.of(Component.translatable("gui.exposure.viewfinder.flash_mode.tooltip"),
+    public void renderToolTip(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        guiGraphics.renderTooltip(Minecraft.getInstance().font, List.of(Component.translatable("gui.exposure.viewfinder.composition_guide.tooltip"),
                 ((MutableComponent) getMessage()).withStyle(ChatFormatting.GRAY)), Optional.empty(), mouseX, mouseY);
     }
 
     @Override
     public @NotNull Component getMessage() {
-        return flashModes.get(currentIndex).translate();
+        return guides.get(currentIndex).translate();
     }
 
     @Override
     protected void onCycle() {
-        SynchronizedCameraInHandActions.setFlashMode(flashModes.get(currentIndex));
+        SynchronizedCameraInHandActions.setCompositionGuide(guides.get(currentIndex));
     }
 }

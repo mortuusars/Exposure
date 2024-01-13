@@ -1,14 +1,18 @@
-package io.github.mortuusars.exposure.client.gui.screen;
+package io.github.mortuusars.exposure.client.gui.screen.album;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
+import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
+import io.github.mortuusars.exposure.client.gui.screen.element.TextBlock;
+import io.github.mortuusars.exposure.client.gui.screen.element.TextBox;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.AlbumPlayerInventorySlot;
 import io.github.mortuusars.exposure.util.PagingDirection;
+import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -39,30 +43,13 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
-    private class Page {
-        public final AlbumMenu.Page page;
-        public final Rect2i photoArea;
-        public final Rect2i exposureArea;
-        public final Button addPhotoButton;
-        public final int photoButtonId;
-
-        public Page(@NotNull AlbumMenu.Page page, Rect2i photoArea, Rect2i exposureArea, @NotNull Button addPhotoButton, int photoButtonId) {
-            this.page = page;
-            this.photoArea = photoArea;
-            this.exposureArea = exposureArea;
-            this.addPhotoButton = addPhotoButton;
-            this.photoButtonId = photoButtonId;
-        }
-
-        public boolean isMouseOver(double mouseX, double mouseY) {
-            return isHovering(photoArea.getX() - leftPos, photoArea.getY() - topPos,
-                    photoArea.getWidth(), photoArea.getHeight(), mouseX, mouseY);
-        }
-    }
-
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/album.png");
-    public static final int MAIN_FONT_COLOR = 0xB59774;
-    public static final int SECONDARY_FONT_COLOR = 0xEFE4CA;
+    public static final int MAIN_FONT_COLOR = 0xFFB59774;
+    public static final int SECONDARY_FONT_COLOR = 0xFFEFE4CA;
+    public static final int MAX_NOTE_WIDTH = 114;
+    public static final int MAX_NOTE_LINES = 3;
+    public static final int SELECTION_COLOR = 0xFF8888FF;
+    public static final int SELECTION_UNFOCUSED_COLOR = 0xFFBBBBFF;
 
     @NotNull
     private final Minecraft minecraft;
@@ -109,12 +96,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         minecraft = Minecraft.getInstance();
         player = Objects.requireNonNull(minecraft.player);
         gameMode = Objects.requireNonNull(minecraft.gameMode);
-
     }
 
     @Override
-    public void added() {
-        minecraft.getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 1f));
+    protected void containerTick() {
+        forEachPage(page -> page.noteWidget.ifLeft(TextBox::tick));
     }
 
     @Override
@@ -134,41 +120,92 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         MutableComponent addButtonTooltip = Component.translatable("gui.exposure.album.add_photograph");
 
-        Rect2i leftPhotoArea = new Rect2i(leftPos + 25, topPos + 21, 108, 109);
-        Rect2i leftPhotoExposure = new Rect2i(this.leftPos + 31, this.topPos + 27, 96, 96);
+        // LEFT:
 
-        Button leftAddPhotoButton = new ImageButton(leftPhotoArea.getX(), leftPhotoArea.getY(),
-                leftPhotoArea.getWidth(), leftPhotoArea.getHeight(), 299, 0, 109,
-                TEXTURE, 512, 512, this::onButtonPress);
-        leftAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
+        Rect2i lPageArea = new Rect2i(leftPos, topPos, 149, 188);
+        Rect2i lPhotoArea = new Rect2i(leftPos + 25, topPos + 21, 108, 109);
+        Rect2i lExposureArea = new Rect2i(leftPos + 31, topPos + 27, 96, 96);
+        Rect2i lNoteArea = new Rect2i(leftPos + 22, topPos + 132, 114, 27);
 
-        pages.add(new Page(AlbumMenu.Page.LEFT, leftPhotoArea, leftPhotoExposure,
-                leftAddPhotoButton, AlbumMenu.LEFT_PAGE_PHOTO_BUTTON));
-        addRenderableWidget(leftAddPhotoButton);
+        Button lAddPhotoButton = new ImageButton(lPhotoArea.getX(), lPhotoArea.getY(), lPhotoArea.getWidth(), lPhotoArea.getHeight(),
+                299, 0, 109, TEXTURE, 512, 512, this::onButtonPress);
+        lAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
+        addRenderableWidget(lAddPhotoButton);
 
+        Either<TextBox, TextBlock> lNoteWidget;
+        if (getMenu().isAlbumEditable()) {
+            TextBox textBox = new TextBox(font, lNoteArea.getX(), lNoteArea.getY(),
+                    lNoteArea.getWidth(), lNoteArea.getHeight())
+                    .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
+                    .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
+            textBox.textGetter = () -> getMenu().getPage(Side.LEFT).map(page -> page.getNote().left().orElseThrow())
+                    .orElse("");
+            textBox.textSetter = text -> onNoteChanged(Side.LEFT, text);
+            addRenderableWidget(textBox);
+            lNoteWidget = Either.left(textBox);
+        } else {
+            TextBlock textBlock = new TextBlock(font, lNoteArea.getX(), lNoteArea.getY(),
+                    lNoteArea.getWidth(), lNoteArea.getHeight(), message);
+            textBlock.fontColor = MAIN_FONT_COLOR;
+            addRenderableWidget(textBlock);
+            lNoteWidget = Either.right(textBlock);
+        }
+
+        pages.add(new Page(Side.LEFT, lPageArea, lPhotoArea, lExposureArea, lNoteArea, lAddPhotoButton,
+                AlbumMenu.LEFT_PAGE_PHOTO_BUTTON, lNoteWidget));
+
+
+        // RIGHT:
+
+        Rect2i rightPageArea = new Rect2i(leftPos, topPos, 149, 188);
         Rect2i rightPhotoArea = new Rect2i(leftPos + 166, topPos + 21, 108, 109);
-        Rect2i rightPhotoExposure = new Rect2i(this.leftPos + 172, this.topPos + 27, 96, 96);
+        Rect2i rightExposureArea = new Rect2i(leftPos + 172, topPos + 27, 96, 96);
+        Rect2i rightNoteArea = new Rect2i(leftPos + 163, topPos + 132, 114, 27);
 
         Button rightAddPhotoButton = new ImageButton(rightPhotoArea.getX(), rightPhotoArea.getY(),
                 rightPhotoArea.getWidth(), rightPhotoArea.getHeight(), 299, 0, 109,
                 TEXTURE, 512, 512, this::onButtonPress);
         rightAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
-
-        pages.add(new Page(AlbumMenu.Page.RIGHT, rightPhotoArea, rightPhotoExposure,
-                rightAddPhotoButton, AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON));
         addRenderableWidget(rightAddPhotoButton);
 
-        for (Page page : pages) {
+        Either<TextBox, TextBlock> rightNoteWidget;
+        if (getMenu().isAlbumEditable()) {
+            TextBox textBox = new TextBox(font, rightNoteArea.getX(), rightNoteArea.getY(),
+                    rightNoteArea.getWidth(), rightNoteArea.getHeight())
+                    .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
+                    .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
+            addRenderableWidget(textBox);
+            rightNoteWidget = Either.left(textBox);
+        } else {
+            TextBlock textBlock = new TextBlock(font, rightNoteArea.getX(), rightNoteArea.getY(),
+                    rightNoteArea.getWidth(), rightNoteArea.getHeight(), message);
+            textBlock.fontColor = MAIN_FONT_COLOR;
+            addRenderableWidget(textBlock);
+            rightNoteWidget = Either.right(textBlock);
+        }
+
+        pages.add(new Page(Side.RIGHT, rightPageArea, rightPhotoArea, rightExposureArea, rightNoteArea, rightAddPhotoButton,
+                AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON, rightNoteWidget));
+
+        forEachPage(page -> {
             page.addPhotoButton.visible = getMenu().isAlbumEditable();
             page.addPhotoButton.active = getMenu().isAlbumEditable();
-        }
+        });
+    }
+
+    protected void onNoteChanged(Side side, String noteText) {
+        getMenu().getPage(side).ifPresent(page -> {
+            page.setNote(Either.left(noteText));
+
+        });
+
     }
 
     private void onButtonPress(Button button) {
-        for (Page pageData : pages) {
-            if (button == pageData.addPhotoButton)
-                pressButton(pageData.photoButtonId);
-        }
+        forEachPage(page -> {
+            if (button == page.addPhotoButton)
+                pressButton(page.photoButtonId);
+        });
     }
 
     @Override
@@ -213,8 +250,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         if (!getMenu().isInAddingPhotographMode()) {
             for (Page page : pages) {
-                if (!page.addPhotoButton.visible && page.isMouseOver(x, y)) {
-                    getMenu().getPhotographSlot(page.page).ifPresent(slot -> {
+                if (!page.addPhotoButton.visible && page.isMouseOver(page.photoArea, x, y)) {
+                    getMenu().getPhotographSlot(page.side).ifPresent(slot -> {
                         ItemStack stack = slot.getItem();
                         List<Component> tooltip = this.getTooltipFromContainerItem(stack);
                         tooltip.add(Component.empty());
@@ -265,7 +302,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
                 if (photoStack.getItem() instanceof PhotographItem photographItem) {
                     Rect2i area = page.photoArea;
-                    guiGraphics.blit(TEXTURE, area.getX(), area.getY(), 0, 299, page.isMouseOver(mouseX, mouseY) ? 327 : 218,
+                    guiGraphics.blit(TEXTURE, area.getX(), area.getY(), 0, 299, page.isMouseOverPhoto(mouseX, mouseY) ? 327 : 218,
                             area.getWidth(), area.getHeight(), 512, 512);
 
                     @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photoStack);
@@ -327,7 +364,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             }
         } else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             for (Page page : pages) {
-                if (page.isMouseOver(mouseX, mouseY)) {
+                if (page.isMouseOverPhoto(mouseX, mouseY)) {
                     pressButton(page.photoButtonId);
                     return true;
                 }
@@ -335,6 +372,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         }
 
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     private void pressButton(int buttonId) {
@@ -352,6 +394,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         super.slotClicked(slot, slotId, mouseButton, type);
     }
 
+//    @Override
+//    public boolean charTyped(char codePoint, int modifiers) {
+//        return noteHandler.charTyped(codePoint, modifiers) || super.charTyped(codePoint, modifiers);
+//    }
+
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (getMenu().isInAddingPhotographMode() && (minecraft.options.keyInventory.matches(keyCode, scanCode)
@@ -366,5 +413,40 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         return pager.handleKeyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    }
+
+    public void forEachPage(Consumer<Page> pageAction) {
+        for (Page page : pages) {
+            pageAction.accept(page);
+        }
+    }
+
+    private class Page {
+        public final Side side;
+        public final Rect2i pageArea;
+        public final Rect2i photoArea;
+        public final Rect2i exposureArea;
+        public final Button addPhotoButton;
+        public final int photoButtonId;
+
+        public final Rect2i noteArea;
+        public final Either<TextBox, TextBlock> noteWidget;
+
+        private Page(Side side, Rect2i pageArea, Rect2i photoArea, Rect2i exposureArea, Rect2i noteArea,
+                     Button addPhotoButton, int photoButtonId, Either<TextBox, TextBlock> noteWidget) {
+            this.side = side;
+            this.pageArea = pageArea;
+            this.photoArea = photoArea;
+            this.exposureArea = exposureArea;
+            this.photoButtonId = photoButtonId;
+            this.addPhotoButton = addPhotoButton;
+            this.noteArea = noteArea;
+            this.noteWidget = noteWidget;
+        }
+
+        public boolean isMouseOver(Rect2i area, double mouseX, double mouseY) {
+            return isHovering(area.getX() - leftPos, area.getY() - topPos,
+                    area.getWidth(), area.getHeight(), mouseX, mouseY);
+        }
     }
 }
