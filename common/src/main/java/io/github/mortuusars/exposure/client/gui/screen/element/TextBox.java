@@ -53,7 +53,7 @@ public class TextBox extends AbstractWidget {
     public TextBox(@NotNull Font font, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
         this.font = font;
-        textFieldHelper = new TextFieldHelper(textGetter, textSetter,
+        textFieldHelper = new TextFieldHelper(this::getText, this::setText,
                 TextFieldHelper.createClipboardGetter(Minecraft.getInstance()),
                 TextFieldHelper.createClipboardSetter(Minecraft.getInstance()),
                 this::validateText);
@@ -100,6 +100,10 @@ public class TextBox extends AbstractWidget {
         textFieldHelper.setCursorToEnd();
     }
 
+    public void refresh() {
+        clearDisplayCache();
+    }
+
     protected boolean validateText(String text) {
         return textValidator.test(text);
     }
@@ -128,10 +132,10 @@ public class TextBox extends AbstractWidget {
             keyEnd();
             return true;
         } else if (keyCode == InputConstants.KEY_BACKSPACE) {
-            this.textFieldHelper.removeFromCursor(-1, cursorStep);
+            textFieldHelper.removeFromCursor(-1, cursorStep);
             return true;
         } else if (keyCode == InputConstants.KEY_DELETE) {
-            this.textFieldHelper.removeFromCursor(1, cursorStep);
+            textFieldHelper.removeFromCursor(1, cursorStep);
             return true;
         } else if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
             textFieldHelper.insertText(CommonComponents.NEW_LINE.getString());
@@ -155,22 +159,24 @@ public class TextBox extends AbstractWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isHovered && visible && isActive() && button == 0) {
             long currentTime = Util.getMillis();
-            DisplayCache displayCache = this.getDisplayCache();
-            int index = displayCache.getIndexAtPosition(this.font, this.convertScreenToLocal(new Pos2i((int)mouseX, (int)mouseY)));
+            DisplayCache displayCache = getDisplayCache();
+            int index = displayCache.getIndexAtPosition(font, convertScreenToLocal(new Pos2i((int)mouseX, (int)mouseY)));
+
             if (index >= 0) {
-                if (index == this.lastIndex && currentTime - this.lastClickTime < 250L) {
-                    if (!this.textFieldHelper.isSelecting()) {
-                        this.selectWord(index);
+                if (index == lastIndex && currentTime - lastClickTime < 250L) {
+                    if (!textFieldHelper.isSelecting()) {
+                        selectWord(index);
                     } else {
-                        this.textFieldHelper.selectAll();
+                        textFieldHelper.selectAll();
                     }
                 } else {
-                    this.textFieldHelper.setCursorPos(index, Screen.hasShiftDown());
+                    textFieldHelper.setCursorPos(index, Screen.hasShiftDown());
                 }
-                this.clearDisplayCache();
+                clearDisplayCache();
             }
-            this.lastIndex = index;
-            this.lastClickTime = currentTime;
+
+            lastIndex = index;
+            lastClickTime = currentTime;
             return true;
         }
 
@@ -273,66 +279,76 @@ public class TextBox extends AbstractWidget {
     }
 
     protected DisplayCache rebuildDisplayCache() {
-        String text = this.getText();
+        String text = getText();
 
         if (text.isEmpty())
             return DisplayCache.EMPTY;
 
-        int cursorPos = this.textFieldHelper.getCursorPos();
-        int selectionPos = this.textFieldHelper.getSelectionPos();
+        int cursorPos = textFieldHelper.getCursorPos();
+        int selectionPos = textFieldHelper.getSelectionPos();
 
-        IntArrayList lineStarts = new IntArrayList();
+        IntArrayList lineStartIndexes = new IntArrayList();
         ArrayList<LineInfo> lines = Lists.newArrayList();
         MutableInt linesCount = new MutableInt();
-        MutableBoolean mutableBoolean = new MutableBoolean();
+        MutableBoolean endsOnNewLine = new MutableBoolean();
 
-        StringSplitter stringSplitter = this.font.getSplitter();
+        StringSplitter stringSplitter = font.getSplitter();
         stringSplitter.splitLines(text, getWidth(), Style.EMPTY, true, (style, x, y) -> {
             int lineIndex = linesCount.getAndIncrement();
-            String textPart = text.substring(x, y);
-            mutableBoolean.setValue(textPart.endsWith("\n"));
-            textPart = StringUtils.stripEnd(textPart, " \n");
-            int lineYPos = lineIndex * this.font.lineHeight;
-            Pos2i linePos = this.convertLocalToScreen(new Pos2i(0, lineYPos));
+            String lineText = text.substring(x, y);
+            endsOnNewLine.setValue(lineText.endsWith("\n"));
+            lineText = StringUtils.stripEnd(lineText, " \n");
+            int lineYPos = lineIndex * font.lineHeight;
 
-            lineStarts.add(x);
-            lines.add(new LineInfo(style, textPart, linePos.x, linePos.y));
+//            int lineX = getWidth() / 2 - font.width(lineText) / 2;
+
+            Pos2i linePos = convertLocalToScreen(new Pos2i(0, lineYPos));
+
+            lineStartIndexes.add(x);
+            lines.add(new LineInfo(style, lineText, linePos.x, linePos.y));
         });
 
-        int l;
+        int cursorX;
         Pos2i newCursorPos;
-        int[] lineStartsArray = lineStarts.toIntArray();
+        int[] lineStartIndexesArray = lineStartIndexes.toIntArray();
         boolean isCursorAtTextEnd = cursorPos == text.length();
-        if (isCursorAtTextEnd && mutableBoolean.isTrue()) {
-            newCursorPos = new Pos2i(0, lines.size() * this.font.lineHeight);
+
+        if (isCursorAtTextEnd && endsOnNewLine.isTrue()) {
+            newCursorPos = new Pos2i(/*getWidth() / 2*/0, lines.size() * font.lineHeight);
         } else {
-            int k = findLineFromPos(lineStartsArray, cursorPos);
-            l = this.font.width(text.substring(lineStartsArray[k], cursorPos));
-            newCursorPos = new Pos2i(l, k * this.font.lineHeight);
+            int lineIndex = findLineFromPos(lineStartIndexesArray, cursorPos);
+            String lineTextToCursor = text.substring(lineStartIndexesArray[lineIndex], cursorPos);
+            cursorX = /*getWidth() / 2 + font.width(lineTextToCursor) / 2*/ font.width(lineTextToCursor);
+            newCursorPos = new Pos2i(cursorX, lineIndex * font.lineHeight);
         }
-        ArrayList<Rect2i> list2 = Lists.newArrayList();
+
+        ArrayList<Rect2i> selections = Lists.newArrayList();
         if (cursorPos != selectionPos) {
             int o;
-            l = Math.min(cursorPos, selectionPos);
+            cursorX = Math.min(cursorPos, selectionPos);
             int m = Math.max(cursorPos, selectionPos);
-            int n = findLineFromPos(lineStartsArray, l);
-            if (n == (o = findLineFromPos(lineStartsArray, m))) {
-                int p = n * this.font.lineHeight;
-                int q = lineStartsArray[n];
-                list2.add(this.createPartialLineSelection(text, stringSplitter, l, m, p, q));
+            int lineAtCursor = findLineFromPos(lineStartIndexesArray, cursorX);
+
+            if (lineAtCursor == (o = findLineFromPos(lineStartIndexesArray, m))) {
+                int cursorLineY = lineAtCursor * font.lineHeight;
+                int lineX = lineStartIndexesArray[lineAtCursor];
+                selections.add(createPartialLineSelection(text, stringSplitter, cursorX, m, cursorLineY, lineX));
             } else {
-                int p = n + 1 > lineStartsArray.length ? text.length() : lineStartsArray[n + 1];
-                list2.add(this.createPartialLineSelection(text, stringSplitter, l, p, n * this.font.lineHeight, lineStartsArray[n]));
-                for (int q = n + 1; q < o; ++q) {
-                    int r = q * this.font.lineHeight;
-                    String string2 = text.substring(lineStartsArray[q], lineStartsArray[q + 1]);
-                    int s = (int) stringSplitter.stringWidth(string2);
-                    list2.add(this.createSelection(new Pos2i(0, r), new Pos2i(s, r + this.font.lineHeight)));
+                int p = lineAtCursor + 1 > lineStartIndexesArray.length ? text.length() : lineStartIndexesArray[lineAtCursor + 1];
+                selections.add(createPartialLineSelection(text, stringSplitter, cursorX, p, lineAtCursor * font.lineHeight, lineStartIndexesArray[lineAtCursor]));
+                for (int lineI = lineAtCursor + 1; lineI < o; ++lineI) {
+                    int selectionY = lineI * font.lineHeight;
+                    String string2 = text.substring(lineStartIndexesArray[lineI], lineStartIndexesArray[lineI + 1]);
+                    int selectionWidth = (int) stringSplitter.stringWidth(string2);
+                    selections.add(createSelection(new Pos2i(0, selectionY), new Pos2i(selectionWidth, selectionY + font.lineHeight)));
                 }
-                list2.add(this.createPartialLineSelection(text, stringSplitter, lineStartsArray[o], m, o * this.font.lineHeight, lineStartsArray[o]));
+
+                selections.add(createPartialLineSelection(text, stringSplitter, lineStartIndexesArray[o], m, o * font.lineHeight, lineStartIndexesArray[o]));
             }
         }
-        return new DisplayCache(text, newCursorPos, isCursorAtTextEnd, lineStartsArray, lines.toArray(new LineInfo[0]), list2.toArray(new Rect2i[0]));
+
+        return new DisplayCache(text, newCursorPos, isCursorAtTextEnd, lineStartIndexesArray,
+                lines.toArray(LineInfo[]::new), selections.toArray(Rect2i[]::new));
     }
 
     protected Rect2i createPartialLineSelection(String input, StringSplitter splitter, int startPos, int endPos, int y, int lineStart) {
@@ -397,8 +413,7 @@ public class TextBox extends AbstractWidget {
                 return this.fullText.length();
             }
             LineInfo lineInfo = this.lines[i];
-            return this.lineStarts[i] + font.getSplitter()
-                    .plainIndexAtWidth(lineInfo.contents, cursorPosition.x, lineInfo.style);
+            return this.lineStarts[i] + font.getSplitter().plainIndexAtWidth(lineInfo.contents, cursorPosition.x, lineInfo.style);
         }
 
         public int changeLine(int xChange, int yChange) {

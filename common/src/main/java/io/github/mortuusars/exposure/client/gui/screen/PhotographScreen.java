@@ -3,10 +3,9 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Vector3f;
+import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
@@ -15,7 +14,10 @@ import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
@@ -38,7 +40,7 @@ public class PhotographScreen extends ZoomableScreen {
     private final List<ItemAndStack<PhotographItem>> photographs;
     private final List<String> savedExposures = new ArrayList<>();
 
-    private final Pager pager = new Pager(WIDGETS_TEXTURE);
+    private final Pager pager = new Pager(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get());
 
     public PhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
         super(Component.empty());
@@ -63,30 +65,42 @@ public class PhotographScreen extends ZoomableScreen {
     protected void init() {
         super.init();
         zoomFactor = (float) height / ExposureRenderer.SIZE;
-        pager.init(width, height, photographs.size(), true, this::addRenderableWidget);
+
+        ImageButton previousButton = new ImageButton(0, (int) (height / 2f - 16 / 2f), 16, 16,
+                0, 0, 16, WIDGETS_TEXTURE, 256, 256,
+                button -> pager.changePage(PagingDirection.PREVIOUS), Component.translatable("gui.exposure.previous_page"));
+        addRenderableWidget(previousButton);
+
+        ImageButton nextButton = new ImageButton(width - 16, (int) (height / 2f - 16 / 2f), 16, 16,
+                16, 0, 16, WIDGETS_TEXTURE, 256, 256,
+                button -> pager.changePage(PagingDirection.NEXT), Component.translatable("gui.exposure.next_page"));
+        addRenderableWidget(nextButton);
+
+        pager.init(photographs.size(), true, previousButton, nextButton);
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         pager.update();
 
-        renderBackground(poseStack);
+        renderBackground(guiGraphics);
 
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
+        guiGraphics.pose().pushPose();
+        guiGraphics.pose().translate(0, 0, 500); // Otherwise exposure will overlap buttons
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        super.render(poseStack, mouseX, mouseY, partialTick);
-        poseStack.popPose();
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        guiGraphics.pose().popPose();
 
-        poseStack.pushPose();
+        guiGraphics.pose().pushPose();
 
-        poseStack.translate(x, y, 0);
-        poseStack.translate(width / 2f, height / 2f, 0);
-        poseStack.scale(scale, scale, scale);
-        poseStack.translate(ExposureRenderer.SIZE / -2f, ExposureRenderer.SIZE / -2f, 0);
+        guiGraphics.pose().translate(x, y, 0);
+        guiGraphics.pose().translate(width / 2f, height / 2f, 0);
+        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().translate(ExposureRenderer.SIZE / -2f, ExposureRenderer.SIZE / -2f, 0);
 
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance()
+                .getBuilder());
 
         // Rendering paper bottom to top:
         for (int i = Math.min(2, photographs.size() - 1); i > 0; i--) {
@@ -95,35 +109,35 @@ public class PhotographScreen extends ZoomableScreen {
 
             float rotateOffset = ExposureRenderer.SIZE / 2f;
 
-            poseStack.pushPose();
-            poseStack.translate(posOffset, posOffset, 0);
+            guiGraphics.pose().pushPose();
+            guiGraphics.pose().translate(posOffset, posOffset, 0);
 
-            poseStack.translate(rotateOffset, rotateOffset, 0);
-            poseStack.mulPose(Vector3f.ZP.rotationDegrees(i * 90 + 90));
-            poseStack.translate(-rotateOffset, -rotateOffset, 0);
+            guiGraphics.pose().translate(rotateOffset, rotateOffset, 0);
+            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 90 + 90));
+            guiGraphics.pose().translate(-rotateOffset, -rotateOffset, 0);
 
-            ExposureClient.getExposureRenderer().renderPaperTexture(poseStack,
+            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(),
                     bufferSource, 0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, brightness, brightness, brightness, 255);
 
-            poseStack.popPose();
+            guiGraphics.pose().popPose();
         }
 
-        ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
-        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+        ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
+        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()
+                .getIdOrTexture(photograph.getStack());
         if (idOrTexture != null) {
-            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, poseStack, bufferSource,
+            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource,
                     0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
-        }
-        else {
-            ExposureClient.getExposureRenderer().renderPaperTexture(poseStack, bufferSource,
+        } else {
+            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(), bufferSource,
                     0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
         }
         bufferSource.endBatch();
 
-        poseStack.popPose();
+        guiGraphics.pose().popPose();
 
         trySaveToFile(photograph, idOrTexture);
     }
@@ -137,7 +151,7 @@ public class PhotographScreen extends ZoomableScreen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (Screen.hasControlDown() && player != null && player.isCreative()) {
-            ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
+            ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
             @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
 
             if (keyCode == InputConstants.KEY_S) {
