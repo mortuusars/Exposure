@@ -14,8 +14,10 @@ import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.render.ExposureRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
@@ -38,7 +40,7 @@ public class PhotographScreen extends ZoomableScreen {
     private final List<ItemAndStack<PhotographItem>> photographs;
     private final List<String> savedExposures = new ArrayList<>();
 
-    private final Pager pager = new Pager(WIDGETS_TEXTURE);
+    private final Pager pager = new Pager(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get());
 
     public PhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
         super(Component.empty());
@@ -63,7 +65,18 @@ public class PhotographScreen extends ZoomableScreen {
     protected void init() {
         super.init();
         zoomFactor = (float) height / ExposureRenderer.SIZE;
-        pager.init(width, height, photographs.size(), true, this::addRenderableWidget);
+
+        ImageButton previousButton = new ImageButton(0, (int) (height / 2f - 16 / 2f), 16, 16,
+                0, 0, 16, WIDGETS_TEXTURE, 256, 256,
+                button -> pager.changePage(PagingDirection.PREVIOUS), Component.translatable("gui.exposure.previous_page"));
+        addRenderableWidget(previousButton);
+
+        ImageButton nextButton = new ImageButton(width - 16, (int) (height / 2f - 16 / 2f), 16, 16,
+                16, 0, 16, WIDGETS_TEXTURE, 256, 256,
+                button -> pager.changePage(PagingDirection.NEXT), Component.translatable("gui.exposure.next_page"));
+        addRenderableWidget(nextButton);
+
+        pager.init(photographs.size(), true, previousButton, nextButton);
     }
 
     @Override
@@ -110,7 +123,7 @@ public class PhotographScreen extends ZoomableScreen {
             guiGraphics.pose().popPose();
         }
 
-        ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
+        ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
         @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()
                 .getIdOrTexture(photograph.getStack());
         if (idOrTexture != null) {
@@ -138,7 +151,7 @@ public class PhotographScreen extends ZoomableScreen {
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         LocalPlayer player = Minecraft.getInstance().player;
         if (Screen.hasControlDown() && player != null && player.isCreative()) {
-            ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPageIndex());
+            ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
             @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
 
             if (keyCode == InputConstants.KEY_S) {

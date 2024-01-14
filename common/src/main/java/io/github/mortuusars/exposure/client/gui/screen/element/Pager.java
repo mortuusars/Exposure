@@ -1,67 +1,64 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 
-import java.util.function.Consumer;
-
 public class Pager {
-    public static final int BUTTON_SIZE = 16;
-
     public long lastChangedAt;
     public int changeCooldownMS = 50;
     public boolean playSound = true;
+    public SoundEvent changeSoundEvent;
 
     protected ResourceLocation texture;
     protected int pages;
     protected boolean cycled;
     protected int currentPage;
-    protected ImageButton previousButton;
-    protected ImageButton nextButton;
+    protected AbstractButton previousButton;
+    protected AbstractButton nextButton;
 
-    public Pager(ResourceLocation texture) {
-        this.texture = texture;
+    public Pager(SoundEvent changeSoundEvent) {
+        this.changeSoundEvent = changeSoundEvent;
     }
 
-    public int getCurrentPageIndex() {
-        return currentPage;
-    }
-
-    public void init(int screenWidth, int screenHeight, int pages, boolean cycled, Consumer<AbstractButton> addButtonAction) {
+    public void init(int pages, boolean cycled, AbstractButton previousPageButton, AbstractButton nextPageButton) {
         this.pages = pages;
         this.cycled = cycled;
-        previousButton = new ImageButton(0, (int) (screenHeight / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
-                0, 0, BUTTON_SIZE, texture, button -> onPreviousButtonPressed());
-        nextButton = new ImageButton(screenWidth - BUTTON_SIZE, (int) (screenHeight / 2f - BUTTON_SIZE / 2f), BUTTON_SIZE, BUTTON_SIZE,
-                16, 0, BUTTON_SIZE, texture, button -> onNextButtonPressed());
+        setPage(getCurrentPage());
 
-        addButtonAction.accept(previousButton);
-        addButtonAction.accept(nextButton);
-
+        this.previousButton = previousPageButton;
+        this.nextButton = nextPageButton;
         update();
     }
 
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public void setPage(int value) {
+        this.currentPage = Mth.clamp(value, 0, this.pages);
+    }
+
     public void update() {
-        previousButton.visible = pages > 1 && (cycled || currentPage > 0);
-        nextButton.visible = pages > 1 && (cycled || currentPage < pages - 1);
+        previousButton.visible = canChangePage(PagingDirection.PREVIOUS);
+        nextButton.visible = canChangePage(PagingDirection.NEXT);
     }
 
     public boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (Minecraft.getInstance().options.keyLeft.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_LEFT) {
-            changePage(PagingDirection.PREVIOUS);
+            if (!isOnCooldown())
+                changePage(PagingDirection.PREVIOUS);
             return true;
         }
         else if (Minecraft.getInstance().options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT) {
-            changePage(PagingDirection.NEXT);
+            if (!isOnCooldown())
+                changePage(PagingDirection.NEXT);
             return true;
         }
         else
@@ -78,33 +75,32 @@ public class Pager {
         return false;
     }
 
-    protected void onPreviousButtonPressed() {
-        changePage(PagingDirection.PREVIOUS);
+    private boolean isOnCooldown() {
+        return Util.getMillis() - lastChangedAt < changeCooldownMS;
     }
 
-    protected void onNextButtonPressed() {
-        changePage(PagingDirection.NEXT);
+    public boolean canChangePage(PagingDirection direction) {
+        int newIndex = getCurrentPage() + direction.getValue();
+        return pages > 1 && (cycled || (0 <= newIndex && newIndex < pages));
     }
 
-    public boolean changePage(PagingDirection pagingDirection) {
-        if (pages < 2 || Util.getMillis() - lastChangedAt < changeCooldownMS)
+    public boolean changePage(PagingDirection direction) {
+        if (!canChangePage(direction))
             return false;
 
-        int prevPage = currentPage;
+        int oldPage = currentPage;
+        int newPage = getCurrentPage() + direction.getValue();
 
-        currentPage += pagingDirection == PagingDirection.NEXT ? 1 : -1;
+        if (cycled && newPage >= pages)
+            newPage = 0;
+        else if (cycled && newPage < 0)
+            newPage = pages - 1;
 
-        if (cycled && currentPage >= pages)
-            currentPage = 0;
-        else if (cycled && currentPage < 0)
-            currentPage = pages - 1;
-        else if (!cycled)
-            currentPage = Mth.clamp(currentPage, 0, pages - 1);
-
-        if (prevPage == currentPage)
+        if (oldPage == newPage)
             return false;
 
-        onPageChanged(pagingDirection, prevPage, currentPage);
+        setPage(newPage);
+        onPageChanged(direction, oldPage, currentPage);
         return true;
     }
 
@@ -120,6 +116,6 @@ public class Pager {
     }
 
     protected SoundEvent getChangeSound() {
-        return Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get();
+        return changeSoundEvent;
     }
 }

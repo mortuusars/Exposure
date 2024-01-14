@@ -33,6 +33,9 @@
 
   "entity.exposure.photograph": "Photograph",
 
+  "gui.exposure.previous_page": "Previous Page",
+  "gui.exposure.next_page": "Next Page",
+
   "gui.exposure.composition_guide.none": "None",
   "gui.exposure.composition_guide.crosshair": "Crosshair",
   "gui.exposure.composition_guide.quads": "Quads",
@@ -50,8 +53,6 @@
   "gui.exposure.viewfinder.focal_length.tooltip": "Focal Length",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Shutter Speed",
 
-  "gui.exposure.album.previous_page": "Previous Page",
-  "gui.exposure.album.next_page": "Next Page",
   "gui.exposure.album.add_photograph": "Add Photograph",
   "gui.exposure.album.left_click_to_add": "§8[§7Left Click§8] to Add",
   "gui.exposure.album.left_click_to_view": "§8[§7Left Click§8] to View",

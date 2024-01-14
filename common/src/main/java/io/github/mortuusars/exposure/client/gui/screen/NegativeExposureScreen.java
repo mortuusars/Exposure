@@ -12,7 +12,9 @@ import io.github.mortuusars.exposure.client.render.ExposureImage;
 import io.github.mortuusars.exposure.client.render.ExposureTexture;
 import io.github.mortuusars.exposure.data.storage.ExposureSavedData;
 import io.github.mortuusars.exposure.util.GuiUtil;
+import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -27,7 +29,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
     public static final int BG_SIZE = 78;
     public static final int FRAME_SIZE = 54;
 
-    private final Pager pager = new Pager(PhotographScreen.WIDGETS_TEXTURE);
+    private final Pager pager = new Pager(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get());
     private final List<Either<String, ResourceLocation>> exposures;
 
     public NegativeExposureScreen(List<Either<String, ResourceLocation>> exposures) {
@@ -51,7 +53,17 @@ public class NegativeExposureScreen extends ZoomableScreen {
     protected void init() {
         super.init();
         zoomFactor = 1f / (minecraft.options.guiScale().get() + 1);
-        pager.init(width, height, exposures.size(), true, this::addRenderableWidget);
+        ImageButton previousButton = new ImageButton(0, (int) (height / 2f - 16 / 2f), 16, 16,
+                0, 0, 16, PhotographScreen.WIDGETS_TEXTURE, 256, 256,
+                button -> pager.changePage(PagingDirection.PREVIOUS), Component.translatable("gui.exposure.previous_page"));
+        addRenderableWidget(previousButton);
+
+        ImageButton nextButton = new ImageButton(width - 16, (int) (height / 2f - 16 / 2f), 16, 16,
+                16, 0, 16, PhotographScreen.WIDGETS_TEXTURE, 256, 256,
+                button -> pager.changePage(PagingDirection.NEXT), Component.translatable("gui.exposure.next_page"));
+        addRenderableWidget(nextButton);
+
+        pager.init(exposures.size(), true, previousButton, nextButton);
     }
 
     @Override
@@ -62,7 +74,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
 
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
-        Either<String, ResourceLocation> idOrTexture = exposures.get(pager.getCurrentPageIndex());
+        Either<String, ResourceLocation> idOrTexture = exposures.get(pager.getCurrentPage());
 
         FilmType type = idOrTexture.map(
                 id -> ExposureClient.getExposureStorage().getOrQuery(id).map(ExposureSavedData::getType)

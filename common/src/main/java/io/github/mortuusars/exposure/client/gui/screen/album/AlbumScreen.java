@@ -11,6 +11,8 @@ import io.github.mortuusars.exposure.client.gui.screen.element.TextBox;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.AlbumPlayerInventorySlot;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.server.AlbumSyncNoteC2SP;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.ChatFormatting;
@@ -22,7 +24,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -58,34 +59,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     @NotNull
     private final MultiPlayerGameMode gameMode;
 
-    private final Pager pager = new Pager(TEXTURE) {
-        @Override
-        public void init(int screenWidth, int screenHeight, int pages, boolean cycled, Consumer<AbstractButton> addButtonAction) {
-            this.pages = pages;
-            this.cycled = cycled;
-            previousButton = new ImageButton(leftPos + 12, topPos + 164, 13, 15,
-                    149, 188, 15, texture, 512, 512, button -> onPreviousButtonPressed());
-            nextButton = new ImageButton(leftPos + 274, topPos + 164, 13, 15,
-                    162, 188, 15, texture, 512, 512, button -> onNextButtonPressed());
-
-            previousButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.previous_page")));
-            nextButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.next_page")));
-
-            addButtonAction.accept(previousButton);
-            addButtonAction.accept(nextButton);
-
-            update();
-        }
-
+    private final Pager pager = new Pager(SoundEvents.BOOK_PAGE_TURN) {
         @Override
         public void onPageChanged(PagingDirection pagingDirection, int prevPage, int currentPage) {
             super.onPageChanged(pagingDirection, prevPage, currentPage);
             pressButton(pagingDirection == PagingDirection.PREVIOUS ? AlbumMenu.PREVIOUS_PAGE_BUTTON : AlbumMenu.NEXT_PAGE_BUTTON);
-        }
-
-        @Override
-        protected SoundEvent getChangeSound() {
-            return SoundEvents.BOOK_PAGE_TURN;
         }
     };
 
@@ -113,9 +91,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         inventoryLabelX = 69;
         inventoryLabelY = -999;
 
-        int spreadsCount = (int) Math.ceil(getMenu().getPages().size() / 2f);
-        pager.init(width, height, spreadsCount, false, this::addRenderableWidget);
-
         pages.clear();
 
         MutableComponent addButtonTooltip = Component.translatable("gui.exposure.album.add_photograph");
@@ -125,11 +100,12 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         Rect2i lPageArea = new Rect2i(leftPos, topPos, 149, 188);
         Rect2i lPhotoArea = new Rect2i(leftPos + 25, topPos + 21, 108, 109);
         Rect2i lExposureArea = new Rect2i(leftPos + 31, topPos + 27, 96, 96);
-        Rect2i lNoteArea = new Rect2i(leftPos + 22, topPos + 132, 114, 27);
+        Rect2i lNoteArea = new Rect2i(leftPos + 22, topPos + 133, 114, 27);
 
         Button lAddPhotoButton = new ImageButton(lPhotoArea.getX(), lPhotoArea.getY(), lPhotoArea.getWidth(), lPhotoArea.getHeight(),
                 299, 0, 109, TEXTURE, 512, 512, this::onButtonPress);
         lAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
+        lAddPhotoButton.setTabOrderGroup(0);
         addRenderableWidget(lAddPhotoButton);
 
         Either<TextBox, TextBlock> lNoteWidget;
@@ -141,15 +117,23 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             textBox.textGetter = () -> getMenu().getPage(Side.LEFT).map(page -> page.getNote().left().orElseThrow())
                     .orElse("");
             textBox.textSetter = text -> onNoteChanged(Side.LEFT, text);
+            textBox.setTabOrderGroup(1);
             addRenderableWidget(textBox);
             lNoteWidget = Either.left(textBox);
         } else {
+            //TODO: MESSAGE
             TextBlock textBlock = new TextBlock(font, lNoteArea.getX(), lNoteArea.getY(),
-                    lNoteArea.getWidth(), lNoteArea.getHeight(), message);
+                    lNoteArea.getWidth(), lNoteArea.getHeight(), Component.empty() /*message*/ );
             textBlock.fontColor = MAIN_FONT_COLOR;
+            textBlock.setTabOrderGroup(1);
             addRenderableWidget(textBlock);
             lNoteWidget = Either.right(textBlock);
         }
+
+        ImageButton previousButton = new ImageButton(leftPos + 12, topPos + 164, 13, 15,
+                149, 188, 15, TEXTURE, 512, 512,
+                button -> pager.changePage(PagingDirection.PREVIOUS), Component.translatable("gui.exposure.previous_page"));
+        addRenderableWidget(previousButton);
 
         pages.add(new Page(Side.LEFT, lPageArea, lPhotoArea, lExposureArea, lNoteArea, lAddPhotoButton,
                 AlbumMenu.LEFT_PAGE_PHOTO_BUTTON, lNoteWidget));
@@ -157,35 +141,50 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         // RIGHT:
 
-        Rect2i rightPageArea = new Rect2i(leftPos, topPos, 149, 188);
-        Rect2i rightPhotoArea = new Rect2i(leftPos + 166, topPos + 21, 108, 109);
-        Rect2i rightExposureArea = new Rect2i(leftPos + 172, topPos + 27, 96, 96);
-        Rect2i rightNoteArea = new Rect2i(leftPos + 163, topPos + 132, 114, 27);
+        Rect2i rPageArea = new Rect2i(leftPos, topPos, 149, 188);
+        Rect2i rPhotoArea = new Rect2i(leftPos + 166, topPos + 21, 108, 109);
+        Rect2i rExposureArea = new Rect2i(leftPos + 172, topPos + 27, 96, 96);
+        Rect2i rNoteArea = new Rect2i(leftPos + 163, topPos + 133, 114, 27);
 
-        Button rightAddPhotoButton = new ImageButton(rightPhotoArea.getX(), rightPhotoArea.getY(),
-                rightPhotoArea.getWidth(), rightPhotoArea.getHeight(), 299, 0, 109,
+        Button rAddPhotoButton = new ImageButton(rPhotoArea.getX(), rPhotoArea.getY(),
+                rPhotoArea.getWidth(), rPhotoArea.getHeight(), 299, 0, 109,
                 TEXTURE, 512, 512, this::onButtonPress);
-        rightAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
-        addRenderableWidget(rightAddPhotoButton);
+        rAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
+        lAddPhotoButton.setTabOrderGroup(3);
+        addRenderableWidget(rAddPhotoButton);
 
-        Either<TextBox, TextBlock> rightNoteWidget;
+        Either<TextBox, TextBlock> rNoteWidget;
         if (getMenu().isAlbumEditable()) {
-            TextBox textBox = new TextBox(font, rightNoteArea.getX(), rightNoteArea.getY(),
-                    rightNoteArea.getWidth(), rightNoteArea.getHeight())
+            TextBox textBox = new TextBox(font, rNoteArea.getX(), rNoteArea.getY(),
+                    rNoteArea.getWidth(), rNoteArea.getHeight())
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
+            textBox.textGetter = () -> getMenu().getPage(Side.RIGHT).map(page -> page.getNote().left().orElseThrow())
+                    .orElse("");
+            textBox.textSetter = text -> onNoteChanged(Side.RIGHT, text);
+            textBox.setTabOrderGroup(4);
             addRenderableWidget(textBox);
-            rightNoteWidget = Either.left(textBox);
+            rNoteWidget = Either.left(textBox);
         } else {
-            TextBlock textBlock = new TextBlock(font, rightNoteArea.getX(), rightNoteArea.getY(),
-                    rightNoteArea.getWidth(), rightNoteArea.getHeight(), message);
+            //TODO: MESSAGE
+            TextBlock textBlock = new TextBlock(font, rNoteArea.getX(), rNoteArea.getY(),
+                    rNoteArea.getWidth(), rNoteArea.getHeight(), Component.empty() /*message*/ );
             textBlock.fontColor = MAIN_FONT_COLOR;
+            textBlock.setTabOrderGroup(4);
             addRenderableWidget(textBlock);
-            rightNoteWidget = Either.right(textBlock);
+            rNoteWidget = Either.right(textBlock);
         }
 
-        pages.add(new Page(Side.RIGHT, rightPageArea, rightPhotoArea, rightExposureArea, rightNoteArea, rightAddPhotoButton,
-                AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON, rightNoteWidget));
+        ImageButton nextButton = new ImageButton(leftPos + 274, topPos + 164, 13, 15,
+                162, 188, 15, TEXTURE, 512, 512,
+                button -> pager.changePage(PagingDirection.NEXT), Component.translatable("gui.exposure.next_page"));
+        addRenderableWidget(nextButton);
+
+        pages.add(new Page(Side.RIGHT, rPageArea, rPhotoArea, rExposureArea, rNoteArea, rAddPhotoButton,
+                AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON, rNoteWidget));
+
+        int spreadsCount = (int) Math.ceil(getMenu().getPages().size() / 2f);
+        pager.init(spreadsCount, false, previousButton, nextButton);
 
         forEachPage(page -> {
             page.addPhotoButton.visible = getMenu().isAlbumEditable();
@@ -196,9 +195,9 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     protected void onNoteChanged(Side side, String noteText) {
         getMenu().getPage(side).ifPresent(page -> {
             page.setNote(Either.left(noteText));
-
+            int pageIndex = getMenu().getCurrentSpreadIndex() * 2 + side.getIndex();
+            Packets.sendToServer(new AlbumSyncNoteC2SP(pageIndex, noteText));
         });
-
     }
 
     private void onButtonPress(Button button) {
@@ -294,7 +293,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         drawPageNumbers(guiGraphics, currentSpreadIndex);
 
         for (Page page : pages) {
-            getMenu().getPhotographSlot(page.page).ifPresent(slot -> {
+            getMenu().getPhotographSlot(page.side).ifPresent(slot -> {
                 ItemStack photoStack = slot.getItem();
 
                 page.addPhotoButton.visible = getMenu().isAlbumEditable() && !getMenu().isInAddingPhotographMode() && photoStack.isEmpty();
@@ -302,7 +301,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
                 if (photoStack.getItem() instanceof PhotographItem photographItem) {
                     Rect2i area = page.photoArea;
-                    guiGraphics.blit(TEXTURE, area.getX(), area.getY(), 0, 299, page.isMouseOverPhoto(mouseX, mouseY) ? 327 : 218,
+                    guiGraphics.blit(TEXTURE, area.getX(), area.getY(), 0, 299, page.isMouseOver(page.photoArea, mouseX, mouseY) ? 327 : 218,
                             area.getWidth(), area.getHeight(), 512, 512);
 
                     @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photoStack);
@@ -313,12 +312,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     }
                 }
             });
+
+//            page.noteWidget.map(box -> ((Renderable) box), block -> ((Renderable) block))
+//                    .render(guiGraphics, mouseX, mouseY, partialTick);
         }
 
         if (getMenu().isInAddingPhotographMode()) {
-            @Nullable AlbumMenu.Page pageBeingAddedTo = getMenu().getPageBeingAddedTo();
+            @Nullable Side pageBeingAddedTo = getMenu().getSideBeingAddedTo();
             for (Page page : pages) {
-                if (page.page == pageBeingAddedTo) {
+                if (page.side == pageBeingAddedTo) {
                     guiGraphics.blit(TEXTURE, page.photoArea.getX(), page.photoArea.getY(), 5, 299, 109,
                             page.photoArea.getWidth(), page.photoArea.getHeight(), 512, 512);
                     break;
@@ -364,7 +366,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             }
         } else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             for (Page page : pages) {
-                if (page.isMouseOverPhoto(mouseX, mouseY)) {
+                if (page.isMouseOver(page.photoArea, mouseX, mouseY)) {
                     pressButton(page.photoButtonId);
                     return true;
                 }
@@ -374,12 +376,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-    }
-
     private void pressButton(int buttonId) {
+        for (Page page : pages) {
+            page.noteWidget.ifLeft(TextBox::refresh);
+        }
+
         getMenu().clickMenuButton(player, buttonId);
         gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
     }
@@ -394,13 +395,25 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         super.slotClicked(slot, slotId, mouseButton, type);
     }
 
-//    @Override
-//    public boolean charTyped(char codePoint, int modifiers) {
-//        return noteHandler.charTyped(codePoint, modifiers) || super.charTyped(codePoint, modifiers);
-//    }
-
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        for (Page page : pages) {
+            AbstractWidget widget = page.noteWidget.map(box -> box, block -> block);
+            if (widget.isFocused()) {
+                if (keyCode == InputConstants.KEY_ESCAPE) {
+                    this.setFocused(null);
+                    return true;
+                }
+
+                if (keyCode == InputConstants.KEY_TAB) {
+                    this.setFocused(null);
+                    return super.keyPressed(keyCode, scanCode, modifiers);
+                }
+
+                return widget.keyPressed(keyCode, scanCode, modifiers);
+            }
+        }
+
         if (getMenu().isInAddingPhotographMode() && (minecraft.options.keyInventory.matches(keyCode, scanCode)
                 || keyCode == InputConstants.KEY_ESCAPE)) {
             pressButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
@@ -412,6 +425,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        for (Page page : pages) {
+            if (page.noteWidget.map(box -> box, block -> block).isFocused())
+                return super.keyReleased(keyCode, scanCode, modifiers);
+        }
+
         return pager.handleKeyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
     }
 

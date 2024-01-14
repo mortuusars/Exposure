@@ -6,7 +6,6 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.AlbumItem;
 import io.github.mortuusars.exposure.item.AlbumPage;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.item.SignedAlbumItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.network.FriendlyByteBuf;
@@ -42,11 +41,12 @@ public class AlbumMenu extends AbstractContainerMenu {
     private final DataSlot currentSpreadIndex = DataSlot.standalone();
 
     @Nullable
-    private Page pageBeingAddedTo = null;
+    private Side sideBeingAddedTo = null;
+    private boolean noteChanged;
 
     private final Map<Integer, Consumer<Player>> buttonActions = new HashMap<>() {{
         put(CANCEL_ADDING_PHOTO_BUTTON, p -> {
-            pageBeingAddedTo = null;
+            sideBeingAddedTo = null;
             if (!getCarried().isEmpty()) {
                 p.getInventory().placeItemBackInInventory(getCarried());
                 setCarried(ItemStack.EMPTY);
@@ -64,6 +64,7 @@ public class AlbumMenu extends AbstractContainerMenu {
         put(LEFT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Side.LEFT));
         put(RIGHT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Side.RIGHT));
     }};
+
 
     public AlbumMenu(int containerId, Inventory playerInventory, ItemAndStack<AlbumItem> album) {
         super(Exposure.MenuTypes.ALBUM.get(), containerId);
@@ -96,16 +97,6 @@ public class AlbumMenu extends AbstractContainerMenu {
          */
     }
 
-    public boolean isAlbumEditable() {
-        return album.getItem().isEditable();
-    }
-
-    protected void addEmptyPage() {
-        AlbumPage page = album.getItem().createEmptyPage();
-        pages.add(page);
-        album.getItem().addPage(album.getStack(), page);
-    }
-
     private void addPhotographSlots() {
         ItemStack[] photographs = pages.stream().map(AlbumPage::getPhotographStack).toArray(ItemStack[]::new);
         SimpleContainer container = new SimpleContainer(photographs);
@@ -118,17 +109,15 @@ public class AlbumMenu extends AbstractContainerMenu {
             photographSlots.add(slot);
         }
 
-        container.addListener(this::updateAlbumPages);
-    }
-
-    private void updateAlbumPages(Container container) {
-        List<AlbumPage> pages = getPages();
-        for (int i = 0; i < pages.size(); i++) {
-            AlbumPage page = pages.get(i);
-            ItemStack stack = container.getItem(i);
-            page.setPhotographStack(stack);
-            album.getItem().setPage(album.getStack(), page, i);
-        }
+        container.addListener(c -> {
+            List<AlbumPage> pages = getPages();
+            for (int pageIndex = 0; pageIndex < pages.size(); pageIndex++) {
+                AlbumPage page = pages.get(pageIndex);
+                ItemStack stack = container.getItem(pageIndex);
+                page.setPhotographStack(stack);
+            }
+            updateAlbumStack();
+        });
     }
 
     private void addPlayerInventorySlots(Inventory playerInventory, int x, int y) {
@@ -152,31 +141,29 @@ public class AlbumMenu extends AbstractContainerMenu {
         }
     }
 
-    private void onPhotoButtonPress(Player player, Side side) {
-        Preconditions.checkArgument(isAlbumEditable(),
-                "Photo Button should be disabled and hidden when Album is not editable. " + album.getStack());
-
-        Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(side);
-        if (photographSlot.isEmpty())
-            return;
-
-        AlbumPhotographSlot slot = photographSlot.get();
-        if (!slot.hasItem()) {
-            pageBeingAddedTo = side;
+    protected void updatePlayerInventorySlots() {
+        boolean isInAddingPhotographMode = isInAddingPhotographMode();
+        for (AlbumPlayerInventorySlot slot : playerInventorySlots) {
+            slot.setActive(isInAddingPhotographMode);
         }
-        else {
-            ItemStack stack = slot.getItem();
-            if (!player.getInventory().add(stack))
-                player.drop(stack, false);
-
-            slot.set(ItemStack.EMPTY);
-        }
-
-        updatePlayerInventorySlots();
     }
 
-    public List<AlbumPhotographSlot> getPhotographSlots() {
-        return photographSlots;
+    public boolean isAlbumEditable() {
+        return album.getItem().isEditable();
+    }
+
+    public void updateAlbumStack() {
+        List<AlbumPage> pages = getPages();
+        for (int pageIndex = 0; pageIndex < pages.size(); pageIndex++) {
+            AlbumPage page = pages.get(pageIndex);
+            album.getItem().setPage(album.getStack(), page, pageIndex);
+        }
+    }
+
+    protected void addEmptyPage() {
+        AlbumPage page = album.getItem().createEmptyPage();
+        pages.add(page);
+        album.getItem().addPage(album.getStack(), page);
     }
 
     public List<AlbumPlayerInventorySlot> getPlayerInventorySlots() {
@@ -186,14 +173,6 @@ public class AlbumMenu extends AbstractContainerMenu {
     public List<AlbumPage> getPages() {
         return pages;
     }
-
-//    public Optional<AlbumPage> getLeftPage() {
-//        return getPage(getCurrentSpreadIndex() * 2);
-//    }
-//
-//    public Optional<AlbumPage> getRightPage() {
-//        return getPage(getCurrentSpreadIndex() * 2 + 1);
-//    }
 
     public Optional<AlbumPage> getPage(Side side) {
         return getPage(getCurrentSpreadIndex() * 2 + side.getIndex());
@@ -206,8 +185,8 @@ public class AlbumMenu extends AbstractContainerMenu {
         return Optional.empty();
     }
 
-    public Optional<AlbumPhotographSlot> getPhotographSlot(Page page) {
-        return getPhotographSlot(getCurrentSpreadIndex() * 2 + (page == Page.LEFT ? 0 : 1));
+    public Optional<AlbumPhotographSlot> getPhotographSlot(Side side) {
+        return getPhotographSlot(getCurrentSpreadIndex() * 2 + (side == Side.LEFT ? 0 : 1));
     }
 
     public Optional<AlbumPhotographSlot> getPhotographSlot(int index) {
@@ -225,12 +204,16 @@ public class AlbumMenu extends AbstractContainerMenu {
         this.currentSpreadIndex.set(spreadIndex);
     }
 
-    public boolean isInAddingPhotographMode() {
-        return getPageBeingAddedTo() != null;
+    public void setNoteChanged() {
+        this.noteChanged = true;
     }
 
-    public @Nullable Page getPageBeingAddedTo() {
-        return pageBeingAddedTo;
+    public boolean isInAddingPhotographMode() {
+        return getSideBeingAddedTo() != null;
+    }
+
+    public @Nullable Side getSideBeingAddedTo() {
+        return sideBeingAddedTo;
     }
 
     @Override
@@ -244,11 +227,34 @@ public class AlbumMenu extends AbstractContainerMenu {
         return false;
     }
 
+    private void onPhotoButtonPress(Player player, Side side) {
+        Preconditions.checkArgument(isAlbumEditable(),
+                "Photo Button should be disabled and hidden when Album is not editable. " + album.getStack());
+
+        Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(side);
+        if (photographSlot.isEmpty())
+            return;
+
+        AlbumPhotographSlot slot = photographSlot.get();
+        if (!slot.hasItem()) {
+            sideBeingAddedTo = side;
+        }
+        else {
+            ItemStack stack = slot.getItem();
+            if (!player.getInventory().add(stack))
+                player.drop(stack, false);
+
+            slot.set(ItemStack.EMPTY);
+        }
+
+        updatePlayerInventorySlots();
+    }
+
     @Override
     public void clicked(int slotId, int button, ClickType clickType, Player player) {
         // Both sides
 
-        if (pageBeingAddedTo == null || slotId < 0 || slotId >= slots.size())
+        if (sideBeingAddedTo == null || slotId < 0 || slotId >= slots.size())
             return;
 
         Slot slot = slots.get(slotId);
@@ -257,7 +263,7 @@ public class AlbumMenu extends AbstractContainerMenu {
         if (button == InputConstants.MOUSE_BUTTON_LEFT
                 && slot instanceof AlbumPlayerInventorySlot
                 && stack.getItem() instanceof PhotographItem) {
-            int pageIndex = pageBeingAddedTo.getPageIndexFromSpread(getCurrentSpreadIndex());
+            int pageIndex = getCurrentSpreadIndex() * 2 + sideBeingAddedTo.getIndex();
             Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(pageIndex);
             if (photographSlot.isEmpty() || !photographSlot.get().getItem().isEmpty())
                 return;
@@ -265,7 +271,7 @@ public class AlbumMenu extends AbstractContainerMenu {
             photographSlot.get().set(stack);
             slot.set(ItemStack.EMPTY);
 
-            pageBeingAddedTo = null;
+            sideBeingAddedTo = null;
             updatePlayerInventorySlots();
             return;
         }
@@ -287,12 +293,5 @@ public class AlbumMenu extends AbstractContainerMenu {
 
     public static AlbumMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
         return new AlbumMenu(containerId, inventory, new ItemAndStack<>(buffer.readItem()));
-    }
-
-    protected void updatePlayerInventorySlots() {
-        boolean isInAddingPhotographMode = isInAddingPhotographMode();
-        for (AlbumPlayerInventorySlot slot : playerInventorySlots) {
-            slot.setActive(isInAddingPhotographMode);
-        }
     }
 }
