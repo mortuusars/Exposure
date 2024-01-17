@@ -136,9 +136,13 @@ public class AlbumItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
 
-//        if (level.isClientSide) {
-//            Minecraft.getInstance().setScreen(new TextTestScreen());
-//        }
+        // TODO: REMOVE
+        if (!player.isSecondaryUseActive()) {
+            if (level.isClientSide) {
+                Minecraft.getInstance().setScreen(new TextTestScreen());
+            }
+            return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
+        }
 
         if (player instanceof ServerPlayer serverPlayer)
             openMenu(serverPlayer, itemStack);
