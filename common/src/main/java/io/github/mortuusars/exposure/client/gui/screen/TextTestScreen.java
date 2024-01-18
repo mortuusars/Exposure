@@ -1,19 +1,15 @@
 package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.github.mortuusars.exposure.client.gui.screen.element.NewTextBox;
-import io.github.mortuusars.exposure.client.gui.screen.element.TextBlock;
-import io.github.mortuusars.exposure.client.gui.screen.element.TextBox;
-import net.minecraft.client.Minecraft;
+import io.github.mortuusars.exposure.client.gui.screen.element.textbox.HorizontalAlignment;
+import io.github.mortuusars.exposure.client.gui.screen.element.textbox.TextBox;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineEditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 
 public class TextTestScreen extends Screen {
 
-    private NewTextBox textBox;
+    private TextBox textBox;
 
     public TextTestScreen() {
         super(Component.empty());
@@ -23,8 +19,9 @@ public class TextTestScreen extends Screen {
 
     @Override
     protected void init() {
-        textBox = new NewTextBox(font, width / 2 - 50, height / 2 - 20, 100, 40, () -> text, t -> text = t);
+        textBox = new TextBox(font, width / 2 - 50, height / 2 - 20, 100, 40, () -> text, t -> text = t);
 
+        textBox.horizontalAlignment = HorizontalAlignment.RIGHT;
 
 
         addRenderableWidget(textBox);
