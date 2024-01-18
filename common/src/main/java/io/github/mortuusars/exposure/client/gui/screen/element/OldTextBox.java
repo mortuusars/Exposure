@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class TextBox extends AbstractWidget {
+public class OldTextBox extends AbstractWidget {
     public Predicate<String> textValidator = text -> text != null && getFont().wordWrapHeight(text, width) <= height;
 
     protected final Font font;
@@ -50,7 +50,7 @@ public class TextBox extends AbstractWidget {
     protected long lastClickTime;
     protected int lastIndex = -1;
 
-    public TextBox(@NotNull Font font, int x, int y, int width, int height) {
+    public OldTextBox(@NotNull Font font, int x, int y, int width, int height) {
         super(x, y, width, height, Component.empty());
         this.font = font;
         textFieldHelper = new TextFieldHelper(this::getText, this::setText,
@@ -75,7 +75,7 @@ public class TextBox extends AbstractWidget {
         return textGetter.get();
     }
 
-    public TextBox setText(@NotNull String text) {
+    public OldTextBox setText(@NotNull String text) {
         textSetter.accept(text);
         return this;
     }
@@ -84,13 +84,13 @@ public class TextBox extends AbstractWidget {
         return isFocused() ? fontColor : fontUnfocusedColor;
     }
 
-    public TextBox setFontColor(int fontColor, int fontUnfocusedColor) {
+    public OldTextBox setFontColor(int fontColor, int fontUnfocusedColor) {
         this.fontColor = fontColor;
         this.fontUnfocusedColor = fontUnfocusedColor;
         return this;
     }
 
-    public TextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
+    public OldTextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
         this.selectionColor = selectionColor;
         this.selectionUnfocusedColor = selectionUnfocusedColor;
         return this;

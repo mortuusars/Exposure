@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.client.gui.screen.element;
+package io.github.mortuusars.exposure.client.gui.screen.element.textbox;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class NewTextBox extends AbstractWidget {
+public class TextBox extends AbstractWidget {
     public final Font font;
     public Supplier<String> textGetter;
     public Consumer<String> textSetter;
@@ -37,13 +37,13 @@ public class NewTextBox extends AbstractWidget {
     public int selectionUnfocusedColor = 0x880000FF;
 
     public final TextFieldHelper textFieldHelper;
-    protected TextBoxDisplayCache displayCache = TextBoxDisplayCache.EMPTY;
+    protected DisplayCache displayCache = new DisplayCache();
     protected int frameTick;
     protected long lastClickTime;
     protected int lastIndex = -1;
 
-    public NewTextBox(@NotNull Font font, int x, int y, int width, int height,
-                      Supplier<String> textGetter, Consumer<String> textSetter) {
+    public TextBox(@NotNull Font font, int x, int y, int width, int height,
+                   Supplier<String> textGetter, Consumer<String> textSetter) {
         super(x, y, width, height, Component.empty());
         this.font = font;
         this.textGetter = textGetter;
@@ -62,7 +62,7 @@ public class NewTextBox extends AbstractWidget {
         return textGetter.get();
     }
 
-    public NewTextBox setText(@NotNull String text) {
+    public TextBox setText(@NotNull String text) {
         textSetter.accept(text);
         return this;
     }
@@ -79,13 +79,13 @@ public class NewTextBox extends AbstractWidget {
         return isFocused() ? fontColor : fontUnfocusedColor;
     }
 
-    public NewTextBox setFontColor(int fontColor, int fontUnfocusedColor) {
+    public TextBox setFontColor(int fontColor, int fontUnfocusedColor) {
         this.fontColor = fontColor;
         this.fontUnfocusedColor = fontUnfocusedColor;
         return this;
     }
 
-    public NewTextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
+    public TextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
         this.selectionColor = selectionColor;
         this.selectionUnfocusedColor = selectionUnfocusedColor;
         return this;
@@ -99,115 +99,16 @@ public class NewTextBox extends AbstractWidget {
         clearDisplayCache();
     }
 
-    protected TextBoxDisplayCache getDisplayCache() {
+    protected DisplayCache getDisplayCache() {
         if (displayCache.needsRebuilding)
             displayCache.rebuild(font, getText(), textFieldHelper.getCursorPos(), textFieldHelper.getSelectionPos(),
-                    getX(), getY(), getWidth(), getHeight());
+                    getX(), getY(), getWidth(), getHeight(), horizontalAlignment);
         return displayCache;
     }
 
     protected void clearDisplayCache() {
         displayCache.needsRebuilding = true;
     }
-
-//    protected TextBoxDisplayCache rebuildDisplayCache() {
-//        String text = getText();
-//
-//        if (text.isEmpty())
-//            return TextBoxDisplayCache.EMPTY;
-//
-//        int cursorPos = textFieldHelper.getCursorPos();
-//        int selectionPos = textFieldHelper.getSelectionPos();
-//
-//        IntArrayList lineStartIndexes = new IntArrayList();
-//        ArrayList<TextBoxDisplayCache.LineInfo> lines = Lists.newArrayList();
-//        MutableInt linesCount = new MutableInt();
-//        MutableBoolean endsOnNewLine = new MutableBoolean();
-//
-//        StringSplitter stringSplitter = font.getSplitter();
-//        stringSplitter.splitLines(text, getWidth(), Style.EMPTY, true, (style, x, y) -> {
-//            int lineIndex = linesCount.getAndIncrement();
-//            String lineText = text.substring(x, y);
-//            endsOnNewLine.setValue(lineText.endsWith("\n"));
-//            lineText = StringUtils.stripEnd(lineText, " \n");
-//            int lineYPos = lineIndex * font.lineHeight;
-//
-////            int lineX = getWidth() / 2 - font.width(lineText) / 2;
-//
-//            Pos2i linePos = convertLocalToScreen(new Pos2i(0, lineYPos));
-//
-//            lineStartIndexes.add(x);
-//            lines.add(new TextBoxDisplayCache.LineInfo(style, lineText, linePos.x, linePos.y));
-//        });
-//
-//        int cursorX;
-//        Pos2i newCursorPos;
-//        int[] lineStartIndexesArray = lineStartIndexes.toIntArray();
-//        boolean isCursorAtTextEnd = cursorPos == text.length();
-//
-//        if (isCursorAtTextEnd && endsOnNewLine.isTrue()) {
-//            newCursorPos = new Pos2i(/*getWidth() / 2*/0, lines.size() * font.lineHeight);
-//        } else {
-//            int lineIndex = findLineFromPos(lineStartIndexesArray, cursorPos);
-//            String lineTextToCursor = text.substring(lineStartIndexesArray[lineIndex], cursorPos);
-//            cursorX = /*getWidth() / 2 + font.width(lineTextToCursor) / 2*/ font.width(lineTextToCursor);
-//            newCursorPos = new Pos2i(cursorX, lineIndex * font.lineHeight);
-//        }
-//
-//        ArrayList<Rect2i> selections = Lists.newArrayList();
-//        if (cursorPos != selectionPos) {
-//            int o;
-//            cursorX = Math.min(cursorPos, selectionPos);
-//            int m = Math.max(cursorPos, selectionPos);
-//            int lineAtCursor = findLineFromPos(lineStartIndexesArray, cursorX);
-//
-//            if (lineAtCursor == (o = findLineFromPos(lineStartIndexesArray, m))) {
-//                int cursorLineY = lineAtCursor * font.lineHeight;
-//                int lineX = lineStartIndexesArray[lineAtCursor];
-//                selections.add(createPartialLineSelection(text, stringSplitter, cursorX, m, cursorLineY, lineX));
-//            } else {
-//                int p = lineAtCursor + 1 > lineStartIndexesArray.length ? text.length() : lineStartIndexesArray[lineAtCursor + 1];
-//                selections.add(createPartialLineSelection(text, stringSplitter, cursorX, p, lineAtCursor * font.lineHeight, lineStartIndexesArray[lineAtCursor]));
-//                for (int lineI = lineAtCursor + 1; lineI < o; ++lineI) {
-//                    int selectionY = lineI * font.lineHeight;
-//                    String string2 = text.substring(lineStartIndexesArray[lineI], lineStartIndexesArray[lineI + 1]);
-//                    int selectionWidth = (int) stringSplitter.stringWidth(string2);
-//                    selections.add(createSelection(new Pos2i(0, selectionY), new Pos2i(selectionWidth, selectionY + font.lineHeight)));
-//                }
-//
-//                selections.add(createPartialLineSelection(text, stringSplitter, lineStartIndexesArray[o], m, o * font.lineHeight, lineStartIndexesArray[o]));
-//            }
-//        }
-//
-//        return new TextBoxDisplayCache(text, newCursorPos, isCursorAtTextEnd, lineStartIndexesArray,
-//                lines.toArray(TextBoxDisplayCache.LineInfo[]::new), selections.toArray(Rect2i[]::new));
-//    }
-
-//    protected Rect2i createPartialLineSelection(String input, StringSplitter splitter, int startPos, int endPos, int y, int lineStart) {
-//        String string = input.substring(lineStart, startPos);
-//        String string2 = input.substring(lineStart, endPos);
-//        Pos2i pos2i = new Pos2i((int) splitter.stringWidth(string), y);
-//        Pos2i pos2i2 = new Pos2i((int) splitter.stringWidth(string2), y + this.font.lineHeight);
-//        return this.createSelection(pos2i, pos2i2);
-//    }
-
-//    protected Rect2i createSelection(Pos2i corner1, Pos2i corner2) {
-//        Pos2i pos2i = this.convertLocalToScreen(corner1);
-//        Pos2i pos2i2 = this.convertLocalToScreen(corner2);
-//        int i = Math.min(pos2i.x, pos2i2.x);
-//        int j = Math.max(pos2i.x, pos2i2.x);
-//        int k = Math.min(pos2i.y, pos2i2.y);
-//        int l = Math.max(pos2i.y, pos2i2.y);
-//        return new Rect2i(i, k, j - i, l - k);
-//    }
-
-//    protected int findLineFromPos(int[] lineStarts, int find) {
-//        int i = Arrays.binarySearch(lineStarts, find);
-//        if (i < 0) {
-//            return -(i + 2);
-//        }
-//        return i;
-//    }
 
     protected Pos2i convertLocalToScreen(Pos2i pos) {
         return new Pos2i(getX() + pos.x, getY() + pos.y);
@@ -219,9 +120,9 @@ public class NewTextBox extends AbstractWidget {
 
     @Override
     protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        TextBoxDisplayCache displayCache = this.getDisplayCache();
-        for (TextBoxDisplayCache.LineInfo lineInfo : displayCache.lines) {
-            guiGraphics.drawString(this.font, lineInfo.asComponent, lineInfo.x, lineInfo.y, getCurrentFontColor(), false);
+        DisplayCache displayCache = this.getDisplayCache();
+        for (DisplayCache.LineInfo lineInfo : displayCache.lines) {
+            guiGraphics.drawString(this.font, lineInfo.asComponent, getX() + lineInfo.x, getY() + lineInfo.y, getCurrentFontColor(), false);
         }
         this.renderHighlight(guiGraphics, displayCache.selectionAreas);
         if (isFocused())
@@ -230,8 +131,8 @@ public class NewTextBox extends AbstractWidget {
 
     protected void renderHighlight(GuiGraphics guiGraphics, Rect2i[] highlightAreas) {
         for (Rect2i selection : highlightAreas) {
-            int x = selection.getX();
-            int y = selection.getY();
+            int x = getX() + selection.getX();
+            int y = getY() + selection.getY();
             int x1 = x + selection.getWidth();
             int y1 = y + selection.getHeight();
             guiGraphics.fill(RenderType.guiTextHighlight(), x, y - 1, x1, y1, isFocused() ? selectionColor : selectionUnfocusedColor);
@@ -315,7 +216,7 @@ public class NewTextBox extends AbstractWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isHovered && visible && isActive() && button == 0) {
             long currentTime = Util.getMillis();
-            TextBoxDisplayCache displayCache = getDisplayCache();
+            DisplayCache displayCache = getDisplayCache();
             int index = displayCache.getIndexAtPosition(font, convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
 
             if (index >= 0) {
@@ -342,7 +243,7 @@ public class NewTextBox extends AbstractWidget {
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (button == 0) {
-            TextBoxDisplayCache displayCache = this.getDisplayCache();
+            DisplayCache displayCache = this.getDisplayCache();
             int index = displayCache.getIndexAtPosition(this.font, this.convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
             this.textFieldHelper.setCursorPos(index, true);
             this.clearDisplayCache();
@@ -376,7 +277,7 @@ public class NewTextBox extends AbstractWidget {
         if (Screen.hasControlDown()) {
             this.textFieldHelper.setCursorToEnd(Screen.hasShiftDown());
         } else {
-            TextBoxDisplayCache displayCache = this.getDisplayCache();
+            DisplayCache displayCache = this.getDisplayCache();
             int cursorIndex = this.textFieldHelper.getCursorPos();
             int lineEndIndex = displayCache.findLineEnd(cursorIndex);
             this.textFieldHelper.setCursorPos(lineEndIndex, Screen.hasShiftDown());

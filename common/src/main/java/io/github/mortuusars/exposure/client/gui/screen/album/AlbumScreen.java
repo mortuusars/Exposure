@@ -7,7 +7,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.gui.screen.element.TextBlock;
-import io.github.mortuusars.exposure.client.gui.screen.element.TextBox;
+import io.github.mortuusars.exposure.client.gui.screen.element.OldTextBox;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.AlbumPlayerInventorySlot;
@@ -27,7 +27,6 @@ import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -78,7 +77,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     protected void containerTick() {
-        forEachPage(page -> page.noteWidget.ifLeft(TextBox::tick));
+        forEachPage(page -> page.noteWidget.ifLeft(OldTextBox::tick));
     }
 
     @Override
@@ -108,9 +107,9 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         lAddPhotoButton.setTabOrderGroup(0);
         addRenderableWidget(lAddPhotoButton);
 
-        Either<TextBox, TextBlock> lNoteWidget;
+        Either<OldTextBox, TextBlock> lNoteWidget;
         if (getMenu().isAlbumEditable()) {
-            TextBox textBox = new TextBox(font, lNoteArea.getX(), lNoteArea.getY(),
+            OldTextBox textBox = new OldTextBox(font, lNoteArea.getX(), lNoteArea.getY(),
                     lNoteArea.getWidth(), lNoteArea.getHeight())
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
@@ -153,9 +152,9 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         lAddPhotoButton.setTabOrderGroup(3);
         addRenderableWidget(rAddPhotoButton);
 
-        Either<TextBox, TextBlock> rNoteWidget;
+        Either<OldTextBox, TextBlock> rNoteWidget;
         if (getMenu().isAlbumEditable()) {
-            TextBox textBox = new TextBox(font, rNoteArea.getX(), rNoteArea.getY(),
+            OldTextBox textBox = new OldTextBox(font, rNoteArea.getX(), rNoteArea.getY(),
                     rNoteArea.getWidth(), rNoteArea.getHeight())
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
@@ -378,7 +377,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     private void pressButton(int buttonId) {
         for (Page page : pages) {
-            page.noteWidget.ifLeft(TextBox::refresh);
+            page.noteWidget.ifLeft(OldTextBox::refresh);
         }
 
         getMenu().clickMenuButton(player, buttonId);
@@ -448,10 +447,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         public final int photoButtonId;
 
         public final Rect2i noteArea;
-        public final Either<TextBox, TextBlock> noteWidget;
+        public final Either<OldTextBox, TextBlock> noteWidget;
 
         private Page(Side side, Rect2i pageArea, Rect2i photoArea, Rect2i exposureArea, Rect2i noteArea,
-                     Button addPhotoButton, int photoButtonId, Either<TextBox, TextBlock> noteWidget) {
+                     Button addPhotoButton, int photoButtonId, Either<OldTextBox, TextBlock> noteWidget) {
             this.side = side;
             this.pageArea = pageArea;
             this.photoArea = photoArea;
