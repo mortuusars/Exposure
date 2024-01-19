@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element.textbox;
 
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.util.Pos2i;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.minecraft.client.StringSplitter;
@@ -97,6 +98,9 @@ public class DisplayCache {
             return;
         }
 
+        // Cursor can be
+//        cursorIndex = Math.min(cursorIndex, text.length() - 1);
+
         IntArrayList lineStartIndexes = new IntArrayList();
         List<LineInfo> lines = new ArrayList<>();
         MutableInt linesCount = new MutableInt();
@@ -133,6 +137,7 @@ public class DisplayCache {
             LineInfo line = lines.get(lineIndex);
 
             String lineTextToCursor = text.substring(lineStartIndexesArray[lineIndex], cursorIndex);
+
             cursorX = line.x + (int)stringSplitter.stringWidth(lineTextToCursor);
             newCursorPos = new Pos2i(cursorX, line.y);
         }

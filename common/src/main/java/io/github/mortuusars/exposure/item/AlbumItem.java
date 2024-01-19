@@ -3,11 +3,8 @@ package io.github.mortuusars.exposure.item;
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.PlatformHelper;
-import io.github.mortuusars.exposure.client.gui.screen.TextTestScreen;
-import io.github.mortuusars.exposure.client.gui.screen.album.AlbumScreen;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -136,13 +133,12 @@ public class AlbumItem extends Item {
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
 
-        // TODO: REMOVE
-        if (!player.isSecondaryUseActive()) {
-            if (level.isClientSide) {
-                Minecraft.getInstance().setScreen(new TextTestScreen());
-            }
-            return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
-        }
+//        if (!player.isSecondaryUseActive()) {
+//            if (level.isClientSide) {
+//                Minecraft.getInstance().setScreen(new TextTestScreen());
+//            }
+//            return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
+//        }
 
         if (player instanceof ServerPlayer serverPlayer)
             openMenu(serverPlayer, itemStack);

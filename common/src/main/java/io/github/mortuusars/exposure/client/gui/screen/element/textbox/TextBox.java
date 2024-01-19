@@ -28,7 +28,7 @@ public class TextBox extends AbstractWidget {
     public final Font font;
     public Supplier<String> textGetter;
     public Consumer<String> textSetter;
-    public Predicate<String> textValidator = Objects::nonNull/* && getFont().wordWrapHeight(text, width) <= height*/;
+    public Predicate<String> textValidator = text -> text != null && getFont().wordWrapHeight(text, width) <= height;
 
     public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
     public int fontColor = 0xFF000000;
@@ -56,6 +56,10 @@ public class TextBox extends AbstractWidget {
 
     public void tick() {
         ++frameTick;
+    }
+
+    public Font getFont() {
+        return font;
     }
 
     public @NotNull String getText() {
@@ -97,6 +101,7 @@ public class TextBox extends AbstractWidget {
 
     public void refresh() {
         clearDisplayCache();
+        textFieldHelper.setCursorToEnd();
     }
 
     protected DisplayCache getDisplayCache() {

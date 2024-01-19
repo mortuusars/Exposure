@@ -7,7 +7,8 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.gui.screen.element.TextBlock;
-import io.github.mortuusars.exposure.client.gui.screen.element.OldTextBox;
+import io.github.mortuusars.exposure.client.gui.screen.element.textbox.HorizontalAlignment;
+import io.github.mortuusars.exposure.client.gui.screen.element.textbox.TextBox;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.AlbumPlayerInventorySlot;
@@ -46,8 +47,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/album.png");
     public static final int MAIN_FONT_COLOR = 0xFFB59774;
     public static final int SECONDARY_FONT_COLOR = 0xFFEFE4CA;
-    public static final int MAX_NOTE_WIDTH = 114;
-    public static final int MAX_NOTE_LINES = 3;
     public static final int SELECTION_COLOR = 0xFF8888FF;
     public static final int SELECTION_UNFOCUSED_COLOR = 0xFFBBBBFF;
 
@@ -77,7 +76,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     protected void containerTick() {
-        forEachPage(page -> page.noteWidget.ifLeft(OldTextBox::tick));
+        forEachPage(page -> page.noteWidget.ifLeft(TextBox::tick));
     }
 
     @Override
@@ -107,16 +106,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         lAddPhotoButton.setTabOrderGroup(0);
         addRenderableWidget(lAddPhotoButton);
 
-        Either<OldTextBox, TextBlock> lNoteWidget;
+        Either<TextBox, TextBlock> lNoteWidget;
         if (getMenu().isAlbumEditable()) {
-            OldTextBox textBox = new OldTextBox(font, lNoteArea.getX(), lNoteArea.getY(),
-                    lNoteArea.getWidth(), lNoteArea.getHeight())
+            TextBox textBox = new TextBox(font, lNoteArea.getX(), lNoteArea.getY(), lNoteArea.getWidth(), lNoteArea.getHeight(),
+                    () -> getMenu().getPage(Side.LEFT).map(page -> page.getNote().left().orElseThrow()).orElse(""),
+                    text -> onNoteChanged(Side.LEFT, text))
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-            textBox.textGetter = () -> getMenu().getPage(Side.LEFT).map(page -> page.getNote().left().orElseThrow())
-                    .orElse("");
-            textBox.textSetter = text -> onNoteChanged(Side.LEFT, text);
             textBox.setTabOrderGroup(1);
+            textBox.horizontalAlignment = HorizontalAlignment.CENTER;
             addRenderableWidget(textBox);
             lNoteWidget = Either.left(textBox);
         } else {
@@ -152,16 +150,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         lAddPhotoButton.setTabOrderGroup(3);
         addRenderableWidget(rAddPhotoButton);
 
-        Either<OldTextBox, TextBlock> rNoteWidget;
+        Either<TextBox, TextBlock> rNoteWidget;
         if (getMenu().isAlbumEditable()) {
-            OldTextBox textBox = new OldTextBox(font, rNoteArea.getX(), rNoteArea.getY(),
-                    rNoteArea.getWidth(), rNoteArea.getHeight())
+            TextBox textBox = new TextBox(font, rNoteArea.getX(), rNoteArea.getY(), rNoteArea.getWidth(), rNoteArea.getHeight(),
+                    () -> getMenu().getPage(Side.RIGHT).map(page -> page.getNote().left().orElseThrow()).orElse(""),
+                    text -> onNoteChanged(Side.RIGHT, text))
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-            textBox.textGetter = () -> getMenu().getPage(Side.RIGHT).map(page -> page.getNote().left().orElseThrow())
-                    .orElse("");
-            textBox.textSetter = text -> onNoteChanged(Side.RIGHT, text);
             textBox.setTabOrderGroup(4);
+            textBox.horizontalAlignment = HorizontalAlignment.CENTER;
             addRenderableWidget(textBox);
             rNoteWidget = Either.left(textBox);
         } else {
@@ -376,12 +373,12 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     private void pressButton(int buttonId) {
-        for (Page page : pages) {
-            page.noteWidget.ifLeft(OldTextBox::refresh);
-        }
-
         getMenu().clickMenuButton(player, buttonId);
         gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
+
+        for (Page page : pages) {
+            page.noteWidget.ifLeft(TextBox::refresh);
+        }
     }
 
     @Override
@@ -447,10 +444,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         public final int photoButtonId;
 
         public final Rect2i noteArea;
-        public final Either<OldTextBox, TextBlock> noteWidget;
+        public final Either<TextBox, TextBlock> noteWidget;
 
         private Page(Side side, Rect2i pageArea, Rect2i photoArea, Rect2i exposureArea, Rect2i noteArea,
-                     Button addPhotoButton, int photoButtonId, Either<OldTextBox, TextBlock> noteWidget) {
+                     Button addPhotoButton, int photoButtonId, Either<TextBox, TextBlock> noteWidget) {
             this.side = side;
             this.pageArea = pageArea;
             this.photoArea = photoArea;
