@@ -56,7 +56,7 @@
   "gui.exposure.album.note": "Note",
   "gui.exposure.album.add_photograph": "Add Photograph",
   "gui.exposure.album.left_click_to_add": "§8[§7Left Click§8] to Add",
-  "gui.exposure.album.left_click_to_view": "§8[§7Left Click§8] to View",
+  "gui.exposure.album.left_click_or_scroll_up_to_view": "§8[§7Left Click§8] or §8[§7Scroll Up§8] to View",
   "gui.exposure.album.right_click_to_remove": "§8[§7Right Click§8] to Remove",
   "gui.exposure.album.left_click_to_edit": "§8[§7Left Click§8] to Edit",
   "gui.exposure.album.right_click_to_clear": "§8[§7Right Click§8] to Clear",
