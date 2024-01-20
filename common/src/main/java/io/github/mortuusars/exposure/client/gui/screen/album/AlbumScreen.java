@@ -14,13 +14,16 @@ import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.AlbumPlayerInventorySlot;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.server.AlbumSyncNoteC2SP;
+import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.util.Side;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.GameRenderer;
@@ -250,7 +253,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     getMenu().getPhotographSlot(page.side).ifPresent(slot -> {
                         ItemStack stack = slot.getItem();
                         List<Component> tooltip = this.getTooltipFromContainerItem(stack);
-                        tooltip.add(Component.translatable("gui.exposure.album.left_click_to_view"));
+                        tooltip.add(Component.translatable("gui.exposure.album.left_click_or_scroll_up_to_view"));
                         tooltip.add(Component.translatable("gui.exposure.album.right_click_to_remove"));
                         guiGraphics.renderTooltip(this.font, tooltip,
                                 (stack.getItem() instanceof PhotographItem ? Optional.empty() : stack.getTooltipImage()), x, y);
@@ -375,9 +378,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         }
         else {
             for (Page page : pages) {
-                if (button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.photoArea, mouseX, mouseY)) {
-                    pressButton(page.photoButtonId);
-                    return true;
+                if (page.isMouseOver(page.photoArea, mouseX, mouseY)) {
+                    if (hasPhotograph(page) && button == InputConstants.MOUSE_BUTTON_LEFT) {
+                        inspectPhotograph(page);
+                        return true;
+                    }
+                    else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+                        pressButton(page.photoButtonId);
+                        return true;
+                    }
                 }
 
                 if (button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.noteArea, mouseX, mouseY)) {
@@ -386,11 +395,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     });
                     return true;
                 }
-
-//                if (page.getNoteWidget().isFocused() && !page.isMouseOver(page.noteArea, mouseX, mouseY)) {
-//                    setFocused(null);
-//                    return true;
-//                }
             }
         }
 
@@ -408,6 +412,14 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         return handled;
     }
 
+    private void inspectPhotograph(Page page) {
+        getMenu().getPage(page.side).ifPresent(p -> {
+            ItemStack photographStack = p.getPhotographStack();
+            if (photographStack.getItem() instanceof PhotographItem)
+                minecraft.setScreen(new AlbumPhotographScreen(this, List.of(new ItemAndStack<>(photographStack))));
+        });
+    }
+
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         if (getMenu().isInAddingPhotographMode())
@@ -415,6 +427,22 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         else
             return this.getFocused() != null && this.isDragging() && button == 0
                     && this.getFocused().mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        for (Page page : pages) {
+            if (delta >= 0.0 /*Scroll Up*/ && hasPhotograph(page) && page.isMouseOver(page.photoArea, mouseX, mouseY)) {
+                inspectPhotograph(page);
+                return true;
+            }
+        }
+
+        return super.mouseScrolled(mouseX, mouseY, delta);
+    }
+
+    public boolean hasPhotograph(Page page) {
+        return getMenu().getPage(page.side).map(p -> !p.getPhotographStack().isEmpty()).orElse(false);
     }
 
     private void pressButton(int buttonId) {
@@ -452,11 +480,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                 if (keyCode == InputConstants.KEY_ESCAPE) {
                     this.setFocused(null);
                     return true;
-                }
-
-                if (keyCode == InputConstants.KEY_TAB) {
-                    this.setFocused(null);
-                    return super.keyPressed(keyCode, scanCode, modifiers);
                 }
 
                 return widget.keyPressed(keyCode, scanCode, modifiers);
