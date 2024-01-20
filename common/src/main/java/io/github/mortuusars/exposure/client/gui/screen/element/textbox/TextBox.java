@@ -68,6 +68,7 @@ public class TextBox extends AbstractWidget {
 
     public TextBox setText(@NotNull String text) {
         textSetter.accept(text);
+        clearDisplayCache();
         return this;
     }
 
@@ -77,6 +78,7 @@ public class TextBox extends AbstractWidget {
 
     public void setHeight(int height) {
         this.height = height;
+        clearDisplayCache();
     }
 
     public int getCurrentFontColor() {
@@ -86,22 +88,24 @@ public class TextBox extends AbstractWidget {
     public TextBox setFontColor(int fontColor, int fontUnfocusedColor) {
         this.fontColor = fontColor;
         this.fontUnfocusedColor = fontUnfocusedColor;
+        clearDisplayCache();
         return this;
     }
 
     public TextBox setSelectionColor(int selectionColor, int selectionUnfocusedColor) {
         this.selectionColor = selectionColor;
         this.selectionUnfocusedColor = selectionUnfocusedColor;
+        clearDisplayCache();
         return this;
     }
 
     public void setCursorToEnd() {
         textFieldHelper.setCursorToEnd();
+        clearDisplayCache();
     }
 
     public void refresh() {
         clearDisplayCache();
-        textFieldHelper.setCursorToEnd();
     }
 
     protected DisplayCache getDisplayCache() {
