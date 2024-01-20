@@ -103,7 +103,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         Button lAddPhotoButton = new ImageButton(lPhotoArea.getX(), lPhotoArea.getY(), lPhotoArea.getWidth(), lPhotoArea.getHeight(),
                 299, 0, 109, TEXTURE, 512, 512, this::onButtonPress);
         lAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
-        lAddPhotoButton.setTabOrderGroup(0);
         addRenderableWidget(lAddPhotoButton);
 
         Either<TextBox, TextBlock> lNoteWidget;
@@ -113,14 +112,13 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     text -> onNoteChanged(Side.LEFT, text))
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-            textBox.setTabOrderGroup(1);
             textBox.horizontalAlignment = HorizontalAlignment.CENTER;
             addRenderableWidget(textBox);
             lNoteWidget = Either.left(textBox);
         } else {
             //TODO: MESSAGE
             TextBlock textBlock = new TextBlock(font, lNoteArea.getX(), lNoteArea.getY(),
-                    lNoteArea.getWidth(), lNoteArea.getHeight(), Component.empty() /*message*/ );
+                    lNoteArea.getWidth(), lNoteArea.getHeight(), Component.empty() /*message*/);
             textBlock.fontColor = MAIN_FONT_COLOR;
             textBlock.setTabOrderGroup(1);
             addRenderableWidget(textBlock);
@@ -147,7 +145,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                 rPhotoArea.getWidth(), rPhotoArea.getHeight(), 299, 0, 109,
                 TEXTURE, 512, 512, this::onButtonPress);
         rAddPhotoButton.setTooltip(Tooltip.create(addButtonTooltip));
-        lAddPhotoButton.setTabOrderGroup(3);
         addRenderableWidget(rAddPhotoButton);
 
         Either<TextBox, TextBlock> rNoteWidget;
@@ -157,14 +154,13 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     text -> onNoteChanged(Side.RIGHT, text))
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-            textBox.setTabOrderGroup(4);
             textBox.horizontalAlignment = HorizontalAlignment.CENTER;
             addRenderableWidget(textBox);
             rNoteWidget = Either.left(textBox);
         } else {
             //TODO: MESSAGE
             TextBlock textBlock = new TextBlock(font, rNoteArea.getX(), rNoteArea.getY(),
-                    rNoteArea.getWidth(), rNoteArea.getHeight(), Component.empty() /*message*/ );
+                    rNoteArea.getWidth(), rNoteArea.getHeight(), Component.empty() /*message*/);
             textBlock.fontColor = MAIN_FONT_COLOR;
             textBlock.setTabOrderGroup(4);
             addRenderableWidget(textBlock);
@@ -211,6 +207,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         inventoryLabelY = isInAddingPhotographMode ? getMenu().getPlayerInventorySlots().get(0).y - 12 : -999;
 
+        forEachPage(page -> {
+            page.getNoteWidget().visible = !isInAddingPhotographMode;
+            page.getNoteWidget().active = !isInAddingPhotographMode;
+        });
+
         this.renderBackground(guiGraphics);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -241,7 +242,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
         if (getMenu().isInAddingPhotographMode() && hoveredSlot != null && !hoveredSlot.getItem()
                 .isEmpty() && !(hoveredSlot.getItem().getItem() instanceof PhotographItem))
-            return;
+            return; // Do not render tooltips for greyed-out items
 
         if (!getMenu().isInAddingPhotographMode()) {
             for (Page page : pages) {
@@ -249,12 +250,27 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     getMenu().getPhotographSlot(page.side).ifPresent(slot -> {
                         ItemStack stack = slot.getItem();
                         List<Component> tooltip = this.getTooltipFromContainerItem(stack);
-                        tooltip.add(Component.empty());
                         tooltip.add(Component.translatable("gui.exposure.album.left_click_to_view"));
                         tooltip.add(Component.translatable("gui.exposure.album.right_click_to_remove"));
                         guiGraphics.renderTooltip(this.font, tooltip,
                                 (stack.getItem() instanceof PhotographItem ? Optional.empty() : stack.getTooltipImage()), x, y);
                     });
+
+                    return;
+                }
+
+                if (getMenu().isAlbumEditable() && page.isMouseOver(page.noteArea, x, y)) {
+                    List<Component> tooltip = new ArrayList<>();
+                    tooltip.add(Component.translatable("gui.exposure.album.note"));
+
+                    if (!page.getNoteWidget().isFocused())
+                        tooltip.add(Component.translatable("gui.exposure.album.left_click_to_edit"));
+
+                    boolean hasText = page.noteWidget.left().map(box -> box.getText().length() > 0).orElse(false);
+                    if (hasText)
+                        tooltip.add(Component.translatable("gui.exposure.album.right_click_to_clear"));
+
+                    guiGraphics.renderTooltip(this.font, tooltip, Optional.empty(), x, y);
 
                     return;
                 }
@@ -270,8 +286,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         if (getMenu().isInAddingPhotographMode() && hoveredSlot != null && hoveredSlot.getItem() == stack
                 && stack.getItem() instanceof PhotographItem) {
             tooltipLines.add(Component.empty());
-            tooltipLines.add(Component.translatable("gui.exposure.album.left_click_to_add")
-                    .withStyle(ChatFormatting.GOLD));
+            tooltipLines.add(Component.translatable("gui.exposure.album.left_click_to_add"));
         }
         return tooltipLines;
     }
@@ -308,16 +323,13 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     }
                 }
             });
-
-//            page.noteWidget.map(box -> ((Renderable) box), block -> ((Renderable) block))
-//                    .render(guiGraphics, mouseX, mouseY, partialTick);
         }
 
         if (getMenu().isInAddingPhotographMode()) {
             @Nullable Side pageBeingAddedTo = getMenu().getSideBeingAddedTo();
             for (Page page : pages) {
                 if (page.side == pageBeingAddedTo) {
-                    guiGraphics.blit(TEXTURE, page.photoArea.getX(), page.photoArea.getY(), 5, 299, 109,
+                    guiGraphics.blit(TEXTURE, page.photoArea.getX(), page.photoArea.getY(), 10, 299, 109,
                             page.photoArea.getWidth(), page.photoArea.getHeight(), 512, 512);
                     break;
                 }
@@ -360,24 +372,62 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     return true;
                 }
             }
-        } else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        }
+        else {
             for (Page page : pages) {
-                if (page.isMouseOver(page.photoArea, mouseX, mouseY)) {
+                if (button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.photoArea, mouseX, mouseY)) {
                     pressButton(page.photoButtonId);
+                    return true;
+                }
+
+                if (button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.noteArea, mouseX, mouseY)) {
+                    page.noteWidget.ifLeft(box -> {
+                        box.setText(""); // Clears the note
+                    });
+                    return true;
+                }
+
+//                if (page.getNoteWidget().isFocused() && !page.isMouseOver(page.noteArea, mouseX, mouseY)) {
+//                    setFocused(null);
+//                    return true;
+//                }
+            }
+        }
+
+        boolean handled = super.mouseClicked(mouseX, mouseY, button);
+
+        if (!handled) {
+            for (Page page : pages) {
+                if (page.getNoteWidget().isFocused() && !page.isMouseOver(page.noteArea, mouseX, mouseY)) {
+                    setFocused(null);
                     return true;
                 }
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return handled;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (getMenu().isInAddingPhotographMode())
+            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        else
+            return this.getFocused() != null && this.isDragging() && button == 0
+                    && this.getFocused().mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     private void pressButton(int buttonId) {
         getMenu().clickMenuButton(player, buttonId);
         gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
 
-        for (Page page : pages) {
-            page.noteWidget.ifLeft(TextBox::refresh);
+        if (buttonId == AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON)
+            setFocused(null);
+
+        if (buttonId == AlbumMenu.PREVIOUS_PAGE_BUTTON || buttonId == AlbumMenu.NEXT_PAGE_BUTTON) {
+            for (Page page : pages) {
+                page.noteWidget.ifLeft(TextBox::setCursorToEnd);
+            }
         }
     }
 
@@ -393,6 +443,9 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == InputConstants.KEY_TAB)
+            return super.keyPressed(keyCode, scanCode, modifiers);
+
         for (Page page : pages) {
             AbstractWidget widget = page.noteWidget.map(box -> box, block -> block);
             if (widget.isFocused()) {
@@ -461,6 +514,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         public boolean isMouseOver(Rect2i area, double mouseX, double mouseY) {
             return isHovering(area.getX() - leftPos, area.getY() - topPos,
                     area.getWidth(), area.getHeight(), mouseX, mouseY);
+        }
+
+        public AbstractWidget getNoteWidget() {
+            return noteWidget.map(box -> box, block -> block);
         }
     }
 }
