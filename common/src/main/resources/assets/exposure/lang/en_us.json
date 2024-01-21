@@ -60,6 +60,11 @@
   "gui.exposure.album.right_click_to_remove": "§8[§7Right Click§8] to Remove",
   "gui.exposure.album.left_click_to_edit": "§8[§7Left Click§8] to Edit",
   "gui.exposure.album.right_click_to_clear": "§8[§7Right Click§8] to Clear",
+  "gui.exposure.album.enter_title": "Enter Album Title:",
+  "gui.exposure.album.by_author": "by %1$s",
+  "gui.exposure.album.sign": "Sign Album",
+  "gui.exposure.album.sign.warning": "Note! When you sign the album, it will no longer be editable.",
+  "gui.exposure.album.cancel_signing": "Cancel",
 
   "gui.exposure.lightroom.previous_frame": "Previous Frame",
   "gui.exposure.lightroom.current_frame": "Frame: %s",

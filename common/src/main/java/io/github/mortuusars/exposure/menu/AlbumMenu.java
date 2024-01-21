@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.menu;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.AlbumItem;
 import io.github.mortuusars.exposure.item.AlbumPage;
@@ -9,7 +10,6 @@ import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -30,21 +30,24 @@ public class AlbumMenu extends AbstractContainerMenu {
     public static final int NEXT_PAGE_BUTTON = 1;
     public static final int LEFT_PAGE_PHOTO_BUTTON = 2;
     public static final int RIGHT_PAGE_PHOTO_BUTTON = 3;
+    public static final int ENTER_SIGN_MODE_BUTTON = 4;
+    public static final int SIGN_BUTTON = 5;
+    public static final int CANCEL_SIGNING_BUTTON = 6;
 
-    private final ItemAndStack<AlbumItem> album;
+    protected final ItemAndStack<AlbumItem> album;
 
-    private final List<AlbumPage> pages;
+    protected final List<AlbumPage> pages;
 
-    private final List<AlbumPhotographSlot> photographSlots = new ArrayList<>();
-    private final List<AlbumPlayerInventorySlot> playerInventorySlots = new ArrayList<>();
+    protected final List<AlbumPhotographSlot> photographSlots = new ArrayList<>();
+    protected final List<AlbumPlayerInventorySlot> playerInventorySlots = new ArrayList<>();
 
-    private final DataSlot currentSpreadIndex = DataSlot.standalone();
+    protected final DataSlot currentSpreadIndex = DataSlot.standalone();
 
     @Nullable
-    private Side sideBeingAddedTo = null;
-    private boolean noteChanged;
+    protected Side sideBeingAddedTo = null;
+    protected boolean signing;
 
-    private final Map<Integer, Consumer<Player>> buttonActions = new HashMap<>() {{
+    protected final Map<Integer, Consumer<Player>> buttonActions = new HashMap<>() {{
         put(CANCEL_ADDING_PHOTO_BUTTON, p -> {
             sideBeingAddedTo = null;
             if (!getCarried().isEmpty()) {
@@ -63,6 +66,14 @@ public class AlbumMenu extends AbstractContainerMenu {
         });
         put(LEFT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Side.LEFT));
         put(RIGHT_PAGE_PHOTO_BUTTON, p -> onPhotoButtonPress(p, Side.RIGHT));
+        put(ENTER_SIGN_MODE_BUTTON, p -> {
+            signing = true;
+            sideBeingAddedTo = null;
+        });
+        put(SIGN_BUTTON, p -> signAlbum(p));
+        put(CANCEL_SIGNING_BUTTON, p -> {
+            signing = false;
+        });
     }};
 
 
@@ -152,6 +163,26 @@ public class AlbumMenu extends AbstractContainerMenu {
         return album.getItem().isEditable();
     }
 
+    public boolean isInAddingPhotographMode() {
+        return getSideBeingAddedTo() != null;
+    }
+
+    public boolean isInSigningMode() {
+        return signing;
+    }
+
+    public boolean canSignAlbum() {
+        for (AlbumPage page : getPages()) {
+            if (!page.getPhotographStack().isEmpty() || page.getNote().left().map(note -> !note.isEmpty()).orElse(false))
+                return true;
+        }
+        return false;
+    }
+
+    protected void signAlbum(Player player) {
+        LogUtils.getLogger().error("NOt implemented");
+    }
+
     public void updateAlbumStack() {
         List<AlbumPage> pages = getPages();
         for (int pageIndex = 0; pageIndex < pages.size(); pageIndex++) {
@@ -202,14 +233,6 @@ public class AlbumMenu extends AbstractContainerMenu {
 
     public void setCurrentSpreadIndex(int spreadIndex) {
         this.currentSpreadIndex.set(spreadIndex);
-    }
-
-    public void setNoteChanged() {
-        this.noteChanged = true;
-    }
-
-    public boolean isInAddingPhotographMode() {
-        return getSideBeingAddedTo() != null;
     }
 
     public @Nullable Side getSideBeingAddedTo() {
