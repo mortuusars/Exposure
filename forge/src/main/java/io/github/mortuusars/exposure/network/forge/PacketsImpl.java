@@ -82,6 +82,12 @@ public class PacketsImpl {
                 .consumerMainThread(PacketsImpl::handlePacket)
                 .add();
 
+        CHANNEL.messageBuilder(AlbumSignC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(AlbumSignC2SP::toBuffer)
+                .decoder(AlbumSignC2SP::fromBuffer)
+                .consumerMainThread(PacketsImpl::handlePacket)
+                .add();
+
         // CLIENT
         CHANNEL.messageBuilder(ApplyShaderS2CP.class, id++, NetworkDirection.PLAY_TO_CLIENT)
                 .encoder(ApplyShaderS2CP::toBuffer)

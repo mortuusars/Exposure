@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 
+@SuppressWarnings({"UnusedReturnValue", "BooleanMethodIsAlwaysInverted"})
 public class Pager {
     public long lastChangedAt;
     public int changeCooldownMS = 50;

@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
@@ -30,7 +31,9 @@ import java.util.List;
 import java.util.Optional;
 
 public class AlbumItem extends Item {
-    public static final String PAGES_TAG = "Pages";
+    public static final String TAG_PAGES = "Pages";
+    public static final String TAG_TITLE = "Title";
+    public static final String TAG_AUTHOR = "Author";
 
     public AlbumItem(Properties properties) {
         super(properties);
@@ -47,7 +50,7 @@ public class AlbumItem extends Item {
     public Optional<AlbumPage> getPage(ItemStack albumStack, int index) {
         Preconditions.checkElementIndex(index, getMaxPages());
         CompoundTag tag = albumStack.getTag();
-        if (tag == null || tag.isEmpty() || !tag.contains(PAGES_TAG, Tag.TAG_LIST))
+        if (tag == null || tag.isEmpty() || !tag.contains(TAG_PAGES, Tag.TAG_LIST))
             return Optional.empty();
 
         ListTag pagesTag = getOrCreatePagesTag(albumStack);
@@ -72,10 +75,10 @@ public class AlbumItem extends Item {
 
     public List<AlbumPage> getPages(ItemStack albumStack) {
         CompoundTag tag = albumStack.getTag();
-        if (tag == null || tag.isEmpty() || !tag.contains(PAGES_TAG, Tag.TAG_LIST))
+        if (tag == null || tag.isEmpty() || !tag.contains(TAG_PAGES, Tag.TAG_LIST))
             return Collections.emptyList();
 
-        ListTag pagesList = tag.getList(PAGES_TAG, Tag.TAG_COMPOUND);
+        ListTag pagesList = tag.getList(TAG_PAGES, Tag.TAG_COMPOUND);
         if (pagesList.isEmpty())
             return Collections.emptyList();
 
@@ -100,45 +103,14 @@ public class AlbumItem extends Item {
 
     protected ListTag getOrCreatePagesTag(ItemStack albumStack) {
         CompoundTag tag = albumStack.getOrCreateTag();
-        ListTag list = tag.getList(PAGES_TAG, Tag.TAG_COMPOUND);
-        tag.put(PAGES_TAG, list);
+        ListTag list = tag.getList(TAG_PAGES, Tag.TAG_COMPOUND);
+        tag.put(TAG_PAGES, list);
         return list;
     }
-
-//    public ItemStack setPhotoOnPage(ItemStack albumStack, ItemStack photoStack, int pageIndex) {
-//        CompoundTag tag = albumStack.getOrCreateTag();
-//        ListTag list = tag.getList(PAGES_TAG, Tag.TAG_COMPOUND);
-//
-//        ItemStack existingStack = ItemStack.EMPTY;
-//
-//        AlbumPage page;
-//
-//        if (pageIndex < list.size()) {
-//            page = AlbumPage.fromTag(list.getCompound(pageIndex), isEditable());
-//            existingStack = page.setPhotographStack(photoStack);
-//        } else {
-//            page = new AlbumPage(photoStack, isEditable() ? Either.left("") : Either.right(Component.empty()));
-//            while (list.size() <= pageIndex) {
-//                list.add(new CompoundTag());
-//            }
-//        }
-//
-//        list.set(pageIndex, page.toTag(new CompoundTag()));
-//        albumStack.getOrCreateTag().put(PAGES_TAG, list);
-//
-//        return existingStack;
-//    }
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand) {
         ItemStack itemStack = player.getItemInHand(usedHand);
-
-//        if (!player.isSecondaryUseActive()) {
-//            if (level.isClientSide) {
-//                Minecraft.getInstance().setScreen(new TextTestScreen());
-//            }
-//            return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
-//        }
 
         if (player instanceof ServerPlayer serverPlayer)
             openMenu(serverPlayer, itemStack);
@@ -174,5 +146,37 @@ public class AlbumItem extends Item {
 
         if (photosCount > 0)
             tooltipComponents.add(Component.translatable("item.exposure.album.tooltip.photos_count", photosCount));
+    }
+
+    public ItemStack sign(ItemStack album, String title, String author) {
+        if (!(album.getItem() instanceof AlbumItem))
+            throw new IllegalArgumentException("Can only sign AlbumItem's. Provided: '" + album + "'.");
+        else if (!isEditable())
+            throw new IllegalArgumentException("Cannot sign fixed album.");
+
+        ItemStack albumCopy = album.copy();
+        ListTag pagesTag = getOrCreatePagesTag(albumCopy);
+
+        for (int i = pagesTag.size() - 1; i >= 0; i--) {
+            CompoundTag pageTag = pagesTag.getCompound(i);
+            AlbumPage page = AlbumPage.fromTag(pageTag, isEditable());
+
+            // Remove until we have page with content
+            if (page.isEmpty())
+                pagesTag.remove(i);
+            else
+                break;
+        }
+
+        for (int i = 0; i < pagesTag.size(); i++) {
+            AlbumPage page = AlbumPage.fromTag(pagesTag.getCompound(i), isEditable());
+            pagesTag.set(i, page.toSigned().toTag(new CompoundTag()));
+        }
+
+        ItemStack signedAlbum = new ItemStack(Exposure.Items.SIGNED_ALBUM.get());
+        signedAlbum.setTag(albumCopy.getTag());
+        signedAlbum.getOrCreateTag().putString(TAG_TITLE, title);
+        signedAlbum.getOrCreateTag().putString(TAG_AUTHOR, author);
+        return signedAlbum;
     }
 }

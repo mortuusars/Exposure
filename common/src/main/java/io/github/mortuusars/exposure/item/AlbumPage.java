@@ -34,6 +34,10 @@ public class AlbumPage {
         return note.left().isPresent();
     }
 
+    public boolean isEmpty() {
+        return photographStack.isEmpty() && note.map(String::isEmpty, c -> c.getString().isEmpty());
+    }
+
     public static AlbumPage fromTag(CompoundTag tag, boolean editable) {
         ItemStack photographStack = tag.contains(PHOTOGRAPH_TAG, Tag.TAG_COMPOUND)
                 ? ItemStack.of(tag.getCompound(PHOTOGRAPH_TAG)) : ItemStack.EMPTY;
@@ -88,6 +92,14 @@ public class AlbumPage {
 
     public void setNote(Either<String, Component> note) {
         this.note = note;
+    }
+
+    public AlbumPage toSigned() {
+        if (!isEditable())
+            return this;
+
+        MutableComponent noteComponent = Component.literal(getNote().left().orElseThrow());
+        return signed(getPhotographStack(), noteComponent);
     }
 
     @Override
