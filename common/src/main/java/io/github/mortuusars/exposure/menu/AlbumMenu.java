@@ -2,11 +2,12 @@ package io.github.mortuusars.exposure.menu;
 
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.AlbumItem;
 import io.github.mortuusars.exposure.item.AlbumPage;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.exposure.network.packet.server.AlbumSignC2SP;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.network.FriendlyByteBuf;
@@ -46,6 +47,7 @@ public class AlbumMenu extends AbstractContainerMenu {
     @Nullable
     protected Side sideBeingAddedTo = null;
     protected boolean signing;
+    protected String title = "";
 
     protected final Map<Integer, Consumer<Player>> buttonActions = new HashMap<>() {{
         put(CANCEL_ADDING_PHOTO_BUTTON, p -> {
@@ -171,6 +173,14 @@ public class AlbumMenu extends AbstractContainerMenu {
         return signing;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String authorName) {
+        this.title = authorName;
+    }
+
     public boolean canSignAlbum() {
         for (AlbumPage page : getPages()) {
             if (!page.getPhotographStack().isEmpty() || page.getNote().left().map(note -> !note.isEmpty()).orElse(false))
@@ -180,7 +190,13 @@ public class AlbumMenu extends AbstractContainerMenu {
     }
 
     protected void signAlbum(Player player) {
-        LogUtils.getLogger().error("NOt implemented");
+        if (!player.level().isClientSide)
+            return;
+
+        if (!canSignAlbum())
+            throw new IllegalStateException("Cannot sign the album.\n" + Arrays.toString(getPages().toArray()));
+
+        Packets.sendToServer(new AlbumSignC2SP(title));
     }
 
     public void updateAlbumStack() {
@@ -225,6 +241,10 @@ public class AlbumMenu extends AbstractContainerMenu {
             return Optional.ofNullable(photographSlots.get(index));
 
         return Optional.empty();
+    }
+
+    public ItemStack getPhotograph(Side side) {
+        return getPhotographSlot(side).map(Slot::getItem).orElse(ItemStack.EMPTY);
     }
 
     public int getCurrentSpreadIndex() {

@@ -7,16 +7,17 @@ import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public class AlbumPhotographScreen extends PhotographScreen {
-    private final AlbumScreen screen;
+    private final Screen parentScreen;
 
-    public AlbumPhotographScreen(AlbumScreen screen, List<ItemAndStack<PhotographItem>> photographs) {
+    public AlbumPhotographScreen(Screen parentScreen, List<ItemAndStack<PhotographItem>> photographs) {
         super(photographs);
-        this.screen = screen;
+        this.parentScreen = parentScreen;
     }
 
     @Override
@@ -54,7 +55,7 @@ public class AlbumPhotographScreen extends PhotographScreen {
     }
 
     public void close() {
-        Minecraft.getInstance().setScreen(screen);
+        Minecraft.getInstance().setScreen(parentScreen);
         if (minecraft.player != null)
             minecraft.player.playSound(Exposure.SoundEvents.CAMERA_LENS_RING_CLICK.get(), 1f, 0.7f);
     }

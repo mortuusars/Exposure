@@ -28,6 +28,7 @@ public class PacketsImpl {
         ServerPlayNetworking.registerGlobalReceiver(QueryExposureDataC2SP.ID, new ServerHandler(QueryExposureDataC2SP::fromBuffer));
 
         ServerPlayNetworking.registerGlobalReceiver(AlbumSyncNoteC2SP.ID, new ServerHandler(AlbumSyncNoteC2SP::fromBuffer));
+        ServerPlayNetworking.registerGlobalReceiver(AlbumSignC2SP.ID, new ServerHandler(AlbumSignC2SP::fromBuffer));
     }
 
     public static void registerS2CPackets() {
