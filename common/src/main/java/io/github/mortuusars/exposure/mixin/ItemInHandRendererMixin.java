@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.client.render.PhotographInHandRenderer;
+import io.github.mortuusars.exposure.render.PhotographInHandRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import net.minecraft.client.player.AbstractClientPlayer;

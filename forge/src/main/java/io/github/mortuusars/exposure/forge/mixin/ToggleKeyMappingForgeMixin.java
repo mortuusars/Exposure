@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.forge.mixin;
 
-import io.github.mortuusars.exposure.client.gui.screen.camera.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.gui.screen.camera.ViewfinderControlsScreen;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ToggleKeyMapping;
