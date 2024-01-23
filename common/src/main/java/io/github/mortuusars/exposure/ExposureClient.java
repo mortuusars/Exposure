@@ -1,8 +1,8 @@
 package io.github.mortuusars.exposure;
 
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.client.gui.screen.camera.ViewfinderControlsScreen;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.gui.screen.camera.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.render.ExposureRenderer;
 import io.github.mortuusars.exposure.data.storage.ClientsideExposureStorage;
 import io.github.mortuusars.exposure.data.storage.IExposureStorage;
 import io.github.mortuusars.exposure.data.transfer.ExposureReceiver;

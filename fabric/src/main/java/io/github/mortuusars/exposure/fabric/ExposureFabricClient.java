@@ -1,11 +1,11 @@
 package io.github.mortuusars.exposure.fabric;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
-import io.github.mortuusars.exposure.client.gui.screen.album.AlbumScreen;
-import io.github.mortuusars.exposure.client.gui.screen.camera.CameraAttachmentsScreen;
-import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
-import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
+import io.github.mortuusars.exposure.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.gui.screen.album.AlbumScreen;
+import io.github.mortuusars.exposure.gui.screen.camera.CameraAttachmentsScreen;
+import io.github.mortuusars.exposure.gui.screen.LightroomScreen;
+import io.github.mortuusars.exposure.render.PhotographEntityRenderer;
 import io.github.mortuusars.exposure.network.fabric.PacketsImpl;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;

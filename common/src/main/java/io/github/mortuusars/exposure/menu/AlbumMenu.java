@@ -314,13 +314,16 @@ public class AlbumMenu extends AbstractContainerMenu {
             photographSlot.get().set(stack);
             slot.set(ItemStack.EMPTY);
 
+            if (player.level().isClientSide)
+                player.playSound(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), 0.8f, 1.1f);
+
             sideBeingAddedTo = null;
             updatePlayerInventorySlots();
-            return;
+//            return;
         }
 
-        if (isInAddingPhotographMode())
-            super.clicked(slotId, button, clickType, player);
+//        if (isInAddingPhotographMode())
+//            super.clicked(slotId, button, clickType, player);
     }
 
     @Override
