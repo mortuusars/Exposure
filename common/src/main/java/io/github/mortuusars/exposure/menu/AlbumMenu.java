@@ -319,11 +319,7 @@ public class AlbumMenu extends AbstractContainerMenu {
 
             sideBeingAddedTo = null;
             updatePlayerInventorySlots();
-//            return;
         }
-
-//        if (isInAddingPhotographMode())
-//            super.clicked(slotId, button, clickType, player);
     }
 
     @Override
