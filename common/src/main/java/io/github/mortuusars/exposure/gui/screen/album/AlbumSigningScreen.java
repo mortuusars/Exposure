@@ -67,7 +67,7 @@ public class AlbumSigningScreen extends Screen {
         addRenderableWidget(titleTextBox);
 
         // SIGN
-        signButton = new ImageButton(leftPos + 46, topPos + 110, 22, 22, 324, 0,
+        signButton = new ImageButton(leftPos + 46, topPos + 110, 22, 22, 242, 188,
                 22, texture, textureWidth, textureHeight,
                 b -> signAlbum(), Component.translatable("gui.exposure.album.sign"));
         MutableComponent component = Component.translatable("gui.exposure.album.sign")
@@ -76,7 +76,7 @@ public class AlbumSigningScreen extends Screen {
         addRenderableWidget(signButton);
 
         // CANCEL
-        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 111, 22, 22, 346, 0,
+        cancelSigningButton = new ImageButton(leftPos + 83, topPos + 111, 22, 22, 264, 188,
                 22, texture, textureWidth, textureHeight,
                 b -> cancelSigning(), Component.translatable("gui.exposure.album.cancel_signing"));
         cancelSigningButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.cancel_signing")));
@@ -99,8 +99,8 @@ public class AlbumSigningScreen extends Screen {
         updateButtons();
 
         renderBackground(guiGraphics);
-        guiGraphics.blit(texture, leftPos, topPos, 0, 0,
-                imageHeight, imageWidth, imageHeight, textureWidth, textureHeight);
+        guiGraphics.blit(texture, leftPos, topPos, 0, 298,
+                0, imageWidth, imageHeight, textureWidth, textureHeight);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
 
         renderLabels(guiGraphics);
@@ -108,7 +108,7 @@ public class AlbumSigningScreen extends Screen {
 
     private void renderLabels(GuiGraphics guiGraphics) {
         MutableComponent component = Component.translatable("gui.exposure.album.enter_title");
-        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 50, 0xe5d6bf, false);
+        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 50, 0xf5ebd0, false);
 
         component = Component.translatable("gui.exposure.album.by_author", player.getName());
         guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 84, 0xc7b496, false);
