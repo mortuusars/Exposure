@@ -9,6 +9,7 @@ import io.github.mortuusars.exposure.client.ExposureClientReloadListener;
 import io.github.mortuusars.exposure.client.MouseHandler;
 import io.github.mortuusars.exposure.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.gui.screen.album.AlbumScreen;
+import io.github.mortuusars.exposure.gui.screen.album.LecternAlbumScreen;
 import io.github.mortuusars.exposure.gui.screen.camera.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.render.ItemFramePhotographRenderer;
@@ -29,6 +30,7 @@ public class ClientEvents {
                 Exposure.initClient();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
+                MenuScreens.register(Exposure.MenuTypes.LECTERN_ALBUM.get(), LecternAlbumScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
             });
         }

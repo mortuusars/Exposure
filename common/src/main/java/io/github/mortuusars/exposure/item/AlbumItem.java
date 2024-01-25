@@ -6,6 +6,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -13,6 +14,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
@@ -21,7 +23,11 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.LecternBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -113,13 +119,24 @@ public class AlbumItem extends Item {
         ItemStack itemStack = player.getItemInHand(usedHand);
 
         if (player instanceof ServerPlayer serverPlayer)
-            openMenu(serverPlayer, itemStack);
+            open(serverPlayer, itemStack, isEditable());
 
         player.awardStat(Stats.ITEM_USED.get(this));
         return InteractionResultHolder.sidedSuccess(itemStack, level.isClientSide());
     }
 
-    protected void openMenu(ServerPlayer player, ItemStack albumStack) {
+    @Override
+    public @NotNull InteractionResult useOn(UseOnContext context) {
+        BlockPos blockPos = context.getClickedPos();
+        Level level = context.getLevel();
+        BlockState blockState = level.getBlockState(blockPos);
+        if (blockState.is(Blocks.LECTERN))
+            return LecternBlock.tryPlaceBook(context.getPlayer(), level, blockPos, blockState,
+                    context.getItemInHand()) ? InteractionResult.sidedSuccess(level.isClientSide) : InteractionResult.PASS;
+        return InteractionResult.PASS;
+    }
+
+    public void open(ServerPlayer player, ItemStack albumStack, boolean editable) {
         MenuProvider menuProvider = new MenuProvider() {
             @Override
             public @NotNull Component getDisplayName() {
@@ -128,11 +145,14 @@ public class AlbumItem extends Item {
 
             @Override
             public @NotNull AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
-                return new AlbumMenu(containerId, playerInventory, new ItemAndStack<>(albumStack));
+                return new AlbumMenu(containerId, playerInventory, new ItemAndStack<>(albumStack), editable);
             }
         };
 
-        PlatformHelper.openMenu(player, menuProvider, buffer -> buffer.writeItem(albumStack));
+        PlatformHelper.openMenu(player, menuProvider, buffer -> {
+            buffer.writeItem(albumStack);
+            buffer.writeBoolean(editable);
+        });
     }
 
     @Override

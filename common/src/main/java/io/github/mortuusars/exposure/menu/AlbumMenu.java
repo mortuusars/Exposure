@@ -14,10 +14,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.DataSlot;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +33,7 @@ public class AlbumMenu extends AbstractContainerMenu {
     public static final int CANCEL_SIGNING_BUTTON = 6;
 
     protected final ItemAndStack<AlbumItem> album;
+    protected final boolean editable;
 
     protected final List<AlbumPage> pages;
 
@@ -73,15 +71,17 @@ public class AlbumMenu extends AbstractContainerMenu {
             sideBeingAddedTo = null;
         });
         put(SIGN_BUTTON, p -> signAlbum(p));
-        put(CANCEL_SIGNING_BUTTON, p -> {
-            signing = false;
-        });
+        put(CANCEL_SIGNING_BUTTON, p -> signing = false);
     }};
 
+    public AlbumMenu(int containerId, Inventory playerInventory, ItemAndStack<AlbumItem> album, boolean editable) {
+        this(Exposure.MenuTypes.ALBUM.get(), containerId, playerInventory, album, editable);
+    }
 
-    public AlbumMenu(int containerId, Inventory playerInventory, ItemAndStack<AlbumItem> album) {
-        super(Exposure.MenuTypes.ALBUM.get(), containerId);
+    protected AlbumMenu(MenuType<? extends AbstractContainerMenu> type, int containerId, Inventory playerInventory, ItemAndStack<AlbumItem> album, boolean editable) {
+        super(type, containerId);
         this.album = album;
+        this.editable = editable;
 
         List<AlbumPage> albumPages = album.getItem().getPages(album.getStack());
         pages = isAlbumEditable() ? new ArrayList<>(albumPages) : albumPages;
@@ -162,7 +162,7 @@ public class AlbumMenu extends AbstractContainerMenu {
     }
 
     public boolean isAlbumEditable() {
-        return album.getItem().isEditable();
+        return editable;
     }
 
     public boolean isInAddingPhotographMode() {
@@ -329,11 +329,11 @@ public class AlbumMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return player.getMainHandItem().getItem() instanceof AlbumItem
-                || player.getOffhandItem().getItem() instanceof AlbumItem;
+        return !isAlbumEditable() || (player.getMainHandItem().getItem() instanceof AlbumItem
+                || player.getOffhandItem().getItem() instanceof AlbumItem);
     }
 
     public static AlbumMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {
-        return new AlbumMenu(containerId, inventory, new ItemAndStack<>(buffer.readItem()));
+        return new AlbumMenu(containerId, inventory, new ItemAndStack<>(buffer.readItem()), buffer.readBoolean());
     }
 }

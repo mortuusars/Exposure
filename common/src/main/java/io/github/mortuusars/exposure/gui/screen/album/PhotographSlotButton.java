@@ -70,7 +70,7 @@ public class PhotographSlotButton extends ImageButton {
     }
 
     public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        if (!hasPhotograph) {
+        if (isEditable && !hasPhotograph) {
             guiGraphics.renderTooltip(Minecraft.getInstance().font,
                     Component.translatable("gui.exposure.album.add_photograph"), mouseX, mouseY);
             return;

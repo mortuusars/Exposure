@@ -3,8 +3,8 @@ package io.github.mortuusars.exposure.gui.screen.album;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
+import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.gui.screen.element.TextBlock;
 import io.github.mortuusars.exposure.gui.screen.element.textbox.HorizontalAlignment;
@@ -67,7 +67,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         @Override
         public void onPageChanged(PagingDirection pagingDirection, int prevPage, int currentPage) {
             super.onPageChanged(pagingDirection, prevPage, currentPage);
-            pressButton(pagingDirection == PagingDirection.PREVIOUS ? AlbumMenu.PREVIOUS_PAGE_BUTTON : AlbumMenu.NEXT_PAGE_BUTTON);
+            sendButtonClick(pagingDirection == PagingDirection.PREVIOUS ? AlbumMenu.PREVIOUS_PAGE_BUTTON : AlbumMenu.NEXT_PAGE_BUTTON);
         }
     };
 
@@ -149,7 +149,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     ItemStack photograph = button.getPhotograph();
                     if (photograph.isEmpty()) {
                         if (button.isEditable) {
-                            pressButton(side == Side.LEFT ? AlbumMenu.LEFT_PAGE_PHOTO_BUTTON : AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON);
+                            sendButtonClick(side == Side.LEFT ? AlbumMenu.LEFT_PAGE_PHOTO_BUTTON : AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON);
                             button.playDownSound(minecraft.getSoundManager());
                         }
                     } else
@@ -158,7 +158,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                 b -> {
                     PhotographSlotButton button = (PhotographSlotButton) b;
                     if (button.isEditable && !button.getPhotograph().isEmpty()) {
-                        pressButton(side == Side.LEFT ? AlbumMenu.LEFT_PAGE_PHOTO_BUTTON : AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON);
+                        sendButtonClick(side == Side.LEFT ? AlbumMenu.LEFT_PAGE_PHOTO_BUTTON : AlbumMenu.RIGHT_PAGE_PHOTO_BUTTON);
                         minecraft.getSoundManager().play(SimpleSoundInstance.forUI(
                                 Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), 0.7f, 1.1f));
                     }
@@ -363,7 +363,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                 if (isHovering(x, y, 176, 100, mouseX, mouseY))
                     return true;
                 else if (!hasClickedOutside(mouseX, mouseY, leftPos, topPos, button)) {
-                    pressButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
+                    sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
                     return true;
                 }
             }
@@ -411,37 +411,42 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             return false;
         else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
             String pageIndexStr = clickEvent.getValue();
-            try {
-                int pageIndex = Integer.parseInt(pageIndexStr) - 1;
-                int newSpreadIndex = pageIndex / 2;
-
-                if (newSpreadIndex == getMenu().getCurrentSpreadIndex() || newSpreadIndex < 0
-                        || newSpreadIndex > getMenu().getPages().size() / 2) {
-                    return true;
-                }
-
-                PagingDirection pagingDirection = newSpreadIndex < getMenu().getCurrentSpreadIndex()
-                        ? PagingDirection.PREVIOUS : PagingDirection.NEXT;
-
-                int pageChanges = 0; // Safeguard against infinite loop. Probably not needed. But I don't mind it.
-                while (newSpreadIndex != getMenu().getCurrentSpreadIndex() || !pager.canChangePage(pagingDirection)) {
-                    if (pageChanges > 16)
-                        break;
-
-                    pager.changePage(pagingDirection);
-                    pageChanges++;
-                }
-
-                return true;
-            } catch (Exception exception) {
-                return false;
-            }
+            int pageIndex = Integer.parseInt(pageIndexStr) - 1;
+            forcePage(pageIndex);
+            return true;
         }
 
         boolean handled = super.handleComponentClicked(style);
         if (handled && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND)
             onClose();
         return handled;
+    }
+
+    protected boolean forcePage(int pageIndex) {
+        try {
+            int newSpreadIndex = pageIndex / 2;
+
+            if (newSpreadIndex == getMenu().getCurrentSpreadIndex() || newSpreadIndex < 0
+                    || newSpreadIndex > getMenu().getPages().size() / 2) {
+                return false;
+            }
+
+            PagingDirection pagingDirection = newSpreadIndex < getMenu().getCurrentSpreadIndex()
+                    ? PagingDirection.PREVIOUS : PagingDirection.NEXT;
+
+            int pageChanges = 0; // Safeguard against infinite loop. Probably not needed. But I don't mind it.
+            while (newSpreadIndex != getMenu().getCurrentSpreadIndex() || !pager.canChangePage(pagingDirection)) {
+                if (pageChanges > 16)
+                    break;
+
+                pager.changePage(pagingDirection);
+                pageChanges++;
+            }
+            return true;
+        } catch (Exception e) {
+            LogUtils.getLogger().error("Cannot force page: " + e);
+        }
+        return false;
     }
 
     @Override
@@ -453,7 +458,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     && this.getFocused().mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
-    private void pressButton(int buttonId) {
+    protected void sendButtonClick(int buttonId) {
         getMenu().clickMenuButton(player, buttonId);
         gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
 
@@ -476,7 +481,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     @Override
     protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
         if (slot == null && getMenu().isInAddingPhotographMode()) {
-            pressButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
+            sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
             return;
         }
 
@@ -502,7 +507,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         if (getMenu().isInAddingPhotographMode() && (minecraft.options.keyInventory.matches(keyCode, scanCode)
                 || keyCode == InputConstants.KEY_ESCAPE)) {
-            pressButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
+            sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
             return true;
         }
 
@@ -534,7 +539,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     protected void enterSignMode() {
         if (getMenu().isInAddingPhotographMode())
-            pressButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
+            sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
 
         minecraft.setScreen(new AlbumSigningScreen(this, TEXTURE, 512, 512));
     }
