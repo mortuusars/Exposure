@@ -27,7 +27,8 @@ public class TextBox extends AbstractWidget {
     public final Font font;
     public Supplier<String> textGetter;
     public Consumer<String> textSetter;
-    public Predicate<String> textValidator = text -> text != null && getFont().wordWrapHeight(text, width) <= height;
+    public Predicate<String> textValidator = text -> text != null
+            && getFont().wordWrapHeight(text, width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height;
 
     public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
     public int fontColor = 0xFF000000;

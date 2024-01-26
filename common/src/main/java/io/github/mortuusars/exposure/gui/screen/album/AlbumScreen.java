@@ -172,7 +172,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     text -> onNoteChanged(side, text))
                     .setFontColor(MAIN_FONT_COLOR, MAIN_FONT_COLOR)
                     .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-            textBox.textValidator = text -> text != null && font.wordWrapHeight(text, note.getWidth()) <= note.getHeight();
             textBox.horizontalAlignment = HorizontalAlignment.CENTER;
             addRenderableWidget(textBox);
             noteWidget = Either.left(textBox);

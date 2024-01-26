@@ -18,7 +18,6 @@ public class LecternAlbumMenu extends AlbumMenu {
     public static final int TAKE_BOOK_BUTTON = 99;
 
     private final Container lectern;
-    private final ContainerData lecternData;
     private final BlockPos lecternPos;
     private final Level level;
 
@@ -34,7 +33,6 @@ public class LecternAlbumMenu extends AlbumMenu {
         checkContainerDataCount(lecternData, 1);
         this.lecternPos = lecternPos;
         this.lectern = lectern;
-        this.lecternData = lecternData;
         this.level = playerInventory.player.level();
         this.addSlot(new Slot(lectern, 0, -999, -999) {
             @Override
@@ -61,27 +59,19 @@ public class LecternAlbumMenu extends AlbumMenu {
             return true;
         }
 
-        boolean handled = super.clickMenuButton(player, id);
+        return super.clickMenuButton(player, id);
+    }
 
-        if (handled && id == AlbumMenu.PREVIOUS_PAGE_BUTTON || id == AlbumMenu.NEXT_PAGE_BUTTON) {
-            setData(1, getCurrentSpreadIndex());
-        }
-
-        return handled;
+    @Override
+    public void setCurrentSpreadIndex(int spreadIndex) {
+        super.setCurrentSpreadIndex(spreadIndex);
+        setData(1, spreadIndex);
     }
 
     @Override
     public void setData(int id, int data) {
         super.setData(id, data);
         this.broadcastChanges();
-    }
-
-    public ItemStack getAlbum() {
-        return this.lectern.getItem(0);
-    }
-
-    public int getPage() {
-        return this.lecternData.get(0);
     }
 
     @Override
