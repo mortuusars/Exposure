@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.item;
 
+import io.github.mortuusars.exposure.Config;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -43,7 +44,6 @@ public class SignedAlbumItem extends AlbumItem {
 
     @Override
     public boolean isFoil(ItemStack stack) {
-        // TODO: config
-        return true;
+        return Config.Client.SIGNED_ALBUM_GLINT.get();
     }
 }

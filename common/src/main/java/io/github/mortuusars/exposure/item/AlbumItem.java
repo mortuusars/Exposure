@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
@@ -157,15 +158,17 @@ public class AlbumItem extends Item {
 
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        List<AlbumPage> albumPages = getPages(stack);
-        int photosCount = 0;
-        for (AlbumPage albumPage : albumPages) {
-            if (!albumPage.getPhotographStack().isEmpty())
-                photosCount++;
-        }
+        if (Config.Client.ALBUM_SHOW_PHOTOS_COUNT.get()) {
+            List<AlbumPage> albumPages = getPages(stack);
+            int photosCount = 0;
+            for (AlbumPage albumPage : albumPages) {
+                if (!albumPage.getPhotographStack().isEmpty())
+                    photosCount++;
+            }
 
-        if (photosCount > 0)
-            tooltipComponents.add(Component.translatable("item.exposure.album.tooltip.photos_count", photosCount));
+            if (photosCount > 0)
+                tooltipComponents.add(Component.translatable("item.exposure.album.tooltip.photos_count", photosCount));
+        }
     }
 
     public ItemStack sign(ItemStack album, String title, String author) {
