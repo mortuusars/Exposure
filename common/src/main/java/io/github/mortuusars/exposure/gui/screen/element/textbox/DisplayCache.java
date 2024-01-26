@@ -97,9 +97,6 @@ public class DisplayCache {
             return;
         }
 
-        // Cursor can be
-//        cursorIndex = Math.min(cursorIndex, text.length() - 1);
-
         IntArrayList lineStartIndexes = new IntArrayList();
         List<LineInfo> lines = new ArrayList<>();
         MutableInt linesCount = new MutableInt();
@@ -130,7 +127,7 @@ public class DisplayCache {
         boolean isCursorAtTextEnd = cursorIndex == text.length();
 
         if (isCursorAtTextEnd && endsOnNewLine.isTrue()) {
-            newCursorPos = new Pos2i(alignment.align(this.width, 0), lines.size() * font.lineHeight);
+            newCursorPos = new Pos2i(alignment.align(this.width, font.width("_")), lines.size() * font.lineHeight);
         } else {
             int lineIndex = findLineFromPos(lineStartIndexesArray, cursorIndex);
             LineInfo line = lines.get(lineIndex);
