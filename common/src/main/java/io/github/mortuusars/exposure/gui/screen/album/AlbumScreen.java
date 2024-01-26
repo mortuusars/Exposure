@@ -178,8 +178,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         } else {
             Component noteComponent = getMenu().getPage(side)
                     .map(AlbumPage::getNote)
-                    .map(n -> n.right()
-                            .orElse(Component.empty()))
+                    .map(n -> n.map(Component::literal, comp -> comp))
                     .orElse(Component.empty());
 
             TextBlock textBlock = new TextBlock(font, note.getX(), note.getY(),
@@ -218,7 +217,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         forEachPage(page -> page.getNoteWidget().visible = !isInAddingPhotographMode);
 
         for (Page page : pages) {
-            page.photographButton.visible = page.photographButton.hasPhotograph || !isInAddingPhotographMode;
+            page.photographButton.visible = !getMenu().getPhotograph(page.side).isEmpty()
+                    || (!isInAddingPhotographMode && getMenu().isAlbumEditable());
         }
 
         inventoryLabelY = isInAddingPhotographMode ? getMenu().getPlayerInventorySlots().get(0).y - 12 : -999;
@@ -470,8 +470,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                         .ifLeft(TextBox::setCursorToEnd)
                         .ifRight(textBlock -> textBlock.setMessage(getMenu().getPage(page.side)
                                 .map(AlbumPage::getNote)
-                                .map(note -> note.right()
-                                        .orElse(Component.empty()))
+                                .map(n -> n.map(Component::literal, comp -> comp))
                                 .orElse(Component.empty())));
             }
         }
