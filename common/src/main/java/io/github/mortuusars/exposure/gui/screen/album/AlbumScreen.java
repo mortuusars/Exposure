@@ -176,13 +176,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             addRenderableWidget(textBox);
             noteWidget = Either.left(textBox);
         } else {
-            Component noteComponent = getMenu().getPage(side)
-                    .map(AlbumPage::getNote)
-                    .map(n -> n.map(Component::literal, comp -> comp))
-                    .orElse(Component.empty());
-
             TextBlock textBlock = new TextBlock(font, note.getX(), note.getY(),
-                    note.getWidth(), note.getHeight(), noteComponent, this::handleComponentClicked);
+                    note.getWidth(), note.getHeight(), getNoteComponent(side), this::handleComponentClicked);
             textBlock.fontColor = MAIN_FONT_COLOR;
             textBlock.alignment = HorizontalAlignment.CENTER;
             textBlock.drawShadow = false;
@@ -468,12 +463,17 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             for (Page page : pages) {
                 page.noteWidget
                         .ifLeft(TextBox::setCursorToEnd)
-                        .ifRight(textBlock -> textBlock.setMessage(getMenu().getPage(page.side)
-                                .map(AlbumPage::getNote)
-                                .map(n -> n.map(Component::literal, comp -> comp))
-                                .orElse(Component.empty())));
+                        .ifRight(textBlock -> textBlock.setMessage(getNoteComponent(page.side)));
             }
         }
+    }
+
+    @NotNull
+    protected Component getNoteComponent(Side page) {
+        return getMenu().getPage(page)
+                .map(AlbumPage::getNote)
+                .map(n -> n.map(Component::literal, comp -> comp))
+                .orElse(Component.empty());
     }
 
     @Override
@@ -548,7 +548,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         }
     }
 
-    private class Page {
+    protected class Page {
         public final Side side;
         public final Rect2i pageArea;
         public final Rect2i photoArea;

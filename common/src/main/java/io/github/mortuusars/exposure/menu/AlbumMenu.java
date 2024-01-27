@@ -40,7 +40,7 @@ public class AlbumMenu extends AbstractContainerMenu {
     protected final List<AlbumPhotographSlot> photographSlots = new ArrayList<>();
     protected final List<AlbumPlayerInventorySlot> playerInventorySlots = new ArrayList<>();
 
-    protected final DataSlot currentSpreadIndex = DataSlot.standalone();
+    protected DataSlot currentSpreadIndex = DataSlot.standalone();
 
     @Nullable
     protected Side sideBeingAddedTo = null;

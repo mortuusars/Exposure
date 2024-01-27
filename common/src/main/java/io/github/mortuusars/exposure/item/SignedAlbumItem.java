@@ -32,7 +32,6 @@ public class SignedAlbumItem extends AlbumItem {
     }
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
         if (stack.getTag() != null) {
             CompoundTag compoundTag = stack.getTag();
             String author = compoundTag.getString(TAG_AUTHOR);
@@ -40,6 +39,7 @@ public class SignedAlbumItem extends AlbumItem {
                 tooltipComponents.add(Component.translatable("gui.exposure.album.by_author", author).withStyle(ChatFormatting.GRAY));
             }
         }
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
 
     @Override

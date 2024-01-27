@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.gui.screen.album;
 
+import io.github.mortuusars.exposure.gui.screen.element.textbox.TextBox;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.LecternAlbumMenu;
 import net.minecraft.client.gui.components.Button;
@@ -18,7 +19,13 @@ public class LecternAlbumScreen extends AlbumScreen {
 
         public void dataChanged(AbstractContainerMenu containerMenu, int dataSlotIndex, int value) {
             if (dataSlotIndex == 1) {
+                getMenu().setCurrentSpreadIndex(value);
                 pager.setPage(value);
+                for (Page page : pages) {
+                    page.noteWidget
+                            .ifLeft(TextBox::setCursorToEnd)
+                            .ifRight(textBlock -> textBlock.setMessage(getNoteComponent(page.side)));
+                }
             }
         }
     };
