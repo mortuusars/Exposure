@@ -361,6 +361,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     return true;
                 }
             }
+            return super.mouseClicked(mouseX, mouseY, button);
         } else {
             for (Page page : pages) {
                 if (getMenu().isAlbumEditable() && button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.noteArea, mouseX, mouseY)) {
