@@ -8,6 +8,7 @@
     "create.CreateJEICompatMixin"
   ],
   "mixins": [
+    "AlbumItemForgeMixin",
     "CameraItemForgeMixin",
     "LightroomBlockEntityForgeMixin",
     "create.SpoutDevelopingMixin"

@@ -11,6 +11,7 @@
     "create.CreateJEICompatMixin"
   ],
   "mixins": [
+    "AlbumItemFabricMixin",
     "create.RecipeTypesMixin",
     "create.SpoutDevelopingMixin"
   ],

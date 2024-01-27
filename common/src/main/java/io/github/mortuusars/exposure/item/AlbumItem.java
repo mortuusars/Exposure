@@ -181,6 +181,10 @@ public class AlbumItem extends Item {
         }
     }
 
+    public boolean shouldPlayEquipAnimation(ItemStack oldStack, ItemStack newStack) {
+        return oldStack.getItem() != newStack.getItem();
+    }
+
     public ItemStack sign(ItemStack album, String title, String author) {
         if (!(album.getItem() instanceof AlbumItem))
             throw new IllegalArgumentException("Can only sign AlbumItem's. Provided: '" + album + "'.");
