@@ -108,6 +108,22 @@ public class AlbumItem extends Item {
         pages.add(index, page.toTag(new CompoundTag()));
     }
 
+    public int getPhotographsCount(ItemStack albumStack) {
+        @Nullable CompoundTag tag = albumStack.getTag();
+        if (tag == null || !tag.contains(TAG_PAGES, Tag.TAG_LIST))
+            return 0;
+
+        int count = 0;
+        ListTag pagesTag = tag.getList(TAG_PAGES, Tag.TAG_COMPOUND);
+        for (int i = 0; i < pagesTag.size(); i++) {
+            CompoundTag pageTag = pagesTag.getCompound(i);
+            if (pageTag.contains(AlbumPage.PHOTOGRAPH_TAG, Tag.TAG_COMPOUND))
+                count++;
+        }
+
+        return count;
+    }
+
     protected ListTag getOrCreatePagesTag(ItemStack albumStack) {
         CompoundTag tag = albumStack.getOrCreateTag();
         ListTag list = tag.getList(TAG_PAGES, Tag.TAG_COMPOUND);
@@ -159,15 +175,9 @@ public class AlbumItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltipComponents, TooltipFlag isAdvanced) {
         if (Config.Client.ALBUM_SHOW_PHOTOS_COUNT.get()) {
-            List<AlbumPage> albumPages = getPages(stack);
-            int photosCount = 0;
-            for (AlbumPage albumPage : albumPages) {
-                if (!albumPage.getPhotographStack().isEmpty())
-                    photosCount++;
-            }
-
-            if (photosCount > 0)
-                tooltipComponents.add(Component.translatable("item.exposure.album.tooltip.photos_count", photosCount));
+            int photographsCount = getPhotographsCount(stack);
+            if (photographsCount > 0)
+                tooltipComponents.add(Component.translatable("item.exposure.album.tooltip.photos_count", photographsCount));
         }
     }
 

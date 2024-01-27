@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure;
 
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.gui.screen.camera.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.item.AlbumItem;
 import io.github.mortuusars.exposure.render.ExposureRenderer;
 import io.github.mortuusars.exposure.data.storage.ClientsideExposureStorage;
 import io.github.mortuusars.exposure.data.storage.IExposureStorage;
@@ -32,12 +33,12 @@ public class ExposureClient {
 
         ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
         ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
-                (pStack, pLevel, pEntity, pSeed) -> {
-                    if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
-                        return stackedPhotographsItem.getPhotographsCount(pStack) / 100f;
-                    }
-                    return 0f;
-                });
+                (stack, clientLevel, livingEntity, seed) ->
+                        stack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem ?
+                                stackedPhotographsItem.getPhotographsCount(stack) / 100f : 0f);
+        ItemProperties.register(Exposure.Items.ALBUM.get(), new ResourceLocation("photos"),
+                (stack, clientLevel, livingEntity, seed) ->
+                        stack.getItem() instanceof AlbumItem albumItem ? albumItem.getPhotographsCount(stack) / 100f : 0f);
     }
 
     public static IExposureStorage getExposureStorage() {
