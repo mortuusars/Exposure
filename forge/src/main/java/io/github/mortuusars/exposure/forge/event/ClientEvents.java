@@ -98,7 +98,8 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void renderItemFrameItem(RenderItemInFrameEvent event) {
-            ItemFramePhotographRenderer.render(event.getItemFrameEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
+            if (ItemFramePhotographRenderer.render(event.getItemFrameEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight()))
+                event.setCanceled(true);
         }
 
         @SubscribeEvent
