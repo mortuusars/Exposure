@@ -22,6 +22,8 @@ import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExposureRenderer implements AutoCloseable {
     public static final ResourceLocation PHOTOGRAPH_TEXTURE = Exposure.resource("textures/block/photograph.png");
@@ -117,12 +119,8 @@ public class ExposureRenderer implements AutoCloseable {
 
     private ExposureInstance getOrCreateExposureInstance(String id, ExposureImage exposure,
                                                          boolean negative, boolean simulateFilm) {
-        id = id.toLowerCase();
-        id = "exposure/" + id + (negative ? "_negative" : "") + (simulateFilm ? "_film" : "");
-        // colon will throw further down because of ResourceLocation init:
-        id = id.replace(':', '_');
-
-        return (this.cache).compute(id, (expId, expData) -> {
+        String instanceId = id + (negative ? "_negative" : "") + (simulateFilm ? "_film" : "");
+        return (this.cache).compute(instanceId, (expId, expData) -> {
             if (expData == null) {
                 return new ExposureInstance(expId, exposure, negative, simulateFilm);
             } else {
@@ -159,8 +157,28 @@ public class ExposureRenderer implements AutoCloseable {
             this.texture = new DynamicTexture(exposure.getWidth(), exposure.getHeight(), true);
             this.negative = negative;
             this.simulateFilm = simulateFilm;
-            ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register(id, this.texture);
+            String textureId = createTextureId(id);
+            ResourceLocation resourcelocation = Minecraft.getInstance().getTextureManager().register(textureId, this.texture);
             this.renderType = RenderType.text(resourcelocation);
+        }
+
+        private static String createTextureId(String exposureId) {
+            String id = "exposure/" + exposureId.toLowerCase();
+            id = id.replace(':', '_');
+
+            // Player nicknames can have non az09 chars
+            // we need to remove all invalid chars from the id to create ResourceLocation,
+            // otherwise it crashes
+            Pattern pattern = Pattern.compile("[^a-z0-9_.-]");
+            Matcher matcher = pattern.matcher(id);
+
+            StringBuilder sb = new StringBuilder();
+            while (matcher.find()) {
+                matcher.appendReplacement(sb, String.valueOf(matcher.group().hashCode()));
+            }
+            matcher.appendTail(sb);
+
+            return sb.toString();
         }
 
         private void replaceData(ExposureImage exposure) {
