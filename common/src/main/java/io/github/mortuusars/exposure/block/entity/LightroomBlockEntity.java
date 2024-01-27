@@ -122,8 +122,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         int frames = film.getItem().getExposedFramesCount(film.getStack());
 
         if (getSelectedFrame() >= frames - 1) { // On last frame
-            if (tryEjectFilm())
-                setChanged();
+            tryEjectFilm();
         } else {
             setSelectedFrame(getSelectedFrame() + 1);
             setChanged();
@@ -144,12 +143,17 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         if (level.getBlockState(pos.relative(facing)).canOcclude())
             return false;
 
+        ItemStack filmStack = removeItem(Lightroom.FILM_SLOT, 1);
+
         Vec3i normal = facing.getNormal();
         Vec3 point = Vec3.atCenterOf(pos).add(normal.getX() * 0.75f, normal.getY() * 0.75f, normal.getZ() * 0.75f);
-        ItemEntity itemEntity = new ItemEntity(level, point.x, point.y, point.z, removeItem(Lightroom.FILM_SLOT, 1));
+        ItemEntity itemEntity = new ItemEntity(level, point.x, point.y, point.z, filmStack);
         itemEntity.setDeltaMovement(normal.getX() * 0.05f, normal.getY() * 0.05f + 0.15f, normal.getZ() * 0.05f);
         itemEntity.setDefaultPickUpDelay();
         level.addFreshEntity(itemEntity);
+
+        inventoryContentsChanged(Lightroom.FILM_SLOT);
+
         return true;
     }
 
@@ -443,7 +447,7 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     public @NotNull ItemStack removeItem(int slot, int amount) {
         ItemStack itemStack = ContainerHelper.removeItem(getItems(), slot, amount);
         if (!itemStack.isEmpty())
-            this.setChanged();
+            inventoryContentsChanged(slot);
         return itemStack;
     }
 
@@ -458,12 +462,13 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
         if (stack.getCount() > this.getMaxStackSize()) {
             stack.setCount(this.getMaxStackSize());
         }
-        this.setChanged();
+        inventoryContentsChanged(slot);
     }
 
     @Override
     public void clearContent() {
         getItems().clear();
+        inventoryContentsChanged(-1);
     }
 
     @Override
