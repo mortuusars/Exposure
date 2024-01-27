@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+- Added album
+
+- Changed photograph paper texture to not be so rough at the edges
+- Holding use key when opening Viewfinder will no longer cause Camera to shoot immediately after opening
+
+
 ## 1.2.2 - 2024-01-01
 - Added `/exposure export` command. Allows exporting exposures to PNGs to `<world>/exposures` folder. Requires OP privileges.
 - Added some **creative-mode** tools to Photograph screen:
