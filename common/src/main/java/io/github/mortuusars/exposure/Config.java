@@ -57,7 +57,9 @@ public class Config {
             builder.push("Camera");
             {
                 CAMERA_DEFAULT_FOCAL_RANGE = builder
-                        .comment("Default focal range of the camera (with built in lens). Default: 18-55")
+                        .comment("Default focal range of the camera (with built in lens).",
+                                "Separated by a comma. Allowed range: " + FocalRange.ALLOWED_MIN + "-" + FocalRange.ALLOWED_MAX,
+                                "Default: 18-55")
                         .define("DefaultFocalRange", "18-55");
 
                 CAMERA_LENS_FOCAL_RANGES = builder
