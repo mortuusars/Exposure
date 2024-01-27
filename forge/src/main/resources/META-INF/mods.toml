@@ -23,6 +23,13 @@ side = "BOTH"
 [[dependencies.exposure]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19.2,)"
+versionRange = "[1.19.2,1.19.3)"
 ordering = "NONE"
 side = "BOTH"
+
+[[dependencies.exposure]]
+modId="jei"
+mandatory=false
+versionRange="[11.6.0.0,)"
+ordering="NONE"
+side="CLIENT"
