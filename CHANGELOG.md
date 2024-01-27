@@ -2,6 +2,8 @@
 
 ## Unreleased
 - Added Photo Album 
+  - Can store up to 16 photographs and some notes
+  - Can be placed on Chiseled Bookshelves and Lecterns
 
 
 - Changed photograph paper texture to not be so rough at the edges
