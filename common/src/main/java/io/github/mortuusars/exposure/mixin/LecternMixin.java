@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.mixin;
 
 import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.item.AlbumItem;
-import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.LecternAlbumMenu;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.core.BlockPos;
@@ -25,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LecternBlock.class)
-public class LecternMixin {
+public abstract class LecternMixin {
     @Inject(method = "openScreen", at = @At(value = "HEAD"), cancellable = true)
     private void openScreen(Level level, BlockPos pos, Player player, CallbackInfo ci) {
         if (level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity

@@ -20,7 +20,6 @@
   "mixins": [
     "BookPageCountMixin",
     "LecternBlockEntityAccessor",
-    "LecternBlockEntityMixin",
     "LecternMixin",
     "PlayerMixin"
   ],
