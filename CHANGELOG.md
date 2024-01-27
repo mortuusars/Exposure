@@ -1,14 +1,17 @@
 # Changelog
 
 ## Unreleased
-- Added album
+- Added Photo Album 
+
 
 - Changed photograph paper texture to not be so rough at the edges
 - Holding use key when opening Viewfinder will no longer cause Camera to shoot immediately after opening
 
+
 - Fixed non-english characters in player's nickname causing a crash when trying to render their photos 
 - Fixed Lightroom not resetting selected frame back to 0 when film is ejected and another is inserted
-- [Forge]: Fixed item frame also rendering an item over the photograph 
+- Fixed Lightroom not dropping due to the missing loot-table
+- [Forge] Fixed item frame also rendering an item over the photograph 
 
 ## 1.2.2 - 2024-01-01
 - Added `/exposure export` command. Allows exporting exposures to PNGs to `<world>/exposures` folder. Requires OP privileges.
