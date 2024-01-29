@@ -119,7 +119,7 @@ public class DisplayCache {
         });
 
         this.fullText = text;
-        this.lines = lines.toArray(DisplayCache.LineInfo[]::new);;
+        this.lines = lines.toArray(DisplayCache.LineInfo[]::new);
 
         int cursorX;
         Pos2i newCursorPos;

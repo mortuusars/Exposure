@@ -47,9 +47,9 @@ public abstract class ItemInHandRendererMixin {
 
         if (stack.getItem() instanceof PhotographItem || stack.getItem() instanceof StackedPhotographsItem) {
             if (isMainHand && this.offHandItem.isEmpty()) {
-                renderTwoHandedPhotograph(player, poseStack, buffer, combinedLight, pitch, equipProgress, swingProgress);
+                exposure$renderTwoHandedPhotograph(player, poseStack, buffer, combinedLight, pitch, equipProgress, swingProgress);
             } else {
-                renderOneHandedPhotograph(player, poseStack, buffer, combinedLight, equipProgress, arm, swingProgress, stack);
+                exposure$renderOneHandedPhotograph(player, poseStack, buffer, combinedLight, equipProgress, arm, swingProgress, stack);
             }
 
             poseStack.popPose();
@@ -59,7 +59,7 @@ public abstract class ItemInHandRendererMixin {
     }
 
     @Unique
-    private void renderOneHandedPhotograph(AbstractClientPlayer player, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, float pEquippedProgress, HumanoidArm pHand, float pSwingProgress, ItemStack pStack) {
+    private void exposure$renderOneHandedPhotograph(AbstractClientPlayer player, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, float pEquippedProgress, HumanoidArm pHand, float pSwingProgress, ItemStack pStack) {
         float f = pHand == HumanoidArm.RIGHT ? 1.0F : -1.0F;
         pMatrixStack.translate(f * 0.125F, -0.125D, 0.0D);
         if (!player.isInvisible()) {
@@ -84,7 +84,7 @@ public abstract class ItemInHandRendererMixin {
     }
 
     @Unique
-    private void renderTwoHandedPhotograph(AbstractClientPlayer player, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, float pPitch, float pEquippedProgress, float pSwingProgress) {
+    private void exposure$renderTwoHandedPhotograph(AbstractClientPlayer player, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, float pPitch, float pEquippedProgress, float pSwingProgress) {
         float f = Mth.sqrt(pSwingProgress);
         float f1 = -0.2F * Mth.sin(pSwingProgress * (float)Math.PI);
         float f2 = -0.4F * Mth.sin(f * (float)Math.PI);

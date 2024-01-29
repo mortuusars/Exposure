@@ -27,7 +27,6 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -199,8 +198,8 @@ public class Exposure {
         public static final Supplier<SoundEvent> LIGHTROOM_PRINT = register("block", "lightroom.print");
 
         private static Supplier<SoundEvent> register(String category, String key) {
-            Preconditions.checkState(category != null && category.length() > 0, "'category' should not be empty.");
-            Preconditions.checkState(key != null && key.length() > 0, "'key' should not be empty.");
+            Preconditions.checkState(category != null && !category.isEmpty(), "'category' should not be empty.");
+            Preconditions.checkState(key != null && !key.isEmpty(), "'key' should not be empty.");
             String path = category + "." + key;
             return Register.soundEvent(path, () -> SoundEvent.createVariableRangeEvent(Exposure.resource(path)));
         }

@@ -1,17 +1,14 @@
 package io.github.mortuusars.exposure.menu;
 
-import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.sound.OnePerPlayerSounds;
-import io.github.mortuusars.exposure.util.CameraInHand;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +26,6 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
     private final Player player;
     private final Level level;
     private final ItemAndStack<CameraItem> camera;
-    private final List<CameraItem.AttachmentType> attachmentTypes;
 
     private boolean contentsInitialized;
 
@@ -38,7 +34,7 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
         player = playerInventory.player;
         level = playerInventory.player.level();
         camera = new ItemAndStack<>(cameraStack);
-        attachmentTypes = camera.getItem().getAttachmentTypes(camera.getStack());
+        List<CameraItem.AttachmentType> attachmentTypes = camera.getItem().getAttachmentTypes(camera.getStack());
 
         SimpleContainer container = new SimpleContainer(getCameraAttachments(camera).toArray(ItemStack[]::new)) {
             @Override
@@ -213,8 +209,8 @@ public class CameraAttachmentsMenu extends AbstractContainerMenu {
             i = reverseDirection ? endIndex - 1 : startIndex;
             while (!(!reverseDirection ? i >= endIndex : i < startIndex)) {
                 Slot slot1 = this.slots.get(i);
-                ItemStack itemmovedStack1 = slot1.getItem();
-                if (itemmovedStack1.isEmpty() && slot1.mayPlace(movedStack)) {
+                ItemStack movedStack1 = slot1.getItem();
+                if (movedStack1.isEmpty() && slot1.mayPlace(movedStack)) {
                     if (movedStack.getCount() > slot1.getMaxStackSize()) {
                         slot1.setByPlayer(movedStack.split(slot1.getMaxStackSize()));
                     } else {

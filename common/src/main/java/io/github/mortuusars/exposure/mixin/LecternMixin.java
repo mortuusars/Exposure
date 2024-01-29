@@ -30,14 +30,14 @@ public abstract class LecternMixin {
         if (level.getBlockEntity(pos) instanceof LecternBlockEntity lecternBlockEntity
                 && player instanceof ServerPlayer serverPlayer
                 && lecternBlockEntity.getBook().getItem() instanceof AlbumItem) {
-            open(serverPlayer, lecternBlockEntity, lecternBlockEntity.getBook());
+            exposure$open(serverPlayer, lecternBlockEntity, lecternBlockEntity.getBook());
             player.awardStat(Stats.INTERACT_WITH_LECTERN);
             ci.cancel();
         }
     }
 
     @Unique
-    private void open(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack albumStack) {
+    private void exposure$open(ServerPlayer player, LecternBlockEntity lecternBlockEntity, ItemStack albumStack) {
         MenuProvider menuProvider = new MenuProvider() {
             @Override
             public @NotNull Component getDisplayName() {

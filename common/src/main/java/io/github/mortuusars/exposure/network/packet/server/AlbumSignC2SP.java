@@ -1,11 +1,8 @@
 package io.github.mortuusars.exposure.network.packet.server;
 
 import com.google.common.base.Preconditions;
-import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.item.AlbumItem;
-import io.github.mortuusars.exposure.item.AlbumPage;
-import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.network.PacketDirection;
 import io.github.mortuusars.exposure.network.packet.IPacket;
 import net.minecraft.network.FriendlyByteBuf;

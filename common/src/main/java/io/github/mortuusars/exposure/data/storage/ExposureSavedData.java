@@ -4,7 +4,6 @@ import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,6 +45,7 @@ public class ExposureSavedData extends SavedData {
         return pixels[y * width + x];
     }
 
+    @SuppressWarnings("unused")
     public void setPixel(int x, int y, byte value) {
         Preconditions.checkArgument(x >= 0 && x < width,  "X=" + x + " is out of bounds for Width=" + width);
         Preconditions.checkArgument(y >= 0 && y < height,  "Y=" + x + " is out of bounds for Height=" + height);
