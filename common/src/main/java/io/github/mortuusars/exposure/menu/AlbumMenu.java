@@ -95,19 +95,6 @@ public class AlbumMenu extends AbstractContainerMenu {
         addPhotographSlots();
         addPlayerInventorySlots(playerInventory, 70, 115);
         addDataSlot(currentSpreadIndex);
-
-        /* give Dev exposure:album{Pages:[
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Id:"view1"}}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Id:"Dev_30717"}}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Id:"Dev_28958"}}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Texture:"exposure:textures/block/flash.png"}}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Id:"Dev_1043"}}},
-            {Photo:{}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Id:"Dev_6323"}}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Texture:"exposure:textures/block/lightroom_side.png"}}},
-            {Photo:{id:"exposure:photograph",Count:1,tag:{Id:"Dev_1043"}}},
-        ]}
-         */
     }
 
     private void addPhotographSlots() {

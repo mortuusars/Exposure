@@ -4,7 +4,6 @@ package io.github.mortuusars.exposure.network;
 import com.google.common.base.Preconditions;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.exposure.network.packet.IPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 import java.util.function.Predicate;
