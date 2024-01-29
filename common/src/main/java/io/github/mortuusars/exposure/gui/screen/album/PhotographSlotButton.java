@@ -76,6 +76,8 @@ public class PhotographSlotButton extends ImageButton {
         if (isEditable)
             itemTooltip.add(Component.translatable("gui.exposure.album.right_click_to_remove"));
 
+        // Photograph image in tooltip is not rendered here
+
         if (isFocused()) {
             guiGraphics.renderTooltip(Minecraft.getInstance().font, Lists.transform(itemTooltip,
                     Component::getVisualOrderText), createTooltipPositioner(), mouseX, mouseY);
