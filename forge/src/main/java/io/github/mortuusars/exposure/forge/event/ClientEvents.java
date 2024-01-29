@@ -7,12 +7,13 @@ import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.client.ExposureClientReloadListener;
 import io.github.mortuusars.exposure.client.MouseHandler;
-import io.github.mortuusars.exposure.client.gui.component.PhotographTooltip;
-import io.github.mortuusars.exposure.client.gui.screen.AlbumScreen;
-import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
-import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
-import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
-import io.github.mortuusars.exposure.client.render.PhotographEntityRenderer;
+import io.github.mortuusars.exposure.gui.component.PhotographTooltip;
+import io.github.mortuusars.exposure.gui.screen.album.AlbumScreen;
+import io.github.mortuusars.exposure.gui.screen.album.LecternAlbumScreen;
+import io.github.mortuusars.exposure.gui.screen.camera.CameraAttachmentsScreen;
+import io.github.mortuusars.exposure.gui.screen.LightroomScreen;
+import io.github.mortuusars.exposure.render.ItemFramePhotographRenderer;
+import io.github.mortuusars.exposure.render.PhotographEntityRenderer;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraftforge.client.event.*;
@@ -29,6 +30,7 @@ public class ClientEvents {
                 Exposure.initClient();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
+                MenuScreens.register(Exposure.MenuTypes.LECTERN_ALBUM.get(), LecternAlbumScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
             });
         }
@@ -96,7 +98,8 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void renderItemFrameItem(RenderItemInFrameEvent event) {
-            ItemFramePhotographRenderer.render(event.getItemFrameEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight());
+            if (ItemFramePhotographRenderer.render(event.getItemFrameEntity(), event.getPoseStack(), event.getMultiBufferSource(), event.getPackedLight()))
+                event.setCanceled(true);
         }
 
         @SubscribeEvent

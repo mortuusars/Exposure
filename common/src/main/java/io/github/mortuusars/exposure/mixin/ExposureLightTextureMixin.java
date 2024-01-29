@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.client.GammaModifier;
+import io.github.mortuusars.exposure.render.GammaModifier;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.world.level.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;

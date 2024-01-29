@@ -43,4 +43,8 @@ public class CameraItemClientExtensions {
 
         return 0f;
     }
+
+    public static void releaseUseButton() {
+        Minecraft.getInstance().options.keyUse.setDown(false);
+    }
 }

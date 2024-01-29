@@ -7,17 +7,20 @@
     "DrawViewfinderOverlayMixin",
     "ExposureLightTextureMixin",
     "GuiMixin",
+    "ItemInHandRendererMixin",
     "ItemRendererMixin",
     "KeyboardHandlerMixin",
     "KeyMappingMixin",
     "LocalPlayerTickMixin",
     "MinecraftMixin",
     "MultiPlayerGameModeMixin",
-    "ItemInHandRendererMixin",
     "SelfieCameraMixin",
     "ViewfinderSensitivityMixin"
   ],
   "mixins": [
+    "BookPageCountMixin",
+    "LecternBlockEntityAccessor",
+    "LecternMixin",
     "PlayerMixin"
   ],
   "injectors": {

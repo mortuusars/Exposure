@@ -1,10 +1,9 @@
 package io.github.mortuusars.exposure;
 
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
-import io.github.mortuusars.exposure.client.gui.screen.CameraAttachmentsScreen;
-import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
-import io.github.mortuusars.exposure.client.gui.screen.ViewfinderControlsScreen;
-import io.github.mortuusars.exposure.client.render.ExposureRenderer;
+import io.github.mortuusars.exposure.gui.screen.camera.ViewfinderControlsScreen;
+import io.github.mortuusars.exposure.item.AlbumItem;
+import io.github.mortuusars.exposure.render.ExposureRenderer;
 import io.github.mortuusars.exposure.data.storage.ClientsideExposureStorage;
 import io.github.mortuusars.exposure.data.storage.IExposureStorage;
 import io.github.mortuusars.exposure.data.transfer.ExposureReceiver;
@@ -16,12 +15,9 @@ import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.util.CameraInHand;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.item.ItemProperties;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.resources.ResourceLocation;
 
 public class ExposureClient {
@@ -37,12 +33,12 @@ public class ExposureClient {
 
         ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
         ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
-                (pStack, pLevel, pEntity, pSeed) -> {
-                    if (pStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
-                        return stackedPhotographsItem.getPhotographsCount(pStack) / 100f;
-                    }
-                    return 0f;
-                });
+                (stack, clientLevel, livingEntity, seed) ->
+                        stack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem ?
+                                stackedPhotographsItem.getPhotographsCount(stack) / 100f : 0f);
+        ItemProperties.register(Exposure.Items.ALBUM.get(), new ResourceLocation("photos"),
+                (stack, clientLevel, livingEntity, seed) ->
+                        stack.getItem() instanceof AlbumItem albumItem ? albumItem.getPhotographsCount(stack) / 100f : 0f);
     }
 
     public static IExposureStorage getExposureStorage() {

@@ -76,9 +76,15 @@ public class PacketsImpl {
                 .consumerMainThread(PacketsImpl::handlePacket)
                 .add();
 
-        CHANNEL.messageBuilder(AlbumMovePhotoC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
-                .encoder(AlbumMovePhotoC2SP::toBuffer)
-                .decoder(AlbumMovePhotoC2SP::fromBuffer)
+        CHANNEL.messageBuilder(AlbumSyncNoteC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(AlbumSyncNoteC2SP::toBuffer)
+                .decoder(AlbumSyncNoteC2SP::fromBuffer)
+                .consumerMainThread(PacketsImpl::handlePacket)
+                .add();
+
+        CHANNEL.messageBuilder(AlbumSignC2SP.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(AlbumSignC2SP::toBuffer)
+                .decoder(AlbumSignC2SP::fromBuffer)
                 .consumerMainThread(PacketsImpl::handlePacket)
                 .add();
 

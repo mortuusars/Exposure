@@ -11,6 +11,7 @@ import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.item.*;
 import io.github.mortuusars.exposure.menu.AlbumMenu;
 import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
+import io.github.mortuusars.exposure.menu.LecternAlbumMenu;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
 import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
@@ -26,6 +27,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -133,9 +135,12 @@ public class Exposure {
                 () -> new StackedPhotographsItem(16, new Item.Properties()
                         .stacksTo(1)));
 
-//        public static final Supplier<AlbumItem> ALBUM = Register.item("album",
-//                () -> new AlbumItem(new Item.Properties()
-//                        .stacksTo(1)));
+        public static final Supplier<AlbumItem> ALBUM = Register.item("album",
+                () -> new AlbumItem(new Item.Properties()
+                        .stacksTo(1)));
+        public static final Supplier<SignedAlbumItem> SIGNED_ALBUM = Register.item("signed_album",
+                () -> new SignedAlbumItem(new Item.Properties()
+                        .stacksTo(1)));
 
         public static final Supplier<BlockItem> LIGHTROOM = Register.item("lightroom",
                 () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));
@@ -155,6 +160,7 @@ public class Exposure {
     public static class MenuTypes {
         public static final Supplier<MenuType<CameraAttachmentsMenu>> CAMERA = Register.menuType("camera", CameraAttachmentsMenu::fromBuffer);
         public static final Supplier<MenuType<AlbumMenu>> ALBUM = Register.menuType("album", AlbumMenu::fromBuffer);
+        public static final Supplier<MenuType<LecternAlbumMenu>> LECTERN_ALBUM = Register.menuType("lectern_album", LecternAlbumMenu::fromBuffer);
         public static final Supplier<MenuType<LightroomMenu>> LIGHTROOM = Register.menuType("lightroom", LightroomMenu::fromBuffer);
 
         static void init() {

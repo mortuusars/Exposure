@@ -57,7 +57,9 @@ public class Config {
             builder.push("Camera");
             {
                 CAMERA_DEFAULT_FOCAL_RANGE = builder
-                        .comment("Default focal range of the camera (with built in lens). Default: 18-55")
+                        .comment("Default focal range of the camera (with built in lens).",
+                                "Separated by a comma. Allowed range: " + FocalRange.ALLOWED_MIN + "-" + FocalRange.ALLOWED_MAX,
+                                "Default: 18-55")
                         .define("DefaultFocalRange", "18-55");
 
                 CAMERA_LENS_FOCAL_RANGES = builder
@@ -160,6 +162,8 @@ public class Config {
         public static final ForgeConfigSpec.BooleanValue CAMERA_SHOW_OPEN_WITH_SNEAK_IN_TOOLTIP;
         public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP;
         public static final ForgeConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
+        public static final ForgeConfigSpec.BooleanValue SIGNED_ALBUM_GLINT;
+        public static final ForgeConfigSpec.BooleanValue ALBUM_SHOW_PHOTOS_COUNT;
 
         // CAPTURE
         public static final ForgeConfigSpec.IntValue FLASH_CAPTURE_DELAY_TICKS;
@@ -196,6 +200,14 @@ public class Config {
                 PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR = builder
                         .comment("Crosshair will not get in the way when holding a photograph.")
                         .define("PhotographInHandHideCrosshair", true);
+
+                ALBUM_SHOW_PHOTOS_COUNT = builder
+                        .comment("Album will show how many photographs they contain in a tooltip.")
+                        .define("AlbumShowPhotosCount", true);
+
+                SIGNED_ALBUM_GLINT = builder
+                        .comment("Signed Album item will have an enchantment glint.")
+                        .define("SignedAlbumGlint", true);
 
                 {
                     builder.push("Viewfinder");

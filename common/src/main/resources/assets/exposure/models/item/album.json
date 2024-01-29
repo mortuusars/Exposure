@@ -2,5 +2,25 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "exposure:item/album"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "photos": 0.01
+      },
+      "model": "exposure:item/album_one"
+    },
+    {
+      "predicate": {
+        "photos": 0.02
+      },
+      "model": "exposure:item/album_two"
+    },
+    {
+      "predicate": {
+        "photos": 0.03
+      },
+      "model": "exposure:item/album_three"
+    }
+  ]
 }
