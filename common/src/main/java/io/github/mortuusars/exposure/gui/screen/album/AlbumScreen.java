@@ -21,7 +21,10 @@ import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.GameRenderer;
@@ -34,7 +37,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -282,7 +284,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     if (!page.getNoteWidget().isFocused())
                         tooltip.add(Component.translatable("gui.exposure.album.left_click_to_edit"));
 
-                    boolean hasText = page.noteWidget.left().map(box -> box.getText().length() > 0).orElse(false);
+                    boolean hasText = page.noteWidget.left().map(box -> !box.getText().isEmpty()).orElse(false);
                     if (hasText)
                         tooltip.add(Component.translatable("gui.exposure.album.right_click_to_clear"));
 
@@ -467,12 +469,19 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         return isHovering(x, y, 176, 100, mouseX, mouseY);
     }
 
+    protected boolean isHoveringOverSignElement(double mouseX, double mouseY) {
+        return enterSignModeButton == null
+                || (enterSignModeButton.visible && isHovering(leftPos - 27, topPos + 14, 27, 28, mouseX, mouseY));
+    }
+
     @Override
     protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
         return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)
-                && !isHoveringOverInventory(mouseX, mouseY);
+                && !isHoveringOverInventory(mouseX, mouseY)
+                && !isHoveringOverSignElement(mouseX, mouseY);
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     protected boolean forcePage(int pageIndex) {
         try {
             int newSpreadIndex = pageIndex / 2;
