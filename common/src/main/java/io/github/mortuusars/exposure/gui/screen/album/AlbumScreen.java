@@ -21,10 +21,7 @@ import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.GameRenderer;
@@ -162,7 +159,17 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                         minecraft.getSoundManager().play(SimpleSoundInstance.forUI(
                                 Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), 0.7f, 1.1f));
                     }
-                }, () -> getMenu().getPhotograph(side), getMenu().isAlbumEditable());
+                }, () -> getMenu().getPhotograph(side), getMenu().isAlbumEditable()) {
+            @Override
+            public boolean mouseClicked(double mouseX, double mouseY, int button) {
+                return !isInAddingMode() && super.mouseClicked(mouseX, mouseY, button);
+            }
+
+            @Override
+            public boolean isHovered() {
+                return !isInAddingMode() && super.isHovered();
+            }
+        };
         addRenderableWidget(photographButton);
 
         Either<TextBox, TextBlock> noteWidget;
@@ -199,6 +206,9 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         });
     }
 
+    
+    // RENDER
+    
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         pager.update();
@@ -206,7 +216,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         if (enterSignModeButton != null)
             enterSignModeButton.visible = getMenu().canSignAlbum();
 
-        boolean isInAddingPhotographMode = getMenu().isInAddingPhotographMode();
+        boolean isInAddingPhotographMode = isInAddingMode();
 
         // Note should be hidden when adding photograph because it's drawn over the slots. Blit offset does not help.
         forEachPage(page -> page.getNoteWidget().visible = !isInAddingPhotographMode);
@@ -254,11 +264,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
-        if (getMenu().isInAddingPhotographMode() && hoveredSlot != null && !hoveredSlot.getItem()
+        if (isInAddingMode() && hoveredSlot != null && !hoveredSlot.getItem()
                 .isEmpty() && !(hoveredSlot.getItem().getItem() instanceof PhotographItem))
             return; // Do not render tooltips for greyed-out items
 
-        if (!getMenu().isInAddingPhotographMode()) {
+        if (!isInAddingMode()) {
             for (Page page : pages) {
                 if (page.photographButton.isHoveredOrFocused()) {
                     page.photographButton.renderTooltip(guiGraphics, x, y);
@@ -289,7 +299,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     @Override
     protected @NotNull List<Component> getTooltipFromContainerItem(ItemStack stack) {
         List<Component> tooltipLines = super.getTooltipFromContainerItem(stack);
-        if (getMenu().isInAddingPhotographMode() && hoveredSlot != null && hoveredSlot.getItem() == stack
+        if (isInAddingMode() && hoveredSlot != null && hoveredSlot.getItem() == stack
                 && stack.getItem() instanceof PhotographItem) {
             tooltipLines.add(Component.empty());
             tooltipLines.add(Component.translatable("gui.exposure.album.left_click_to_add"));
@@ -314,7 +324,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         int currentSpreadIndex = getMenu().getCurrentSpreadIndex();
         drawPageNumbers(guiGraphics, currentSpreadIndex);
 
-        if (getMenu().isInAddingPhotographMode()) {
+        if (isInAddingMode()) {
             @Nullable Side pageBeingAddedTo = getMenu().getSideBeingAddedTo();
             for (Page page : pages) {
                 if (page.side == pageBeingAddedTo) {
@@ -349,27 +359,22 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (getMenu().isInAddingPhotographMode()) {
-            AlbumPlayerInventorySlot firstSlot = getMenu().getPlayerInventorySlots().get(0);
-            int x = firstSlot.x - 8;
-            int y = firstSlot.y - 18;
-            if (hoveredSlot == null) {
-                if (isHovering(x, y, 176, 100, mouseX, mouseY))
-                    return true;
-                else if (!hasClickedOutside(mouseX, mouseY, leftPos, topPos, button)) {
-                    sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
-                    return true;
-                }
+        if (isInAddingMode()) {
+            if (!isHoveringOverInventory(mouseX, mouseY)
+                && (!hasClickedOutside(mouseX, mouseY, leftPos, topPos, button) || getMenu().getCarried().isEmpty())) {
+                sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
+                return true;
             }
+
             return super.mouseClicked(mouseX, mouseY, button);
-        } else {
-            for (Page page : pages) {
-                if (getMenu().isAlbumEditable() && button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.noteArea, mouseX, mouseY)) {
-                    page.noteWidget.ifLeft(box -> {
-                        box.setText(""); // Clear the note
-                    });
-                    return true;
-                }
+        }
+
+        for (Page page : pages) {
+            if (getMenu().isAlbumEditable() && button == InputConstants.MOUSE_BUTTON_RIGHT && page.isMouseOver(page.noteArea, mouseX, mouseY)) {
+                page.noteWidget.ifLeft(box -> {
+                    box.setText(""); // Clear the note
+                });
+                return true;
             }
         }
 
@@ -397,6 +402,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (isQuickCrafting && !getMenu().getCarried().isEmpty() && getMenu().getCarried().getCount() == 1) {
+            isQuickCrafting = false; // Fixes weird issue with carried item not placing when dragging slightly
+        }
+
+        return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    @Override
     public boolean handleComponentClicked(@Nullable Style style) {
         if (style == null)
             return false;
@@ -415,6 +429,48 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         if (handled && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND)
             onClose();
         return handled;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (isInAddingMode())
+            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+        else
+            return this.getFocused() != null && this.isDragging() && button == 0
+                    && this.getFocused().mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    protected void sendButtonClick(int buttonId) {
+        getMenu().clickMenuButton(player, buttonId);
+        gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
+
+        if (buttonId == AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON)
+            setFocused(null);
+
+        if (buttonId == AlbumMenu.PREVIOUS_PAGE_BUTTON || buttonId == AlbumMenu.NEXT_PAGE_BUTTON) {
+            for (Page page : pages) {
+                page.noteWidget
+                        .ifLeft(TextBox::setCursorToEnd)
+                        .ifRight(textBlock -> textBlock.setMessage(getNoteComponent(page.side)));
+            }
+        }
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    protected boolean isHoveringOverInventory(double mouseX, double mouseY) {
+        if (!isInAddingMode())
+            return false;
+
+        AlbumPlayerInventorySlot firstSlot = getMenu().getPlayerInventorySlots().get(0);
+        int x = firstSlot.x - 8;
+        int y = firstSlot.y - 18;
+        return isHovering(x, y, 176, 100, mouseX, mouseY);
+    }
+
+    @Override
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
+        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)
+                && !isHoveringOverInventory(mouseX, mouseY);
     }
 
     protected boolean forcePage(int pageIndex) {
@@ -445,49 +501,6 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (getMenu().isInAddingPhotographMode())
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
-        else
-            return this.getFocused() != null && this.isDragging() && button == 0
-                    && this.getFocused().mouseDragged(mouseX, mouseY, button, dragX, dragY);
-    }
-
-    protected void sendButtonClick(int buttonId) {
-        getMenu().clickMenuButton(player, buttonId);
-        gameMode.handleInventoryButtonClick(getMenu().containerId, buttonId);
-
-        if (buttonId == AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON)
-            setFocused(null);
-
-        if (buttonId == AlbumMenu.PREVIOUS_PAGE_BUTTON || buttonId == AlbumMenu.NEXT_PAGE_BUTTON) {
-            for (Page page : pages) {
-                page.noteWidget
-                        .ifLeft(TextBox::setCursorToEnd)
-                        .ifRight(textBlock -> textBlock.setMessage(getNoteComponent(page.side)));
-            }
-        }
-    }
-
-    @NotNull
-    protected Component getNoteComponent(Side page) {
-        return getMenu().getPage(page)
-                .map(AlbumPage::getNote)
-                .map(n -> n.map(Component::literal, comp -> comp))
-                .orElse(Component.empty());
-    }
-
-    @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType type) {
-        if (slot == null && getMenu().isInAddingPhotographMode()) {
-            sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
-            return;
-        }
-
-        super.slotClicked(slot, slotId, mouseButton, type);
-    }
-
-    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == InputConstants.KEY_TAB)
             return super.keyPressed(keyCode, scanCode, modifiers);
@@ -504,7 +517,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             }
         }
 
-        if (getMenu().isInAddingPhotographMode() && (minecraft.options.keyInventory.matches(keyCode, scanCode)
+        if (isInAddingMode() && (minecraft.options.keyInventory.matches(keyCode, scanCode)
                 || keyCode == InputConstants.KEY_ESCAPE)) {
             sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
             return true;
@@ -525,7 +538,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
 
     // MISC:
-
+    
     protected void inspectPhotograph(ItemStack photograph) {
         if (!(photograph.getItem() instanceof PhotographItem))
             return;
@@ -536,13 +549,25 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                         player.level().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
     }
 
+    @NotNull
+    protected Component getNoteComponent(Side page) {
+        return getMenu().getPage(page)
+                .map(AlbumPage::getNote)
+                .map(n -> n.map(Component::literal, comp -> comp))
+                .orElse(Component.empty());
+    }
+
     protected void enterSignMode() {
-        if (getMenu().isInAddingPhotographMode())
+        if (isInAddingMode())
             sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
 
         minecraft.setScreen(new AlbumSigningScreen(this, TEXTURE, 512, 512));
     }
 
+    protected boolean isInAddingMode() {
+        return getMenu().isInAddingPhotographMode();
+    }
+    
     protected void forEachPage(Consumer<Page> pageAction) {
         for (Page page : pages) {
             pageAction.accept(page);

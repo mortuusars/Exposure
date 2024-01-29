@@ -308,8 +308,10 @@ public class AlbumMenu extends AbstractContainerMenu {
     public void clicked(int slotId, int button, ClickType clickType, Player player) {
         // Both sides
 
-        if (sideBeingAddedTo == null || slotId < 0 || slotId >= slots.size())
+        if (sideBeingAddedTo == null || slotId < 0 || slotId >= slots.size()) {
+            super.clicked(slotId, button, clickType, player);
             return;
+        }
 
         Slot slot = slots.get(slotId);
         ItemStack stack = slot.getItem();
