@@ -12,10 +12,15 @@ import io.github.mortuusars.exposure.gui.screen.album.AlbumScreen;
 import io.github.mortuusars.exposure.gui.screen.album.LecternAlbumScreen;
 import io.github.mortuusars.exposure.gui.screen.camera.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.gui.screen.LightroomScreen;
+import io.github.mortuusars.exposure.item.AlbumItem;
+import io.github.mortuusars.exposure.item.CameraItemClientExtensions;
+import io.github.mortuusars.exposure.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.render.ItemFramePhotographRenderer;
 import io.github.mortuusars.exposure.render.PhotographEntityRenderer;
 import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -32,6 +37,15 @@ public class ClientEvents {
                 MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LECTERN_ALBUM.get(), LecternAlbumScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
+
+                ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
+                ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
+                        (stack, clientLevel, livingEntity, seed) ->
+                                stack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem ?
+                                        stackedPhotographsItem.getPhotographsCount(stack) / 100f : 0f);
+                ItemProperties.register(Exposure.Items.ALBUM.get(), new ResourceLocation("photos"),
+                        (stack, clientLevel, livingEntity, seed) ->
+                                stack.getItem() instanceof AlbumItem albumItem ? albumItem.getPhotographsCount(stack) / 100f : 0f);
             });
         }
 

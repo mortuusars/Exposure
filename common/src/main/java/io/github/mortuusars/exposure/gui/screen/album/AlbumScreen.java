@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.gui.screen.album;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
@@ -20,11 +21,11 @@ import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.renderer.GameRenderer;
@@ -80,6 +81,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         minecraft = Minecraft.getInstance();
         player = Objects.requireNonNull(minecraft.player);
         gameMode = Objects.requireNonNull(minecraft.gameMode);
+        minecraft.keyboardHandler.setSendRepeatsToGui(true);
     }
 
     @Override
@@ -105,8 +107,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         ImageButton previousButton = new ImageButton(leftPos + 12, topPos + 164, 13, 15,
                 216, 188, 15, TEXTURE, 512, 512,
-                button -> pager.changePage(PagingDirection.PREVIOUS), Component.translatable("gui.exposure.previous_page"));
-        previousButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.previous_page")));
+                button -> pager.changePage(PagingDirection.PREVIOUS),
+                (button, poseStack, x, y) -> {
+                    renderTooltip(poseStack, Component.translatable("gui.exposure.previous_page"), x, y);
+                }, Component.translatable("gui.exposure.previous_page"));
         addRenderableWidget(previousButton);
 
         // RIGHT:
@@ -115,16 +119,19 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         ImageButton nextButton = new ImageButton(leftPos + 274, topPos + 164, 13, 15,
                 229, 188, 15, TEXTURE, 512, 512,
-                button -> pager.changePage(PagingDirection.NEXT), Component.translatable("gui.exposure.next_page"));
-        nextButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.next_page")));
+                button -> pager.changePage(PagingDirection.NEXT),
+                (button, poseStack, x, y) -> {
+                    renderTooltip(poseStack, Component.translatable("gui.exposure.next_page"), x, y);
+                }, Component.translatable("gui.exposure.next_page"));
         addRenderableWidget(nextButton);
 
         // MISC:
         if (getMenu().isAlbumEditable()) {
             enterSignModeButton = new ImageButton(leftPos - 23, topPos + 17, 22, 22, 242, 188,
                     22, TEXTURE, 512, 512,
-                    b -> enterSignMode(), Component.translatable("gui.exposure.album.sign"));
-            enterSignModeButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.sign")));
+                    b -> enterSignMode(), (button, poseStack, x, y) -> {
+                renderTooltip(poseStack, Component.translatable("gui.exposure.album.sign"), x, y);
+            }, Component.translatable("gui.exposure.album.sign"));
             addRenderableWidget(enterSignModeButton);
         }
 
@@ -141,7 +148,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         Rect2i exposure = new Rect2i(x + 31, y + 27, 96, 96);
         Rect2i note = new Rect2i(x + 22, y + 133, 114, 27);
 
-        PhotographSlotButton photographButton = new PhotographSlotButton(exposure, photo.getX(), photo.getY(),
+        PhotographSlotButton photographButton = new PhotographSlotButton(this, exposure, photo.getX(), photo.getY(),
                 photo.getWidth(), photo.getHeight(), 0, 188, 108, TEXTURE, 512, 512,
                 b -> {
                     PhotographSlotButton button = (PhotographSlotButton) b;
@@ -168,8 +175,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             }
 
             @Override
-            public boolean isHovered() {
-                return !isInAddingMode() && super.isHovered();
+            public void renderButton(PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
+                if (isInAddingMode())
+                    isHovered = false;
+                super.renderButton(poseStack, mouseX, mouseY, partialTick);
             }
         };
         addRenderableWidget(photographButton);
@@ -185,7 +194,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             addRenderableWidget(textBox);
             noteWidget = Either.left(textBox);
         } else {
-            TextBlock textBlock = new TextBlock(font, note.getX(), note.getY(),
+            TextBlock textBlock = new TextBlock(this, font, note.getX(), note.getY(),
                     note.getWidth(), note.getHeight(), getNoteComponent(side), this::handleComponentClicked);
             textBlock.fontColor = MAIN_FONT_COLOR;
             textBlock.alignment = HorizontalAlignment.CENTER;
@@ -208,11 +217,11 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         });
     }
 
-    
+
     // RENDER
-    
+
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         pager.update();
 
         if (enterSignModeButton != null)
@@ -230,42 +239,61 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
         inventoryLabelY = isInAddingPhotographMode ? getMenu().getPlayerInventorySlots().get(0).y - 12 : -999;
 
-        this.renderBackground(guiGraphics);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        this.renderBackground(poseStack);
+        super.render(poseStack, mouseX, mouseY, partialTick);
 
         for (Page page : pages) {
             AbstractWidget noteWidget = page.getNoteWidget();
             if (noteWidget instanceof TextBlock textBlock) {
-                textBlock.render(guiGraphics, mouseX, mouseY, partialTick);
+                textBlock.render(poseStack, mouseX, mouseY, partialTick);
             }
         }
 
+        RenderSystem.setShaderTexture(0, TEXTURE);
+
         if (isInAddingPhotographMode) {
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            @Nullable Side pageBeingAddedTo = getMenu().getSideBeingAddedTo();
+            for (Page page : pages) {
+                if (page.side == pageBeingAddedTo) {
+                    blit(poseStack, page.photoArea.getX(), page.photoArea.getY(), 10, 0, 296,
+                            page.photoArea.getWidth(), page.photoArea.getHeight(), 512, 512);
+                    break;
+                }
+            }
+
+            AlbumPlayerInventorySlot firstSlot = getMenu().getPlayerInventorySlots().get(0);
+            int x = firstSlot.x - 8;
+            int y = firstSlot.y - 18;
+            blit(poseStack, leftPos + x, topPos + y, 10, 0, 404, 176, 100, 512, 512);
+
             for (Slot slot : getMenu().slots) {
                 if (!slot.getItem().isEmpty() && !(slot.getItem().getItem() instanceof PhotographItem)) {
-                    guiGraphics.blit(TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, 350, 176, 404,
+                    blit(poseStack, leftPos + slot.x - 1, topPos + slot.y - 1, 350, 176, 404,
                             18, 18, 512, 512);
                 }
             }
             RenderSystem.disableBlend();
         }
 
-        this.renderTooltip(guiGraphics, mouseX, mouseY);
+        this.renderTooltip(poseStack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 15);
-        super.renderLabels(guiGraphics, mouseX, mouseY);
+    protected void renderLabels(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
+        poseStack.pushPose();
+        poseStack.translate(0, 0, 15);
+        super.renderLabels(poseStack, mouseX, mouseY);
 
-        guiGraphics.pose().popPose();
+        poseStack.popPose();
     }
 
     @Override
-    protected void renderTooltip(GuiGraphics guiGraphics, int x, int y) {
+    protected void renderTooltip(@NotNull PoseStack poseStack, int x, int y) {
         if (isInAddingMode() && hoveredSlot != null && !hoveredSlot.getItem()
                 .isEmpty() && !(hoveredSlot.getItem().getItem() instanceof PhotographItem))
             return; // Do not render tooltips for greyed-out items
@@ -273,7 +301,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         if (!isInAddingMode()) {
             for (Page page : pages) {
                 if (page.photographButton.isHoveredOrFocused()) {
-                    page.photographButton.renderTooltip(guiGraphics, x, y);
+                    page.photographButton.renderTooltip(poseStack, x, y);
                     return;
                 }
 
@@ -288,19 +316,19 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     if (hasText)
                         tooltip.add(Component.translatable("gui.exposure.album.right_click_to_clear"));
 
-                    guiGraphics.renderTooltip(this.font, tooltip, Optional.empty(), x, y);
+                    renderTooltip(poseStack, tooltip, Optional.empty(), x, y);
 
                     return;
                 }
             }
         }
 
-        super.renderTooltip(guiGraphics, x, y);
+        super.renderTooltip(poseStack, x, y);
     }
 
     @Override
-    protected @NotNull List<Component> getTooltipFromContainerItem(ItemStack stack) {
-        List<Component> tooltipLines = super.getTooltipFromContainerItem(stack);
+    public @NotNull List<Component> getTooltipFromItem(ItemStack stack) {
+        List<Component> tooltipLines = super.getTooltipFromItem(stack);
         if (isInAddingMode() && hoveredSlot != null && hoveredSlot.getItem() == stack
                 && stack.getItem() instanceof PhotographItem) {
             tooltipLines.add(Component.empty());
@@ -310,50 +338,37 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     @Override
-    protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
+    protected void renderBg(@NotNull PoseStack poseStack, float partialTick, int mouseX, int mouseY) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, 0,
+        RenderSystem.setShaderTexture(0, TEXTURE);
+        blit(poseStack, leftPos, topPos, 0, 0, 0,
                 imageWidth, imageHeight, 512, 512);
 
         if (enterSignModeButton != null && enterSignModeButton.visible) {
-            guiGraphics.blit(TEXTURE, leftPos - 27, topPos + 14, 447, 0,
+            blit(poseStack, leftPos - 27, topPos + 14, 447, 0,
                     27, 28, 512, 512);
         }
 
         int currentSpreadIndex = getMenu().getCurrentSpreadIndex();
-        drawPageNumbers(guiGraphics, currentSpreadIndex);
-
-        if (isInAddingMode()) {
-            @Nullable Side pageBeingAddedTo = getMenu().getSideBeingAddedTo();
-            for (Page page : pages) {
-                if (page.side == pageBeingAddedTo) {
-                    guiGraphics.blit(TEXTURE, page.photoArea.getX(), page.photoArea.getY(), 10, 0, 296,
-                            page.photoArea.getWidth(), page.photoArea.getHeight(), 512, 512);
-                    break;
-                }
-            }
-
-            AlbumPlayerInventorySlot firstSlot = getMenu().getPlayerInventorySlots().get(0);
-            int x = firstSlot.x - 8;
-            int y = firstSlot.y - 18;
-            guiGraphics.blit(TEXTURE, leftPos + x, topPos + y, 10, 0, 404, 176, 100, 512, 512);
-        }
+        drawPageNumbers(poseStack, currentSpreadIndex);
     }
 
-    protected void drawPageNumbers(GuiGraphics guiGraphics, int currentSpreadIndex) {
+    protected void drawPageNumbers(@NotNull PoseStack poseStack, int currentSpreadIndex) {
         Font font = minecraft.font;
 
         String leftPageNumber = Integer.toString(currentSpreadIndex * 2 + 1);
         String rightPageNumber = Integer.toString(currentSpreadIndex * 2 + 2);
 
-        guiGraphics.drawString(font, leftPageNumber, leftPos + 71 + (8 - font.width(leftPageNumber) / 2),
-                topPos + 167, SECONDARY_FONT_COLOR, false);
+        //noinspection IntegerDivisionInFloatingPointContext
+        font.draw(poseStack, leftPageNumber, leftPos + 71 + (8 - font.width(leftPageNumber) / 2),
+                topPos + 167, SECONDARY_FONT_COLOR);
 
-        guiGraphics.drawString(font, rightPageNumber, leftPos + 212 + (8 - font.width(rightPageNumber) / 2),
-                topPos + 167, SECONDARY_FONT_COLOR, false);
+        //noinspection IntegerDivisionInFloatingPointContext
+        font.draw(poseStack, rightPageNumber, leftPos + 212 + (8 - font.width(rightPageNumber) / 2),
+                topPos + 167, SECONDARY_FONT_COLOR);
     }
 
 
@@ -363,7 +378,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isInAddingMode()) {
             if (!isHoveringOverInventory(mouseX, mouseY)
-                && (!hasClickedOutside(mouseX, mouseY, leftPos, topPos, button) || getMenu().getCarried().isEmpty())) {
+                    && (!hasClickedOutside(mouseX, mouseY, leftPos, topPos, button) || getMenu().getCarried().isEmpty())) {
                 sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
                 return true;
             }
@@ -401,6 +416,17 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             setFocused(null); // Clear focus on mouse click because it's annoying. But keep on textbox to type.
 
         return handled;
+    }
+
+    @Override
+    public void setFocused(@Nullable GuiEventListener focused) {
+        super.setFocused(focused);
+
+        for (Page page : pages) {
+            if (page.getNoteWidget() instanceof TextBox textBox) {
+                textBox.setFocus(textBox.equals(focused));
+            }
+        }
     }
 
     @Override
@@ -547,7 +573,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
 
     // MISC:
-    
+
     protected void inspectPhotograph(ItemStack photograph) {
         if (!(photograph.getItem() instanceof PhotographItem))
             return;
@@ -555,7 +581,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         minecraft.setScreen(new AlbumPhotographScreen(this, List.of(new ItemAndStack<>(photograph))));
         minecraft.getSoundManager()
                 .play(SimpleSoundInstance.forUI(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(),
-                        player.level().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
+                        player.getLevel().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
     }
 
     @NotNull
@@ -567,6 +593,9 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     protected void enterSignMode() {
+        if (!getMenu().canSignAlbum())
+            return;
+
         if (isInAddingMode())
             sendButtonClick(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
 
@@ -576,7 +605,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     protected boolean isInAddingMode() {
         return getMenu().isInAddingPhotographMode();
     }
-    
+
     protected void forEachPage(Consumer<Page> pageAction) {
         for (Page page : pages) {
             pageAction.accept(page);

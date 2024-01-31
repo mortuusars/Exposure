@@ -29,8 +29,6 @@ public class AlbumMenu extends AbstractContainerMenu {
     public static final int LEFT_PAGE_PHOTO_BUTTON = 2;
     public static final int RIGHT_PAGE_PHOTO_BUTTON = 3;
     public static final int ENTER_SIGN_MODE_BUTTON = 4;
-    public static final int SIGN_BUTTON = 5;
-    public static final int CANCEL_SIGNING_BUTTON = 6;
 
     protected final ItemAndStack<AlbumItem> album;
     protected final boolean editable;
@@ -70,8 +68,6 @@ public class AlbumMenu extends AbstractContainerMenu {
             signing = true;
             sideBeingAddedTo = null;
         });
-        put(SIGN_BUTTON, p -> signAlbum(p));
-        put(CANCEL_SIGNING_BUTTON, p -> signing = false);
     }};
 
     public AlbumMenu(int containerId, Inventory playerInventory, ItemAndStack<AlbumItem> album, boolean editable) {
@@ -188,11 +184,13 @@ public class AlbumMenu extends AbstractContainerMenu {
     }
 
     protected void signAlbum(Player player) {
-        if (!player.level().isClientSide)
-            return;
-
         if (!canSignAlbum())
             throw new IllegalStateException("Cannot sign the album.\n" + Arrays.toString(getPages().toArray()));
+
+        if (!player.getLevel().isClientSide) {
+            player.containerMenu = player.inventoryMenu;
+            return;
+        }
 
         Packets.sendToServer(new AlbumSignC2SP(title));
     }
@@ -305,7 +303,8 @@ public class AlbumMenu extends AbstractContainerMenu {
 
         if (button == InputConstants.MOUSE_BUTTON_LEFT
                 && slot instanceof AlbumPlayerInventorySlot
-                && stack.getItem() instanceof PhotographItem) {
+                && stack.getItem() instanceof PhotographItem
+                && getCarried().isEmpty()) {
             int pageIndex = getCurrentSpreadIndex() * 2 + sideBeingAddedTo.getIndex();
             Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(pageIndex);
             if (photographSlot.isEmpty() || !photographSlot.get().getItem().isEmpty())
@@ -314,7 +313,7 @@ public class AlbumMenu extends AbstractContainerMenu {
             photographSlot.get().set(stack);
             slot.set(ItemStack.EMPTY);
 
-            if (player.level().isClientSide)
+            if (player.getLevel().isClientSide)
                 player.playSound(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), 0.8f, 1.1f);
 
             sideBeingAddedTo = null;

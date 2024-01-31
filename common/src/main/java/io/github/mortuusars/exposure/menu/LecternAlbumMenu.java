@@ -33,7 +33,7 @@ public class LecternAlbumMenu extends AlbumMenu {
         checkContainerDataCount(lecternData, 1);
         this.lecternPos = lecternPos;
         this.lectern = lectern;
-        this.level = playerInventory.player.level();
+        this.level = playerInventory.player.getLevel();
         this.addSlot(new Slot(lectern, 0, -999, -999) {
             @Override
             public void setChanged() {
@@ -76,9 +76,12 @@ public class LecternAlbumMenu extends AlbumMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return level.getBlockEntity(lecternPos) instanceof LecternBlockEntity lecternBlockEntity
-                && lecternBlockEntity.getBook().getItem() instanceof AlbumItem
-                && Container.stillValidBlockEntity(lecternBlockEntity, player);
+        return level.getBlockEntity(lecternPos) instanceof LecternBlockEntity be
+                && be.getBook().getItem() instanceof AlbumItem
+                && player.distanceToSqr(
+                        be.getBlockPos().getX() + 0.5f,
+                        be.getBlockPos().getY() + 0.5f,
+                        be.getBlockPos().getZ() + 0.5f) < 64.0;
     }
 
     public static LecternAlbumMenu fromBuffer(int containerId, Inventory inventory, FriendlyByteBuf buffer) {

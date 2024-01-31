@@ -1,15 +1,15 @@
 package io.github.mortuusars.exposure.gui.screen.album;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.gui.screen.element.textbox.HorizontalAlignment;
 import io.github.mortuusars.exposure.gui.screen.element.textbox.TextBox;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.server.AlbumSignC2SP;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -17,7 +17,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 public class AlbumSigningScreen extends Screen {
     public static final int SELECTION_COLOR = 0xFF8888FF;
@@ -69,17 +71,21 @@ public class AlbumSigningScreen extends Screen {
         // SIGN
         signButton = new ImageButton(leftPos + 46, topPos + 110, 22, 22, 242, 188,
                 22, texture, textureWidth, textureHeight,
-                b -> signAlbum(), Component.translatable("gui.exposure.album.sign"));
-        MutableComponent component = Component.translatable("gui.exposure.album.sign")
-                .append("\n").append(Component.translatable("gui.exposure.album.sign.warning").withStyle(ChatFormatting.GRAY));
-        signButton.setTooltip(Tooltip.create(component));
+                b -> signAlbum(),
+            (b, poseStack, x, y) -> {
+                renderTooltip(poseStack, List.of(Component.translatable("gui.exposure.album.sign"),
+                        Component.translatable("gui.exposure.album.sign.warning").withStyle(ChatFormatting.GRAY)),
+                        Optional.empty(), x, y);
+            }, Component.translatable("gui.exposure.album.sign"));
         addRenderableWidget(signButton);
 
         // CANCEL
         cancelSigningButton = new ImageButton(leftPos + 83, topPos + 111, 22, 22, 264, 188,
                 22, texture, textureWidth, textureHeight,
-                b -> cancelSigning(), Component.translatable("gui.exposure.album.cancel_signing"));
-        cancelSigningButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.album.cancel_signing")));
+                b -> cancelSigning(),
+                (b, poseStack, x, y) -> {
+                    renderTooltip(poseStack, Component.translatable("gui.exposure.album.cancel_signing"), x, y);
+                }, Component.translatable("gui.exposure.album.cancel_signing"));
         addRenderableWidget(cancelSigningButton);
 
         setInitialFocus(titleTextBox);
@@ -95,32 +101,41 @@ public class AlbumSigningScreen extends Screen {
         titleTextBox.tick();
     }
 
-    private void updateButtons() {
-        signButton.active = titleText.length() > 0;
+    protected void updateButtons() {
+        signButton.active = canSign();
+    }
+
+    protected boolean canSign() {
+        return !titleText.isEmpty();
     }
 
     @Override
-    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         updateButtons();
 
-        renderBackground(guiGraphics);
-        guiGraphics.blit(texture, leftPos, topPos, 0, 298,
-                0, imageWidth, imageHeight, textureWidth, textureHeight);
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        RenderSystem.setShaderTexture(0, texture);
 
-        renderLabels(guiGraphics);
+        renderBackground(poseStack);
+        blit(poseStack, leftPos, topPos, 0, 298,
+                0, imageWidth, imageHeight, textureHeight, textureWidth);
+        super.render(poseStack, mouseX, mouseY, partialTick);
+
+        renderLabels(poseStack);
     }
 
-    private void renderLabels(GuiGraphics guiGraphics) {
+    private void renderLabels(@NotNull PoseStack poseStack) {
         MutableComponent component = Component.translatable("gui.exposure.album.enter_title");
-        guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 50, 0xf5ebd0, false);
+        font.draw(poseStack, component,  (int)(leftPos + 149 / 2 - font.width(component) / 2), topPos + 50, 0xf5ebd0);
 
         component = Component.translatable("gui.exposure.album.by_author", player.getName());
-        guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 84, 0xc7b496, false);
+        font.draw(poseStack, component, (int)(leftPos + 149 / 2 - font.width(component) / 2), topPos + 84, 0xc7b496);
     }
 
     protected void signAlbum() {
-        Packets.sendToServer(new AlbumSignC2SP(titleText));
+        if (canSign()) {
+            Packets.sendToServer(new AlbumSignC2SP(titleText));
+            this.onClose();
+        }
     }
 
     protected void cancelSigning() {

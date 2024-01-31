@@ -305,7 +305,7 @@ public class CameraItem extends Item {
             activate(player, stack);
             player.getCooldowns().addCooldown(this, 4);
 
-            if (player.level().isClientSide) {
+            if (player.getLevel().isClientSide) {
                 // Release use key after activating. Otherwise, right click will be still held and camera will take a shot
                 CameraItemClientExtensions.releaseUseButton();
             }
@@ -475,7 +475,7 @@ public class CameraItem extends Item {
         tag.putFloat(FrameData.SUN_ANGLE, level.getSunAngle(0));
 
         List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
-        if (entitiesInFrame.size() > 0) {
+        if (!entitiesInFrame.isEmpty()) {
             ListTag entities = new ListTag();
 
             for (Entity entity : entitiesInFrame) {
@@ -490,7 +490,7 @@ public class CameraItem extends Item {
                 tag.putBoolean(entityInfoTag.getString(FrameData.ENTITY_ID), true);
             }
 
-            if (entities.size() > 0)
+            if (!entities.isEmpty())
                 tag.put(FrameData.ENTITIES_IN_FRAME, entities);
         }
 
@@ -575,7 +575,7 @@ public class CameraItem extends Item {
     }
 
     /**
-     * This method is called after we take a screenshot (or immediately if not capturing but should show effects). Otherwise, due to the delays (flash, etc) - particles would be captured as well.
+     * This method is called after we take a screenshot (or immediately if not capturing but should show effects). Otherwise, due to the delays (flash, etc.) - particles would be captured as well.
      */
     @SuppressWarnings("unused")
     public void spawnClientsideFlashEffects(@NotNull Player player, ItemStack cameraStack) {

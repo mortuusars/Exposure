@@ -8,8 +8,6 @@ import io.github.mortuusars.exposure.command.argument.ShaderLocationArgument;
 import io.github.mortuusars.exposure.network.forge.PacketsImpl;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,24 +22,6 @@ public class CommonEvents {
                 Exposure.Advancements.register();
                 Exposure.Stats.register();
             });
-        }
-
-        @SubscribeEvent
-        public static void onCreativeTabsBuild(BuildCreativeModeTabContentsEvent event) {
-            if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
-                event.accept(Exposure.Items.CAMERA.get());
-                event.accept(Exposure.Items.BLACK_AND_WHITE_FILM.get());
-                event.accept(Exposure.Items.COLOR_FILM.get());
-                event.accept(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
-                event.accept(Exposure.Items.DEVELOPED_COLOR_FILM.get());
-                event.accept(Exposure.Items.PHOTOGRAPH.get());
-                event.accept(Exposure.Items.STACKED_PHOTOGRAPHS.get());
-                event.accept(Exposure.Items.ALBUM.get());
-            }
-
-            if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
-                event.accept(Exposure.Items.LIGHTROOM.get());
-            }
         }
     }
 

@@ -1,12 +1,12 @@
 package io.github.mortuusars.exposure.gui.screen.album;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.gui.screen.PhotographScreen;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,13 +21,13 @@ public class AlbumPhotographScreen extends PhotographScreen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         if (zoom.targetZoom == zoom.minZoom) {
             close();
             return;
         }
 
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        super.render(poseStack, mouseX, mouseY, partialTick);
     }
 
     @Override

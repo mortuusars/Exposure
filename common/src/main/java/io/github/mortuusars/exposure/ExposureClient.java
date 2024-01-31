@@ -30,15 +30,6 @@ public class ExposureClient {
     public static void init() {
         exposureSender = new ExposureSender((packet, player) -> Packets.sendToServer(packet));
         exposureReceiver = new ExposureReceiver(exposureStorage);
-
-        ItemProperties.register(Exposure.Items.CAMERA.get(), new ResourceLocation("camera_state"), CameraItemClientExtensions::itemPropertyFunction);
-        ItemProperties.register(Exposure.Items.STACKED_PHOTOGRAPHS.get(), new ResourceLocation("count"),
-                (stack, clientLevel, livingEntity, seed) ->
-                        stack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem ?
-                                stackedPhotographsItem.getPhotographsCount(stack) / 100f : 0f);
-        ItemProperties.register(Exposure.Items.ALBUM.get(), new ResourceLocation("photos"),
-                (stack, clientLevel, livingEntity, seed) ->
-                        stack.getItem() instanceof AlbumItem albumItem ? albumItem.getPhotographsCount(stack) / 100f : 0f);
     }
 
     public static IExposureStorage getExposureStorage() {

@@ -50,8 +50,8 @@ public record AlbumSignC2SP(String title) implements IPacket<AlbumSignC2SP> {
         ItemStack signedAlbum = albumItem.sign(albumStack, title, player.getName().getString());
         player.setItemInHand(hand, signedAlbum);
 
-        player.level().playSound(null, player, SoundEvents.VILLAGER_WORK_CARTOGRAPHER, SoundSource.PLAYERS, 0.8f ,1f);
-        player.closeContainer();
+        player.getLevel().playSound(null, player, SoundEvents.VILLAGER_WORK_CARTOGRAPHER, SoundSource.PLAYERS, 0.8f ,1f);
+        player.containerMenu = player.inventoryMenu;
 
         return true;
     }

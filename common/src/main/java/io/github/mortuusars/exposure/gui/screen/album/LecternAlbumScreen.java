@@ -41,10 +41,10 @@ public class LecternAlbumScreen extends AlbumScreen {
         super.init();
 
         if (player.mayBuild()) {
-            addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> this.onClose())
-                    .bounds(this.width / 2 - 100, topPos + 196, 98, 20).build());
-            addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"), b -> sendButtonClick(LecternAlbumMenu.TAKE_BOOK_BUTTON))
-                    .bounds(this.width / 2 + 2, topPos + 196, 98, 20).build());
+            addRenderableWidget(new Button(this.width / 2 - 100, topPos + 196, 98, 20,
+                    CommonComponents.GUI_DONE, b -> this.onClose()));
+            addRenderableWidget(new Button(this.width / 2 + 2, topPos + 196, 98, 20,
+                    Component.translatable("lectern.take_book"), b -> sendButtonClick(LecternAlbumMenu.TAKE_BOOK_BUTTON)));
         }
     }
 
