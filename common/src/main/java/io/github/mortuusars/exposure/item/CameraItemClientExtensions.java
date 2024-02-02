@@ -11,13 +11,13 @@ import net.minecraft.world.item.ItemStack;
 
 public class CameraItemClientExtensions {
     public static void applyDefaultHoldingPose(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm) {
-        model.head.xRot += 0.4; // If we turn head down completely - arms will be too low.
+        model.head.xRot += 0.4f; // If we turn head down completely - arms will be too low.
         if (arm == HumanoidArm.RIGHT) {
             AnimationUtils.animateCrossbowHold(model.rightArm, model.leftArm, model.head, true);
         } else if (arm == HumanoidArm.LEFT) {
             AnimationUtils.animateCrossbowHold(model.rightArm, model.leftArm, model.head, false);
         }
-        model.head.xRot += 0.3;
+        model.head.xRot += 0.3f;
     }
 
     public static void applySelfieHoldingPose(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm) {
