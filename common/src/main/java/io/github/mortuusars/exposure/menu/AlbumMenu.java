@@ -305,7 +305,8 @@ public class AlbumMenu extends AbstractContainerMenu {
 
         if (button == InputConstants.MOUSE_BUTTON_LEFT
                 && slot instanceof AlbumPlayerInventorySlot
-                && stack.getItem() instanceof PhotographItem) {
+                && stack.getItem() instanceof PhotographItem
+                && getCarried().isEmpty()) {
             int pageIndex = getCurrentSpreadIndex() * 2 + sideBeingAddedTo.getIndex();
             Optional<AlbumPhotographSlot> photographSlot = getPhotographSlot(pageIndex);
             if (photographSlot.isEmpty() || !photographSlot.get().getItem().isEmpty())
