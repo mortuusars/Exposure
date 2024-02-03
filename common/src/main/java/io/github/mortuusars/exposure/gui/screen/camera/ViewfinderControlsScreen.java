@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderOverlay;
@@ -116,22 +117,22 @@ public class ViewfinderControlsScreen extends Screen {
      * When screen is opened - all keys are released. If we do not refresh them - player would stop moving (if they had).
      */
     private void refreshMovementKeys() {
-        Options opt = Minecraft.getInstance().options;
-        long windowId = Minecraft.getInstance().getWindow().getWindow();
         Consumer<KeyMapping> update = keyMapping -> {
             if (keyMapping.key.getType() == InputConstants.Type.MOUSE) {
                 keyMapping.setDown(MouseHandler.isMouseButtonHeld(keyMapping.key.getValue()));
             }
             else {
+                long windowId = Minecraft.getInstance().getWindow().getWindow();
                 keyMapping.setDown(InputConstants.isKeyDown(windowId, keyMapping.key.getValue()));
             }
         };
 
+        update.accept(ExposureClient.getViewfinderControlsKey());
+        Options opt = Minecraft.getInstance().options;
         update.accept(opt.keyUp);
         update.accept(opt.keyDown);
         update.accept(opt.keyLeft);
         update.accept(opt.keyRight);
-        update.accept(opt.keyShift);
         update.accept(opt.keyJump);
         update.accept(opt.keySprint);
     }
@@ -195,7 +196,7 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (Minecraft.getInstance().options.keyShift.matchesMouse(button)) {
+        if (ExposureClient.getViewfinderControlsKey().matchesMouse(button)) {
             if (level.getGameTime() - openedAtTimestamp >= 5)
                 this.onClose();
 
@@ -207,7 +208,7 @@ public class ViewfinderControlsScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (Minecraft.getInstance().options.keyShift.matches(keyCode, scanCode)) {
+        if (ExposureClient.getViewfinderControlsKey().matches(keyCode, scanCode)) {
             if (level.getGameTime() - openedAtTimestamp >= 5)
                 this.onClose();
 

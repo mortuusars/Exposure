@@ -173,6 +173,7 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_BACKGROUND_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_MAIN_COLOR;
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
+        public static final ForgeConfigSpec.BooleanValue ADD_CAMERA_CONTROLS_KEYBIND;
 
         // IMAGE SAVING
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING;
@@ -209,6 +210,7 @@ public class Config {
                         .comment("Signed Album item will have an enchantment glint.")
                         .define("SignedAlbumGlint", true);
 
+
                 {
                     builder.push("Viewfinder");
                     VIEWFINDER_ZOOM_SENSITIVITY_MODIFIER = builder
@@ -217,6 +219,9 @@ public class Config {
                     VIEWFINDER_BACKGROUND_COLOR = builder.define("BackgroundColorHex", "FA1F1D1B");
                     VIEWFINDER_FONT_MAIN_COLOR = builder.define("FontMainColorHex", "FF2B2622");
                     VIEWFINDER_FONT_SECONDARY_COLOR = builder.define("FontSecondaryColorHex", "FF7A736C");
+                    ADD_CAMERA_CONTROLS_KEYBIND = builder
+                            .comment("Key mapping option will be added that allows changing the Camera controls key.", "Default: false.")
+                            .define("AddCameraControlsKeymapping", false);
                     builder.pop();
                 }
 

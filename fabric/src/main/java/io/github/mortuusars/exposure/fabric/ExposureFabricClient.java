@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.fabric;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.gui.component.PhotographTooltip;
 import io.github.mortuusars.exposure.gui.screen.album.AlbumScreen;
 import io.github.mortuusars.exposure.gui.screen.album.LecternAlbumScreen;
@@ -9,6 +10,7 @@ import io.github.mortuusars.exposure.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.render.PhotographEntityRenderer;
 import io.github.mortuusars.exposure.network.fabric.PacketsImpl;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -21,7 +23,9 @@ import net.minecraft.server.packs.PackType;
 public class ExposureFabricClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
-        Exposure.initClient();
+        ExposureClient.init();
+
+        ExposureClient.registerKeymappings(KeyBindingHelper::registerKeyBinding);
 
         MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
         MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);

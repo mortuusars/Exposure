@@ -27,7 +27,7 @@ public class ClientEvents {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
             event.enqueueWork(() -> {
-                Exposure.initClient();
+                ExposureClient.init();
                 MenuScreens.register(Exposure.MenuTypes.CAMERA.get(), CameraAttachmentsScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.ALBUM.get(), AlbumScreen::new);
                 MenuScreens.register(Exposure.MenuTypes.LECTERN_ALBUM.get(), LecternAlbumScreen::new);
@@ -108,6 +108,14 @@ public class ClientEvents {
                 return;
 
             CaptureManager.onRenderTickEnd();
+        }
+
+        @SubscribeEvent
+        public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+            ExposureClient.registerKeymappings(key -> {
+                event.register(key);
+                return key;
+            });
         }
     }
 }

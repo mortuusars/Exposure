@@ -72,6 +72,9 @@
   "gui.exposure.lightroom.next_frame": "Next Frame",
   "gui.exposure.lightroom.print": "Print",
 
+  "category.exposure": "Exposure",
+  "key.exposure.camera_controls": "Open Camera controls panel",
+
   "command.exposure.shader.removed": "Shader removed",
   "command.exposure.load_from_file.success": "Exposure '%s' has been loaded.",
   "command.exposure.load_from_file.failure": "Cannot load exposure. See logs for more more information.",
