@@ -57,10 +57,6 @@ public class Exposure {
         SoundEvents.init();
     }
 
-    public static void initClient() {
-        ExposureClient.init();
-    }
-
     public static void initServer(MinecraftServer server) {
         ExposureServer.init(server);
     }

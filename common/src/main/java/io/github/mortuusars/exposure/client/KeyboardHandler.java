@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
 import io.github.mortuusars.exposure.camera.viewfinder.SelfieClient;
 import io.github.mortuusars.exposure.camera.viewfinder.ViewfinderClient;
@@ -52,7 +53,7 @@ public class KeyboardHandler {
             return false;
 
         if (!(minecraft.screen instanceof ViewfinderControlsScreen)) {
-            if (minecraft.options.keyShift.matches(key, scanCode)) {
+            if (ExposureClient.getViewfinderControlsKey().matches(key, scanCode)) {
                 ClientGUI.openViewfinderControlsScreen();
                 return false; // Do not handle to keep sneaking
             }

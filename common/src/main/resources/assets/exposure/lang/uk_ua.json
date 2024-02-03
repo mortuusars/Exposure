@@ -72,6 +72,9 @@
   "gui.exposure.lightroom.next_frame": "Наступний кадр",
   "gui.exposure.lightroom.print": "Друкувати",
 
+  "category.exposure": "Exposure",
+  "key.exposure.camera_controls": "Відкрити панель керування камерою",
+
   "command.exposure.shader.removed": "Шейдер прибрано",
   "command.exposure.load_from_file.success": "Експозицію «%s» завантажено.",
   "command.exposure.load_from_file.failure": "Не вдається завантажити експозицію. Для отримання додаткової інформації перегляньте логи.",
