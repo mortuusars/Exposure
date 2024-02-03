@@ -7,7 +7,8 @@
 
 
 - Changed photograph paper texture to not be so rough at the edges
-- Holding use key when opening Viewfinder will no longer cause Camera to shoot immediately after opening
+- Holding use when opening Viewfinder will no longer cause Camera to shoot immediately after opening
+- Camera controls key can be remapped now. Should be enabled in config first (disabled by default)  
 
 
 - Fixed non-english characters in player's nickname causing a crash when trying to render their photos 
