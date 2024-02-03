@@ -9,6 +9,8 @@
   "item.exposure.black_and_white_film": "Чорно-біла плівка",
   "item.exposure.color_film": "Кольорова плівка",
   "item.exposure.album": "Фотоальбом",
+  "item.exposure.signed_album": "Підписаний фотоальбом",
+  "item.exposure.album.tooltip.photos_count": "§7Фотографії: %s",
 
   "item.exposure.developed_film.tooltip.frame_count": "Кадри: %s",
   "item.exposure.developed_black_and_white_film": "Проявлена чорно-біла плівка",
@@ -31,6 +33,9 @@
 
   "entity.exposure.photograph": "Фотографія",
 
+  "gui.exposure.previous_page": "Попередня сторінка",
+  "gui.exposure.next_page": "Наступна сторінка",
+
   "gui.exposure.composition_guide.none": "Немає",
   "gui.exposure.composition_guide.crosshair": "Перехрестя",
   "gui.exposure.composition_guide.quads": "Квадранти",
@@ -47,6 +52,19 @@
   "gui.exposure.viewfinder.film_frame_counter.tooltip.no_film": "Немає плівки",
   "gui.exposure.viewfinder.focal_length.tooltip": "Фокусна відстань",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Витримка",
+
+  "gui.exposure.album.note": "Примітка",
+  "gui.exposure.album.add_photograph": "Додати фотографію",
+  "gui.exposure.album.left_click_to_add": "§8Натисніть [§7Ліву кнопку миші§8] щоб додати",
+  "gui.exposure.album.left_click_or_scroll_up_to_view": "§8Натисніть [§7Ліву кнопку миші§8] або §8[§7Прокрутіть колесо прокрутки вгору§8] щоб переглянути",
+  "gui.exposure.album.right_click_to_remove": "§8Натисніть [§7Праву кнопку миші§8] щоб забрати",
+  "gui.exposure.album.left_click_to_edit": "§8Натисніть [§7Ліву кнопку миші§8] щоб редагувати",
+  "gui.exposure.album.right_click_to_clear": "§8Натисніть [§7Праву кнопку миші§8] щоб очистити",
+  "gui.exposure.album.enter_title": "Введіть назву альбому:",
+  "gui.exposure.album.by_author": "від: %1$s",
+  "gui.exposure.album.sign": "Підписати альбом",
+  "gui.exposure.album.sign.warning": "Увага! Коли ви підпишете альбом, його більше не можна буде редагувати.",
+  "gui.exposure.album.cancel_signing": "Скасувати",
 
   "gui.exposure.lightroom.previous_frame": "Попередній кадр",
   "gui.exposure.lightroom.current_frame": "Кадр: %s",
