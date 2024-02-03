@@ -96,7 +96,11 @@ public class AlbumSigningScreen extends Screen {
     }
 
     private void updateButtons() {
-        signButton.active = titleText.length() > 0;
+        signButton.active = canSign();
+    }
+
+    protected boolean canSign() {
+        return !titleText.isEmpty();
     }
 
     @Override
@@ -120,7 +124,10 @@ public class AlbumSigningScreen extends Screen {
     }
 
     protected void signAlbum() {
-        Packets.sendToServer(new AlbumSignC2SP(titleText));
+        if (canSign()) {
+            Packets.sendToServer(new AlbumSignC2SP(titleText));
+            this.onClose();
+        }
     }
 
     protected void cancelSigning() {
