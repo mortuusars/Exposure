@@ -248,22 +248,18 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        boolean handled = super.keyPressed(keyCode, scanCode, modifiers);
-        if (handled)
-            return true;
-
         Preconditions.checkState(minecraft != null);
         Preconditions.checkState(minecraft.gameMode != null);
 
         if (minecraft.options.keyLeft.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_LEFT) {
             changeFrame(PagingDirection.PREVIOUS);
-            handled = true;
+            return true;
         } else if (minecraft.options.keyRight.matches(keyCode, scanCode) || keyCode == InputConstants.KEY_RIGHT) {
             changeFrame(PagingDirection.NEXT);
-            handled = true;
+            return true;
         }
 
-        return handled;
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
