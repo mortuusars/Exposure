@@ -73,7 +73,7 @@
   "gui.exposure.lightroom.print": "Друкувати",
 
   "category.exposure": "Exposure",
-  "key.exposure.camera_controls": "Відкрити панель керування камерою",
+  "key.exposure.camera_controls": "Панель керування камерою (Не прив’язано = Крастися)",
 
   "command.exposure.shader.removed": "Шейдер прибрано",
   "command.exposure.load_from_file.success": "Експозицію «%s» завантажено.",

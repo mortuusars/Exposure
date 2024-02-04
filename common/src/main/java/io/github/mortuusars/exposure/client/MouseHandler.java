@@ -14,9 +14,8 @@ public class MouseHandler {
         if (button >= 0 && button < heldMouseButtons.length)
             heldMouseButtons[button] = action == InputConstants.PRESS;
 
-        if (ExposureClient.getViewfinderControlsKey().matchesMouse(button)
-                && Minecraft.getInstance().player != null
-                && CameraInHand.isActive(Minecraft.getInstance().player)
+        if (Minecraft.getInstance().player != null && CameraInHand.isActive(Minecraft.getInstance().player)
+                && ExposureClient.getViewfinderControlsKey().matchesMouse(button)
                 && !(Minecraft.getInstance().screen instanceof ViewfinderControlsScreen)) {
             ClientGUI.openViewfinderControlsScreen();
             // Do not cancel the event to keep sneaking
