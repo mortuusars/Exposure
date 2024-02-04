@@ -1,4 +1,6 @@
 {
+  "tooltip.exposure.hold_for_details": "§8Удерживайте [§7Shift§8] для подробностей",
+  
   "block.exposure.lightroom": "Фотолаборатория",
 
   "item.exposure.camera": "Камера",
@@ -6,23 +8,33 @@
   "item.exposure.camera.camera_attachments.fail.shutter_open": "Невозможно разобрать камеру, пока опущен затвор.",
   "item.exposure.black_and_white_film": "Чёрно-белая плёнка",
   "item.exposure.color_film": "Цветная плёнка",
+  "item.exposure.album": "Фотоальбом",
+  "item.exposure.signed_album": "Подписанный фотоальбом",
+  "item.exposure.album.tooltip.photos_count": "§7Фотографий: %s",
+  
   "item.exposure.developed_black_and_white_film": "Проявленная чёрно-белая плёнка",
   "item.exposure.developed_color_film": "Проявленная цветная плёнка",
+  "item.exposure.developed_film.tooltip.frame_count": "Кадры: %s",
+  
   "item.exposure.photograph": "Фотография",
-  "item.exposure.photograph.photographer_tooltip": "Автор: %s",
   "item.exposure.photograph.generation.0": "Оригинал",
   "item.exposure.photograph.generation.1": "Копия оригинала",
   "item.exposure.photograph.generation.2": "Копия копии",
   "item.exposure.photograph.generation.3": "Потёрта",
   "item.exposure.photograph.message.no_data": "Бумага чиста. На ней нет и следа изображения, даже если оно когда-то и было.",
+  "item.exposure.photograph.tooltip.details.copy": "Можно снять копию, соединив с:",
+  "item.exposure.photograph.photographer_tooltip": "Автор: %s",
   "item.exposure.stacked_photographs": "Стопка фотографий",
 
   "item.exposure.film_roll.tooltip.frame_count": "%s/%s",
   "item.exposure.film_roll.tooltip.frame_size": "Размер: %sмм",
   "item.exposure.film_roll.tooltip.developing_step": "Проявка: %s",
-  "item.exposure.developed_film.tooltip.frame_count": "Кадры: %s",
+  "item.exposure.film_roll.tooltip.details.develop": "Проявляется при совмещении с:",
 
   "entity.exposure.photograph": "Фотография",
+
+  "gui.exposure.previous_page": "Предыдущая страница",
+  "gui.exposure.next_page": "Следующая страница",
 
   "gui.exposure.composition_guide.none": "Нет",
   "gui.exposure.composition_guide.crosshair": "Перекрестие",
@@ -41,15 +53,36 @@
   "gui.exposure.viewfinder.focal_length.tooltip": "Фокусное расстояние",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "Скорость затвора",
 
+  "gui.exposure.album.note": "Заметка",
+  "gui.exposure.album.add_photograph": "Добавить фотографию",
+  "gui.exposure.album.left_click_to_add": "§8[§7ЛКМ§8] для добавления",
+  "gui.exposure.album.left_click_or_scroll_up_to_view": "§8[§7ЛКМ§8] или §8[§7СКМ§8] для просмотра",
+  "gui.exposure.album.right_click_to_remove": "§8[§7ПКМ§8] чтобы убрать",
+  "gui.exposure.album.left_click_to_edit": "§8[§7ЛКМ§8] для редактирования",
+  "gui.exposure.album.right_click_to_clear": "§8[§7ПКМ§8] чтобы стереть",
+  "gui.exposure.album.enter_title": "Заглавие альбома:",
+  "gui.exposure.album.by_author": "Составлен %1$s",
+  "gui.exposure.album.sign": "Подписать альбом",
+  "gui.exposure.album.sign.warning": "Учтите, что вы больше не сможете его редактировать.",
+  "gui.exposure.album.cancel_signing": "Отмена",
+
   "gui.exposure.lightroom.previous_frame": "Предыдущий кадр",
   "gui.exposure.lightroom.current_frame": "Кадр: %s",
   "gui.exposure.lightroom.zoom_in.tooltip": "Нажмите ЛКМ или прокрутите колесом мыши для приближения",
   "gui.exposure.lightroom.next_frame": "Следующий кадр",
   "gui.exposure.lightroom.print": "Печать",
 
+  "category.exposure": "Exposure",
+  "key.exposure.camera_controls": "Меню настроек камеры (Не назначена = Красться)",
+
   "command.exposure.shader.removed": "Шейдер убран",
   "command.exposure.load_from_file.success": "Кадр '%s' загружен.",
   "command.exposure.load_from_file.failure": "Невозможно загрузить кадр. Для подробностей смотрите логи (logs) игры.",
+  "command.exposure.export.success.result": "Экспортировано %s кадр(ов) в %s.",
+  "command.exposure.export.success.saved_exposure_id": "Экспортировано: [%s]",
+  "command.exposure.export.failure.cannot_get_all_ids": "Не удалось получить ID кадров. Нет сохранённых кадров или произошла ошибка.",
+  "command.exposure.export.failure.none_saved": "Не было экспортировано ни одного кадра.",
+  "command.exposure.export.failure.not_found": "Невозможно экспортировать кадр: Id [%s] не найден.",
   "command.exposure.show.error.not_a_player": "Эту команду следует применять на игроке.",
   "command.exposure.show.error.not_found": "Кадр с id '%s' не найден или не может быть загружен.",
   "command.exposure.show.latest.error.no_exposures": "Не обнаружено последних кадров.",
