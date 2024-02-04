@@ -8,7 +8,7 @@
 
 - Changed photograph paper texture to not be so rough at the edges
 - Holding use when opening Viewfinder will no longer cause Camera to shoot immediately after opening
-- Camera controls key can be remapped now. Should be enabled in config first (disabled by default)  
+- Camera controls key can be remapped now. Unbound means it will use sneak key, as before. Unbound by default.   
 
 
 - Fixed non-english characters in player's nickname causing a crash when trying to render their photos 

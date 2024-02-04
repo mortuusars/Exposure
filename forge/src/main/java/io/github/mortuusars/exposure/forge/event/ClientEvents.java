@@ -54,6 +54,14 @@ public class ClientEvents {
         public static void registerModels(ModelEvent.RegisterAdditional event) {
             event.register(new ModelResourceLocation("exposure", "camera_gui", "inventory"));
         }
+
+        @SubscribeEvent
+        public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
+            ExposureClient.registerKeymappings(key -> {
+                event.register(key);
+                return key;
+            });
+        }
     }
 
     public static class ForgeBus {
@@ -108,14 +116,6 @@ public class ClientEvents {
                 return;
 
             CaptureManager.onRenderTickEnd();
-        }
-
-        @SubscribeEvent
-        public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-            ExposureClient.registerKeymappings(key -> {
-                event.register(key);
-                return key;
-            });
         }
     }
 }

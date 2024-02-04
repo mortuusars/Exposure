@@ -73,7 +73,7 @@
   "gui.exposure.lightroom.print": "Print",
 
   "category.exposure": "Exposure",
-  "key.exposure.camera_controls": "Open Camera controls panel",
+  "key.exposure.camera_controls": "Open Camera Controls (Not bound = Sneak)",
 
   "command.exposure.shader.removed": "Shader removed",
   "command.exposure.load_from_file.success": "Exposure '%s' has been loaded.",
