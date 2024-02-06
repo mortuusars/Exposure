@@ -474,7 +474,7 @@ public class CameraItem extends Item {
         tag.putInt(FrameData.LIGHT_LEVEL, lightLevel);
         tag.putFloat(FrameData.SUN_ANGLE, level.getSunAngle(0));
 
-        List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12);
+        List<Entity> entitiesInFrame = EntitiesInFrame.get(player, ViewfinderClient.getCurrentFov(), 12, isInSelfieMode(cameraStack));
         if (!entitiesInFrame.isEmpty()) {
             ListTag entities = new ListTag();
 
@@ -498,19 +498,22 @@ public class CameraItem extends Item {
     }
 
     @SuppressWarnings("unused")
-    protected CompoundTag createEntityInFrameInfo(Entity entity, Player player, ItemStack cameraStack, Capture capture) {
+    protected CompoundTag createEntityInFrameInfo(Entity entity, Player photographer, ItemStack cameraStack, Capture capture) {
         CompoundTag tag = new CompoundTag();
         ResourceLocation entityRL = Registry.ENTITY_TYPE.getKey(entity.getType());
 
-        tag.putString("Id", entityRL.toString());
+        tag.putString(FrameData.ENTITY_ID, entityRL.toString());
 
         ListTag pos = new ListTag();
         pos.add(IntTag.valueOf((int) entity.getX()));
         pos.add(IntTag.valueOf((int) entity.getY()));
         pos.add(IntTag.valueOf((int) entity.getZ()));
-        tag.put("Pos", pos);
+        tag.put(FrameData.ENTITY_POSITION, pos);
 
-        tag.putFloat("Distance", player.distanceTo(entity));
+        tag.putFloat(FrameData.ENTITY_DISTANCE, photographer.distanceTo(entity));
+
+        if (entity instanceof Player player)
+            tag.putString(FrameData.ENTITY_PLAYER_NAME, player.getScoreboardName());
 
         return tag;
     }
