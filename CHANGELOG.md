@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+- [Fabric] Fixed crash when signing album
+
+
 ## 1.3.0 - 2024-02-04
 - Added Photo Album 
   - Can store up to 16 photographs and some notes

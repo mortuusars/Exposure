@@ -51,7 +51,6 @@ public record AlbumSignC2SP(String title) implements IPacket<AlbumSignC2SP> {
         player.setItemInHand(hand, signedAlbum);
 
         player.level().playSound(null, player, SoundEvents.VILLAGER_WORK_CARTOGRAPHER, SoundSource.PLAYERS, 0.8f ,1f);
-        player.closeContainer();
 
         return true;
     }
