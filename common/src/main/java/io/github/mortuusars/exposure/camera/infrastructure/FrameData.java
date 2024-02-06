@@ -28,6 +28,7 @@ public class FrameData {
     public static final String ENTITY_ID = "Id";
     public static final String ENTITY_POSITION = "Pos";
     public static final String ENTITY_DISTANCE = "Distance";
+    public static final String ENTITY_PLAYER_NAME = "Name";
 
     /**
      * If both are defined - 'Id' takes priority.

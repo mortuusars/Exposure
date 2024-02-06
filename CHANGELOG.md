@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Entities in frame (in photograph NBT) will now work correctly for selfies 
 - Black and white photograph copying recipe now correctly uses only black dye instead of all four colors 
 - [Fabric] Proper message will now show when `Fabric API` or `ForgeConfigApiPort` is not installed 
 - [Fabric] Fixed crash when signing album
