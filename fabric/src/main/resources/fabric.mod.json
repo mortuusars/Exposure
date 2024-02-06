@@ -30,8 +30,9 @@
     "exposure-common.mixins.json"
   ],
   "depends": {
-    "fabric": "*",
     "minecraft": "=1.19.2",
-    "forgeconfigapiport" : "*"
+    "fabric-api": ">=0.76.0",
+    "fabric": "*",
+    "forgeconfigapiport" : ">=4.2.11"
   }
 }

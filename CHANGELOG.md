@@ -1,8 +1,8 @@
 # Changelog
 
 ## Unreleased
+- [Fabric] Proper message will now show when `Fabric API` or `ForgeConfigApiPort` is not installed 
 - [Fabric] Fixed crash when signing album
-
 
 ## 1.3.0 - 2024-02-04
 - Added Photo Album 
