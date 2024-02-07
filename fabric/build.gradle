@@ -1,0 +1,120 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentFabric.extendsFrom common
+}
+
+repositories {
+    maven { url = "https://api.modrinth.com/maven" } // LazyDFU
+    maven { url = "https://maven.terraformersmc.com/releases/" } // Mod Menu
+    maven { url = "https://mvn.devos.one/snapshots/" } // Create Fabric, Porting Lib, Forge Tags, Milk Lib, Registrate Fabric
+    maven { url = "https://cursemaven.com" } // Forge Config API Port
+    maven { url = "https://maven.cafeteria.dev/releases" } // Fake Player API
+    maven { url = "https://maven.jamieswhiteshirt.com/libs-release" } // Reach Entity Attributes
+    maven { url = "https://jitpack.io/" } // Mixin Extras, Fabric ASM
+    maven {
+        name = "Fuzs Mod Resources"
+        url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+    } // Forge Config API Port
+}
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${fabric_loader_version}"
+    modApi "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    // Exposure does not depend on the Architectury API:
+    // modApi "dev.architectury:architectury-fabric:${rootProject.architectury_version}"
+
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
+
+    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_version}"
+
+    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}")
+    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
+//    modRuntimeOnly "me.shedaniel:RoughlyEnoughItems-fabric:${rei_version}"
+
+    // Create - dependencies are added transitively
+    modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
+    modRuntimeOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
+
+    // C2ME
+//    modImplementation("maven.modrinth:VSNURh3q:0.2.0+alpha.11.0+1.20.1")
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
+}
+
+processResources {
+    // input variables of this task:
+    var replaceProperties = [
+            minecraft_version    : minecraft_version,
+
+            mod_id               : mod_id,
+            mod_name             : mod_name,
+            mod_version          : mod_version,
+            mod_license          : mod_license,
+            mod_authors          : mod_authors,
+            mod_description      : mod_description,
+            mod_homepage         : mod_homepage,
+            mod_github           : mod_github,
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching("fabric.mod.json") {
+        expand replaceProperties + [project: project]
+    }
+}
+
+shadowJar {
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = "dev-shadow"
+}
+
+remapJar {
+    archiveClassifier = "fabric"
+    injectAccessWidener = true
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.mod_id + "-" + project.name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}

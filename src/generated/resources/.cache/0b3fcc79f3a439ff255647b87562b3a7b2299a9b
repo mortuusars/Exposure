@@ -1,8 +1,0 @@
-// 1.20.1	2023-11-22T02:40:58.6694196	Tags for minecraft:item mod id exposure
-b34a95093e68ad8ae22973cc4cb75d2f42382353 data/exposure/tags/items/black_printing_dyes.json
-839982abe5174cd192271bde3808534a639fe663 data/exposure/tags/items/cyan_printing_dyes.json
-17ef511b46fe654a2876d0dc0dae3004977a54ae data/exposure/tags/items/developed_film_rolls.json
-14921754ba97574b50e6078f0eba35e0613db686 data/exposure/tags/items/film_rolls.json
-8d54f3ba93df17e59d474054109db5ae663aef00 data/exposure/tags/items/magenta_printing_dyes.json
-886e5e1db1abef8583882d996f8600275f839c37 data/exposure/tags/items/photo_papers.json
-74fde378ff5c1c5f90953470f9231cfe49fea4cc data/exposure/tags/items/yellow_printing_dyes.json

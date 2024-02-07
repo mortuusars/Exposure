@@ -1,0 +1,23 @@
+{
+  "targets": [
+    "swap"
+  ],
+  "passes": [
+    {
+      "name": "exposure_processor",
+      "intarget": "minecraft:main",
+      "outtarget": "swap",
+      "uniforms": [
+        { "name": "Mul", "values": [ 1.0, 0.55, 1.1 ] },
+        { "name": "Add", "values": [ 0.08, 0.04, 0.1 ] },
+        { "name": "Contrast", "values": [ 1.15 ] },
+        { "name": "Saturation", "values": [ 0.85 ] }
+      ]
+    },
+    {
+      "name": "blit",
+      "intarget": "swap",
+      "outtarget": "minecraft:main"
+    }
+  ]
+}

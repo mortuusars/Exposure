@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "package": "io.github.mortuusars.exposure.forge.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "ToggleKeyMappingForgeMixin",
+    "create.CreateJEICompatMixin"
+  ],
+  "mixins": [
+    "AlbumItemForgeMixin",
+    "CameraItemForgeMixin",
+    "LightroomBlockEntityForgeMixin",
+    "create.SpoutDevelopingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "required": true,
+  "package": "io.github.mortuusars.exposure.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "DrawViewfinderOverlayMixin",
+    "ExposureLightTextureMixin",
+    "GuiMixin",
+    "ItemInHandRendererMixin",
+    "ItemRendererMixin",
+    "KeyboardHandlerMixin",
+    "KeyMappingMixin",
+    "LocalPlayerTickMixin",
+    "MinecraftMixin",
+    "MultiPlayerGameModeMixin",
+    "SelfieCameraMixin",
+    "ViewfinderSensitivityMixin"
+  ],
+  "mixins": [
+    "BookPageCountMixin",
+    "LecternBlockEntityAccessor",
+    "LecternMixin",
+    "PlayerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

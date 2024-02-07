@@ -1,0 +1,21 @@
+{
+  "type": "exposure:photograph_copying",
+  "photograph": {
+    "fabric:type": "fabric:nbt",
+    "base": {
+      "item": "exposure:photograph"
+    },
+    "nbt": "{FilmType:\"black_and_white\"}"
+  },
+  "ingredients": [
+    {
+      "tag": "exposure:photo_papers"
+    },
+    {
+      "tag": "exposure:black_printing_dyes"
+    }
+  ],
+  "result": {
+    "item": "exposure:photograph"
+  }
+}

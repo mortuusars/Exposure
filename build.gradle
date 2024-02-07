@@ -1,222 +1,96 @@
-buildscript {
-    repositories {
-        // These repositories are only for Gradle plugins, put any other repositories in the repository block further below
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://maven.parchmentmc.org' }
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
-        classpath 'org.parchmentmc:librarian:1.+'
-        classpath 'org.spongepowered:mixingradle:0.7.+'
-    }
-}
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 plugins {
-    id 'eclipse'
-    id 'maven-publish'
+    id "architectury-plugin" version "3.4-SNAPSHOT"
+    id "dev.architectury.loom" version "1.4-SNAPSHOT" apply false
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'org.spongepowered.mixin'
 
-group = 'io.github.mortuusars'
-version = "${modversion}"
-archivesBaseName = "exposure-${mcversion}"
+architectury {
+    minecraft = rootProject.minecraft_version
+}
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+subprojects {
+    apply plugin: "dev.architectury.loom"
 
-minecraft {
-    mappings channel: 'parchment', version: "${parchmentversion}"
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    // Default run configurations.
-    // These can be tweaked, removed, or duplicated as needed.
-    runs {
-        client {
-            workingDirectory project.file('run')
-
-            // Recommended logging data for a userdev environment
-            // The markers can be added/remove as needed separated by commas.
-            // "SCAN": For mods scan.
-            // "REGISTRIES": For firing of registry events.
-            // "REGISTRYDUMP": For getting the contents of all registries.
-            property 'forge.logging.markers', 'REGISTRIES'
-
-
-            // Recommended logging level for the console
-            // You can set various levels here.
-            // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
-            property 'forge.logging.console.level', 'debug'
-
-                        // Comma-separated list of namespaces to load gametests from. Empty = all namespaces.
-            property 'forge.enabledGameTestNamespaces', 'exposure'
-
-            jvmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:+IgnoreUnrecognizedVMOptions'
-
-            mods {
-                exposure {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client2 {
-            parent runs.client
-            args '--username', 'AnotherDev'
-        }
-
-        server {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'exposure'
-            
-            mods {
-                exposure {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        // This run config launches GameTestServer and runs all registered gametests, then exits.
-        // By default, the server will crash when no gametests are provided.
-        // The gametest system is also enabled by default for other run configs under the /test command.
-        gameTestServer {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'exposure'
-
-            mods {
-                exposure {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-
-            property 'forge.logging.console.level', 'debug'
-
-            // Specify the modid for data generation, where to output the resulting resource, and where to look for existing resources.
-            args '--mod', 'exposure', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-
-            mods {
-                exposure {
-                    source sourceSets.main
-                }
+    loom {
+        silentMojangMappingsLicense()
+        runs {
+            client {
+                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar'
             }
         }
     }
-}
 
-mixin {
-    add sourceSets.main, "exposure.refmap.json"
+    dependencies {
+        minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
 
-    config "exposure.mixins.json"
-}
-
-// All jar files from this folder will be added automatically as runtime mod dependencies
-String extraModsDir = "extra-mods-${mcversion}"
-
-// Include resources generated by data generators.
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-repositories {
-    flatDir {
-        name "extra-mods"
-        dir file(extraModsDir)
-    }
-    maven {
-        // location of the maven that hosts JEI files before January 2023
-        name = "Progwml6's maven"
-        url = "https://dvs1.progwml6.com/files/maven/"
-    }
-    maven {
-        // location of the maven that hosts JEI files since January 2023
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        // location of a maven mirror for JEI files, as a fallback
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-    maven {
-        url 'https://www.cursemaven.com'
-        content {
-            includeGroup "curse.maven"
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
         }
+
+        // compile against the JEI API but do not include it at runtime
+        modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
     }
 }
 
-dependencies {
-    minecraft "net.minecraftforge:forge:${mcversion}-${forgeversion}"
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
 
-    // compile against the JEI API but do not include it at runtime
-    compileOnly(fg.deobf("mezz.jei:jei-${mcversion}-common-api:${jeiversion}"))
-    compileOnly(fg.deobf("mezz.jei:jei-${mcversion}-forge-api:${jeiversion}"))
-    // at runtime, use the full JEI jar for Forge
-    runtimeOnly(fg.deobf("mezz.jei:jei-${mcversion}-forge:${jeiversion}"))
-
-    // Locally sourced extra mods for runtime (i.e. testing) - thanks AE2 for this idea
-    for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
-        def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
-        def versionSep = basename.lastIndexOf('-')
-        assert versionSep != -1
-        def artifactId = basename.substring(0, versionSep)
-        def version = basename.substring(versionSep + 1)
-        runtimeOnly fg.deobf("extra-mods:$artifactId:$version")
+    base {
+        archivesName = "${mod_id}-${minecraft_version}"
     }
 
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-}
+    version = rootProject.mod_version
+    group = rootProject.mod_group_id
 
-// Example for how to get properties into the manifest for reading at runtime.
-jar {
-    manifest {
-        attributes([
-                "Specification-Title": "exposure",
-                "Specification-Vendor": "mortuusars",
-                "Specification-Version": "1", // We are version 1 of ourselves
-                "Implementation-Title": project.name,
-                "Implementation-Version": project.jar.archiveVersion,
-                "Implementation-Vendor": "mortuusars",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
-        ])
-    }
-}
-
-// Example configuration to allow publishing using the maven-publish plugin
-// This is the preferred method to reobfuscate your jar file
-jar.finalizedBy('reobfJar')
-// However if you are in a multi-project build, dev time needs unobfed jar files, so you can delay the obfuscation until publishing by doing
-// publish.dependsOn('reobfJar')
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact jar
-        }
-    }
     repositories {
+        // Add repositories to retrieve artifacts from in here.
+        // You should only use this when depending on other mods because
+        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+        // for more information about repositories.
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
         }
+        maven {
+            // location of the maven that hosts JEI files before January 2023
+            name = "Progwml6's maven"
+            url = "https://dvs1.progwml6.com/files/maven/"
+        }
+        maven {
+            name = 'tterrag maven'
+            url = 'https://maven.tterrag.com/'
+        }
+        maven {
+            // location of the maven that hosts JEI files since January 2023
+            name = "Jared's maven"
+            url = "https://maven.blamejared.com/"
+        }
+        maven {
+            // location of a maven mirror for JEI files, as a fallback
+            name = "ModMaven"
+            url = "https://modmaven.dev"
+        }
+        maven {
+            url = "https://cursemaven.com"
+        }
+        maven {
+            url "https://maven.shedaniel.me"
+        } // REI
     }
-}
 
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
+    dependencies {
+
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+        options.release = 17
+    }
+
+    java {
+        withSourcesJar()
+    }
 }

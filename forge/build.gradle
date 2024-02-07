@@ -1,0 +1,140 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "7.1.2"
+}
+
+architectury {
+    platformSetupLoomIde()
+    forge()
+}
+
+loom {
+    accessWidenerPath = project(":common").loom.accessWidenerPath
+
+    forge {
+        convertAccessWideners = true
+        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+
+        mixinConfig "exposure-common.mixins.json"
+        mixinConfig "exposure.mixins.json"
+    }
+
+    runs {
+        create("client2") {
+            inherit(getByName("client"))
+
+            name("Second Client")
+            programArgs("--username", "AnotherDev")
+
+            client()
+        }
+    }
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin since it *excludes* files.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+    developmentForge.extendsFrom common
+}
+
+repositories {
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+    maven {
+        // Location of the maven for mixed mappings, Registrate, and Flywheel
+        name 'tterrag maven'
+        url 'https://maven.tterrag.com'
+    }
+    maven {
+        url 'https://www.cursemaven.com'
+        content {
+            includeGroup "curse.maven"
+        }
+    }
+}
+
+dependencies {
+    forge "net.minecraftforge:forge:${forge_version}"
+    // Exposure does not depend on Architectury API:
+    // modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
+
+    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
+    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-forge:${jei_version}") { transitive = false }
+
+    modCompileOnly("com.simibubi.create:create-${create_forge_version}") { transitive = false }
+    modCompileOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
+    modCompileOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
+
+//    modRuntimeOnly("com.simibubi.create:create-${create_forge_version}") { transitive = false }
+//    modRuntimeOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
+//    modRuntimeOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
+
+    common(project(path: ":common", configuration: "namedElements")) { transitive false }
+    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+}
+
+processResources {
+    // input variables of this task:
+    var replaceProperties = [
+            minecraft_version    : minecraft_version,
+
+            mod_id               : mod_id,
+            mod_name             : mod_name,
+            mod_version          : mod_version,
+            mod_license          : mod_license,
+            mod_authors          : mod_authors,
+            mod_description      : mod_description,
+            mod_homepage         : mod_homepage,
+            mod_github           : mod_github,
+    ]
+    // setting them as input
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta', 'update.json']) {
+        expand replaceProperties + [project: project]
+    }
+}
+
+shadowJar {
+    exclude "fabric.mod.json"
+    exclude "architectury.common.json"
+
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = "dev-shadow"
+}
+
+remapJar {
+    archiveClassifier = "forge"
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenForge(MavenPublication) {
+            artifactId = rootProject.mod_id + "-" + project.name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}

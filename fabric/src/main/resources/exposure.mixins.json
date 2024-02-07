@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "package": "io.github.mortuusars.exposure.fabric.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "GameRendererFabricMixin",
+    "HumanoidModelMixin",
+    "ItemFrameRendererFabricMixin",
+    "MouseHandlerFabricMixin",
+    "create.CreateJEICompatMixin"
+  ],
+  "mixins": [
+    "AlbumItemFabricMixin",
+    "create.RecipeTypesMixin",
+    "create.SpoutDevelopingMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

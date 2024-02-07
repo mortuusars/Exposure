@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[47,)"
+issueTrackerURL = "${mod_github}/issues"
+license = "${mod_license}"
+
+[[mods]]
+modId = "exposure"
+version = "${mod_version}"
+displayName = "${mod_name}"
+authors = "${mod_authors}"
+description = '''
+${mod_description}
+'''
+logoFile = "assets/exposure/icon.png"
+
+[[dependencies.exposure]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.exposure]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.20.2)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.exposure]]
+modId="jei"
+mandatory=false
+versionRange="[15.0.0.0,)"
+ordering="NONE"
+side="CLIENT"

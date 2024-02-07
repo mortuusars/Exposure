@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "exposure",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contact": {
+    "homepage": "${mod_homepage}",
+    "sources": "${mod_github}"
+  },
+  "license": "${mod_license}",
+  "icon": "assets/exposure/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabric"
+    ],
+    "client": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "io.github.mortuusars.exposure.integration.jei.ExposureJeiPlugin"
+    ]
+  },
+  "mixins": [
+    "exposure.mixins.json",
+    "exposure-common.mixins.json"
+  ],
+  "depends": {
+    "fabric": "*",
+    "minecraft": "=1.20.1"
+  }
+}
