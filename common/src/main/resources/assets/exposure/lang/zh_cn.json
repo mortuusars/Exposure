@@ -8,6 +8,9 @@
   "item.exposure.camera.camera_attachments.fail.shutter_open": "快门打开时无法拆卸相机",
   "item.exposure.black_and_white_film": "黑白胶卷",
   "item.exposure.color_film": "彩色胶卷",
+  "item.exposure.album": "相册",
+  "item.exposure.signed_album": "已署名的相册",
+  "item.exposure.album.tooltip.photos_count": "§7照片数：%s",
 
   "item.exposure.developed_black_and_white_film": "已冲洗的黑白胶卷",
   "item.exposure.developed_color_film": "已冲洗的彩色胶卷",
@@ -30,6 +33,9 @@
 
   "entity.exposure.photograph": "照片",
 
+  "gui.exposure.previous_page": "前一页",
+  "gui.exposure.next_page": "下一页",
+
   "gui.exposure.composition_guide.none": "无",
   "gui.exposure.composition_guide.crosshair": "十字准星",
   "gui.exposure.composition_guide.quads": "十字线",
@@ -47,11 +53,27 @@
   "gui.exposure.viewfinder.focal_length.tooltip": "焦距",
   "gui.exposure.viewfinder.shutter_speed.tooltip": "快门速度",
 
+  "gui.exposure.album.note": "注释",
+  "gui.exposure.album.add_photograph": "添加照片",
+  "gui.exposure.album.left_click_to_add": "§8[§7左键点击§8]以添加",
+  "gui.exposure.album.left_click_or_scroll_up_to_view": "§8[§7左键点击§8]或§8[§7滚轮向上§8]以查看",
+  "gui.exposure.album.right_click_to_remove": "§8[§7右键点击§8]以移除",
+  "gui.exposure.album.left_click_to_edit": "§8[§7左键点击§8]以编辑",
+  "gui.exposure.album.right_click_to_clear": "§8[§7右键点击§8]以清除",
+  "gui.exposure.album.enter_title": "输入相册名：",
+  "gui.exposure.album.by_author": "%1$s 作",
+  "gui.exposure.album.sign": "署名",
+  "gui.exposure.album.sign.warning": "注意！在你署名后，它将不能再被修改。",
+  "gui.exposure.album.cancel_signing": "取消",
+
   "gui.exposure.lightroom.previous_frame": "前一张",
   "gui.exposure.lightroom.current_frame": "当前：%s",
   "gui.exposure.lightroom.zoom_in.tooltip": "左键单击或滚轮向上以放大",
   "gui.exposure.lightroom.next_frame": "下一张",
   "gui.exposure.lightroom.print": "打印",
+
+  "category.exposure": "Exposure",
+  "key.exposure.camera_controls": "打开相机控制模式（未指定=潜行）",
 
   "command.exposure.shader.removed": "已移除着色器",
   "command.exposure.load_from_file.success": "已加载底片“%s”",
@@ -97,4 +119,5 @@
   "stat.exposure.interact_with_lightroom": "与暗房互动次数",
   "stat.exposure.film_frames_exposed": "胶片曝光次数",
   "stat.exposure.flashes_triggered": "闪光灯触发次数"
+}
 }
