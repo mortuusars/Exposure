@@ -111,6 +111,8 @@
   "advancement.exposure.get_photograph.description": "Отримайте фотографію",
   "advancement.exposure.exposure.title": "Експозиція",
   "advancement.exposure.exposure.description": "Проекспонуйте кадр плівки",
+  "advancement.exposure.take_selfie.title": "Я не лише зірка, але й центр галактики!",
+  "advancement.exposure.take_selfie.description": "Зробіть селфі використовуючи вид від третьої особи",
   "advancement.exposure.void.title": "Неземна поверхня у цій порожнечі!",
   "advancement.exposure.void.description": "Зробіть фотографію в Енді",
   "advancement.exposure.flash.title": "Засвітись!",

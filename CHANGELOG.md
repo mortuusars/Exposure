@@ -1,9 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.3.1 - 2024-02-09
+- Added advancement for taking a selfie
+- Slightly changed order of advancements
 - Entities in frame (in photograph NBT) will now work correctly for selfies 
-- Black and white photograph copying recipe now correctly uses only black dye instead of all four colors 
-- [Fabric] Proper message will now show when `Fabric API` or `ForgeConfigApiPort` is not installed 
+- Black and white photograph copying recipe now correctly uses only black dye instead of all four colors
+- Changed Film Frame Exposed advancement trigger from `minecraft:frame_exposed` to `exposure:frame_exposed`
+- [Fabric] Proper message will now show when `Fabric API` or `Forge Config Api Port` is not installed 
 - [Fabric] Fixed crash when signing album
 
 ## 1.3.0 - 2024-02-04
