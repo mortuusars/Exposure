@@ -7,7 +7,7 @@
           "dimension": "minecraft:the_end"
         }
       },
-      "trigger": "minecraft:frame_exposed"
+      "trigger": "exposure:frame_exposed"
     }
   },
   "display": {

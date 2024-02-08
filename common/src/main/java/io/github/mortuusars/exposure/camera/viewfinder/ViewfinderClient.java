@@ -73,7 +73,7 @@ public class ViewfinderClient {
                 previousShaderEffect = effect.getName();
 
             String itemName = Registry.ITEM.getKey(stack.getItem()).getPath();
-            Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation("exposure", "shaders/post/" + itemName + ".json"));
+            Minecraft.getInstance().gameRenderer.loadEffect(Exposure.resource("shaders/post/" + itemName + ".json"));
         });
 
         SelfieClient.update(camera, activeHand, false);

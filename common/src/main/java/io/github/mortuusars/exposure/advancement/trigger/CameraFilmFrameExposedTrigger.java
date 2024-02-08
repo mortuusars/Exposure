@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.advancement.trigger;
 
 import com.google.gson.JsonObject;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.advancement.predicate.ExposurePredicate;
 import io.github.mortuusars.exposure.item.CameraItem;
 import io.github.mortuusars.exposure.util.ItemAndStack;
@@ -11,7 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
 public class CameraFilmFrameExposedTrigger extends SimpleCriterionTrigger<CameraFilmFrameExposedTrigger.TriggerInstance> {
-    public static final ResourceLocation ID = new ResourceLocation("frame_exposed");
+    public static final ResourceLocation ID = Exposure.resource("frame_exposed");
 
     public @NotNull ResourceLocation getId() {
         return ID;

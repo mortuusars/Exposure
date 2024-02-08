@@ -435,11 +435,13 @@ public class CameraItem extends Item {
         CompoundTag tag = new CompoundTag();
 
         tag.putString(FrameData.ID, exposureId);
-        if (flash)
-            tag.putBoolean(FrameData.FLASH, true);
         tag.putString(FrameData.TIMESTAMP, Util.getFilenameFormattedDateTime());
         tag.putString(FrameData.PHOTOGRAPHER, player.getScoreboardName());
         tag.putUUID(FrameData.PHOTOGRAPHER_ID, player.getUUID());
+        if (flash)
+            tag.putBoolean(FrameData.FLASH, true);
+        if (isInSelfieMode(cameraStack))
+            tag.putBoolean(FrameData.SELFIE, true);
 
         ListTag pos = new ListTag();
         pos.add(IntTag.valueOf(player.blockPosition().getX()));

@@ -111,6 +111,8 @@
   "advancement.exposure.get_photograph.description": "Get a Photograph",
   "advancement.exposure.exposure.title": "Exposure",
   "advancement.exposure.exposure.description": "Use Camera to expose a Film frame",
+  "advancement.exposure.take_selfie.title": "Was that a spotlight? On me?",
+  "advancement.exposure.take_selfie.description": "Take a selfie using third-person view",
   "advancement.exposure.void.title": "It's a Brilliant Surface in That Void!",
   "advancement.exposure.void.description": "Take a Photograph in the End",
   "advancement.exposure.flash.title": "Lights Up!",

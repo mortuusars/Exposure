@@ -3,7 +3,7 @@
   "criteria": {
     "expose_film": {
       "conditions": {},
-      "trigger": "minecraft:frame_exposed"
+      "trigger": "exposure:frame_exposed"
     }
   },
   "display": {
@@ -14,7 +14,8 @@
     "frame": "task",
     "hidden": false,
     "icon": {
-      "item": "exposure:camera"
+      "item": "exposure:camera",
+      "nbt": "{Active:1b}"
     },
     "show_toast": true,
     "title": {

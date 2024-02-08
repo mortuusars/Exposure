@@ -15,6 +15,7 @@ public class FrameData {
     public static final String PHOTOGRAPHER = "Photographer";
     public static final String PHOTOGRAPHER_ID = "PhotographerId";
     public static final String FLASH = "Flash";
+    public static final String SELFIE = "Selfie";
     public static final String POSITION = "Pos";
     public static final String DIMENSION = "Dimension";
     public static final String BIOME = "Biome";

@@ -1,13 +1,10 @@
 {
-  "parent": "exposure:adventure/take_selfie",
+  "parent": "exposure:adventure/expose_film",
   "criteria": {
-    "flash_in_darkness": {
+    "take_selfie": {
       "conditions": {
         "exposure": {
-          "light_level": {
-            "max": 4
-          },
-          "nbt": "{Flash:1b}"
+          "nbt": "{Selfie:1b}"
         }
       },
       "trigger": "exposure:frame_exposed"
@@ -16,21 +13,21 @@
   "display": {
     "announce_to_chat": true,
     "description": {
-      "translate": "advancement.exposure.flash.description"
+      "translate": "advancement.exposure.take_selfie.description"
     },
     "frame": "task",
     "hidden": false,
     "icon": {
-      "item": "minecraft:redstone_lamp"
+      "item": "minecraft:player_head"
     },
     "show_toast": true,
     "title": {
-      "translate": "advancement.exposure.flash.title"
+      "translate": "advancement.exposure.take_selfie.title"
     }
   },
   "requirements": [
     [
-      "flash_in_darkness"
+      "take_selfie"
     ]
   ],
   "sends_telemetry_event": true
