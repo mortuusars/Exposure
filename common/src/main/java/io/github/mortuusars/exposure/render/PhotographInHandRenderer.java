@@ -3,9 +3,11 @@ package io.github.mortuusars.exposure.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
+import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.item.StackedPhotographsItem;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -29,9 +31,17 @@ public class PhotographInHandRenderer {
         else throw new IllegalArgumentException(stack + " cannot be rendered as a Photograph.");
 
         if (idOrTexture != null) {
-            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, poseStack, bufferSource,
-                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
-                    combinedLight, 255, 255, 255, 255, false);
+            if (stack.is(Exposure.Items.AGED_PHOTOGRAPH.get())) {
+                ExposureClient.getExposureRenderer().renderAgedOnPaper(idOrTexture, ExposurePixelModifiers.SEPIA,
+                        poseStack, bufferSource,
+                        0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                        combinedLight, 255, 255, 255, 255, false);
+            }
+            else {
+                ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
+                        0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                        combinedLight, 255, 255, 255, 255, false);
+            }
         }
         else {
             ExposureClient.getExposureRenderer().renderPaperTexture(poseStack, bufferSource,

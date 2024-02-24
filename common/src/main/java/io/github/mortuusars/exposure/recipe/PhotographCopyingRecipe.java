@@ -54,7 +54,6 @@ public class PhotographCopyingRecipe extends AbstractNbtTransferringRecipe {
                 ItemStack itemstack1 = itemstack.copy();
                 itemstack1.setCount(1);
                 nonnulllist.set(i, itemstack1);
-                break;
             }
         }
 

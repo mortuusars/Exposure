@@ -4,74 +4,54 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
-
-public class FilmDevelopingRecipe extends AbstractNbtTransferringRecipe {
-    public FilmDevelopingRecipe(ResourceLocation id, Ingredient filmIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
-        super(id, filmIngredient, ingredients, result);
+public class PhotographAgingRecipe extends AbstractNbtTransferringRecipe{
+    public PhotographAgingRecipe(ResourceLocation id, Ingredient transferIngredient,
+                                 NonNullList<Ingredient> ingredients, ItemStack result) {
+        super(id, transferIngredient, ingredients, result);
     }
 
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
-        return Exposure.RecipeSerializers.FILM_DEVELOPING.get();
+        return Exposure.RecipeSerializers.PHOTOGRAPH_AGING.get();
     }
 
-    @Override
-    public @NotNull NonNullList<ItemStack> getRemainingItems(@NotNull CraftingContainer container) {
-        NonNullList<ItemStack> remainingItems = super.getRemainingItems(container);
-
-        for (int i = 0; i < container.getContainerSize(); ++i) {
-            ItemStack item = container.getItem(i);
-            if (item.getItem() instanceof PotionItem) {
-                remainingItems.set(i, new ItemStack(Items.GLASS_BOTTLE));
-            }
-            else if (item.getItem().hasCraftingRemainingItem()) {
-                remainingItems.set(i, new ItemStack(Objects.requireNonNull(item.getItem().getCraftingRemainingItem())));
-            }
-        }
-
-        return remainingItems;
-    }
-
-    public static class Serializer implements RecipeSerializer<FilmDevelopingRecipe> {
+    public static class Serializer implements RecipeSerializer<PhotographAgingRecipe> {
         @Override
-        public @NotNull FilmDevelopingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            Ingredient filmIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "film"));
+        public @NotNull PhotographAgingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
+            Ingredient photographIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "photograph"));
             NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
 
-            if (filmIngredient.isEmpty())
-                throw new JsonParseException("Recipe should have 'film' ingredient.");
+            if (photographIngredient.isEmpty())
+                throw new JsonParseException("Recipe should have 'photograph' ingredient.");
 
-            return new FilmDevelopingRecipe(recipeId, filmIngredient, ingredients, result);
+            return new PhotographAgingRecipe(recipeId, photographIngredient, ingredients, result);
         }
 
         @Override
-        public @NotNull FilmDevelopingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
+        public @NotNull PhotographAgingRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer) {
             Ingredient transferredIngredient = Ingredient.fromNetwork(buffer);
             int ingredientsCount = buffer.readVarInt();
             NonNullList<Ingredient> ingredients = NonNullList.withSize(ingredientsCount, Ingredient.EMPTY);
             ingredients.replaceAll(ignored -> Ingredient.fromNetwork(buffer));
             ItemStack result = buffer.readItem();
 
-            return new FilmDevelopingRecipe(recipeId, transferredIngredient, ingredients, result);
+            return new PhotographAgingRecipe(recipeId, transferredIngredient, ingredients, result);
         }
 
         @Override
-        public void toNetwork(FriendlyByteBuf buffer, FilmDevelopingRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buffer, PhotographAgingRecipe recipe) {
             recipe.getTransferIngredient().toNetwork(buffer);
             buffer.writeVarInt(recipe.getIngredients().size());
             for (Ingredient ingredient : recipe.getIngredients()) {

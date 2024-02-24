@@ -13,6 +13,7 @@ import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
 import io.github.mortuusars.exposure.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.render.ExposureRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.Minecraft;
@@ -44,7 +45,7 @@ public class PhotographScreen extends ZoomableScreen {
 
     public PhotographScreen(List<ItemAndStack<PhotographItem>> photographs) {
         super(Component.empty());
-        Preconditions.checkState(photographs.size() > 0, "No photographs to display.");
+        Preconditions.checkState(!photographs.isEmpty(), "No photographs to display.");
         this.photographs = photographs;
 
         // Query all photographs:
@@ -127,7 +128,7 @@ public class PhotographScreen extends ZoomableScreen {
         @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()
                 .getIdOrTexture(photograph.getStack());
         if (idOrTexture != null) {
-            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource,
+            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, ExposurePixelModifiers.EMPTY, guiGraphics.pose(), bufferSource,
                     0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
         } else {

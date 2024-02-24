@@ -55,7 +55,7 @@ public class ExposureImage {
         if (exposureData != null) {
             return MapColor.getColorFromPackedId(exposureData.getPixel(x, y));
         }
-        else if (texture != null){
+        else if (texture != null) {
             @Nullable NativeImage image = texture.getImage();
             return image != null ? image.getPixelRGBA(x, y) : 0x00000000;
         }

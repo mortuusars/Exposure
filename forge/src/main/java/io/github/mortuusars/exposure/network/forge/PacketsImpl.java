@@ -124,17 +124,23 @@ public class PacketsImpl {
                 .decoder(StopOnePerPlayerSoundS2CP::fromBuffer)
                 .consumerMainThread(PacketsImpl::handlePacket)
                 .add();
+
+        CHANNEL.messageBuilder(ClearRenderingCacheS2CP.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(ClearRenderingCacheS2CP::toBuffer)
+                .decoder(ClearRenderingCacheS2CP::fromBuffer)
+                .consumerMainThread(PacketsImpl::handlePacket)
+                .add();
     }
 
-    public static void sendToServer(IPacket<?> packet) {
+    public static void sendToServer(IPacket packet) {
         CHANNEL.sendToServer(packet);
     }
 
-    public static void sendToClient(IPacket<?> packet, ServerPlayer player) {
+    public static void sendToClient(IPacket packet, ServerPlayer player) {
         CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), packet);
     }
 
-    private static <T extends IPacket<T>> void handlePacket(T packet, Supplier<NetworkEvent.Context> contextSupplier) {
+    private static <T extends IPacket> void handlePacket(T packet, Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
         packet.handle(direction(context.getDirection()), context.getSender());
     }

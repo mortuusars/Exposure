@@ -14,6 +14,7 @@ import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.menu.LecternAlbumMenu;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
+import io.github.mortuusars.exposure.recipe.PhotographAgingRecipe;
 import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
@@ -126,6 +127,10 @@ public class Exposure {
                 () -> new PhotographItem(new Item.Properties()
                         .stacksTo(1)));
 
+        public static final Supplier<PhotographItem> AGED_PHOTOGRAPH = Register.item("aged_photograph",
+                () -> new PhotographItem(new Item.Properties()
+                        .stacksTo(1)));
+
         public static final Supplier<StackedPhotographsItem> STACKED_PHOTOGRAPHS = Register.item("stacked_photographs",
                 () -> new StackedPhotographsItem(16, new Item.Properties()
                         .stacksTo(1)));
@@ -167,6 +172,8 @@ public class Exposure {
                 FilmDevelopingRecipe.Serializer::new);
         public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_CLONING = Register.recipeSerializer("photograph_copying",
                 PhotographCopyingRecipe.Serializer::new);
+        public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_AGING = Register.recipeSerializer("photograph_aging",
+                PhotographAgingRecipe.Serializer::new);
 
         static void init() {
         }
@@ -245,6 +252,7 @@ public class Exposure {
             public static final TagKey<Item> YELLOW_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("yellow_printing_dyes"));
             public static final TagKey<Item> BLACK_PRINTING_DYES = TagKey.create(Registries.ITEM, Exposure.resource("black_printing_dyes"));
             public static final TagKey<Item> PHOTO_PAPERS = TagKey.create(Registries.ITEM, Exposure.resource("photo_papers"));
+            public static final TagKey<Item> PHOTO_AGERS = TagKey.create(Registries.ITEM, Exposure.resource("photo_agers"));
             public static final TagKey<Item> FLASHES = TagKey.create(Registries.ITEM, Exposure.resource("flashes"));
             public static final TagKey<Item> LENSES = TagKey.create(Registries.ITEM, Exposure.resource("lenses"));
             public static final TagKey<Item> FILTERS = TagKey.create(Registries.ITEM, Exposure.resource("filters"));

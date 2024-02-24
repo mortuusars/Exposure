@@ -10,16 +10,16 @@ import java.util.function.Predicate;
 
 public class Packets {
     @ExpectPlatform
-    public static void sendToServer(IPacket<?> packet) {
+    public static void sendToServer(IPacket packet) {
         throw new AssertionError();
     }
 
     @ExpectPlatform
-    public static void sendToClient(IPacket<?> packet, ServerPlayer player) {
+    public static void sendToClient(IPacket packet, ServerPlayer player) {
         throw new AssertionError();
     }
 
-    public static void sendToClients(IPacket<?> packet, ServerPlayer origin, Predicate<ServerPlayer> filter) {
+    public static void sendToClients(IPacket packet, ServerPlayer origin, Predicate<ServerPlayer> filter) {
         Preconditions.checkState(origin.getServer() != null, "Server cannot be null");
         for (ServerPlayer player : origin.getServer().getPlayerList().getPlayers()) {
             if (filter.test(player))
@@ -27,11 +27,11 @@ public class Packets {
         }
     }
 
-    public static void sendToOtherClients(IPacket<?> packet, ServerPlayer excludedPlayer) {
+    public static void sendToOtherClients(IPacket packet, ServerPlayer excludedPlayer) {
         sendToClients(packet, excludedPlayer, serverPlayer -> !serverPlayer.equals(excludedPlayer));
     }
 
-    public static void sendToOtherClients(IPacket<?> packet, ServerPlayer excludedPlayer, Predicate<ServerPlayer> filter) {
+    public static void sendToOtherClients(IPacket packet, ServerPlayer excludedPlayer, Predicate<ServerPlayer> filter) {
         sendToClients(packet, excludedPlayer, serverPlayer -> !serverPlayer.equals(excludedPlayer) && filter.test(serverPlayer));
     }
 }

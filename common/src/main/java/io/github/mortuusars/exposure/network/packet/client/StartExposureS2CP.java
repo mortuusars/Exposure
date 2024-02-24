@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public record StartExposureS2CP(@NotNull String exposureId, @NotNull InteractionHand activeHand,
-                                boolean flashHasFired, int lightLevel) implements IPacket<StartExposureS2CP> {
+                                boolean flashHasFired, int lightLevel) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("start_exposure");
 
     @Override

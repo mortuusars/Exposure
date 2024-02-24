@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record LoadExposureCommandS2CP(String id, String path, int size, boolean dither) implements IPacket<LoadExposureCommandS2CP> {
+public record LoadExposureCommandS2CP(String id, String path, int size, boolean dither) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("load_exposure");
 
     @Override

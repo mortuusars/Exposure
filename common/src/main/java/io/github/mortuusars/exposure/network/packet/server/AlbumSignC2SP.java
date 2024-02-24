@@ -14,7 +14,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record AlbumSignC2SP(String title) implements IPacket<AlbumSignC2SP> {
+public record AlbumSignC2SP(String title) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("album_sign");
 
     @Override

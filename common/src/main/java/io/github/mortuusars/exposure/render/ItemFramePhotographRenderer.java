@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
@@ -46,7 +47,7 @@ public class ItemFramePhotographRenderer {
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, 10);
 
-        ExposureClient.getExposureRenderer().renderSimple(idOrTexture, false, false, poseStack, bufferSource,
+        ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
                 0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                 packedLight, 255, 255, 255, 255);
         poseStack.popPose();

@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.render.ExposureRenderer;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -78,7 +79,7 @@ public class PhotographTooltip implements ClientTooltipComponent, TooltipCompone
         }
 
         if (idOrTexture != null) {
-            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, guiGraphics.pose(), bufferSource,
+            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, ExposurePixelModifiers.EMPTY, guiGraphics.pose(), bufferSource,
                     0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                     LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
         }

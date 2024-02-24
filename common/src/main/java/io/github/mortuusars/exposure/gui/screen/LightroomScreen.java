@@ -14,6 +14,7 @@ import io.github.mortuusars.exposure.camera.infrastructure.FilmType;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -114,7 +115,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         }
 
         ListTag frames = getMenu().getExposedFrames();
-        if (frames.size() == 0) {
+        if (frames.isEmpty()) {
             guiGraphics.blit(FILM_OVERLAYS_TEXTURE, leftPos + 4, topPos + 15, 0, 136, 168, 68);
             return;
         }
@@ -204,7 +205,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         if (frame != null) {
             Either<String, ResourceLocation> idOrTexture = FrameData.getIdOrTexture(frame);
             MutableComponent component = idOrTexture.map(
-                            id -> id.length() > 0 ? Component.literal("Id: " + id) : Component.empty(),
+                            id -> !id.isEmpty() ? Component.literal("Id: " + id) : Component.empty(),
                             texture -> Component.literal("Texture: " + texture))
                     .withStyle(ChatFormatting.DARK_GRAY);
             tooltipLines.add(component);
@@ -238,7 +239,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         Either<String, ResourceLocation> idOrTexture = FrameData.getIdOrTexture(frame);
-        ExposureClient.getExposureRenderer().renderSimple(idOrTexture, true, true, poseStack, bufferSource,
+        ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
                 0, 0, size, size, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
                 negative.frameR, negative.frameG, negative.frameB, Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
 

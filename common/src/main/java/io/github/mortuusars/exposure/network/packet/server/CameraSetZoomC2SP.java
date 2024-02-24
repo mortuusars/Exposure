@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record CameraSetZoomC2SP(double focalLength) implements IPacket<CameraSetZoomC2SP> {
+public record CameraSetZoomC2SP(double focalLength) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("camera_set_zoom");
 
     @Override

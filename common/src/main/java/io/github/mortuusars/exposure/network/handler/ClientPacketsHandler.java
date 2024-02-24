@@ -5,6 +5,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
 import io.github.mortuusars.exposure.camera.capture.LastExposures;
@@ -204,5 +205,9 @@ public class ClientPacketsHandler {
 
             return new PhotographScreen(photographs);
         }
+    }
+
+    public static void clearRenderingCache() {
+        ExposureClient.getExposureRenderer().clearData();
     }
 }

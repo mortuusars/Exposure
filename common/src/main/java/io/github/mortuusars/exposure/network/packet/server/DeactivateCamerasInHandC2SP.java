@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record DeactivateCamerasInHandC2SP() implements IPacket<DeactivateCamerasInHandC2SP> {
+public record DeactivateCamerasInHandC2SP() implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("deactivate_cameras_in_hand");
 
     @Override

@@ -1,0 +1,14 @@
+{
+  "type": "exposure:photograph_aging",
+  "photograph": {
+    "item": "exposure:photograph"
+  },
+  "ingredients": [
+    {
+      "tag": "exposure:photo_agers"
+    }
+  ],
+  "result": {
+    "item": "exposure:aged_photograph"
+  }
+}

@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) implements IPacket<CameraInHandAddFrameC2SP> {
+public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("camera_in_hand_add_frame");
 
     @Override
