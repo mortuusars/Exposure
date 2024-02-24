@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public record PlayOnePerPlayerSoundS2CP(UUID sourcePlayerId, SoundEvent soundEvent, SoundSource source,
-                                        float volume, float pitch) implements IPacket<PlayOnePerPlayerSoundS2CP> {
+                                        float volume, float pitch) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("play_one_per_player_sound");
 
     @Override

@@ -8,6 +8,10 @@
     {
       "id": "exposure:photograph_copying",
       "required": false
+    },
+    {
+      "id": "exposure:photograph_aging",
+      "required": false
     }
   ]
 }

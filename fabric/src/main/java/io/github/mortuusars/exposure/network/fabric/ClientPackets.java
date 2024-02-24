@@ -24,16 +24,17 @@ public class ClientPackets {
         ClientPlayNetworking.registerGlobalReceiver(ExposeCommandS2CP.ID, new ClientHandler(ExposeCommandS2CP::fromBuffer));
         ClientPlayNetworking.registerGlobalReceiver(PlayOnePerPlayerSoundS2CP.ID, new ClientHandler(PlayOnePerPlayerSoundS2CP::fromBuffer));
         ClientPlayNetworking.registerGlobalReceiver(StopOnePerPlayerSoundS2CP.ID, new ClientHandler(StopOnePerPlayerSoundS2CP::fromBuffer));
+        ClientPlayNetworking.registerGlobalReceiver(ClearRenderingCacheS2CP.ID, new ClientHandler(ClearRenderingCacheS2CP::fromBuffer));
     }
 
-    public static void sendToServer(IPacket<?> packet) {
+    public static void sendToServer(IPacket packet) {
         ClientPlayNetworking.send(packet.getId(), packet.toBuffer(PacketByteBufs.create()));
     }
 
-    private record ClientHandler(Function<FriendlyByteBuf, IPacket<?>> decodeFunction) implements ClientPlayNetworking.PlayChannelHandler {
+    private record ClientHandler(Function<FriendlyByteBuf, IPacket> decodeFunction) implements ClientPlayNetworking.PlayChannelHandler {
         @Override
         public void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
-            IPacket<?> packet = decodeFunction.apply(buf);
+            IPacket packet = decodeFunction.apply(buf);
             packet.handle(PacketDirection.TO_CLIENT, null);
         }
     }

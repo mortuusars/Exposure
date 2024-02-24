@@ -5,6 +5,7 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -61,11 +62,11 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
 
         if (idOrTexture != null) {
             if (invisible) {
-                ExposureClient.getExposureRenderer().renderSimple(idOrTexture, false, false, poseStack, bufferSource,
+                ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
                         0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                         packedLight, brightness, brightness, brightness, 255);
             } else {
-                ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, poseStack, bufferSource,
+                ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
                         0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
                         packedLight, brightness, brightness, brightness, 255, false);
             }

@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record AlbumSyncNoteC2SP(int pageIndex, String text) implements IPacket<AlbumSyncNoteC2SP> {
+public record AlbumSyncNoteC2SP(int pageIndex, String text) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("album_update_note");
 
     @Override

@@ -132,6 +132,11 @@ public class Exposure {
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
+        public static final Supplier<PhotographItem> AGED_PHOTOGRAPH = Register.item("aged_photograph",
+                () -> new PhotographItem(new Item.Properties()
+                        .stacksTo(1)
+                        .tab(CreativeModeTab.TAB_TOOLS)));
+
         public static final Supplier<StackedPhotographsItem> STACKED_PHOTOGRAPHS = Register.item("stacked_photographs",
                 () -> new StackedPhotographsItem(16, new Item.Properties()
                         .stacksTo(1)
@@ -176,6 +181,8 @@ public class Exposure {
                 FilmDevelopingRecipe.Serializer::new);
         public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_CLONING = Register.recipeSerializer("photograph_copying",
                 PhotographCopyingRecipe.Serializer::new);
+        public static final Supplier<RecipeSerializer<?>> PHOTOGRAPH_AGING = Register.recipeSerializer("photograph_aging",
+                PhotographAgingRecipe.Serializer::new);
 
         static void init() {
         }
@@ -254,6 +261,7 @@ public class Exposure {
             public static final TagKey<Item> YELLOW_PRINTING_DYES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("yellow_printing_dyes"));
             public static final TagKey<Item> BLACK_PRINTING_DYES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("black_printing_dyes"));
             public static final TagKey<Item> PHOTO_PAPERS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("photo_papers"));
+            public static final TagKey<Item> PHOTO_AGERS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("photo_agers"));
             public static final TagKey<Item> FLASHES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("flashes"));
             public static final TagKey<Item> LENSES = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("lenses"));
             public static final TagKey<Item> FILTERS = TagKey.create(Registry.ITEM_REGISTRY, Exposure.resource("filters"));

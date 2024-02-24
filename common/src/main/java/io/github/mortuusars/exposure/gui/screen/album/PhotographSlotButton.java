@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -69,7 +70,7 @@ public class PhotographSlotButton extends ImageButton {
         if (photograph.getItem() instanceof PhotographItem photographItem) {
             @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photograph);
             if (idOrTexture != null) {
-                ExposureClient.getExposureRenderer().renderSimple(idOrTexture, poseStack,
+                ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, guiGraphics.pose(),
                         exposureArea.getX(), exposureArea.getY(), exposureArea.getWidth(), exposureArea.getHeight());
             }
         }

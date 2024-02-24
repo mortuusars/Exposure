@@ -17,6 +17,8 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
+
 public class FilmDevelopingRecipe extends AbstractNbtTransferringRecipe {
     public FilmDevelopingRecipe(ResourceLocation id, Ingredient filmIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
         super(id, filmIngredient, ingredients, result);
@@ -35,6 +37,9 @@ public class FilmDevelopingRecipe extends AbstractNbtTransferringRecipe {
             ItemStack item = container.getItem(i);
             if (item.getItem() instanceof PotionItem) {
                 remainingItems.set(i, new ItemStack(Items.GLASS_BOTTLE));
+            }
+            else if (item.getItem().hasCraftingRemainingItem()) {
+                remainingItems.set(i, new ItemStack(Objects.requireNonNull(item.getItem().getCraftingRemainingItem())));
             }
         }
 

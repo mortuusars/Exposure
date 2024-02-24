@@ -1,10 +1,7 @@
 package io.github.mortuusars.exposure.command;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.mortuusars.exposure.command.exposure.ExportCommand;
-import io.github.mortuusars.exposure.command.exposure.ExposeCommand;
-import io.github.mortuusars.exposure.command.exposure.LoadCommand;
-import io.github.mortuusars.exposure.command.exposure.ShowCommand;
+import io.github.mortuusars.exposure.command.exposure.*;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 
@@ -15,6 +12,7 @@ public class ExposureCommand {
                 .then(LoadCommand.get())
                 .then(ExposeCommand.get())
                 .then(ExportCommand.get())
-                .then(ShowCommand.get()));
+                .then(ShowCommand.get())
+                .then(DebugCommand.get()));
     }
 }

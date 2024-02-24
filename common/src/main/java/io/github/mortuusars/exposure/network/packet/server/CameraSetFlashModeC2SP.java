@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record CameraSetFlashModeC2SP(FlashMode flashMode) implements IPacket<CameraSetFlashModeC2SP> {
+public record CameraSetFlashModeC2SP(FlashMode flashMode) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("camera_set_flash_mode");
 
     @Override
