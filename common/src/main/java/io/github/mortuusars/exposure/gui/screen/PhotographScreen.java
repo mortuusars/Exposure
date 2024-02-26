@@ -5,22 +5,20 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
+import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.gui.screen.element.Pager;
-import io.github.mortuusars.exposure.render.ExposureRenderer;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
+import io.github.mortuusars.exposure.render.PhotographRenderer;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -28,11 +26,11 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PhotographScreen extends ZoomableScreen {
@@ -65,7 +63,7 @@ public class PhotographScreen extends ZoomableScreen {
     @Override
     protected void init() {
         super.init();
-        zoomFactor = (float) height / ExposureRenderer.SIZE;
+        zoomFactor = (float) height / ExposureClient.getExposureRenderer().getSize();
 
         ImageButton previousButton = new ImageButton(0, (int) (height / 2f - 16 / 2f), 16, 16,
                 0, 0, 16, WIDGETS_TEXTURE, 256, 256,
@@ -98,49 +96,31 @@ public class PhotographScreen extends ZoomableScreen {
         guiGraphics.pose().translate(x, y, 0);
         guiGraphics.pose().translate(width / 2f, height / 2f, 0);
         guiGraphics.pose().scale(scale, scale, scale);
-        guiGraphics.pose().translate(ExposureRenderer.SIZE / -2f, ExposureRenderer.SIZE / -2f, 0);
+        guiGraphics.pose().translate(ExposureClient.getExposureRenderer().getSize() / -2f, ExposureClient.getExposureRenderer().getSize() / -2f, 0);
 
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance()
-                .getBuilder());
+        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
-        // Rendering paper bottom to top:
-        for (int i = Math.min(2, photographs.size() - 1); i > 0; i--) {
-            float posOffset = 4 * i;
-            int brightness = Mth.clamp(255 - 50 * i, 0, 255);
-
-            float rotateOffset = ExposureRenderer.SIZE / 2f;
+        if (photographs.size() == 1) {
+            ItemAndStack<PhotographItem> photograph = photographs.get(0);
+            PhotographRenderer.renderPhotograph(photograph.getItem(), photograph.getStack(), true,
+                    false, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+        }
+        else {
 
             guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(posOffset, posOffset, 0);
-
-            guiGraphics.pose().translate(rotateOffset, rotateOffset, 0);
-            guiGraphics.pose().mulPose(Axis.ZP.rotationDegrees(i * 90 + 90));
-            guiGraphics.pose().translate(-rotateOffset, -rotateOffset, 0);
-
-            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(),
-                    bufferSource, 0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
-                    LightTexture.FULL_BRIGHT, brightness, brightness, brightness, 255);
-
+            guiGraphics.pose().translate(0, 0, 15);
+            ArrayList<ItemAndStack<PhotographItem>> photos = new ArrayList<>(photographs);
+            Collections.rotate(photos, -pager.getCurrentPage());
+            PhotographRenderer.renderStackedPhotographs(photos, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
             guiGraphics.pose().popPose();
         }
 
-        ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
-        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()
-                .getIdOrTexture(photograph.getStack());
-        if (idOrTexture != null) {
-            ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, ExposurePixelModifiers.EMPTY, guiGraphics.pose(), bufferSource,
-                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
-                    LightTexture.FULL_BRIGHT, 255, 255, 255, 255, false);
-        } else {
-            ExposureClient.getExposureRenderer().renderPaperTexture(guiGraphics.pose(), bufferSource,
-                    0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
-                    LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-        }
         bufferSource.endBatch();
 
         guiGraphics.pose().popPose();
 
-        trySaveToFile(photograph, idOrTexture);
+        ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
+        trySaveToFile(photograph);
     }
 
     @Override
@@ -156,19 +136,7 @@ public class PhotographScreen extends ZoomableScreen {
             @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
 
             if (keyCode == InputConstants.KEY_S) {
-                if (idOrTexture != null) {
-                    idOrTexture.ifLeft(id -> {
-                        if (savedExposures.contains(id))
-                            return;
-
-                        ExposureClient.getExposureStorage().getOrQuery(id).ifPresent(exposure -> {
-                            savedExposures.add(id);
-                            new Thread(() -> FileSaveComponent.withDefaultFolders(id).save(exposure.getPixels(),
-                                    exposure.getWidth(), exposure.getHeight(), exposure.getProperties()), "ExposureSaving").start();
-                        });
-                    });
-                }
-
+                trySaveToFile(photograph);
                 return true;
             }
 
@@ -181,9 +149,8 @@ public class PhotographScreen extends ZoomableScreen {
             }
 
             if (keyCode == InputConstants.KEY_P) {
-                @Nullable MultiPlayerGameMode gameMode = Minecraft.getInstance().gameMode;
-                if (idOrTexture != null && gameMode != null)
-                    gameMode.handleCreativeModeItemDrop(photograph.getStack().copy());
+                if (Minecraft.getInstance().gameMode != null)
+                    Minecraft.getInstance().gameMode.handleCreativeModeItemDrop(photograph.getStack().copy());
                 return true;
             }
         }
@@ -191,14 +158,18 @@ public class PhotographScreen extends ZoomableScreen {
         return pager.handleKeyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
     }
 
-    private void trySaveToFile(ItemAndStack<PhotographItem> photograph, @Nullable Either<String, ResourceLocation> idOrTexture) {
-        if (!Config.Client.EXPOSURE_SAVING.get() || idOrTexture == null || Minecraft.getInstance().player == null)
+    private void trySaveToFile(ItemAndStack<PhotographItem> photograph) {
+        if (!Config.Client.EXPOSURE_SAVING.get() || Minecraft.getInstance().player == null)
+            return;
+
+        Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+        if (idOrTexture == null)
             return;
 
         CompoundTag tag = photograph.getStack().getTag();
         if (tag == null
-                || !tag.contains("PhotographerId", Tag.TAG_INT_ARRAY)
-                || !tag.getUUID("PhotographerId").equals(Minecraft.getInstance().player.getUUID())) {
+                || !tag.contains(FrameData.PHOTOGRAPHER_ID, Tag.TAG_INT_ARRAY)
+                || !tag.getUUID(FrameData.PHOTOGRAPHER_ID).equals(Minecraft.getInstance().player.getUUID())) {
             return;
         }
 

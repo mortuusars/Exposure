@@ -60,7 +60,7 @@ public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) 
 
         addStructuresInfo(serverPlayer);
 
-        cameraItem.exposeFilmFrame(itemInHand, frame);
+        cameraItem.addFrameToFilm(itemInHand, frame);
         Exposure.Advancements.FILM_FRAME_EXPOSED.trigger(serverPlayer, new ItemAndStack<>(itemInHand), frame);
         return true;
     }

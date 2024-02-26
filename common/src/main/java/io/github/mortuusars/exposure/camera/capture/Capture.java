@@ -25,6 +25,7 @@ import java.util.Objects;
 @SuppressWarnings("unused")
 public class Capture {
     private final String exposureId;
+    private final CompoundTag frameData;
     private FilmType type = FilmType.COLOR;
     private int size = Exposure.DEFAULT_FILM_SIZE;
     private float cropFactor = Exposure.CROP_FACTOR;
@@ -39,8 +40,9 @@ public class Capture {
     private boolean completed = false;
     private long currentTick;
 
-    public Capture(String exposureId) {
+    public Capture(String exposureId, CompoundTag frameData) {
         this.exposureId = exposureId;
+        this.frameData = frameData;
     }
 
     public boolean isCompleted() {
@@ -201,7 +203,7 @@ public class Capture {
                 component.save(pixels, image.getWidth(), image.getHeight(), properties);
             }
 
-            LastExposures.add(exposureId);
+            CapturedFramesHistory.add(frameData);
         }
         catch (Exception e) {
             LogUtils.getLogger().error(e.toString());

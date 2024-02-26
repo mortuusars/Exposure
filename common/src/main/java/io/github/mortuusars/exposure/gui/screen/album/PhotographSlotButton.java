@@ -2,20 +2,22 @@ package io.github.mortuusars.exposure.gui.screen.album;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.datafixers.util.Either;
+import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
+import io.github.mortuusars.exposure.render.PhotographRenderProperties;
+import io.github.mortuusars.exposure.render.PhotographRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.navigation.CommonInputs;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,18 +49,43 @@ public class PhotographSlotButton extends ImageButton {
     @Override
     public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         ItemStack photograph = getPhotograph();
-        hasPhotograph = photograph.getItem() instanceof PhotographItem;
 
-        int xTex = xTexStart + (hasPhotograph ? getWidth() : 0);
-        renderTexture(guiGraphics, resourceLocation, getX(), getY(), xTex, yTexStart, yDiffTex, width, height, textureWidth, textureHeight);
+        if (photograph.getItem() instanceof PhotographItem) {
+            hasPhotograph = true;
 
-        if (photograph.getItem() instanceof PhotographItem photographItem) {
-            @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photograph);
-            if (idOrTexture != null) {
-                ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, guiGraphics.pose(),
-                        exposureArea.getX(), exposureArea.getY(), exposureArea.getWidth(), exposureArea.getHeight());
+            PhotographRenderProperties renderProperties = PhotographRenderProperties.get(photograph);
+
+            // Paper
+            renderTexture(guiGraphics, renderProperties.getAlbumPaperTexture(),
+                    getX(), getY(), 0, 0, 0, width, height, width, height);
+
+            // Exposure
+            guiGraphics.pose().pushPose();
+            float scale = exposureArea.getWidth() / (float) ExposureClient.getExposureRenderer().getSize();
+            guiGraphics.pose().translate(exposureArea.getX(), exposureArea.getY(), 1);
+            guiGraphics.pose().scale(scale, scale, scale);
+            MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+            PhotographRenderer.render(photograph, false, false, guiGraphics.pose(),
+                    bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+            bufferSource.endBatch();
+            guiGraphics.pose().popPose();
+
+            // Paper overlay
+            if (renderProperties.hasAlbumPaperOverlayTexture()) {
+                guiGraphics.pose().pushPose();
+                guiGraphics.pose().translate(0, 0, 2);
+                renderTexture(guiGraphics, renderProperties.getAlbumPaperOverlayTexture(),
+                        getX(), getY(), 0, 0, 0, width, height, width, height);
+                guiGraphics.pose().popPose();
             }
         }
+        else {
+            hasPhotograph = false;
+        }
+
+        // Album pins
+        int xTex = xTexStart + (hasPhotograph ? getWidth() : 0);
+        renderTexture(guiGraphics, resourceLocation, getX(), getY(), xTex, yTexStart, yDiffTex, width, height, textureWidth, textureHeight);
     }
 
     public void renderTooltip(GuiGraphics guiGraphics, int mouseX, int mouseY) {

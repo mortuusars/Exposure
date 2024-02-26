@@ -59,28 +59,28 @@ public abstract class ItemInHandRendererMixin {
     }
 
     @Unique
-    private void exposure$renderOneHandedPhotograph(AbstractClientPlayer player, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pCombinedLight, float pEquippedProgress, HumanoidArm pHand, float pSwingProgress, ItemStack pStack) {
+    private void exposure$renderOneHandedPhotograph(AbstractClientPlayer player, PoseStack poseStack, MultiBufferSource buffer, int combinedLight, float pEquippedProgress, HumanoidArm pHand, float pSwingProgress, ItemStack stack) {
         float f = pHand == HumanoidArm.RIGHT ? 1.0F : -1.0F;
-        pMatrixStack.translate(f * 0.125F, -0.125D, 0.0D);
+        poseStack.translate(f * 0.125F, -0.125D, 0.0D);
         if (!player.isInvisible()) {
-            pMatrixStack.pushPose();
-            pMatrixStack.mulPose(Axis.ZP.rotationDegrees(f * 10.0F));
-            this.renderPlayerArm(pMatrixStack, pBuffer, pCombinedLight, pEquippedProgress, pSwingProgress, pHand);
-            pMatrixStack.popPose();
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(f * 10.0F));
+            this.renderPlayerArm(poseStack, buffer, combinedLight, pEquippedProgress, pSwingProgress, pHand);
+            poseStack.popPose();
         }
 
-        pMatrixStack.pushPose();
-        pMatrixStack.translate(f * 0.51F, -0.08F + pEquippedProgress * -1.2F, -0.75D);
+        poseStack.pushPose();
+        poseStack.translate(f * 0.51F, -0.08F + pEquippedProgress * -1.2F, -0.75D);
         float f1 = Mth.sqrt(pSwingProgress);
         float f2 = Mth.sin(f1 * (float)Math.PI);
         float f3 = -0.5F * f2;
         float f4 = 0.4F * Mth.sin(f1 * ((float)Math.PI * 2F));
         float f5 = -0.3F * Mth.sin(pSwingProgress * (float)Math.PI);
-        pMatrixStack.translate(f * f3, f4 - 0.3F * f2, f5);
-        pMatrixStack.mulPose(Axis.XP.rotationDegrees(f2 * -45.0F));
-        pMatrixStack.mulPose(Axis.YP.rotationDegrees(f * f2 * -30.0F));
-        PhotographInHandRenderer.renderPhotograph(pMatrixStack, pBuffer, pCombinedLight, pStack);
-        pMatrixStack.popPose();
+        poseStack.translate(f * f3, f4 - 0.3F * f2, f5);
+        poseStack.mulPose(Axis.XP.rotationDegrees(f2 * -45.0F));
+        poseStack.mulPose(Axis.YP.rotationDegrees(f * f2 * -30.0F));
+        PhotographInHandRenderer.renderPhotograph(poseStack, buffer, combinedLight, stack);
+        poseStack.popPose();
     }
 
     @Unique

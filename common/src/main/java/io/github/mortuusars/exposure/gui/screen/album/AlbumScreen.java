@@ -113,7 +113,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         Page rightPage = createPage(Side.RIGHT, 140);
         pages.add(rightPage);
 
-        ImageButton nextButton = new ImageButton(leftPos + 274, topPos + 164, 13, 15,
+        ImageButton nextButton = new ImageButton(leftPos + 273, topPos + 164, 13, 15,
                 229, 188, 15, TEXTURE, 512, 512,
                 button -> pager.changePage(PagingDirection.NEXT), Component.translatable("gui.exposure.next_page"));
         nextButton.setTooltip(Tooltip.create(Component.translatable("gui.exposure.next_page")));

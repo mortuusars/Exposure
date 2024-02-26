@@ -37,7 +37,7 @@ public class ItemFramePhotographRenderer {
         // Snap to 90 degrees like a map.
         poseStack.mulPose(Axis.ZP.rotationDegrees(45 * itemFrameEntity.getRotation()));
 
-        float size = ExposureRenderer.SIZE;
+        float size = ExposureClient.getExposureRenderer().getSize();
 
         float scale = 1f / size;
         float pixelScale = scale / 16f;
@@ -48,7 +48,7 @@ public class ItemFramePhotographRenderer {
         poseStack.translate(-size / 2f, -size / 2f, 10);
 
         ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
-                0, 0, ExposureRenderer.SIZE, ExposureRenderer.SIZE, 0, 0, 1, 1,
+                0, 0, ExposureClient.getExposureRenderer().getSize(), ExposureClient.getExposureRenderer().getSize(), 0, 0, 1, 1,
                 packedLight, 255, 255, 255, 255);
         poseStack.popPose();
 

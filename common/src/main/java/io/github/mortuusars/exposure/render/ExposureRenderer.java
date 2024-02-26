@@ -26,19 +26,39 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExposureRenderer implements AutoCloseable {
+    public static final ResourceLocation EMPTY_TEXTURE = Exposure.resource("textures/empty.png");
+
     public static final ResourceLocation PHOTOGRAPH_TEXTURE = Exposure.resource("textures/photograph/photograph.png");
     public static final ResourceLocation AGED_PHOTOGRAPH_TEXTURE = Exposure.resource("textures/photograph/aged_photograph.png");
     public static final ResourceLocation AGED_PHOTOGRAPH_OVERLAY_TEXTURE = Exposure.resource("textures/photograph/aged_photograph_overlay.png");
-    public static final int SIZE = 256;
 
     private final Map<String, ExposureInstance> cache = new HashMap<>();
 
+    public int getSize() {
+        return 256;
+    }
+
+    public void render(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier, PoseStack poseStack, MultiBufferSource bufferSource) {
+        render(idOrTexture, modifier, poseStack, bufferSource, 0, 0, getSize(), getSize());
+    }
+
     public void render(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier,
-                       PoseStack poseStack, float x, float y, float width, float height) {
-        MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+                       PoseStack poseStack, MultiBufferSource bufferSource, float x, float y, float width, float height) {
         render(idOrTexture, modifier, poseStack, bufferSource, x, y, x + width, y + height,
                 0, 0, 1, 1, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-        bufferSource.endBatch();
+    }
+
+    public void render(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier,
+                       PoseStack poseStack, MultiBufferSource bufferSource,
+                       int packedLight, int r, int g, int b, int a) {
+        render(idOrTexture, modifier, poseStack, bufferSource, 0, 0, getSize(), getSize(), packedLight, r, g, b, a);
+    }
+
+    public void render(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier,
+                       PoseStack poseStack, MultiBufferSource bufferSource, float x, float y, float width, float height,
+                       int packedLight, int r, int g, int b, int a) {
+        render(idOrTexture, modifier, poseStack, bufferSource, x, y, x + width, y + height,
+                0, 0, 1, 1, packedLight, r, g, b, a);
     }
 
     public void render(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier,
@@ -65,28 +85,28 @@ public class ExposureRenderer implements AutoCloseable {
     }
 
     public void renderOnPaper(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifiers,
-                       PoseStack poseStack, MultiBufferSource bufferSource,
-                       float minX, float minY, float maxX, float maxY,
-                       float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a,
-                       boolean renderBackside) {
+                              PoseStack poseStack, MultiBufferSource bufferSource,
+                              float minX, float minY, float maxX, float maxY,
+                              float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a,
+                              boolean renderBackside) {
         renderPaperTexture(poseStack, bufferSource,
-                0, 0, SIZE, SIZE, 0, 0, 1, 1,
+                0, 0, getSize(), getSize(), 0, 0, 1, 1,
                 packedLight, r, g, b, a);
 
         if (renderBackside) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            poseStack.translate(-SIZE, 0, -0.5);
+            poseStack.translate(-getSize(), 0, -0.5);
 
             renderTexture(PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
-                    0, 0, SIZE, SIZE, 1, 0, 0, 1,
-                    packedLight, (int)(r * 0.85f), (int)(g * 0.85f), (int)(b * 0.85f), a);
+                    0, 0, getSize(), getSize(), 1, 0, 0, 1,
+                    packedLight, (int) (r * 0.85f), (int) (g * 0.85f), (int) (b * 0.85f), a);
 
             poseStack.popPose();
         }
 
         poseStack.pushPose();
-        float offset = SIZE * 0.0625f;
+        float offset = getSize() * 0.0625f;
         poseStack.translate(offset, offset, 1);
         poseStack.scale(0.875f, 0.875f, 0.875f);
         render(idOrTexture, modifiers, poseStack, bufferSource,
@@ -95,28 +115,28 @@ public class ExposureRenderer implements AutoCloseable {
     }
 
     public void renderAgedOnPaper(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier,
-                              PoseStack poseStack, MultiBufferSource bufferSource,
-                              float minX, float minY, float maxX, float maxY,
-                              float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a,
-                              boolean renderBackside) {
+                                  PoseStack poseStack, MultiBufferSource bufferSource,
+                                  float minX, float minY, float maxX, float maxY,
+                                  float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a,
+                                  boolean renderBackside) {
         renderTexture(AGED_PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
-                0, 0, SIZE, SIZE, 0, 0, 1, 1,
+                0, 0, getSize(), getSize(), 0, 0, 1, 1,
                 packedLight, r, g, b, a);
 
         if (renderBackside) {
             poseStack.pushPose();
             poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            poseStack.translate(-SIZE, 0, -0.5);
+            poseStack.translate(-getSize(), 0, -0.5);
 
             renderTexture(AGED_PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
-                    0, 0, SIZE, SIZE, 1, 0, 0, 1,
-                    packedLight, (int)(r * 0.85f), (int)(g * 0.85f), (int)(b * 0.85f), a);
+                    0, 0, getSize(), getSize(), 1, 0, 0, 1,
+                    packedLight, (int) (r * 0.85f), (int) (g * 0.85f), (int) (b * 0.85f), a);
 
             poseStack.popPose();
         }
 
         poseStack.pushPose();
-        float offset = SIZE * 0.0625f;
+        float offset = getSize() * 0.0625f;
         poseStack.translate(offset, offset, 1);
         poseStack.scale(0.875f, 0.875f, 0.875f);
         render(idOrTexture, modifier, poseStack, bufferSource,
@@ -124,9 +144,9 @@ public class ExposureRenderer implements AutoCloseable {
         poseStack.popPose();
 
         poseStack.pushPose();
-        poseStack.translate(0, 0, 1);
+        poseStack.translate(0, 0, 2);
         renderTexture(AGED_PHOTOGRAPH_OVERLAY_TEXTURE, poseStack, bufferSource,
-                0, 0, SIZE, SIZE, 0, 0, 1, 1,
+                0, 0, getSize(), getSize(), 0, 0, 1, 1,
                 packedLight, r, g, b, a);
         poseStack.popPose();
     }
@@ -254,14 +274,10 @@ public class ExposureRenderer implements AutoCloseable {
 
             Matrix4f matrix4f = poseStack.last().pose();
             VertexConsumer vertexconsumer = bufferSource.getBuffer(this.renderType);
-            vertexconsumer.vertex(matrix4f, minX, maxY, 0).color(r, g, b, a).uv(minU, maxV).uv2(packedLight)
-                    .endVertex();
-            vertexconsumer.vertex(matrix4f, maxX, maxY, 0).color(r, g, b, a).uv(maxU, maxV).uv2(packedLight)
-                    .endVertex();
-            vertexconsumer.vertex(matrix4f, maxX, minY, 0).color(r, g, b, a).uv(maxU, minV).uv2(packedLight)
-                    .endVertex();
-            vertexconsumer.vertex(matrix4f, minX, minY, 0).color(r, g, b, a).uv(minU, minV).uv2(packedLight)
-                    .endVertex();
+            vertexconsumer.vertex(matrix4f, minX, maxY, 0).color(r, g, b, a).uv(minU, maxV).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, maxX, maxY, 0).color(r, g, b, a).uv(maxU, maxV).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, maxX, minY, 0).color(r, g, b, a).uv(maxU, minV).uv2(packedLight).endVertex();
+            vertexconsumer.vertex(matrix4f, minX, minY, 0).color(r, g, b, a).uv(minU, minV).uv2(packedLight).endVertex();
         }
 
         public void close() {
