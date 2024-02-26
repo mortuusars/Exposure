@@ -2,11 +2,17 @@ package io.github.mortuusars.exposure.render.modifiers;
 
 import net.minecraft.util.Mth;
 
+@SuppressWarnings("ClassCanBeRecord")
 public class NegativeFilmPixelModifier implements IPixelModifier {
     public final boolean simulateFilmTransparency;
 
     public NegativeFilmPixelModifier(boolean simulateFilmTransparency) {
         this.simulateFilmTransparency = simulateFilmTransparency;
+    }
+
+    @Override
+    public String getIdSuffix() {
+        return simulateFilmTransparency ? "_negative_transparent" : "_negative";
     }
 
     @Override
@@ -16,6 +22,7 @@ public class NegativeFilmPixelModifier implements IPixelModifier {
         int green = ABGR >> 8 & 0xFF;
         int red = ABGR & 0xFF;
 
+        // Invert
         alpha = 255 - alpha;
         blue = 255 - blue;
         green = 255 - green;
@@ -29,11 +36,6 @@ public class NegativeFilmPixelModifier implements IPixelModifier {
         }
 
         return (alpha << 24) | (blue << 16) | (green << 8) | red;
-    }
-
-    @Override
-    public String getIdSuffix() {
-        return simulateFilmTransparency ? "_negative_transparent" : "_negative";
     }
 
     @Override

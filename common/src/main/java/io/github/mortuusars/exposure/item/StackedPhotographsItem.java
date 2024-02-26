@@ -45,7 +45,10 @@ public class StackedPhotographsItem extends Item {
         this.maxPhotographs = maxPhotographs;
     }
 
-    public int getMaxPhotographs() {
+    /**
+     * @return How many photographs can be stacked together.
+     */
+    public int getStackLimit() {
         return maxPhotographs;
     }
 
@@ -54,28 +57,29 @@ public class StackedPhotographsItem extends Item {
     }
 
     public List<ItemAndStack<PhotographItem>> getPhotographs(ItemStack stack) {
+        return getPhotographs(stack, getStackLimit());
+    }
+
+    public List<ItemAndStack<PhotographItem>> getPhotographs(ItemStack stack, int limit) {
         ListTag listTag = getOrCreatePhotographsListTag(stack);
-        if (listTag.size() == 0)
+        if (listTag.isEmpty())
             return Collections.emptyList();
 
         List<ItemAndStack<PhotographItem>> photographs = new ArrayList<>();
-        for (int i = 0; i < listTag.size(); i++) {
+        for (int i = 0; i < Math.min(listTag.size(), limit); i++) {
             photographs.add(getPhotograph(listTag, i));
         }
+
         return photographs;
     }
 
-    private ListTag getOrCreatePhotographsListTag(ItemStack stack) {
-        return stack.getTag() != null ? stack.getOrCreateTag().getList(PHOTOGRAPHS_TAG, Tag.TAG_COMPOUND) : new ListTag();
-    }
-
     public boolean canAddPhotograph(ItemStack stack) {
-        return getPhotographsCount(stack) < getMaxPhotographs();
+        return getPhotographsCount(stack) < getStackLimit();
     }
 
     public void addPhotograph(ItemStack stack, ItemStack photographStack, int index) {
         Preconditions.checkState(index >= 0 && index <= getPhotographsCount(stack), index + " is out of bounds. Count: " + getPhotographsCount(stack));
-        Preconditions.checkState(canAddPhotograph(stack), "Cannot add more photographs than this photo can store. Max count: " + getMaxPhotographs());
+        Preconditions.checkState(canAddPhotograph(stack), "Cannot add more photographs than this photo can store. Max count: " + getStackLimit());
         ListTag listTag = getOrCreatePhotographsListTag(stack);
         listTag.add(index, photographStack.save(new CompoundTag()));
         stack.getOrCreateTag().put(PHOTOGRAPHS_TAG, listTag);
@@ -107,27 +111,62 @@ public class StackedPhotographsItem extends Item {
         return removePhotograph(stack, getPhotographsCount(stack) - 1);
     }
 
+    private ListTag getOrCreatePhotographsListTag(ItemStack stack) {
+        return stack.getTag() != null ? stack.getOrCreateTag().getList(PHOTOGRAPHS_TAG, Tag.TAG_COMPOUND) : new ListTag();
+    }
+
     private ItemAndStack<PhotographItem> getPhotograph(ListTag photographsList, int index) {
         CompoundTag stackTag = photographsList.getCompound(index);
         ItemStack stack = ItemStack.of(stackTag);
         return new ItemAndStack<>(stack);
     }
 
-    public @Nullable Either<String, ResourceLocation> getFirstIdOrTexture(ItemStack stackedPhotographsStack) {
-        ListTag listTag = getOrCreatePhotographsListTag(stackedPhotographsStack);
-        if (listTag.size() == 0)
+    public @Nullable Either<String, ResourceLocation> getFirstIdOrTexture(ItemStack stack) {
+        ListTag listTag = getOrCreatePhotographsListTag(stack);
+        if (listTag.isEmpty())
             return null;
 
         CompoundTag first = listTag.getCompound(0).getCompound("tag");
         String id = first.getString(FrameData.ID);
-        if (id.length() > 0)
+        if (!id.isEmpty())
             return Either.left(id);
 
         String resource = first.getString(FrameData.TEXTURE);
-        if (resource.length() > 0)
+        if (!resource.isEmpty())
             return Either.right(new ResourceLocation(resource));
 
         return null;
+    }
+
+    public List<@Nullable Either<String, ResourceLocation>> getTopPhotographs(ItemStack stack, int count) {
+        Preconditions.checkArgument(count > 0, "count '{}' is not valid. > 0", count);
+
+        List<@Nullable Either<String, ResourceLocation>> photographs = new ArrayList<>();
+        ListTag listTag = getOrCreatePhotographsListTag(stack);
+
+        for (int i = 0; i < Math.min(listTag.size(), count); i++) {
+            CompoundTag photographTag = listTag.getCompound(i).getCompound("tag");
+
+            String id = photographTag.getString(FrameData.ID);
+            if (!id.isEmpty()) {
+                photographs.add(Either.left(id));
+                continue;
+            }
+
+            String resource = photographTag.getString(FrameData.TEXTURE);
+            if (!resource.isEmpty()) {
+                photographs.add(Either.right(new ResourceLocation(resource)));
+                continue;
+            }
+
+            photographs.add(null);
+        }
+
+        while (photographs.size() < count) {
+            photographs.add(null);
+        }
+
+        return photographs;
     }
 
     // ---
@@ -135,11 +174,10 @@ public class StackedPhotographsItem extends Item {
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
         List<ItemAndStack<PhotographItem>> photographs = getPhotographs(stack);
-        if (photographs.size() == 0)
+        if (photographs.isEmpty())
             return Optional.empty();
 
-        ItemAndStack<PhotographItem> topPhotograph = photographs.get(0);
-        return Optional.of(new PhotographTooltip(topPhotograph.getItem().getIdOrTexture(topPhotograph.getStack()), photographs.size()));
+        return Optional.of(new PhotographTooltip(new ItemAndStack<>(stack)));
     }
 
     @Override
@@ -229,7 +267,6 @@ public class StackedPhotographsItem extends Item {
         return false;
     }
 
-
     @Override
     public @NotNull InteractionResult useOn(UseOnContext context) {
         BlockPos clickedPos = context.getClickedPos();
@@ -299,7 +336,7 @@ public class StackedPhotographsItem extends Item {
         }
 
         List<ItemAndStack<PhotographItem>> photographs = getPhotographs(itemInHand);
-        if (photographs.size() > 0) {
+        if (!photographs.isEmpty()) {
             if (level.isClientSide) {
                 ClientGUI.openPhotographScreen(photographs);
                 player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f, 1.1f);
