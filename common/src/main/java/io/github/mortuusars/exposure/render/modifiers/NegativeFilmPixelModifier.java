@@ -22,18 +22,17 @@ public class NegativeFilmPixelModifier implements IPixelModifier {
         int green = ABGR >> 8 & 0xFF;
         int red = ABGR & 0xFF;
 
-        // Invert
-        alpha = 255 - alpha;
-        blue = 255 - blue;
-        green = 255 - green;
-        red = 255 - red;
-
         if (simulateFilmTransparency) {
             // Modify opacity to make lighter colors transparent, like in real film.
             int brightness = (blue + green + red) / 3;
             int opacity = (int) Mth.clamp(brightness * 1.5f, 0, 255);
             alpha = (alpha * opacity) / 255;
         }
+
+        // Invert
+        blue = 255 - blue;
+        green = 255 - green;
+        red = 255 - red;
 
         return (alpha << 24) | (blue << 16) | (green << 8) | red;
     }
