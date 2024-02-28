@@ -47,9 +47,9 @@ public class ItemFramePhotographRenderer {
         poseStack.scale(scale, scale, scale);
         poseStack.translate(-size / 2f, -size / 2f, 10);
 
-        ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
-                0, 0, ExposureClient.getExposureRenderer().getSize(), ExposureClient.getExposureRenderer().getSize(), 0, 0, 1, 1,
-                packedLight, 255, 255, 255, 255);
+        PhotographRenderer.renderPhotograph(photographItem, itemStack, false, false,
+                poseStack, bufferSource, packedLight, 255, 255, 255, 255);
+
         poseStack.popPose();
 
         return true;
