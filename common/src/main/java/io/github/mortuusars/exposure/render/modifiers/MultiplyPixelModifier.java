@@ -1,15 +1,16 @@
 package io.github.mortuusars.exposure.render.modifiers;
 
-public class TintPixelModifier implements IPixelModifier {
-    public final int tintColor;
+@SuppressWarnings({"ClassCanBeRecord", "unused"})
+public class MultiplyPixelModifier implements IPixelModifier {
+    public final int multiplyColor;
 
-    public TintPixelModifier(int tintColor) {
-        this.tintColor = tintColor;
+    public MultiplyPixelModifier(int multiplyColor) {
+        this.multiplyColor = multiplyColor;
     }
 
     @Override
     public int modifyPixel(int ABGR) {
-        if (tintColor == 0)
+        if (multiplyColor == 0)
             return ABGR;
 
         int alpha = ABGR >> 24 & 0xFF;
@@ -17,10 +18,10 @@ public class TintPixelModifier implements IPixelModifier {
         int green = ABGR >> 8 & 0xFF;
         int red = ABGR & 0xFF;
 
-        int tintAlpha = (tintColor >> 24) & 0xFF;
-        int tintRed = (tintColor >> 16) & 0xFF;
-        int tintGreen = (tintColor >> 8) & 0xFF;
-        int tintBlue = tintColor & 0xFF;
+        int tintAlpha = (multiplyColor >> 24) & 0xFF;
+        int tintRed = (multiplyColor >> 16) & 0xFF;
+        int tintGreen = (multiplyColor >> 8) & 0xFF;
+        int tintBlue = multiplyColor & 0xFF;
 
         alpha = Math.min(255, (alpha * tintAlpha) / 255);
         blue = Math.min(255, (blue * tintBlue) / 255);
@@ -32,6 +33,6 @@ public class TintPixelModifier implements IPixelModifier {
 
     @Override
     public String getIdSuffix() {
-        return tintColor != 0 ? "_tint" + Integer.toHexString(tintColor) : "";
+        return multiplyColor != 0 ? "_tint" + Integer.toHexString(multiplyColor) : "";
     }
 }

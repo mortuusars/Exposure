@@ -106,7 +106,6 @@ public class PhotographRenderer {
             }
 
             // Photographs below (only paper)
-
             float posOffset = getStackedPhotographOffset() * i;
             float rotateOffset = ExposureClient.getExposureRenderer().getSize() / 2f;
 

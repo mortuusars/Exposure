@@ -17,33 +17,5 @@ public class PhotographInHandRenderer {
 
         PhotographRenderer.render(stack, true, false, poseStack, bufferSource,
                 combinedLight, 255, 255, 255, 255);
-
-//        @Nullable Either<String, ResourceLocation> idOrTexture;
-
-//        if (stack.getItem() instanceof PhotographItem photographItem)
-//            idOrTexture = photographItem.getIdOrTexture(stack);
-//        else if (stack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem)
-//            idOrTexture = stackedPhotographsItem.getFirstIdOrTexture(stack);
-//        else throw new IllegalArgumentException(stack + " cannot be rendered as a Photograph.");
-
-
-//        if (idOrTexture != null) {
-//            if (stack.is(Exposure.Items.AGED_PHOTOGRAPH.get())) {
-//                ExposureClient.getExposureRenderer().renderAgedOnPaper(idOrTexture, ExposurePixelModifiers.AGED,
-//                        poseStack, bufferSource,
-//                        0, 0, ExposureClient.getExposureRenderer().getSize(), ExposureClient.getExposureRenderer().getSize(), 0, 0, 1, 1,
-//                        combinedLight, 255, 255, 255, 255, false);
-//            }
-//            else {
-//                ExposureClient.getExposureRenderer().renderOnPaper(idOrTexture, ExposurePixelModifiers.EMPTY, poseStack, bufferSource,
-//                        0, 0, ExposureClient.getExposureRenderer().getSize(), ExposureClient.getExposureRenderer().getSize(), 0, 0, 1, 1,
-//                        combinedLight, 255, 255, 255, 255, false);
-//            }
-//        }
-//        else {
-//            ExposureClient.getExposureRenderer().renderPaperTexture(poseStack, bufferSource,
-//                    0, 0, ExposureClient.getExposureRenderer().getSize(), ExposureClient.getExposureRenderer().getSize(), 0, 0, 1, 1,
-//                    combinedLight, 255, 255, 255, 255);
-//        }
     }
 }

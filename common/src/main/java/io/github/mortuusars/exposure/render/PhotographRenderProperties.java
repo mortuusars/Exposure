@@ -12,12 +12,14 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class PhotographRenderProperties {
+    public static final ResourceLocation EMPTY_TEXTURE = Exposure.resource("textures/empty.png");
+
     public static final PhotographRenderProperties DEFAULT = new PhotographRenderProperties("default",
             stack -> stack.getItem() instanceof PhotographItem,
             Exposure.resource("textures/photograph/photograph.png"),
-            ExposureRenderer.EMPTY_TEXTURE,
+            EMPTY_TEXTURE,
             Exposure.resource("textures/photograph/photograph_album.png"),
-            ExposureRenderer.EMPTY_TEXTURE,
+            EMPTY_TEXTURE,
             ExposurePixelModifiers.EMPTY);
 
     public static final PhotographRenderProperties AGED = new PhotographRenderProperties("aged",
@@ -83,10 +85,10 @@ public class PhotographRenderProperties {
     }
 
     public boolean hasPaperOverlayTexture() {
-        return !getPaperOverlayTexture().equals(ExposureRenderer.EMPTY_TEXTURE);
+        return !getPaperOverlayTexture().equals(EMPTY_TEXTURE);
     }
     public boolean hasAlbumPaperOverlayTexture() {
-        return !getAlbumPaperOverlayTexture().equals(ExposureRenderer.EMPTY_TEXTURE);
+        return !getAlbumPaperOverlayTexture().equals(EMPTY_TEXTURE);
     }
 
     public static void register(PhotographRenderProperties renderProperties) {

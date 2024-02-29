@@ -6,7 +6,7 @@ import net.minecraft.world.level.material.MaterialColor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ExposureImage implements IPixelImage {
+public class ExposureImage {
     private final String name;
     @Nullable
     private final ExposureSavedData exposureData;
