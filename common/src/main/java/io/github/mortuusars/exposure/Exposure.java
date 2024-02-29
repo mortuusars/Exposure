@@ -132,7 +132,7 @@ public class Exposure {
                         .stacksTo(1)));
 
         public static final Supplier<StackedPhotographsItem> STACKED_PHOTOGRAPHS = Register.item("stacked_photographs",
-                () -> new StackedPhotographsItem(16, new Item.Properties()
+                () -> new StackedPhotographsItem(new Item.Properties()
                         .stacksTo(1)));
 
         public static final Supplier<AlbumItem> ALBUM = Register.item("album",

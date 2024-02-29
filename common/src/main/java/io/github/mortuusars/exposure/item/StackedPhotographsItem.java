@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.item;
 
 import com.google.common.base.Preconditions;
 import com.mojang.datafixers.util.Either;
+import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
 import io.github.mortuusars.exposure.gui.ClientGUI;
@@ -38,18 +39,16 @@ import java.util.Optional;
 
 public class StackedPhotographsItem extends Item {
     public static final String PHOTOGRAPHS_TAG = "Photographs";
-    private final int maxPhotographs;
 
-    public StackedPhotographsItem(int maxPhotographs, Properties properties) {
+    public StackedPhotographsItem(Properties properties) {
         super(properties);
-        this.maxPhotographs = maxPhotographs;
     }
 
     /**
      * @return How many photographs can be stacked together.
      */
     public int getStackLimit() {
-        return maxPhotographs;
+        return Config.Common.STACKED_PHOTOGRAPHS_MAX_SIZE.get();
     }
 
     public int getPhotographsCount(ItemStack stack) {
@@ -317,14 +316,6 @@ public class StackedPhotographsItem extends Item {
 
         return InteractionResult.sidedSuccess(level.isClientSide);
     }
-//    @Override
-//    public InteractionResult onItemUseFirst(ItemStack photo, UseOnContext context) {
-//        if (!context.isSecondaryUseActive())
-//            return InteractionResult.PASS;
-//
-//        boolean result = cyclePhotographs(photo, context.getPlayer());
-//        return result ? InteractionResult.SUCCESS : InteractionResult.FAIL;
-//
 
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
