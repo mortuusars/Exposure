@@ -4,7 +4,7 @@ import io.github.mortuusars.exposure.util.HUSLColorConverter;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.StringUtils;
 
-public class AgedPixelModifier implements IPixelModifier {
+public class AgedHSLUVPixelModifier implements IPixelModifier {
     public final int tintColor;
     public final double[] tintColorHsluv;
     public final float tintOpacity;
@@ -17,7 +17,7 @@ public class AgedPixelModifier implements IPixelModifier {
      * @param blackPoint Like in a Levels adjustment. 0-255.
      * @param whitePoint Like in a Levels adjustment. 0-255.
      */
-    public AgedPixelModifier(int tintColor, float tintOpacity, int blackPoint, int whitePoint) {
+    public AgedHSLUVPixelModifier(int tintColor, float tintOpacity, int blackPoint, int whitePoint) {
         this.tintColor = tintColor;
         String hexStr = StringUtils.leftPad(Integer.toHexString(tintColor & 0xFFFFFF), 6, "0");
         this.tintColorHsluv = HUSLColorConverter.hexToHsluv("#" + hexStr);
@@ -60,7 +60,7 @@ public class AgedPixelModifier implements IPixelModifier {
 
     @Override
     public String toString() {
-        return "SepiaPixelModifier{" +
+        return "AgedHSLUVPixelModifier{" +
                 "tintColor=#" + Integer.toHexString(tintColor) +
                 ", tintOpacity=" + tintOpacity +
                 ", blackPoint=" + blackPoint +
