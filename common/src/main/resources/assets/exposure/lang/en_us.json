@@ -37,6 +37,12 @@
   "gui.exposure.previous_page": "Previous Page",
   "gui.exposure.next_page": "Next Page",
 
+  "gui.exposure.photograph_screen.drop_as_item_tooltip": "§7[§r%s§7]: drop as item",
+  "gui.exposure.photograph_screen.item_dropped_message": "§7Dropped: [§r%s§7]",
+  "gui.exposure.photograph_screen.copy_id_tooltip": "§7[§r%s§7]: copy exposure ID",
+  "gui.exposure.photograph_screen.copied_message": "§7[§r%s§7] copied to clipboard",
+  "gui.exposure.photograph_screen.copy_texture_path_tooltip": "§7[§r%s§7]: copy texture path",
+
   "gui.exposure.composition_guide.none": "None",
   "gui.exposure.composition_guide.crosshair": "Crosshair",
   "gui.exposure.composition_guide.quads": "Quads",

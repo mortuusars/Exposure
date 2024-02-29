@@ -175,7 +175,7 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
 
         // IMAGE SAVING
-        public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING;
+        public static final ForgeConfigSpec.BooleanValue SAVE_EXPOSURE_TO_FILE_WHEN_VIEWED;
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING_LEVEL_SUBFOLDER;
 
         static {
@@ -235,7 +235,7 @@ public class Config {
 
             {
                 builder.push("FileSaving");
-                EXPOSURE_SAVING = builder
+                SAVE_EXPOSURE_TO_FILE_WHEN_VIEWED = builder
                         .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
                         .define("SavePhotographs", true);
                 EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder

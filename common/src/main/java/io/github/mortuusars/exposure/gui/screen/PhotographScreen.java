@@ -32,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class PhotographScreen extends ZoomableScreen {
     public static final ResourceLocation WIDGETS_TEXTURE = Exposure.resource("textures/gui/widgets.png");
@@ -100,27 +101,35 @@ public class PhotographScreen extends ZoomableScreen {
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
-        if (photographs.size() == 1) {
-            ItemAndStack<PhotographItem> photograph = photographs.get(0);
-            PhotographRenderer.renderPhotograph(photograph.getItem(), photograph.getStack(), true,
-                    false, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-        }
-        else {
-
-            guiGraphics.pose().pushPose();
-            guiGraphics.pose().translate(0, 0, 15);
-            ArrayList<ItemAndStack<PhotographItem>> photos = new ArrayList<>(photographs);
-            Collections.rotate(photos, -pager.getCurrentPage());
-            PhotographRenderer.renderStackedPhotographs(photos, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-            guiGraphics.pose().popPose();
-        }
+        ArrayList<ItemAndStack<PhotographItem>> photos = new ArrayList<>(photographs);
+        Collections.rotate(photos, -pager.getCurrentPage());
+        PhotographRenderer.renderStackedPhotographs(photos, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
 
         bufferSource.endBatch();
 
         guiGraphics.pose().popPose();
 
         ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
-        trySaveToFile(photograph);
+
+        Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+        if (minecraft.player != null && minecraft.player.isCreative() && idOrTexture != null) {
+            guiGraphics.drawString(font, "?", width - font.width("?") - 10, 10, 0xFFFFFFFF);
+
+            if (mouseX > width - 20 && mouseX < width && mouseY < 20) {
+                List<Component> lines = new ArrayList<>();
+
+                lines.add(Component.translatable("gui.exposure.photograph_screen.drop_as_item_tooltip", Component.literal("CTRL + I")));
+
+                lines.add(idOrTexture.map(
+                        id -> Component.translatable("gui.exposure.photograph_screen.copy_id_tooltip", "CTRL + C"),
+                        texture -> Component.translatable("gui.exposure.photograph_screen.copy_texture_path_tooltip", "CTRL + C")));
+
+                guiGraphics.renderTooltip(font, lines, Optional.empty(), mouseX, mouseY + 20);
+            }
+        }
+
+        if (Config.Client.SAVE_EXPOSURE_TO_FILE_WHEN_VIEWED.get())
+            trySaveToFile(photograph);
     }
 
     @Override
@@ -133,24 +142,23 @@ public class PhotographScreen extends ZoomableScreen {
         LocalPlayer player = Minecraft.getInstance().player;
         if (Screen.hasControlDown() && player != null && player.isCreative()) {
             ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
-            @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
-
-            if (keyCode == InputConstants.KEY_S) {
-                trySaveToFile(photograph);
-                return true;
-            }
 
             if (keyCode == InputConstants.KEY_C) {
+                @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
                 if (idOrTexture != null) {
                     String text = idOrTexture.map(id -> id, ResourceLocation::toString);
                     Minecraft.getInstance().keyboardHandler.setClipboard(text);
+                    player.displayClientMessage(Component.translatable("gui.exposure.photograph_screen.copied_message", text), false);
                 }
                 return true;
             }
 
-            if (keyCode == InputConstants.KEY_P) {
-                if (Minecraft.getInstance().gameMode != null)
+            if (keyCode == InputConstants.KEY_I) {
+                if (Minecraft.getInstance().gameMode != null) {
                     Minecraft.getInstance().gameMode.handleCreativeModeItemDrop(photograph.getStack().copy());
+                    player.displayClientMessage(Component.translatable("gui.exposure.photograph_screen.item_dropped_message",
+                            photograph.getStack().toString()), false);
+                }
                 return true;
             }
         }
@@ -159,19 +167,20 @@ public class PhotographScreen extends ZoomableScreen {
     }
 
     private void trySaveToFile(ItemAndStack<PhotographItem> photograph) {
-        if (!Config.Client.EXPOSURE_SAVING.get() || Minecraft.getInstance().player == null)
-            return;
-
-        Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
-        if (idOrTexture == null)
+        if (Minecraft.getInstance().player == null || photograph.getStack().getTag() == null)
             return;
 
         CompoundTag tag = photograph.getStack().getTag();
         if (tag == null
+                || Minecraft.getInstance().player == null
                 || !tag.contains(FrameData.PHOTOGRAPHER_ID, Tag.TAG_INT_ARRAY)
                 || !tag.getUUID(FrameData.PHOTOGRAPHER_ID).equals(Minecraft.getInstance().player.getUUID())) {
             return;
         }
+
+        @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
+        if (idOrTexture == null)
+            return;
 
         idOrTexture.ifLeft(id -> {
             if (savedExposures.contains(id))
