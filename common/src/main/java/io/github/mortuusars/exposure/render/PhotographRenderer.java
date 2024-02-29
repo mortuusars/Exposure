@@ -98,6 +98,7 @@ public class PhotographRenderer {
             // Top photograph:
             if (i == 0) {
                 poseStack.pushPose();
+                poseStack.translate(0, 0, 2);
                 renderPhotograph(photograph.getItem(), photograph.getStack(), true, false, poseStack,
                         bufferSource, packedLight, r, g, b, a);
                 poseStack.popPose();
@@ -110,7 +111,7 @@ public class PhotographRenderer {
             float rotateOffset = ExposureClient.getExposureRenderer().getSize() / 2f;
 
             poseStack.pushPose();
-            poseStack.translate(posOffset, posOffset, -i);
+            poseStack.translate(posOffset, posOffset, 2 - i);
 
             poseStack.translate(rotateOffset, rotateOffset, 0);
             poseStack.mulPose(Axis.ZP.rotationDegrees(i * 90 + 90));
