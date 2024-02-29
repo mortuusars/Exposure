@@ -1,16 +1,12 @@
 package io.github.mortuusars.exposure.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
-import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.render.modifiers.IPixelModifier;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -26,12 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ExposureRenderer implements AutoCloseable {
-    public static final ResourceLocation EMPTY_TEXTURE = Exposure.resource("textures/empty.png");
-
-    public static final ResourceLocation PHOTOGRAPH_TEXTURE = Exposure.resource("textures/photograph/photograph.png");
-    public static final ResourceLocation AGED_PHOTOGRAPH_TEXTURE = Exposure.resource("textures/photograph/aged_photograph.png");
-    public static final ResourceLocation AGED_PHOTOGRAPH_OVERLAY_TEXTURE = Exposure.resource("textures/photograph/aged_photograph_overlay.png");
-
     private final Map<String, ExposureInstance> cache = new HashMap<>();
 
     public int getSize() {
@@ -82,97 +72,6 @@ public class ExposureRenderer implements AutoCloseable {
             getOrCreateExposureInstance(id, exposure, modifier)
                     .draw(poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
         }
-    }
-
-    public void renderOnPaper(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifiers,
-                              PoseStack poseStack, MultiBufferSource bufferSource,
-                              float minX, float minY, float maxX, float maxY,
-                              float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a,
-                              boolean renderBackside) {
-        renderPaperTexture(poseStack, bufferSource,
-                0, 0, getSize(), getSize(), 0, 0, 1, 1,
-                packedLight, r, g, b, a);
-
-        if (renderBackside) {
-            poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            poseStack.translate(-getSize(), 0, -0.5);
-
-            renderTexture(PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
-                    0, 0, getSize(), getSize(), 1, 0, 0, 1,
-                    packedLight, (int) (r * 0.85f), (int) (g * 0.85f), (int) (b * 0.85f), a);
-
-            poseStack.popPose();
-        }
-
-        poseStack.pushPose();
-        float offset = getSize() * 0.0625f;
-        poseStack.translate(offset, offset, 1);
-        poseStack.scale(0.875f, 0.875f, 0.875f);
-        render(idOrTexture, modifiers, poseStack, bufferSource,
-                minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
-        poseStack.popPose();
-    }
-
-    public void renderAgedOnPaper(@NotNull Either<String, ResourceLocation> idOrTexture, IPixelModifier modifier,
-                                  PoseStack poseStack, MultiBufferSource bufferSource,
-                                  float minX, float minY, float maxX, float maxY,
-                                  float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a,
-                                  boolean renderBackside) {
-        renderTexture(AGED_PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
-                0, 0, getSize(), getSize(), 0, 0, 1, 1,
-                packedLight, r, g, b, a);
-
-        if (renderBackside) {
-            poseStack.pushPose();
-            poseStack.mulPose(Axis.YP.rotationDegrees(180));
-            poseStack.translate(-getSize(), 0, -0.5);
-
-            renderTexture(AGED_PHOTOGRAPH_TEXTURE, poseStack, bufferSource,
-                    0, 0, getSize(), getSize(), 1, 0, 0, 1,
-                    packedLight, (int) (r * 0.85f), (int) (g * 0.85f), (int) (b * 0.85f), a);
-
-            poseStack.popPose();
-        }
-
-        poseStack.pushPose();
-        float offset = getSize() * 0.0625f;
-        poseStack.translate(offset, offset, 1);
-        poseStack.scale(0.875f, 0.875f, 0.875f);
-        render(idOrTexture, modifier, poseStack, bufferSource,
-                minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
-        poseStack.popPose();
-
-        poseStack.pushPose();
-        poseStack.translate(0, 0, 2);
-        renderTexture(AGED_PHOTOGRAPH_OVERLAY_TEXTURE, poseStack, bufferSource,
-                0, 0, getSize(), getSize(), 0, 0, 1, 1,
-                packedLight, r, g, b, a);
-        poseStack.popPose();
-    }
-
-    public void renderPaperTexture(PoseStack poseStack, MultiBufferSource bufferSource,
-                                   float minX, float minY, float maxX, float maxY,
-                                   float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
-        renderTexture(PHOTOGRAPH_TEXTURE, poseStack, bufferSource, minX, minY, maxX, maxY,
-                minU, minV, maxU, maxV, packedLight, r, g, b, a);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    private static void renderTexture(ResourceLocation resource, PoseStack poseStack, MultiBufferSource bufferSource,
-                                      float minX, float minY, float maxX, float maxY,
-                                      float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
-        RenderSystem.setShaderTexture(0, resource);
-        RenderSystem.setShader(GameRenderer::getPositionColorTexLightmapShader);
-        RenderSystem.disableBlend();
-        RenderSystem.disableDepthTest();
-
-        Matrix4f matrix = poseStack.last().pose();
-        VertexConsumer bufferBuilder = bufferSource.getBuffer(RenderType.text(resource));
-        bufferBuilder.vertex(matrix, minX, maxY, 0).color(r, g, b, a).uv(minU, maxV).uv2(packedLight).endVertex();
-        bufferBuilder.vertex(matrix, maxX, maxY, 0).color(r, g, b, a).uv(maxU, maxV).uv2(packedLight).endVertex();
-        bufferBuilder.vertex(matrix, maxX, minY, 0).color(r, g, b, a).uv(maxU, minV).uv2(packedLight).endVertex();
-        bufferBuilder.vertex(matrix, minX, minY, 0).color(r, g, b, a).uv(minU, minV).uv2(packedLight).endVertex();
     }
 
     private ExposureInstance getOrCreateExposureInstance(String id, ExposureImage exposure, IPixelModifier modifier) {
