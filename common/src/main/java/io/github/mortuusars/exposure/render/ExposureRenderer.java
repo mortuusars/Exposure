@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Either;
-import io.github.mortuusars.exposure.Exposure;
+import com.mojang.math.Matrix4f;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.render.modifiers.IPixelModifier;
 import net.minecraft.client.Minecraft;
@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
 
 import java.util.HashMap;
 import java.util.Map;

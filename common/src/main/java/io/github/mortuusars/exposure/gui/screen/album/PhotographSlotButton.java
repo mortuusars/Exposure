@@ -4,13 +4,11 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.datafixers.util.Either;
 import com.mojang.blaze3d.vertex.Tesselator;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.render.PhotographRenderProperties;
 import io.github.mortuusars.exposure.render.PhotographRenderer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -21,7 +19,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -73,27 +70,27 @@ public class PhotographSlotButton extends ImageButton {
             PhotographRenderProperties renderProperties = PhotographRenderProperties.get(photograph);
 
             // Paper
-            renderTexture(guiGraphics, renderProperties.getAlbumPaperTexture(),
-                    getX(), getY(), 0, 0, 0, width, height, width, height);
+            renderTexture(poseStack, renderProperties.getAlbumPaperTexture(),
+                    x, y, 0, 0, 0, width, height, width, height);
 
             // Exposure
-            guiGraphics.pose().pushPose();
+            poseStack.pushPose();
             float scale = exposureArea.getWidth() / (float) ExposureClient.getExposureRenderer().getSize();
-            guiGraphics.pose().translate(exposureArea.getX(), exposureArea.getY(), 1);
-            guiGraphics.pose().scale(scale, scale, scale);
+            poseStack.translate(exposureArea.getX(), exposureArea.getY(), 1);
+            poseStack.scale(scale, scale, scale);
             MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-            PhotographRenderer.render(photograph, false, false, guiGraphics.pose(),
+            PhotographRenderer.render(photograph, false, false, poseStack,
                     bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
             bufferSource.endBatch();
-            guiGraphics.pose().popPose();
+            poseStack.popPose();
 
             // Paper overlay
             if (renderProperties.hasAlbumPaperOverlayTexture()) {
-                guiGraphics.pose().pushPose();
-                guiGraphics.pose().translate(0, 0, 2);
-                renderTexture(guiGraphics, renderProperties.getAlbumPaperOverlayTexture(),
-                        getX(), getY(), 0, 0, 0, width, height, width, height);
-                guiGraphics.pose().popPose();
+                poseStack.pushPose();
+                poseStack.translate(0, 0, 2);
+                renderTexture(poseStack, renderProperties.getAlbumPaperOverlayTexture(),
+                        x, y, 0, 0, 0, width, height, width, height);
+                poseStack.popPose();
             }
         }
         else {
@@ -103,15 +100,6 @@ public class PhotographSlotButton extends ImageButton {
         // Album pins
         int xTex = xTexStart + (hasPhotograph ? getWidth() : 0);
         renderTexture(poseStack, resourceLocation, x, y, xTex, yTexStart, yDiffTex, width, height, textureWidth, textureHeight);
-
-        if (photograph.getItem() instanceof PhotographItem photographItem) {
-            @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(photograph);
-            if (idOrTexture != null) {
-                ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.EMPTY, guiGraphics.pose(),
-                        exposureArea.getX(), exposureArea.getY(), exposureArea.getWidth(), exposureArea.getHeight());
-            }
-        }
-        renderTexture(guiGraphics, resourceLocation, getX(), getY(), xTex, yTexStart, yDiffTex, width, height, textureWidth, textureHeight);
     }
 
     public void renderTexture(PoseStack poseStack, ResourceLocation resourceLocation, int x, int y,

@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Config;
@@ -16,7 +17,6 @@ import io.github.mortuusars.exposure.render.PhotographRenderer;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
@@ -80,40 +80,40 @@ public class PhotographScreen extends ZoomableScreen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float partialTick) {
         pager.update();
 
-        renderBackground(guiGraphics);
+        renderBackground(poseStack);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 500); // Otherwise exposure will overlap buttons
+        poseStack.pushPose();
+        poseStack.translate(0, 0, 500); // Otherwise exposure will overlap buttons
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        super.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popPose();
+        super.render(poseStack, mouseX, mouseY, partialTick);
+        poseStack.popPose();
 
-        guiGraphics.pose().pushPose();
+        poseStack.pushPose();
 
-        guiGraphics.pose().translate(x, y, 0);
-        guiGraphics.pose().translate(width / 2f, height / 2f, 0);
-        guiGraphics.pose().scale(scale, scale, scale);
-        guiGraphics.pose().translate(ExposureClient.getExposureRenderer().getSize() / -2f, ExposureClient.getExposureRenderer().getSize() / -2f, 0);
+        poseStack.translate(x, y, 0);
+        poseStack.translate(width / 2f, height / 2f, 0);
+        poseStack.scale(scale, scale, scale);
+        poseStack.translate(ExposureClient.getExposureRenderer().getSize() / -2f, ExposureClient.getExposureRenderer().getSize() / -2f, 0);
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
 
         ArrayList<ItemAndStack<PhotographItem>> photos = new ArrayList<>(photographs);
         Collections.rotate(photos, -pager.getCurrentPage());
-        PhotographRenderer.renderStackedPhotographs(photos, guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
+        PhotographRenderer.renderStackedPhotographs(photos, poseStack, bufferSource, LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
 
         bufferSource.endBatch();
 
-        guiGraphics.pose().popPose();
+        poseStack.popPose();
 
         ItemAndStack<PhotographItem> photograph = photographs.get(pager.getCurrentPage());
 
         Either<String, ResourceLocation> idOrTexture = photograph.getItem().getIdOrTexture(photograph.getStack());
         if (minecraft.player != null && minecraft.player.isCreative() && idOrTexture != null) {
-            guiGraphics.drawString(font, "?", width - font.width("?") - 10, 10, 0xFFFFFFFF);
+            font.draw(poseStack, "?", width - font.width("?") - 10, 10, 0xFFFFFFFF);
 
             if (mouseX > width - 20 && mouseX < width && mouseY < 20) {
                 List<Component> lines = new ArrayList<>();
@@ -124,7 +124,7 @@ public class PhotographScreen extends ZoomableScreen {
                         id -> Component.translatable("gui.exposure.photograph_screen.copy_id_tooltip", "CTRL + C"),
                         texture -> Component.translatable("gui.exposure.photograph_screen.copy_texture_path_tooltip", "CTRL + C")));
 
-                guiGraphics.renderTooltip(font, lines, Optional.empty(), mouseX, mouseY + 20);
+                renderTooltip(poseStack, lines, Optional.empty(), mouseX, mouseY + 20);
             }
         }
 

@@ -14,6 +14,7 @@ import io.github.mortuusars.exposure.menu.CameraAttachmentsMenu;
 import io.github.mortuusars.exposure.menu.LecternAlbumMenu;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.recipe.FilmDevelopingRecipe;
+import io.github.mortuusars.exposure.recipe.PhotographAgingRecipe;
 import io.github.mortuusars.exposure.recipe.PhotographCopyingRecipe;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.Registry;
@@ -138,7 +139,7 @@ public class Exposure {
                         .tab(CreativeModeTab.TAB_TOOLS)));
 
         public static final Supplier<StackedPhotographsItem> STACKED_PHOTOGRAPHS = Register.item("stacked_photographs",
-                () -> new StackedPhotographsItem(16, new Item.Properties()
+                () -> new StackedPhotographsItem(new Item.Properties()
                         .stacksTo(1)
                         .tab(CreativeModeTab.TAB_TOOLS)));
 

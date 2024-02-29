@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
+import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.entity.PhotographEntity;
 import net.minecraft.client.renderer.LightTexture;
@@ -38,10 +38,10 @@ public class PhotographEntityRenderer<T extends PhotographEntity> extends Entity
 
         poseStack.pushPose();
 
-        poseStack.mulPose(Axis.XP.rotationDegrees(entity.getXRot()));
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - entity.getYRot()));
-        poseStack.mulPose(Axis.ZP.rotationDegrees((entity.getRotation() * 360.0F / 4.0F)));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+        poseStack.mulPose(Vector3f.XP.rotationDegrees(entity.getXRot()));
+        poseStack.mulPose(Vector3f.YP.rotationDegrees(180.0F - entity.getYRot()));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees((entity.getRotation() * 360.0F / 4.0F)));
+        poseStack.mulPose(Vector3f.ZP.rotationDegrees(180.0F));
 
         poseStack.translate(-0.5, -0.5, 1f / 32f - 0.005);
         float scale = 1f / ExposureClient.getExposureRenderer().getSize();

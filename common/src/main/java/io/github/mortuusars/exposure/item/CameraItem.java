@@ -554,7 +554,7 @@ public class CameraItem extends Item {
     }
 
     @SuppressWarnings("unused")
-    protected Capture createCapture(Player player, ItemStack cameraStack, String exposureId, boolean flash) {
+    protected Capture createCapture(Player player, ItemStack cameraStack, String exposureId, CompoundTag frameData, boolean flash) {
         ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
         int frameSize = film.getItem().getFrameSize(film.getStack());
         float brightnessStops = getShutterSpeed(cameraStack).getStopsDifference(ShutterSpeed.DEFAULT);
@@ -570,7 +570,7 @@ public class CameraItem extends Item {
 
         components.add(new ExposureStorageSaveComponent(exposureId, true));
 
-        return new Capture(exposureId)
+        return new Capture(exposureId, frameData)
                 .setFilmType(film.getItem().getType())
                 .size(frameSize)
                 .brightnessStops(brightnessStops)

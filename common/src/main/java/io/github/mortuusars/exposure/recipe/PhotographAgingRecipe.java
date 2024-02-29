@@ -4,7 +4,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.item.PhotographItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
@@ -29,7 +28,7 @@ public class PhotographAgingRecipe extends AbstractNbtTransferringRecipe{
     public static class Serializer implements RecipeSerializer<PhotographAgingRecipe> {
         @Override
         public @NotNull PhotographAgingRecipe fromJson(ResourceLocation recipeId, JsonObject serializedRecipe) {
-            Ingredient photographIngredient = Ingredient.fromJson(GsonHelper.getNonNull(serializedRecipe, "photograph"));
+            Ingredient photographIngredient = Ingredient.fromJson(GsonHelper.getAsJsonObject(serializedRecipe, "photograph"));
             NonNullList<Ingredient> ingredients = getIngredients(GsonHelper.getAsJsonArray(serializedRecipe, "ingredients"));
             ItemStack result = ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(serializedRecipe, "result"));
 
