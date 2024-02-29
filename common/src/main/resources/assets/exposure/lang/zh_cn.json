@@ -111,6 +111,8 @@
   "advancement.exposure.get_photograph.description": "获得一张照片",
   "advancement.exposure.exposure.title": "底片",
   "advancement.exposure.exposure.description": "使用相机曝光一张胶片",
+  "advancement.exposure.take_selfie.title": "刚才的聚光灯照的是我？",
+  "advancement.exposure.take_selfie.description": "使用第三人称视角自拍一张",
   "advancement.exposure.void.title": "在虚空下，它是一个明亮的表面！",
   "advancement.exposure.void.description": "在末地拍摄一张照片",
   "advancement.exposure.flash.title": "星星点灯!",
