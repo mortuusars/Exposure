@@ -8,6 +8,8 @@ import io.github.mortuusars.exposure.item.PhotographItem;
 import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -20,11 +22,6 @@ public class ItemFramePhotographRenderer {
         if (!(itemStack.getItem() instanceof PhotographItem photographItem))
             return false;
 
-        // TODO: Check for frame entity
-//        ResourceLocation frameEntityKey = ForgeRegistries.ENTITY_TYPES.getKey(event.getItemFrameEntity().getType());
-//        if (frameEntityKey == null || frameEntityKey.toString().equals("quark:glass_frame"))
-//            return;
-
         @Nullable Either<String, ResourceLocation> idOrTexture = photographItem.getIdOrTexture(itemStack);
         if (idOrTexture == null)
             return false;
@@ -33,6 +30,11 @@ public class ItemFramePhotographRenderer {
             packedLight = LightTexture.FULL_BRIGHT;
 
         poseStack.pushPose();
+
+        String entityName = BuiltInRegistries.ENTITY_TYPE.getKey(itemFrameEntity.getType()).toString();
+        if (entityName.equals("quark:glass_frame")) {
+            poseStack.translate(0, 0, 0.475f);
+        }
 
         // Snap to 90 degrees like a map.
         poseStack.mulPose(Axis.ZP.rotationDegrees(45 * itemFrameEntity.getRotation()));

@@ -10,6 +10,7 @@
 - Updated localization files 
 
 
+- Fixed rendering of a Photograph in Quark's Glass Item Frame
 - Fixed crash when opening Album that's placed in a Lectern
 - Fixed crash when clicking on Exposure entry in Mods menu
 
