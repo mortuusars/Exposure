@@ -64,6 +64,7 @@ public class LecternAlbumMenu extends AlbumMenu {
 
     @Override
     public void setCurrentSpreadIndex(int spreadIndex) {
+        spreadIndex = Math.max(0, spreadIndex);
         super.setCurrentSpreadIndex(spreadIndex);
         setData(1, spreadIndex);
     }
