@@ -28,7 +28,9 @@ public class Config {
         update(type);
     }
 
-    private static void update(ModConfig.Type type) {
+    // Config loading/reloading can fire from different threads.
+    // Don't know if 'synchronized' helps, but I can't find anything about making config thread-safe.
+    private static synchronized void update(ModConfig.Type type) {
         if (type == ModConfig.Type.COMMON)
             Common.update();
     }
