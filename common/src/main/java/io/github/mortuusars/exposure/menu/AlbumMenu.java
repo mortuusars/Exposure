@@ -233,7 +233,7 @@ public class AlbumMenu extends AbstractContainerMenu {
     }
 
     public Optional<AlbumPhotographSlot> getPhotographSlot(int index) {
-        if (index <= photographSlots.size() - 1)
+        if (index >= 0 && index < photographSlots.size())
             return Optional.ofNullable(photographSlots.get(index));
 
         return Optional.empty();
