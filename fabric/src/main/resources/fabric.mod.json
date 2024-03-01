@@ -12,7 +12,7 @@
     "sources": "${mod_github}"
   },
   "license": "${mod_license}",
-  "icon": "assets/exposure/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
