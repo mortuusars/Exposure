@@ -47,6 +47,8 @@ public class PhotographScreen extends ZoomableScreen {
         Preconditions.checkState(!photographs.isEmpty(), "No photographs to display.");
         this.photographs = photographs;
 
+        Minecraft.getInstance().keyboardHandler.setSendRepeatsToGui(true);
+
         // Query all photographs:
         for (ItemAndStack<PhotographItem> photograph : photographs) {
             @Nullable Either<String, ResourceLocation> idOrTexture = photograph.getItem()

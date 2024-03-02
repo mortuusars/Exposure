@@ -5,11 +5,9 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Vector3f;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.item.PhotographItem;
-import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.decoration.ItemFrame;
@@ -31,7 +29,7 @@ public class ItemFramePhotographRenderer {
 
         poseStack.pushPose();
 
-        String entityName = BuiltInRegistries.ENTITY_TYPE.getKey(itemFrameEntity.getType()).toString();
+        String entityName = Registry.ENTITY_TYPE.getKey(itemFrameEntity.getType()).toString();
         if (entityName.equals("quark:glass_frame")) {
             poseStack.translate(0, 0, 0.475f);
         }
