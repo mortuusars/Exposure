@@ -55,6 +55,7 @@ public class ExposureFabric implements ModInitializer {
             content.prepend(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
             content.prepend(Exposure.Items.DEVELOPED_COLOR_FILM.get());
             content.prepend(Exposure.Items.PHOTOGRAPH.get());
+            content.prepend(Exposure.Items.AGED_PHOTOGRAPH.get());
             content.prepend(Exposure.Items.STACKED_PHOTOGRAPHS.get());
             content.prepend(Exposure.Items.ALBUM.get());
         });

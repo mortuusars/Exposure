@@ -35,18 +35,18 @@ public class PacketsImpl {
         ClientPackets.registerS2CPackets();
     }
 
-    public static void sendToServer(IPacket<?> packet) {
+    public static void sendToServer(IPacket packet) {
         ClientPackets.sendToServer(packet);
     }
 
-    public static void sendToClient(IPacket<?> packet, ServerPlayer player) {
+    public static void sendToClient(IPacket packet, ServerPlayer player) {
         ServerPlayNetworking.send(player, packet.getId(), packet.toBuffer(PacketByteBufs.create()));
     }
 
-    private record ServerHandler(Function<FriendlyByteBuf, IPacket<?>> decodeFunction) implements ServerPlayNetworking.PlayChannelHandler {
+    private record ServerHandler(Function<FriendlyByteBuf, IPacket> decodeFunction) implements ServerPlayNetworking.PlayChannelHandler {
         @Override
         public void receive(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender responseSender) {
-            IPacket<?> packet = decodeFunction.apply(buf);
+            IPacket packet = decodeFunction.apply(buf);
             packet.handle(PacketDirection.TO_SERVER, player);
         }
     }

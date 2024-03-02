@@ -11,6 +11,7 @@ import io.github.mortuusars.exposure.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.render.ExposureImage;
 import io.github.mortuusars.exposure.render.ExposureTexture;
 import io.github.mortuusars.exposure.data.storage.ExposureSavedData;
+import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
 import io.github.mortuusars.exposure.util.GuiUtil;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.client.gui.GuiGraphics;
@@ -126,7 +127,7 @@ public class NegativeExposureScreen extends ZoomableScreen {
         }
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
-        ExposureClient.getExposureRenderer().renderSimple(idOrTexture, true, true, guiGraphics.pose(), bufferSource,
+        ExposureClient.getExposureRenderer().render(idOrTexture, ExposurePixelModifiers.NEGATIVE_FILM, guiGraphics.pose(), bufferSource,
                 0, 0, width, height, 0, 0, 1, 1, LightTexture.FULL_BRIGHT,
                 type.frameR, type.frameG, type.frameB, 255);
         bufferSource.endBatch();

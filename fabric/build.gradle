@@ -49,7 +49,7 @@ dependencies {
 
     // Create - dependencies are added transitively
     modCompileOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
-    modRuntimeOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
+//    modRuntimeOnly("com.simibubi.create:create-fabric-${minecraft_version}:${create_fabric_version}")
 
     // C2ME
 //    modImplementation("maven.modrinth:VSNURh3q:0.2.0+alpha.11.0+1.20.1")

@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record ApplyShaderS2CP(ResourceLocation shaderLocation) implements IPacket<ApplyShaderS2CP> {
+public record ApplyShaderS2CP(ResourceLocation shaderLocation) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("apply_shader");
 
     @Override

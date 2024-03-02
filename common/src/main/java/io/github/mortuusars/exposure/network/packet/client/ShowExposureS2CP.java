@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
-public final class ShowExposureS2CP implements IPacket<ShowExposureS2CP> {
+public final class ShowExposureS2CP implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("show_exposure");
 
     private final String idOrPath;

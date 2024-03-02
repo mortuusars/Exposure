@@ -7,16 +7,13 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.camera.infrastructure.FrameData;
+import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.gui.ClientGUI;
 import io.github.mortuusars.exposure.gui.component.PhotographTooltip;
-import io.github.mortuusars.exposure.entity.PhotographEntity;
 import io.github.mortuusars.exposure.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringUtil;
@@ -37,8 +34,6 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,29 +47,14 @@ public class PhotographItem extends Item {
             return null;
 
         String id = stack.getTag().getString(FrameData.ID);
-        if (id.length() > 0)
+        if (!id.isEmpty())
             return Either.left(id);
 
         String resource = stack.getTag().getString(FrameData.TEXTURE);
-        if (resource.length() > 0)
+        if (!resource.isEmpty())
             return Either.right(new ResourceLocation(resource));
 
         return null;
-    }
-
-    public List<Component> getNote(ItemStack stack) {
-        if (stack.getTag() != null) {
-            ListTag noteListTag = stack.getTag().getList("Note", Tag.TAG_STRING);
-            if (noteListTag.size() > 0) {
-                ArrayList<Component> noteComponents = new ArrayList<>();
-                for (Tag noteLine : noteListTag) {
-                    noteComponents.add(Component.Serializer.fromJson(noteLine.getAsString()));
-                }
-                return noteComponents;
-            }
-        }
-
-        return Collections.emptyList();
     }
 
     public void setId(ItemStack stack, @NotNull String id) {
@@ -86,22 +66,9 @@ public class PhotographItem extends Item {
         stack.getOrCreateTag().putString(FrameData.TEXTURE, resourceLocation.toString());
     }
 
-    public void setNote(ItemStack stack, List<Component> note) {
-        if (note.size() == 0 && stack.getTag() != null) {
-            stack.getTag().remove("Note");
-            return;
-        }
-
-        ListTag noteListTag = new ListTag();
-        for (Component component : note) {
-            noteListTag.add(StringTag.valueOf(Component.Serializer.toJson(component)));
-        }
-        stack.getOrCreateTag().put("Note", noteListTag);
-    }
-
     @Override
     public @NotNull Optional<TooltipComponent> getTooltipImage(@NotNull ItemStack stack) {
-        return getIdOrTexture(stack) != null ? Optional.of(new PhotographTooltip(getIdOrTexture(stack))) : Optional.empty();
+        return getIdOrTexture(stack) != null ? Optional.of(new PhotographTooltip(stack)) : Optional.empty();
     }
 
     @Override
@@ -113,12 +80,14 @@ public class PhotographItem extends Item {
                         .withStyle(ChatFormatting.GRAY));
 
             String photographerName = stack.getTag().getString(FrameData.PHOTOGRAPHER);
-            if (photographerName.length() > 0 && Config.Client.PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP.get()) {
+            if (!photographerName.isEmpty() && Config.Client.PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP.get()) {
                 tooltipComponents.add(Component.translatable("item.exposure.photograph.photographer_tooltip",
                                 Component.literal(photographerName).withStyle(ChatFormatting.WHITE))
                         .withStyle(ChatFormatting.GRAY));
             }
 
+            // The value is not constant here
+            //noinspection ConstantValue
             if (generation < 2 && !PlatformHelper.isModLoaded("jei") && Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
                 ClientGUI.addPhotographCopyingTooltip(stack, level, tooltipComponents, isAdvanced);
             }

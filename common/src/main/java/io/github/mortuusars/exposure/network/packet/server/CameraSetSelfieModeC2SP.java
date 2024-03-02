@@ -12,7 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
-public record CameraSetSelfieModeC2SP(InteractionHand hand, boolean isInSelfieMode, boolean effects) implements IPacket<CameraSetSelfieModeC2SP> {
+public record CameraSetSelfieModeC2SP(InteractionHand hand, boolean isInSelfieMode, boolean effects) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("camera_set_selfie_mode");
 
     @Override

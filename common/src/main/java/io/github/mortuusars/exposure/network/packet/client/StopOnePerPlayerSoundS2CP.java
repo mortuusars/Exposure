@@ -16,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
-public record StopOnePerPlayerSoundS2CP(UUID sourcePlayerId, SoundEvent soundEvent) implements IPacket<StopOnePerPlayerSoundS2CP> {
+public record StopOnePerPlayerSoundS2CP(UUID sourcePlayerId, SoundEvent soundEvent) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("stop_one_per_player_sound");
 
     @Override

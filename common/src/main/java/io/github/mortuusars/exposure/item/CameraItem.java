@@ -351,17 +351,17 @@ public class CameraItem extends Item {
 
         ItemStack cameraStack = player.getItemInHand(hand);
 
-        Capture capture = createCapture(player, cameraStack, exposureId, flashHasFired);
+        CompoundTag frame = createFrameTag(player, cameraStack, exposureId, flashHasFired, lightLevel);
+
+        Capture capture = createCapture(player, cameraStack, exposureId, frame, flashHasFired);
         CaptureManager.enqueue(capture);
 
-        CompoundTag frame = createFrameTag(player, cameraStack, exposureId, capture, flashHasFired, lightLevel);
-
-        exposeFilmFrame(cameraStack, frame);
+        addFrameToFilm(cameraStack, frame);
 
         Packets.sendToServer(new CameraInHandAddFrameC2SP(hand, frame));
     }
 
-    public void exposeFilmFrame(ItemStack cameraStack, CompoundTag frame) {
+    public void addFrameToFilm(ItemStack cameraStack, CompoundTag frame) {
         ItemAndStack<FilmRollItem> film = getFilm(cameraStack)
                 .orElseThrow(() -> new IllegalStateException("Camera should have film inserted."));
 
@@ -429,7 +429,7 @@ public class CameraItem extends Item {
         return true;
     }
 
-    protected CompoundTag createFrameTag(Player player, ItemStack cameraStack, String exposureId, Capture capture, boolean flash, int lightLevel) {
+    protected CompoundTag createFrameTag(Player player, ItemStack cameraStack, String exposureId, boolean flash, int lightLevel) {
         Level level = player.level();
 
         CompoundTag tag = new CompoundTag();
@@ -481,7 +481,7 @@ public class CameraItem extends Item {
             ListTag entities = new ListTag();
 
             for (Entity entity : entitiesInFrame) {
-                CompoundTag entityInfoTag = createEntityInFrameInfo(entity, player, cameraStack, capture);
+                CompoundTag entityInfoTag = createEntityInFrameInfo(entity, player, cameraStack);
                 if (entityInfoTag.isEmpty())
                     continue;
 
@@ -499,8 +499,7 @@ public class CameraItem extends Item {
         return tag;
     }
 
-    @SuppressWarnings("unused")
-    protected CompoundTag createEntityInFrameInfo(Entity entity, Player photographer, ItemStack cameraStack, Capture capture) {
+    protected CompoundTag createEntityInFrameInfo(Entity entity, Player photographer, ItemStack cameraStack) {
         CompoundTag tag = new CompoundTag();
         ResourceLocation entityRL = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
 
@@ -555,7 +554,7 @@ public class CameraItem extends Item {
     }
 
     @SuppressWarnings("unused")
-    protected Capture createCapture(Player player, ItemStack cameraStack, String exposureId, boolean flash) {
+    protected Capture createCapture(Player player, ItemStack cameraStack, String exposureId, CompoundTag frameData, boolean flash) {
         ItemAndStack<FilmRollItem> film = getFilm(cameraStack).orElseThrow();
         int frameSize = film.getItem().getFrameSize(film.getStack());
         float brightnessStops = getShutterSpeed(cameraStack).getStopsDifference(ShutterSpeed.DEFAULT);
@@ -571,7 +570,7 @@ public class CameraItem extends Item {
 
         components.add(new ExposureStorageSaveComponent(exposureId, true));
 
-        return new Capture(exposureId)
+        return new Capture(exposureId, frameData)
                 .setFilmType(film.getItem().getType())
                 .size(frameSize)
                 .brightnessStops(brightnessStops)

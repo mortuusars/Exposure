@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record ExposeCommandS2CP(int size) implements IPacket<ExposeCommandS2CP> {
+public record ExposeCommandS2CP(int size) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("expose_command");
 
     @Override

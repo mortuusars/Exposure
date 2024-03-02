@@ -5,9 +5,10 @@ import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.datafixers.util.Either;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.camera.capture.Capture;
 import io.github.mortuusars.exposure.camera.capture.CaptureManager;
-import io.github.mortuusars.exposure.camera.capture.LastExposures;
+import io.github.mortuusars.exposure.camera.capture.CapturedFramesHistory;
 import io.github.mortuusars.exposure.camera.capture.component.BaseComponent;
 import io.github.mortuusars.exposure.camera.capture.component.ExposureStorageSaveComponent;
 import io.github.mortuusars.exposure.camera.capture.component.FileSaveComponent;
@@ -45,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class ClientPacketsHandler {
     public static void applyShader(ApplyShaderS2CP packet) {
@@ -67,7 +69,9 @@ public class ClientPacketsHandler {
         int finalSize = size;
         Minecraft.getInstance().execute(() -> {
             String fileName = Util.getFilenameFormattedDateTime();
-            Capture capture = new Capture(fileName)
+            CompoundTag frameData = new CompoundTag();
+            frameData.putString(FrameData.ID, fileName);
+            Capture capture = new Capture(fileName, frameData)
                     .size(finalSize)
                     .cropFactor(1f)
                     .components(
@@ -106,7 +110,10 @@ public class ClientPacketsHandler {
                         }
                     }
 
-                    Capture capture = new Capture(finalExposureId)
+                    CompoundTag frameData = new CompoundTag();
+                    frameData.putString(FrameData.ID, finalExposureId);
+
+                    Capture capture = new Capture(finalExposureId, frameData)
                             .size(size)
                             .cropFactor(1f)
                             .components(new ExposureStorageSaveComponent(finalExposureId, true))
@@ -176,33 +183,39 @@ public class ClientPacketsHandler {
     }
 
     private static @Nullable Screen createLatestScreen(Player player, boolean negative) {
-        Collection<String> exposureIds = LastExposures.get();
-        if (exposureIds.size() == 0) {
+        List<CompoundTag> latestFrames = CapturedFramesHistory.get()
+                .stream()
+                .filter(frame -> !frame.getString(FrameData.ID).isEmpty())
+                .toList();
+
+        if (latestFrames.isEmpty()) {
             player.displayClientMessage(Component.translatable("command.exposure.show.latest.error.no_exposures"), false);
             return null;
         }
 
+
         if (negative) {
             List<Either<String, ResourceLocation>> exposures = new ArrayList<>();
-
-            for (String exposureId : exposureIds) {
+            for (CompoundTag frame : latestFrames) {
+                String exposureId = frame.getString(FrameData.ID);
                 exposures.add(Either.left(exposureId));
             }
-
             return new NegativeExposureScreen(exposures);
         } else {
             List<ItemAndStack<PhotographItem>> photographs = new ArrayList<>();
 
-            for (String exposureId : exposureIds) {
+            for (CompoundTag frame : latestFrames) {
                 ItemStack stack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-                CompoundTag tag = new CompoundTag();
-                tag.putString("Id", exposureId);
-                stack.setTag(tag);
+                stack.setTag(frame);
 
                 photographs.add(new ItemAndStack<>(stack));
             }
 
             return new PhotographScreen(photographs);
         }
+    }
+
+    public static void clearRenderingCache() {
+        ExposureClient.getExposureRenderer().clearData();
     }
 }

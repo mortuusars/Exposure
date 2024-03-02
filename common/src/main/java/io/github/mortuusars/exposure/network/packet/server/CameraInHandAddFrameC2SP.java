@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) implements IPacket<CameraInHandAddFrameC2SP> {
+public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("camera_in_hand_add_frame");
 
     @Override
@@ -60,7 +60,7 @@ public record CameraInHandAddFrameC2SP(InteractionHand hand, CompoundTag frame) 
 
         addStructuresInfo(serverPlayer);
 
-        cameraItem.exposeFilmFrame(itemInHand, frame);
+        cameraItem.addFrameToFilm(itemInHand, frame);
         Exposure.Advancements.FILM_FRAME_EXPOSED.trigger(serverPlayer, new ItemAndStack<>(itemInHand), frame);
         return true;
     }

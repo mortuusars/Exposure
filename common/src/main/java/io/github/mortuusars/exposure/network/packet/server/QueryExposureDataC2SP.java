@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public record QueryExposureDataC2SP(String id) implements IPacket<QueryExposureDataC2SP> {
+public record QueryExposureDataC2SP(String id) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("query_exposure_data");
 
     @Override

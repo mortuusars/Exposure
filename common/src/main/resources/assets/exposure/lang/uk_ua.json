@@ -17,6 +17,7 @@
   "item.exposure.developed_color_film": "Проявлена кольорова плівка",
 
   "item.exposure.photograph": "Фотографія",
+  "item.exposure.aged_photograph": "Зістарена фотографія",
   "item.exposure.photograph.photographer_tooltip": "Автор: %s",
   "item.exposure.photograph.generation.0": "Оригінал",
   "item.exposure.photograph.generation.1": "Копія оригіналу",

@@ -28,7 +28,9 @@ public class Config {
         update(type);
     }
 
-    private static void update(ModConfig.Type type) {
+    // Config loading/reloading can fire from different threads.
+    // Don't know if 'synchronized' helps, but I can't find anything about making config thread-safe.
+    private static synchronized void update(ModConfig.Type type) {
         if (type == ModConfig.Type.COMMON)
             Common.update();
     }
@@ -45,6 +47,9 @@ public class Config {
         public static final ForgeConfigSpec.IntValue LIGHTROOM_BW_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_COLOR_FILM_PRINT_TIME;
         public static final ForgeConfigSpec.IntValue LIGHTROOM_EXPERIENCE_PER_PRINT;
+
+        // Photographs
+        public static final ForgeConfigSpec.IntValue STACKED_PHOTOGRAPHS_MAX_SIZE;
 
         // Compat
         public static final ForgeConfigSpec.BooleanValue CREATE_SPOUT_DEVELOPING_ENABLED;
@@ -83,6 +88,15 @@ public class Config {
                 LIGHTROOM_EXPERIENCE_PER_PRINT = builder
                         .comment("Amount of experience awarded per printed Photograph. Set to 0 to disable.")
                         .defineInRange("ExperiencePerPrint", 4, 0, 32767);
+            }
+            builder.pop();
+
+            builder.push("Photographs");
+            {
+                STACKED_PHOTOGRAPHS_MAX_SIZE = builder
+                        .comment("How many photographs can be stacked in Stacked Photographs item. Default: 16.",
+                                "Larger numbers may cause errors. Use at your own risk.")
+                        .defineInRange("StackedPhotographsMaxSize", 16, 2, 64);
             }
             builder.pop();
 
@@ -175,7 +189,7 @@ public class Config {
         public static final ForgeConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
 
         // IMAGE SAVING
-        public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING;
+        public static final ForgeConfigSpec.BooleanValue SAVE_EXPOSURE_TO_FILE_WHEN_VIEWED;
         public static final ForgeConfigSpec.BooleanValue EXPOSURE_SAVING_LEVEL_SUBFOLDER;
 
         static {
@@ -235,7 +249,7 @@ public class Config {
 
             {
                 builder.push("FileSaving");
-                EXPOSURE_SAVING = builder
+                SAVE_EXPOSURE_TO_FILE_WHEN_VIEWED = builder
                         .comment("When the Photograph is viewed in UI, image will be saved to 'exposures' folder as a png.")
                         .define("SavePhotographs", true);
                 EXPOSURE_SAVING_LEVEL_SUBFOLDER = builder

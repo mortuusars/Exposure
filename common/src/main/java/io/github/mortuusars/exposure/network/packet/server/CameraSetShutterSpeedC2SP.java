@@ -11,7 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record CameraSetShutterSpeedC2SP(ShutterSpeed shutterSpeed) implements IPacket<CameraSetShutterSpeedC2SP> {
+public record CameraSetShutterSpeedC2SP(ShutterSpeed shutterSpeed) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("camera_set_shutter_speed");
     @Override
     public ResourceLocation getId() {

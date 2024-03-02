@@ -8,7 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
-public record ExposureDataPartPacket(String id, int width, int height, CompoundTag properties, int offset, byte[] partBytes) implements IPacket<ExposureDataPartPacket> {
+public record ExposureDataPartPacket(String id, int width, int height, CompoundTag properties, int offset, byte[] partBytes) implements IPacket {
     public static final ResourceLocation ID = Exposure.resource("exposure_data_part");
 
     @Override
