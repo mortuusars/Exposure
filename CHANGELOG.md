@@ -1,16 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.4.0 - 2024-03-02
 - Added Aged Photographs. Created by crafting a Photograph with brown dye
 - Stacked Photographs max stack size can now be changed in a config
-- Added Spanish and French translations 
 
 
 - Lowered required Fabric API version to 0.88.1+
 - Updated localization files 
 
 
-- Fixed rendering of a Photograph in Quark's Glass Item Frame
+- Fixed incorrect position of a Photograph in Quark's Glass Item Frame
 - Fixed crash when opening Album that's placed in a Lectern
 - Fixed crash when clicking on Exposure entry in Mods menu
 
