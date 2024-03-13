@@ -2,6 +2,7 @@
 
 ## Unreleased
 - Fixed Lenses config resetting and not working properly.
+- Fixed issue with `Cold Sweat` when closing viewfinder with filter installed causing blur shader to apply when it shouldn't. 
 - [Fabric] Fixed Create's Spout crashing with latest `Create Fabric`. 0.5.1f is now required.
 
 

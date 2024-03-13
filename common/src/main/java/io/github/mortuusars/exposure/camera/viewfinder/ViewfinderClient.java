@@ -4,6 +4,7 @@ package io.github.mortuusars.exposure.camera.viewfinder;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.camera.infrastructure.FocalRange;
 import io.github.mortuusars.exposure.camera.infrastructure.SynchronizedCameraInHandActions;
 import io.github.mortuusars.exposure.camera.infrastructure.ZoomDirection;
@@ -86,10 +87,23 @@ public class ViewfinderClient {
         targetFov = Minecraft.getInstance().options.fov().get();
 
         Minecraft.getInstance().gameRenderer.shutdownEffect();
-        if (previousShaderEffect != null) {
+
+        if (shouldRestorePreviousShaderEffect() && previousShaderEffect != null)
             Minecraft.getInstance().gameRenderer.loadEffect(new ResourceLocation(previousShaderEffect));
-            previousShaderEffect = null;
-        }
+
+        previousShaderEffect = null;
+    }
+
+    private static boolean shouldRestorePreviousShaderEffect() {
+        /*
+            Cold Sweat applies a shader effect when having high temperature.
+            If we restore effect after exiting viewfinder it will apply blur even if temp is normal.
+            Not restoring shader is fine, Cold Sweat will reapply it if needed.
+         */
+        if (PlatformHelper.isModLoaded("cold_sweat") && previousShaderEffect != null && previousShaderEffect.equals("minecraft:shaders/post/blobs2.json"))
+            return false;
+        else
+            return previousShaderEffect != null;
     }
 
     public static FocalRange getFocalRange() {
