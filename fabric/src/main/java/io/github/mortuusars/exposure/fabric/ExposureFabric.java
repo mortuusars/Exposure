@@ -26,14 +26,9 @@ public class ExposureFabric implements ModInitializer {
         Exposure.init();
 
         ModConfigEvents.reloading(Exposure.ID).register(config -> {
-            Config.reloading(config.getType());
             if (config.getType() == ModConfig.Type.COMMON && FabricLoader.getInstance().isModLoaded("create")) {
                 CreateFilmDeveloping.clearCachedData();
             }
-        });
-
-        ModConfigEvents.loading(Exposure.ID).register(config -> {
-            Config.loading(config.getType());
         });
 
         ForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.COMMON, Config.Common.SPEC);

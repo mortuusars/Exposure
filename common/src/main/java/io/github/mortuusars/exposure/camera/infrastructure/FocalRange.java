@@ -1,10 +1,15 @@
 package io.github.mortuusars.exposure.camera.infrastructure;
 
 import com.google.common.base.Preconditions;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -27,18 +32,21 @@ public record FocalRange(int min, int max) implements StringRepresentable {
     }
 
     public static FocalRange fromStack(ItemStack stack) {
+        if (stack.isEmpty())
+            return getDefault();
+
         if (!stack.is(Exposure.Tags.Items.LENSES)) {
-            LogUtils.getLogger().error(stack + " is not a valid lens. Should have 'exposure:lenses' tag.");
+            LogUtils.getLogger().error(stack + " is not a valid lens. Should have '#exposure:lenses' tag.");
             return getDefault();
         }
 
-        @Nullable FocalRange focalRange = Config.Common.CAMERA_LENSES.get(stack.getItem());
-        if (focalRange == null) {
-            LogUtils.getLogger().error(stack + " does not have known FocalRange value in config.");
-            return getDefault();
+        for (String value : Config.Common.CAMERA_LENSES.get()) {
+            Pair<Item, FocalRange> lens = Config.Common.parseLens(value);
+            if (stack.is(lens.getFirst()))
+                return lens.getSecond();
         }
 
-        return focalRange;
+        return getDefault();
     }
 
     public static @NotNull FocalRange getDefault() {
