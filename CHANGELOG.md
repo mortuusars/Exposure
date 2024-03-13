@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+- Fixed Lenses config resetting and not working properly.
+- [Fabric] Fixed Create's Spout crashing with latest `Create Fabric`. 0.5.1f is now required.
+
+
 ## 1.4.0 - 2024-03-02
 - Added Aged Photographs. Created by crafting a Photograph with brown dye
 - Stacked Photographs max stack size can now be changed in a config

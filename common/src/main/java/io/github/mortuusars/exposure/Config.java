@@ -12,36 +12,18 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Using ForgeConfigApiPort on fabric allows using forge config in both environments and without extra dependencies on forge.
  */
 public class Config {
-    public static void loading(ModConfig.Type type) {
-        update(type);
-    }
-
-    public static void reloading(ModConfig.Type type) {
-        update(type);
-    }
-
-    // Config loading/reloading can fire from different threads.
-    // Don't know if 'synchronized' helps, but I can't find anything about making config thread-safe.
-    private static synchronized void update(ModConfig.Type type) {
-        if (type == ModConfig.Type.COMMON)
-            Common.update();
-    }
-
     public static class Common {
         public static final ForgeConfigSpec SPEC;
 
         // Camera
         public static final ForgeConfigSpec.ConfigValue<String> CAMERA_DEFAULT_FOCAL_RANGE;
-        public static final ForgeConfigSpec.ConfigValue<List<? extends String>> CAMERA_LENS_FOCAL_RANGES;
-        public static Map<Item, FocalRange> CAMERA_LENSES = new HashMap<>();
+        public static final ForgeConfigSpec.ConfigValue<List<? extends String>> CAMERA_LENSES;
 
         // Lightroom
         public static final ForgeConfigSpec.IntValue LIGHTROOM_BW_FILM_PRINT_TIME;
@@ -62,12 +44,12 @@ public class Config {
             builder.push("Camera");
             {
                 CAMERA_DEFAULT_FOCAL_RANGE = builder
-                        .comment("Default focal range of the camera (with built in lens).",
-                                "Separated by a comma. Allowed range: " + FocalRange.ALLOWED_MIN + "-" + FocalRange.ALLOWED_MAX,
+                        .comment("Default focal range of the camera (without a lens attached).",
+                                "Allowed range: " + FocalRange.ALLOWED_MIN + "-" + FocalRange.ALLOWED_MAX,
                                 "Default: 18-55")
                         .define("DefaultFocalRange", "18-55");
 
-                CAMERA_LENS_FOCAL_RANGES = builder
+                CAMERA_LENSES = builder
                         .comment("Focal Range per lens. Item ID and min-max (or single number for primes) focal lengths. " +
                                     "Separated by a comma. Allowed range: " + FocalRange.ALLOWED_MIN + "-" + FocalRange.ALLOWED_MAX,
                                 "Note: to attach the custom lens to the camera - it needs to be added to '#exposure:lenses' item tag.",
@@ -128,7 +110,7 @@ public class Config {
         private static boolean validateLensProperties(Object o) {
             String value = (String) o;
             try {
-                @SuppressWarnings("unused") Pair<Item, FocalRange> unused = parseLensFocalRange(value);
+                @SuppressWarnings("unused") Pair<Item, FocalRange> unused = parseLens(value);
                 return true;
             } catch (Exception e) {
                 LogUtils.getLogger().error("Lens property '" + value + "' is not a valid. " + e);
@@ -136,7 +118,7 @@ public class Config {
             }
         }
 
-        private static Pair<Item, FocalRange> parseLensFocalRange(String value) {
+        public static Pair<Item, FocalRange> parseLens(String value) {
             String[] split = value.split(",");
             if (split.length != 2)
                 throw new IllegalStateException(value + " is not a valid lens property. Exactly two parts, separated by a comma, are required.");
@@ -154,17 +136,6 @@ public class Config {
 
         public static ForgeConfigSpec.ConfigValue<List<? extends String>> spoutDevelopingSequence(FilmType filmType) {
             return filmType == FilmType.COLOR ? CREATE_SPOUT_DEVELOPING_SEQUENCE_COLOR : CREATE_SPOUT_DEVELOPING_SEQUENCE_BW;
-        }
-
-        public static void update() {
-            List<? extends String> strings = CAMERA_LENS_FOCAL_RANGES.get();
-            for (String value : strings) {
-                Pair<Item, FocalRange> lens = parseLensFocalRange(value);
-                CAMERA_LENSES.put(lens.getFirst(), lens.getSecond());
-            }
-
-            LogUtils.getLogger().info("Exposure: Config updated.\n"
-                    + "Camera Lenses: " + CAMERA_LENSES.toString());
         }
     }
 
