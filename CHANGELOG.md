@@ -1,14 +1,16 @@
 # Changelog
 
-## Unreleased
+## 1.4.1 - 2024-03-15
 - Fixed Lenses config resetting and not working properly.
 - Fixed issue with `Cold Sweat` when closing viewfinder with filter installed causing blur shader to apply when it shouldn't.
 - Fixed `FTB Teams`, `REI` and `REI Plugin Compat` causing the game to freeze indefinitely when Album is opened.  
 
-- [Fabric] Fixed Create's Spout crashing with latest `Create Fabric`.
-- There will be no crash anymore if the `Create` version is not right. Spout Film Developing will not work for incompatible versions though. 
-- Create 0.5.1f required for Spout Film Developing. 
 
+- [Fabric] Fixed Create's Spout crashing with latest `Create Fabric`.
+- There will be no crash anymore if the `Create` version is not supported. Spout Film Developing will not work for incompatible versions instead. 
+- Create 0.5.1f is needed for Spout Film Developing to work. 
+
+---
 
 ## 1.4.0 - 2024-03-02
 - Added Aged Photographs. Created by crafting a Photograph with brown dye
