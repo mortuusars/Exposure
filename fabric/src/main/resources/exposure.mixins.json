@@ -3,6 +3,7 @@
   "package": "io.github.mortuusars.exposure.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
+  "plugin": "io.github.mortuusars.exposure.fabric.ExposureMixinPlugin",
   "client": [
     "GameRendererFabricMixin",
     "HumanoidModelMixin",
