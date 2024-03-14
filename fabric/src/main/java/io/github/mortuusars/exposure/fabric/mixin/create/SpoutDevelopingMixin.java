@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.fabric.mixin.create;
 
 import com.simibubi.create.content.fluids.spout.FillingBySpout;
 import com.simibubi.create.foundation.fluid.FluidIngredient;
-import io.github.fabricators_of_create.porting_lib.fluids.FluidStack;
+import io.github.fabricators_of_create.porting_lib.util.FluidStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.fabric.integration.create.CreateFilmDeveloping;
 import io.github.mortuusars.exposure.item.FilmRollItem;
