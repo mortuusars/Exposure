@@ -34,5 +34,8 @@
     "fabric-api": ">=0.76.0",
     "fabric": "*",
     "forgeconfigapiport" : ">=4.2.11"
+  },
+  "recommends": {
+    "create": ">=0.5.1-f"
   }
 }

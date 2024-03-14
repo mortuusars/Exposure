@@ -25,6 +25,9 @@ loom {
             name("Second Client")
             programArgs("--username", "AnotherDev")
 
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+
             client()
         }
     }
@@ -69,9 +72,9 @@ dependencies {
     modCompileOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
     modCompileOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
 
-//    modRuntimeOnly("com.simibubi.create:create-${create_forge_version}") { transitive = false }
-//    modRuntimeOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
-//    modRuntimeOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
+    modRuntimeOnly("com.simibubi.create:create-${create_forge_version}") { transitive = false }
+    modRuntimeOnly("com.jozufozu.flywheel:flywheel-forge-${flywheel_forge_version}")
+    modRuntimeOnly("com.tterrag.registrate:Registrate:${registrate_forge_version}")
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
