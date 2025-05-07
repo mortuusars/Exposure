@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class SignedAlbumItem extends Item {
+public class SignedAlbumItem extends Item implements AbstractAlbumItem{
     public SignedAlbumItem(Properties properties) {
         super(properties);
     }

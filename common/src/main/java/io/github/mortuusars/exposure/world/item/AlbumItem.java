@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class AlbumItem extends Item {
+public class AlbumItem extends Item implements AbstractAlbumItem{
     public AlbumItem(Properties properties) {
         super(properties);
     }
