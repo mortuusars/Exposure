@@ -8,7 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 public enum FilmType implements StringRepresentable {
     BLACK_AND_WHITE("black_and_white", 255, 255, 255, 1.0F, 1.0F, 1.0F, 1.0F),
-    COLOR("color", 180, 130, 110, 1.2F, 0.96F, 0.75F, 1.0F);
+    COLOR("color", 180, 130, 110, 1.2F, 0.96F, 0.75F, 1.0F),
+    COLOR_POSITIVE("color_positive", 255, 255, 255, 0.0F, 0.0F, 0.0F, 1.0F);
 
     @SuppressWarnings("deprecation")
     public static final StringRepresentable.EnumCodec<FilmType> CODEC = StringRepresentable.fromEnum(FilmType::values);
@@ -47,6 +48,11 @@ public enum FilmType implements StringRepresentable {
     }
 
     public ItemStack createDevelopedItemStack() {
-        return new ItemStack(this == COLOR ? Exposure.Items.DEVELOPED_COLOR_FILM.get() : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
+        // Updated to a switch statement to handle all types
+        return switch (this) {
+            case BLACK_AND_WHITE -> new ItemStack(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
+            case COLOR -> new ItemStack(Exposure.Items.DEVELOPED_COLOR_FILM.get());
+            case COLOR_POSITIVE -> new ItemStack(Exposure.Items.DEVELOPED_COLOR_POSITIVE_FILM.get());
+        };
     }
 }
