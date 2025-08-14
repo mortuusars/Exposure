@@ -1,0 +1,59 @@
+{
+  "type": "exposure:film_developing",
+  "film": {
+    "item": "exposure:color_positive_film"
+  },
+  "ingredients": [
+    [
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"minecraft:awkward\"}"
+      },
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"awkward\"}"
+      }
+    ],
+    [
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"minecraft:thick\"}"
+      },
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"thick\"}"
+      }
+    ],
+    [
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"minecraft:mundane\"}"
+      },
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"mundane\"}"
+      }
+    ],
+    [
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"minecraft:night_vision\"}"
+      },
+      {
+        "type": "forge:partial_nbt",
+        "item": "minecraft:potion",
+        "nbt": "{Potion:\"night_vision\"}"
+      }
+    ]
+  ],
+  "result": {
+    "item": "exposure:developed_color_positive_film"
+  }
+}
