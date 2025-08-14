@@ -12,6 +12,7 @@
 
 <div align="center">
   <h3>Camera mod for Minecraft with focus on process and aesthetics</h3>
+  <p>This branch implements color positive film (slide film) for 1.20.1 Forge. Not the best code, but should work</p>
   <a href="https://github.com/mortuusars/Exposure/wiki/Content">Content</a>
-  \nThis branch implements color positive film (slide film) for 1.20.1 Forge. Not the best code, but should work
+  
 </div>
