@@ -265,10 +265,12 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
 
         if (getActualProcess(filmStack) == Lightroom.Process.CHROMATIC)
             printTime = Config.Common.LIGHTROOM_CHROMATIC_PRINT_TIME.get();
-        else if (film.getType() == FilmType.BLACK_AND_WHITE)
-            printTime = Config.Common.LIGHTROOM_BW_PRINT_TIME.get();
-        else
-            printTime = Config.Common.LIGHTROOM_COLOR_PRINT_TIME.get();
+        else {
+            printTime = switch (film.getType()) {
+                case BLACK_AND_WHITE,COLOR_POSITIVE -> Config.Common.LIGHTROOM_BW_PRINT_TIME.get();
+                case COLOR -> Config.Common.LIGHTROOM_COLOR_PRINT_TIME.get();
+            };
+        }
 
         advanceFrame = advanceFrameOnFinish;
 
@@ -353,7 +355,10 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             return ArrayUtils.EMPTY_INT_ARRAY;
 
         if (process == Lightroom.Process.REGULAR) {
-            return filmItem.getType() == FilmType.COLOR ? Lightroom.DYES_FOR_COLOR : Lightroom.DYES_FOR_BW;
+            return switch (filmItem.getType()) {
+                case BLACK_AND_WHITE -> Lightroom.DYES_FOR_BW;
+                case COLOR, COLOR_POSITIVE -> Lightroom.DYES_FOR_COLOR;
+            };
         }
 
         if (process == Lightroom.Process.CHROMATIC) {
@@ -433,9 +438,10 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
             xp = result.getItem() instanceof ChromaticSheetItem ? 0 : Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT_CHROMATIC.get();
         }
         else if (film.getItem() instanceof IFilmItem filmItem)
-            xp = filmItem.getType() == FilmType.COLOR
-                    ? Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT_COLOR.get()
-                    : Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT_BW.get();
+            xp = switch (filmItem.getType()) {
+                case BLACK_AND_WHITE -> Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT_BW.get();
+                case COLOR, COLOR_POSITIVE -> Config.Common.LIGHTROOM_EXPERIENCE_PER_PRINT_COLOR.get();
+            };
 
         if (xp > 0) {
             float variability = level.getRandom().nextFloat() * 0.3f + 1f;

@@ -17,6 +17,7 @@ import io.github.mortuusars.exposure.item.DevelopedFilmItem;
 import io.github.mortuusars.exposure.menu.LightroomMenu;
 import io.github.mortuusars.exposure.render.image.RenderedImageProvider;
 import io.github.mortuusars.exposure.render.modifiers.ExposurePixelModifiers;
+import io.github.mortuusars.exposure.render.modifiers.IPixelModifier;
 import io.github.mortuusars.exposure.util.ColorChannel;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import net.minecraft.ChatFormatting;
@@ -294,8 +295,15 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         poseStack.translate(x, y, 0);
 
         MultiBufferSource.BufferSource bufferSource = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+
+        IPixelModifier modifier = switch (negative) {
+            case COLOR_POSITIVE -> ExposurePixelModifiers.EMPTY; //literally does nothing lmao
+            default -> ExposurePixelModifiers.NEGATIVE_FILM;
+        };
+
         ExposureClient.getExposureRenderer().render(RenderedImageProvider.fromFrame(frame),
-                ExposurePixelModifiers.NEGATIVE_FILM, poseStack, bufferSource, 0, 0, size, size, LightTexture.FULL_BRIGHT,
+                modifier,
+                poseStack, bufferSource, 0, 0, size, size, LightTexture.FULL_BRIGHT,
                 negative.frameR, negative.frameG, negative.frameB, Mth.clamp((int) Math.ceil(alpha * 255), 0, 255));
         bufferSource.endBatch();
 

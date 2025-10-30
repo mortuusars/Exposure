@@ -1,6 +1,7 @@
 {
   "values": [
     "exposure:developed_black_and_white_film",
-    "exposure:developed_color_film"
+    "exposure:developed_color_film",
+    "exposure:developed_color_positive_film"
   ]
 }

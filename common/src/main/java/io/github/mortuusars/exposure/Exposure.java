@@ -132,12 +132,20 @@ public class Exposure {
                 () -> new FilmRollItem(FilmType.COLOR, Mth.color(0.4F, 0.4F, 1.0F), new Item.Properties()
                         .stacksTo(16)));
 
+        public static final Supplier<FilmRollItem> COLOR_POSITIVE_FILM = Register.item("color_positive_film",
+                () -> new FilmRollItem(FilmType.COLOR_POSITIVE, Mth.color(0.8F, 0.4F, 1.0F), new Item.Properties()
+                        .stacksTo(16)));
+
         public static final Supplier<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = Register.item("developed_black_and_white_film",
                 () -> new DevelopedFilmItem(FilmType.BLACK_AND_WHITE, new Item.Properties()
                         .stacksTo(1)));
 
         public static final Supplier<DevelopedFilmItem> DEVELOPED_COLOR_FILM = Register.item("developed_color_film",
                 () -> new DevelopedFilmItem(FilmType.COLOR, new Item.Properties()
+                        .stacksTo(1)));
+
+        public static final Supplier<DevelopedFilmItem> DEVELOPED_COLOR_POSITIVE_FILM = Register.item("developed_color_positive_film",
+                () -> new DevelopedFilmItem(FilmType.COLOR_POSITIVE, new Item.Properties()
                         .stacksTo(1)));
 
         public static final Supplier<PhotographItem> PHOTOGRAPH = Register.item("photograph",

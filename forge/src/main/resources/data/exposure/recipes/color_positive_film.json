@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "C": {
+      "item": "minecraft:cyan_dye"
+    },
+    "M": {
+      "item": "minecraft:magenta_dye"
+    },
+    "Y": {
+      "item": "minecraft:yellow_dye"
+    },
+    "E": {
+      "item": "minecraft:emerald"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "K": {
+      "item": "minecraft:dried_kelp"
+    }
+  },
+  "pattern": [
+    "CYM",
+    "GEG",
+    "KGK"
+  ],
+  "result": {
+    "item": "exposure:color_positive_film"
+  },
+  "show_notification": true
+}
