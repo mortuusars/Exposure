@@ -1,7 +1,0 @@
-{
-  "predicate": {
-    "items": "minecraft:magenta_stained_glass_pane"
-  },
-  "attachment_tint": "C354CD",
-  "shader": "exposure:post/magenta_tint"
-}

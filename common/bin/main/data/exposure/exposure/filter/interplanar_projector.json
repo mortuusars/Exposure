@@ -1,7 +1,0 @@
-{
-  "predicate": {
-    "items": "exposure:interplanar_projector"
-  },
-  "attachment_texture": "exposure:textures/gui/filter/interplanar_projector.png",
-  "shader": "exposure:post/invert"
-}

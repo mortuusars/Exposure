@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "exposure:item/developed_black_and_white_film"
-  }
-}

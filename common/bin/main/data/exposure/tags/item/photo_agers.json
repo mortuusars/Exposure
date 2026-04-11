@@ -1,9 +1,0 @@
-{
-  "values": [
-    "minecraft:brown_dye",
-    {
-      "id": "supplementaries:antique_ink",
-      "required": false
-    }
-  ]
-}

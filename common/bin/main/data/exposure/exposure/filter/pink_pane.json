@@ -1,7 +1,0 @@
-{
-  "predicate": {
-    "items": "minecraft:pink_stained_glass_pane"
-  },
-  "attachment_tint": "D88198",
-  "shader": "exposure:post/pink_tint"
-}
