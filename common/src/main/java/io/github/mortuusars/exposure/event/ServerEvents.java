@@ -36,7 +36,7 @@ public class ServerEvents {
 
     public static void itemDrop(ServerPlayer player) {
         Inventory inventory = player.getInventory();
-        ItemStack droppedItem = inventory.getSelected();
+        ItemStack droppedItem = inventory.getSelectedItem();
 
         if (droppedItem.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(droppedItem)) {
             player.getActiveExposureCameraOptional().ifPresentOrElse(

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": "minecraft:iron_trapdoor",
+    "P": "#minecraft:planks",
+    "T": "minecraft:redstone_torch"
+  },
+  "pattern": [
+    "IT ",
+    "PP ",
+    "PP "
+  ],
+  "result": {
+    "id": "exposure:lightroom"
+  }
+}

@@ -4,6 +4,9 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.client.gui.Tooltips;
 import io.github.mortuusars.exposure.client.gui.Widgets;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
@@ -146,7 +149,7 @@ public class CycleButton<T> extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         @Nullable WidgetSprites sprites = spritesMap.get(getCurrentValue());
         Identifier spriteLocation = sprites != null
                 ? sprites.get(isActive(), isHoveredOrFocused())
@@ -155,13 +158,11 @@ public class CycleButton<T> extends Button {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if ((button == 0 || button == 1) && isMouseOver(mouseX, mouseY)) {
-            cycle(button == 1);
+    public void onClick(MouseButtonEvent event, boolean handled) {
+        if ((event.button() == 0 || event.button() == 1) && isMouseOver(event.x(), event.y())) {
+            cycle(event.button() == 1);
             playDownSound(Minecraft.getInstance().getSoundManager());
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -172,8 +173,8 @@ public class CycleButton<T> extends Button {
     }
 
     @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        boolean pressed = super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    public boolean keyPressed(KeyEvent event) {
+        boolean pressed = super.keyPressed(event);
 
         if (pressed)
             cycle(Minecraft.getInstance().hasShiftDown());

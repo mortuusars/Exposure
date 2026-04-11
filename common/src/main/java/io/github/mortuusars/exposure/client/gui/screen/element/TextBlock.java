@@ -8,6 +8,7 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -79,9 +80,9 @@ public class TextBlock extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Style style = getClickedComponentStyleAt(mouseX, mouseY);
-        return button == 0 && style != null && componentClickedHandler.apply(style);
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        Style style = getClickedComponentStyleAt(event.x(), event.y());
+        return event.button() == 0 && style != null && componentClickedHandler.apply(style);
     }
 
     @Override
@@ -135,6 +136,6 @@ public class TextBlock extends AbstractWidget {
             return null;
 
 
-        return font.getSplitter().componentStyleAtWidth(line, x - lineStart);
+        return null;
     }
 }

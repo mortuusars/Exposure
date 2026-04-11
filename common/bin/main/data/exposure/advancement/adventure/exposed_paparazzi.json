@@ -1,0 +1,46 @@
+{
+  "parent": "exposure:adventure/lights_up",
+  "criteria": {
+    "shoot_with_flash": {
+      "conditions": {
+        "frame": {
+          "day_time": {
+            "min": 13000,
+            "max": 23000
+          },
+          "entities_in_frame": [
+            {
+              "type": "minecraft:villager",
+              "distance": {
+                "min": 6
+              }
+            }
+          ],
+          "extra_data": "{flash:1b}"
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    }
+  },
+  "display": {
+    "frame": "task",
+    "hidden": true,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "minecraft:jack_o_lantern"
+    },
+    "title": {
+      "translate": "advancement.exposure.exposed_paparazzi.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.exposed_paparazzi.description"
+    }
+  },
+  "requirements": [
+    [
+      "shoot_with_flash"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

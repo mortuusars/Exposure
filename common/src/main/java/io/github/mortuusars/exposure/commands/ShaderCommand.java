@@ -21,7 +21,6 @@ import java.util.List;
 public class ShaderCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("shader")
-                .requires((stack) -> stack.hasPermission(2))
                 .then(Commands.literal("apply")
                         .then(Commands.argument("targets", EntityArgument.players())
                                 .then(Commands.argument("shader_location", new ShaderLocationArgument())

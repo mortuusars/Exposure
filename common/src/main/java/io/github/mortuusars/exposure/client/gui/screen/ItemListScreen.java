@@ -11,6 +11,8 @@ import net.minecraft.util.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
@@ -108,7 +110,7 @@ public class ItemListScreen extends Screen {
 
         renderTransparentBackground(guiGraphics);
 
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate((width / 2f), (height / 2f));
         float animProgress = (float)openingAnimation.getValue();
         guiGraphics.pose().scale(animProgress, animProgress);
@@ -118,7 +120,7 @@ public class ItemListScreen extends Screen {
         ////RenderSystem.disableDepthTest();
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         {
-            guiGraphics.pose().pushPose();
+            guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(left, top);
             hoveredSlot = null;
             for (Slot slot : slots) {
@@ -135,10 +137,10 @@ public class ItemListScreen extends Screen {
                 renderSlotHighlight(guiGraphics, slot.x, slot.y, 0);
             }
             this.renderLabels(guiGraphics, mouseX, mouseY);
-            guiGraphics.pose().popPose();
+            guiGraphics.pose().popMatrix();
         }
         ////RenderSystem.enableDepthTest();
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
         renderTooltip(guiGraphics, mouseX, mouseY);
     }
@@ -172,11 +174,11 @@ public class ItemListScreen extends Screen {
         int x = slot.x;
         int y = slot.y;
         ItemStack itemStack = slot.getItem();
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0.0f, 0.0f, 100.0f);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(0.0f, 0.0f);
         guiGraphics.renderItem(itemStack, x, y, slot.x + slot.y * imageWidth);
         guiGraphics.renderItemDecorations(font, itemStack, x, y, null);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     public static void renderSlotHighlight(GuiGraphics guiGraphics, int x, int y, int blitOffset) {
@@ -191,7 +193,7 @@ public class ItemListScreen extends Screen {
                     ? abstractContainerScreen.getTooltipFromContainerItem(itemStack)
                     : Screen.getTooltipFromItem(Minecrft.get(), itemStack);
 
-            Tooltips.renderTooltip(guiGraphics, font, tooltipLines, itemStack.getTooltipImage(), x, y);
+            Tooltips.renderTooltip(guiGraphics, font, tooltipLines, x, y);
         }
     }
 
@@ -206,17 +208,19 @@ public class ItemListScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (Minecrft.options().keyInventory.matches(keyCode, scanCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (Minecrft.options().keyInventory.matches(event)) {
             onClose();
             return true;
         }
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) return true;
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        if (super.mouseClicked(event, handled)) return true;
 
         if (!isHovering(0, 0, imageWidth, imageHeight, mouseX, mouseY)) {
             onClose();

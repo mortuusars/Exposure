@@ -31,7 +31,7 @@ public record OpenCameraAttachmentsInCreativePacketC2SP(int cameraSlotIndex) imp
     @Override
     public boolean handle(PacketFlow flow, Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
-            serverPlayer.server.execute(() -> {
+            serverPlayer.level().getServer().execute(() -> {
                 ItemStack stack = player.getInventory().getItem(cameraSlotIndex);
                 if (stack.getItem() instanceof CameraItem cameraItem)
                     cameraItem.openCameraAttachments(player, cameraSlotIndex, true);

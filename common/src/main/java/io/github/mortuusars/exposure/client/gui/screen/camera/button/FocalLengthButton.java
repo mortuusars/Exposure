@@ -23,8 +23,8 @@ public class FocalLengthButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderContents(guiGraphics, mouseX, mouseY, partialTick);
 
         int focalLength = (int)Math.round(Fov.fovToFocalLength(getCurrentFov()));
 

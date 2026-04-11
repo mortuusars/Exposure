@@ -2,6 +2,7 @@ package io.github.mortuusars.exposure.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.Widgets;
@@ -23,6 +24,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -122,7 +125,7 @@ public class FilmFrameInspectScreen extends Screen {
 
         renderTransparentBackground(guiGraphics);
 
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(x, y);
         guiGraphics.pose().translate(width / 2f, height / 2f);
         guiGraphics.pose().scale(scale, scale);
@@ -140,20 +143,23 @@ public class FilmFrameInspectScreen extends Screen {
         GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
 //        //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-        guiGraphics.pose().translate(12, 12, 0);
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate((float)(x + width / 2f - (BG_SIZE * scale) / 2f + 12 * scale),
+                (float)(y + height / 2f - (BG_SIZE * scale) / 2f + 12 * scale), 0f);
+        poseStack.scale(scale, scale, 1f);
         RenderableImage image = ExposureClient.renderedExposures().getOrCreate(frame).modifyWith(ImageEffect.NEGATIVE_FILM);
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        ExposureClient.imageRenderer().render(image,  guiGraphics.pose(), bufferSource,
+        ExposureClient.imageRenderer().render(image, poseStack, bufferSource,
                 new RenderCoordinates(0, 0, FRAME_SIZE, FRAME_SIZE), filmType.getImageColor());
         bufferSource.endBatch();
 
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         // Places widgets above, because they will be covered when photo is zoomed in
 //        guiGraphics.pose().translate(0, 0, 100);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     @Override
@@ -163,13 +169,13 @@ public class FilmFrameInspectScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
     @Override
@@ -185,10 +191,10 @@ public class FilmFrameInspectScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) return true;
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (super.mouseDragged(event, dragX, dragY)) return true;
 
-        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             float centerX = width / 2f;
             float centerY = height / 2f;
             x = (float) Mth.clamp(x + dragX, -centerX, centerX);

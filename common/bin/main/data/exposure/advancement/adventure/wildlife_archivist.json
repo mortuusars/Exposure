@@ -1,0 +1,312 @@
+{
+  "parent": "exposure:adventure/exposure",
+  "criteria": {
+    "minecraft:axolotl": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:axolotl"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:bat": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:bat"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:camel": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:camel"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:frog": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:frog"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:glow_squid": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:glow_squid"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:squid": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:squid"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:ocelot": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:ocelot"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:parrot": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:parrot"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:rabbit": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:rabbit"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:sniffer": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:sniffer"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:turtle": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:turtle"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:bee": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:bee"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:dolphin": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:dolphin"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:fox": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:fox"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:goat": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:goat"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:llama": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:llama"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:panda": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:panda"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:polar_bear": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:polar_bear"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    },
+    "minecraft:wolf": {
+      "conditions": {
+        "frame": {
+          "entities_in_frame": [
+            {
+              "type": "minecraft:wolf"
+            }
+          ]
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    }
+  },
+  "display": {
+    "frame": "challenge",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "minecraft:axolotl_bucket"
+    },
+    "title": {
+      "translate": "advancement.exposure.wildlife_archivist.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.wildlife_archivist.description"
+    }
+  },
+  "requirements": [
+    [
+      "minecraft:axolotl"
+    ],
+    [
+      "minecraft:bat"
+    ],
+    [
+      "minecraft:camel"
+    ],
+    [
+      "minecraft:frog"
+    ],
+    [
+      "minecraft:glow_squid"
+    ],
+    [
+      "minecraft:squid"
+    ],
+    [
+      "minecraft:ocelot"
+    ],
+    [
+      "minecraft:parrot"
+    ],
+    [
+      "minecraft:rabbit"
+    ],
+    [
+      "minecraft:sniffer"
+    ],
+    [
+      "minecraft:turtle"
+    ],
+    [
+      "minecraft:bee"
+    ],
+    [
+      "minecraft:dolphin"
+    ],
+    [
+      "minecraft:fox"
+    ],
+    [
+      "minecraft:goat"
+    ],
+    [
+      "minecraft:llama"
+    ],
+    [
+      "minecraft:panda"
+    ],
+    [
+      "minecraft:polar_bear"
+    ],
+    [
+      "minecraft:wolf"
+    ]
+  ],
+  "rewards": {
+    "experience": 150
+  },
+  "sends_telemetry_event": true
+}
+

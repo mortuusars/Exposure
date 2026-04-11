@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "B": "minecraft:bone_meal",
+    "P": "minecraft:prismarine_crystals",
+    "I": "#c:ingots/iron",
+    "K": "minecraft:dried_kelp",
+    "N": "#c:nuggets/iron"
+  },
+  "pattern": [
+    "NBB",
+    "IPP",
+    "IKK"
+  ],
+  "result": {
+    "id": "exposure:high_sensitivity_black_and_white_film"
+  }
+}

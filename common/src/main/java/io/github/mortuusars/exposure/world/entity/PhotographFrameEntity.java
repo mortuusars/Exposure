@@ -36,6 +36,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.DiodeBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -111,42 +114,38 @@ public class PhotographFrameEntity extends HangingEntity {
         return new ClientboundAddEntityPacket(this, packedData, this.getPos());
     }
 
-    public void addAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.addAdditionalSaveData(tag);
+    public void addAdditionalSaveData(@NotNull ValueOutput output) {
+        super.addAdditionalSaveData(output);
         ItemStack item = getItem();
         if (!item.isEmpty()) {
-            tag.put("Item", item.save(this.registryAccess()));
-            tag.putBoolean("IsGlowing", this.isGlowing()); // "Glowing" is used in vanilla
-            tag.putByte("ItemRotation", (byte) this.getItemRotation());
+            output.store("Item", ItemStack.CODEC, item);
+            output.putBoolean("IsGlowing", this.isGlowing()); // "Glowing" is used in vanilla
+            output.putByte("ItemRotation", (byte) this.getItemRotation());
         }
         ItemStack frameItem = getFrameItem();
         if (!frameItem.isEmpty())
-            tag.put("FrameItem", frameItem.save(this.registryAccess()));
+            output.store("FrameItem", ItemStack.CODEC, frameItem);
 
-        tag.putByte("Size", (byte) getSize());
-        tag.putByte("Facing", (byte) direction.get3DDataValue());
-        tag.putBoolean("Invisible", isInvisible());
+        output.putByte("Size", (byte) getSize());
+        output.putByte("Facing", (byte) getDirection().get3DDataValue());
+        output.putBoolean("Invisible", isInvisible());
     }
 
-    public void readAdditionalSaveData(@NotNull CompoundTag tag) {
-        super.readAdditionalSaveData(tag);
-        CompoundTag frameItemTag = tag.getCompound("FrameItem");
-        if (!frameItemTag.isEmpty()) {
-            ItemStack stack = ItemStack.parse(registryAccess(), frameItemTag).orElse(new ItemStack(getBaseFrameItem()));
-            setFrameItem(stack);
+    public void readAdditionalSaveData(@NotNull ValueInput input) {
+        super.readAdditionalSaveData(input);
+        ItemStack frameItem = input.read("FrameItem", ItemStack.CODEC).orElse(new ItemStack(getBaseFrameItem()));
+        setFrameItem(frameItem);
+
+        ItemStack item = input.read("Item", ItemStack.CODEC).orElse(ItemStack.EMPTY);
+        if (!item.isEmpty()) {
+            setItem(item);
+            setGlowing(input.getBooleanOr("IsGlowing", false)); // "Glowing" is used in vanilla
+            setItemRotation(input.getByteOr("ItemRotation", (byte) 0));
         }
 
-        CompoundTag itemTag = tag.getCompound("Item");
-        if (!itemTag.isEmpty()) {
-            ItemStack itemstack = ItemStack.parse(registryAccess(), itemTag).orElse(ItemStack.EMPTY);
-            setItem(itemstack);
-            setGlowing(tag.getBoolean("IsGlowing")); // "Glowing" is used in vanilla
-            setItemRotation(tag.getByte("ItemRotation"));
-        }
-
-        setSize(tag.getByte("Size"));
-        setDirection(Direction.from3DDataValue(tag.getByte("Facing")));
-        setInvisible(tag.getBoolean("Invisible"));
+        setSize(input.getByteOr("Size", (byte) 0));
+        setDirection(Direction.from3DDataValue(input.getByteOr("Facing", (byte) Direction.NORTH.get3DDataValue())));
+        setInvisible(input.getBooleanOr("Invisible", false));
     }
 
     @Override
@@ -243,7 +242,7 @@ public class PhotographFrameEntity extends HangingEntity {
             }
         }
 
-        return level().getEntities(this, getBoundingBox(), HANGING_ENTITY).isEmpty();
+        return level().getEntities(this, getBoundingBox(), entity -> entity instanceof HangingEntity).isEmpty();
     }
 
     @Override
@@ -380,7 +379,7 @@ public class PhotographFrameEntity extends HangingEntity {
         ItemStack itemStack = getItem();
         setItem(ItemStack.EMPTY);
 
-        if (!level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) return;
+        if (!level.getGameRules().get(GameRules.ENTITY_DROPS)) return;
         if (entity instanceof Player player && player.isCreative()) return;
 
         // Prevent item phasing through the block when placed on the ceiling (pointing DOWN)

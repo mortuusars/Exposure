@@ -1,0 +1,6 @@
+{
+  "predicate": {
+    "items": "minecraft:white_stained_glass_pane"
+  },
+  "shader": "exposure:post/white_tint"
+}

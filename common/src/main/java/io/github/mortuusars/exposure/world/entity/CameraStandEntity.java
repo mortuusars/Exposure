@@ -17,7 +17,6 @@ import net.minecraft.util.Util;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -46,6 +45,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -108,33 +109,31 @@ public class CameraStandEntity extends Entity implements CameraHolder {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
-        tag.putInt("CooldownTime", getCooldownTime());
-        tag.putInt("Cooldown", getCooldown());
-        tag.putBoolean("Malfunctioned", isMalfunctioned());
+    protected void addAdditionalSaveData(ValueOutput output) {
+        output.putInt("CooldownTime", getCooldownTime());
+        output.putInt("Cooldown", getCooldown());
+        output.putBoolean("Malfunctioned", isMalfunctioned());
         if (!getCamera().isEmpty()) {
-            tag.put("Camera", getCamera().save(registryAccess()));
+            output.store("Camera", ItemStack.CODEC, getCamera());
         }
 
-        redstoneControl.save(tag);
+        redstoneControl.save(output);
 
         if (!ownerPlayerId.equals(Util.NIL_UUID)) {
-            tag.putUUID("Owner", ownerPlayerId);
+            output.putString("Owner", ownerPlayerId.toString());
         }
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
-        setCooldownTime(tag.getInt("CooldownTime"));
-        setCooldown(tag.getInt("Cooldown"));
-        setMalfunctioned(tag.getBoolean("Malfunctioned"));
-        setCamera(ItemStack.parseOptional(registryAccess(), tag.getCompound("Camera")));
+    protected void readAdditionalSaveData(ValueInput input) {
+        setCooldownTime(input.getIntOr("CooldownTime", 0));
+        setCooldown(input.getIntOr("Cooldown", 0));
+        setMalfunctioned(input.getBooleanOr("Malfunctioned", false));
+        setCamera(input.read("Camera", ItemStack.CODEC).orElse(ItemStack.EMPTY));
 
-        redstoneControl.load(tag);
+        redstoneControl.load(input);
 
-        if (tag.contains("Owner", CompoundTag.TAG_INT_ARRAY)) {
-            ownerPlayerId = tag.getUUID("Owner");
-        }
+        ownerPlayerId = input.getString("Owner").map(UUID::fromString).orElse(Util.NIL_UUID);
     }
 
     // -- Camera
@@ -782,14 +781,7 @@ public class CameraStandEntity extends Entity implements CameraHolder {
     }
 
     @Override
-    public boolean isControlledByLocalInstance() {
-        return operator() instanceof Player player && player.isLocalPlayer() || super.isControlledByLocalInstance();
-    }
-
-    // --
-
-    @Override
-    public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps) {
+    protected void lerpPositionAndRotationStep(int step, double x, double y, double z, double yRot, double xRot) {
         this.setPos(x, y, z);
         // this method is called when client receives packet from server,
         // and it makes camera rotation jump around and be janky.

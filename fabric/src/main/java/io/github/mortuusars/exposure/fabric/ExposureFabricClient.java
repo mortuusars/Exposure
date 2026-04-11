@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.fabric;
 
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactoryRegistry;
+import fuzs.forgeconfigapiport.fabric.api.v5.client.ConfigScreenFactoryRegistry;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.tooltip.CameraStandTooltip;
@@ -21,13 +21,11 @@ import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
 import io.github.mortuusars.exposure.client.gui.screen.album.AlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.album.LecternAlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.camera.CameraAttachmentsScreen;
-import io.github.mortuusars.exposure.integration.ModCompatibilityClient;
 import io.github.mortuusars.exposure.world.inventory.tooltip.PhotographTooltip;
 import io.github.mortuusars.exposure.network.fabric.FabricS2CPacketHandler;
 import io.github.mortuusars.exposure.client.render.PhotographFrameEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.model.loading.v1.ModelLoadingPlugin;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.TooltipComponentCallback;
@@ -58,18 +56,6 @@ public class ExposureFabricClient implements ClientModInitializer {
         MenuScreens.register(Exposure.MenuTypes.LIGHTROOM.get(), LightroomScreen::new);
         MenuScreens.register(Exposure.MenuTypes.ITEM_RENAME.get(), ItemRenameScreen::new);
 
-        ModelLoadingPlugin.register(pluginContext ->
-                pluginContext.addModels(
-                        ExposureClient.Models.PHOTOGRAPH_FRAME_SMALL.id(),
-                        ExposureClient.Models.PHOTOGRAPH_FRAME_MEDIUM.id(),
-                        ExposureClient.Models.PHOTOGRAPH_FRAME_LARGE.id(),
-                        ExposureClient.Models.CLEAR_PHOTOGRAPH_FRAME_SMALL.id(),
-                        ExposureClient.Models.CLEAR_PHOTOGRAPH_FRAME_MEDIUM.id(),
-                        ExposureClient.Models.CLEAR_PHOTOGRAPH_FRAME_LARGE.id(),
-                        ExposureClient.Models.CAMERA_STAND.id(),
-                        ExposureClient.Models.CAMERA_STAND_MOUNT.id()
-                ));
-
         SelectItemModelProperties.ID_MAPPER.put(ExposureClient.SelectProperties.CAMERA_STATUS, StackCameraStatus.TYPE);
         SelectItemModelProperties.ID_MAPPER.put(ExposureClient.SelectProperties.CAMERA_ATTACHMENTS, StackCameraAttachments.TYPE);
 
@@ -91,7 +77,5 @@ public class ExposureFabricClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(CameraStandTooltip::render);
 
         FabricS2CPacketHandler.register();
-
-        ModCompatibilityClient.handle();
     }
 }

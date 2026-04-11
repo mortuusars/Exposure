@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.mortuusars.exposure.util.color.Color;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.resources.Identifier;
 import org.joml.Matrix4f;
 
@@ -34,7 +35,7 @@ public class TextureRenderer {
 //        //RenderSystem.disableDepthTest();
 
         Matrix4f matrix = poseStack.last().pose();
-        VertexConsumer bufferBuilder = bufferSource.getBuffer(RenderType.text(texture));
+        VertexConsumer bufferBuilder = bufferSource.getBuffer(RenderTypes.text(texture));
         bufferBuilder.addVertex(matrix, minX, maxY, 0).setColor(r, g, b, a).setUv(minU, maxV).setLight(packedLight);
         bufferBuilder.addVertex(matrix, maxX, maxY, 0).setColor(r, g, b, a).setUv(maxU, maxV).setLight(packedLight);
         bufferBuilder.addVertex(matrix, maxX, minY, 0).setColor(r, g, b, a).setUv(maxU, minV).setLight(packedLight);

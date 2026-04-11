@@ -24,6 +24,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.Holder;
@@ -135,11 +137,11 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
 //                //RenderSystem.enableBlend();
 //                //RenderSystem.defaultBlendFunc();
 
-                guiGraphics.pose().pushPose();
+                guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(0, 0);
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos + slot.x - 2, topPos + slot.y - 2, 236, 92, 20, 20, 256, 256);
                 ////RenderSystem.disableBlend();
-                guiGraphics.pose().popPose();
+                guiGraphics.pose().popMatrix();
             }
         }
 
@@ -310,8 +312,8 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_F1) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == InputConstants.KEY_F1) {
             String url = "https://moddedmc.wiki/project/exposure";
             Minecrft.get().setScreen(new ConfirmLinkScreen(confirmed -> {
                 if (confirmed) {
@@ -323,13 +325,13 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        int x = (int) mouseX;
-        int y = (int) mouseY;
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        int x = (int) event.x();
+        int y = (int) event.y();
 
         if (isMouseOver(filter, x, y) || isMouseOver(filterOnLens, x, y)) {
             List<ItemStack> itemStacks = new ArrayList<>();
@@ -361,7 +363,7 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, handled);
     }
 
     @Override

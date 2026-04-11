@@ -4,6 +4,9 @@ architectury {
 
 loom {
     accessWidenerPath = file("src/main/resources/exposure.accesswidener")
+    mixin {
+        useLegacyMixinAp = true
+    }
 }
 
 configurations {

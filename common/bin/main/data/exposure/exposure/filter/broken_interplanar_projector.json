@@ -1,0 +1,7 @@
+{
+  "predicate": {
+    "items": "exposure:broken_interplanar_projector"
+  },
+  "attachment_texture": "exposure:textures/gui/filter/broken_interplanar_projector.png",
+  "shader": "exposure:post/bsod"
+}

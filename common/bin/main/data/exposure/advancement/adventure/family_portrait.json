@@ -1,0 +1,59 @@
+{
+  "parent": "exposure:adventure/exposure",
+  "criteria": {
+    "captured_entities": {
+      "conditions": {
+        "frame": {
+          "extra_data": "{on_stand:1b}"
+        },
+        "entities_in_frame": [
+          {
+            "type": "minecraft:player"
+          },
+          [
+            {
+              "condition": "minecraft:entity_properties",
+              "entity": "this",
+              "predicate": {
+                "type": "minecraft:cat",
+                "type_specific": {
+                  "type": "exposure:tamed",
+                  "is_tamed": true
+                }
+              }
+            }
+          ],
+          [
+            {
+              "condition": "minecraft:entity_properties",
+              "entity": "this",
+              "predicate": {
+                "type": "minecraft:wolf",
+                "type_specific": {
+                  "type": "exposure:tamed",
+                  "is_tamed": true
+                }
+              }
+            }
+          ]
+        ]
+      },
+      "trigger": "exposure:frame_exposed"
+    }
+  },
+  "display": {
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "exposure:camera_stand"
+    },
+    "title": {
+      "translate": "advancement.exposure.family_portrait.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.family_portrait.description"
+    }
+  }
+}

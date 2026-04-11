@@ -1,0 +1,55 @@
+{
+  "parent": "exposure:adventure/splitting_the_photon",
+  "criteria": {
+    "print_chromatic_photograph": {
+      "conditions": {
+        "item": {
+          "items": [
+            "exposure:photograph",
+            "exposure:aged_photograph"
+          ],
+          "predicates": {
+            "exposure:frame": {
+              "extra_data": "{chromatic:1b}"
+            }
+          }
+        }
+      },
+      "trigger": "exposure:frame_printed"
+    }
+  },
+  "display": {
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "exposure:chromatic_sheet",
+      "components": {
+        "exposure:chromatic_layers": [
+          {
+            "identifier": "1"
+          },
+          {
+            "identifier": "2"
+          },
+          {
+            "identifier": "3"
+          }
+        ]
+      }
+    },
+    "title": {
+      "translate": "advancement.exposure.complex_composite_compound.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.complex_composite_compound.description"
+    }
+  },
+  "requirements": [
+    [
+      "print_chromatic_photograph"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

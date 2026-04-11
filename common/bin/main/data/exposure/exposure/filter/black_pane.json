@@ -1,0 +1,7 @@
+{
+  "predicate": {
+    "items": "minecraft:black_stained_glass_pane"
+  },
+  "attachment_tint": "1E1B1B",
+  "shader": "exposure:post/black_tint"
+}

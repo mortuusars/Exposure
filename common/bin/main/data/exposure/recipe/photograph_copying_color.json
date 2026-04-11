@@ -1,0 +1,14 @@
+{
+  "type": "exposure:photograph_copying",
+  "photograph": "exposure:photograph",
+  "ingredients": [
+    "#exposure:photo_papers",
+    "#exposure:black_printing_dyes",
+    "#exposure:cyan_printing_dyes",
+    "#exposure:magenta_printing_dyes",
+    "#exposure:yellow_printing_dyes"
+  ],
+  "result": {
+    "id": "exposure:photograph"
+  }
+}

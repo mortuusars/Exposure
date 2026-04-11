@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "id": "exposure",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${mod_authors}"
+  ],
+  "contact": {
+    "homepage": "${mod_page}",
+    "sources": "${mod_github}"
+  },
+  "license": "${mod_license}",
+  "icon": "icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabric"
+    ],
+    "client": [
+      "io.github.mortuusars.exposure.fabric.ExposureFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "io.github.mortuusars.exposure.integration.jei.ExposureJeiPlugin"
+    ],
+    "jade": [
+      "io.github.mortuusars.exposure.integration.jade.ExposureJadePlugin"
+    ]
+  },
+  "mixins": [
+    "exposure.mixins.json",
+    "exposure-common.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21",
+    "java": ">=21",
+    "fabric-api": "*",
+    "forgeconfigapiport": ">=21.0.0"
+  }
+}

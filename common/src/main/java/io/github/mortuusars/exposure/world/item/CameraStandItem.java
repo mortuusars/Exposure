@@ -52,7 +52,7 @@ public class CameraStandItem extends Item {
             if (context.getPlayer() != null) {
                 cameraStand.setOwnerPlayer(context.getPlayer());
             }
-            cameraStand.moveTo(cameraStand.getX(), cameraStand.getY(), cameraStand.getZ(), 0.0F, 0.0F);
+            cameraStand.snapTo(cameraStand.getX(), cameraStand.getY(), cameraStand.getZ(), 0.0F, 0.0F);
             serverLevel.addFreshEntityWithPassengers(cameraStand);
             cameraStand.playPlaceSound();
             cameraStand.gameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());

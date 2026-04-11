@@ -8,6 +8,8 @@ import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.util.ItemAndStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -31,22 +33,22 @@ public class ChildPhotographScreen extends PhotographScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_ESCAPE || Minecrft.options().keyInventory.matches(keyCode, scanCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == InputConstants.KEY_ESCAPE || Minecrft.options().keyInventory.matches(event)) {
             onClose();
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        if (super.mouseClicked(event, handled)) {
             return true;
         }
 
-        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
             zoom.setTarget(0f);
             return true;
         }

@@ -1,0 +1,46 @@
+{
+  "parent": "exposure:adventure/moment_in_time",
+  "criteria": {
+    "get_skeleton_smirk_photograph": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "exposure:photograph",
+              "exposure:aged_photograph"
+            ],
+            "predicates": {
+              "exposure:frame": {
+                "identifier": {
+                  "texture": "exposure:textures/exposure/mineshaft/skeleton_smirk.png"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "frame": "task",
+    "hidden": true,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "minecraft:bone"
+    },
+    "title": {
+      "translate": "advancement.exposure.spooky_silly_skeletons.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.spooky_silly_skeletons.description"
+    }
+  },
+  "requirements": [
+    [
+      "get_skeleton_smirk_photograph"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

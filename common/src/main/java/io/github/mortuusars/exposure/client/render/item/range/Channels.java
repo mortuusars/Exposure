@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import io.github.mortuusars.exposure.world.item.ChromaticSheetItem;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.item.properties.numeric.RangeSelectItemModelProperty;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ItemOwner;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +12,7 @@ public record Channels() implements RangeSelectItemModelProperty {
     public static final MapCodec<Channels> MAP_CODEC = MapCodec.unit(new Channels());
 
     @Override
-    public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
+    public float get(ItemStack stack, @Nullable ClientLevel level, @Nullable ItemOwner entity, int seed) {
         if (stack.getItem() instanceof ChromaticSheetItem chromaticSheet) {
             return chromaticSheet.getLayers(stack).size() / 10f;
         }
@@ -21,6 +21,6 @@ public record Channels() implements RangeSelectItemModelProperty {
 
     @Override
     public MapCodec<? extends RangeSelectItemModelProperty> type() {
-        return null;
+        return MAP_CODEC;
     }
 }

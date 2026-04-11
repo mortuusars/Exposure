@@ -10,15 +10,11 @@ import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.data.ColorPalettes;
 import io.github.mortuusars.exposure.util.Codecs;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.core.HolderLookup;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.level.saveddata.SavedDataType;
-import net.minecraft.world.level.storage.ValueInput;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -29,7 +25,7 @@ public class ExposureData extends SavedData {
             Codec.INT.fieldOf("width").forGetter(ExposureData::getWidth),
             Codec.INT.fieldOf("height").forGetter(ExposureData::getHeight),
             Codecs.byteArrayCodec(1, 2048 * 2048).fieldOf("pixels").forGetter(ExposureData::getPixels),
-            Identifier.CODEC.optionalFieldOf("palette", ColorPalettes.DEFAULT.location()).forGetter(ExposureData::getPaletteId),
+            Identifier.CODEC.optionalFieldOf("palette", ColorPalettes.DEFAULT.identifier()).forGetter(ExposureData::getPaletteId),
             Tag.CODEC.optionalFieldOf("tag", Tag.EMPTY).forGetter(ExposureData::getTag)
     ).apply(instance, ExposureData::new));
 
@@ -43,7 +39,7 @@ public class ExposureData extends SavedData {
     );
 
     public static final ExposureData EMPTY = new ExposureData(
-            1, 1, new byte[]{0}, ColorPalettes.DEFAULT.location(), Tag.EMPTY);
+            1, 1, new byte[]{0}, ColorPalettes.DEFAULT.identifier(), Tag.EMPTY);
 
     private final int width;
     private final int height;
@@ -108,27 +104,10 @@ public class ExposureData extends SavedData {
 
     // --
 
-    @Override
-    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        DataResult<net.minecraft.nbt.Tag> encodingResult = CODEC.encode(this, NbtOps.INSTANCE, tag);
-        if (encodingResult.isSuccess()) {
-            net.minecraft.nbt.Tag encodedTag = encodingResult.getOrThrow();
-            if (encodedTag instanceof CompoundTag encodedCompoundTag)
-                return encodedCompoundTag;
-            else {
-                Exposure.LOGGER.error("Cannot save PalettedExposure: '{}'. Encoded tag is not CompoundTag but a {}",
-                        this, encodedTag.getType());
-            }
-        }
-        encodingResult.error().ifPresent(error -> Exposure.LOGGER.error("Cannot save PalettedExposure: {}", error.message()));
-
-        return tag;
-    }
-
     public static SavedDataType<ExposureData> factory(String path) {
-        return new SavedDataType<>(path,context -> {
+        return new SavedDataType<>(path, () -> {
             throw new IllegalStateException("Should never create an empty exposure saved data");
-        }, context -> CODEC, null);
+        }, CODEC, null);
     }
 
 //    public static ExposureData load(ValueInput tag) {

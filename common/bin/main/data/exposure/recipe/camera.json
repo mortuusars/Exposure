@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "group": "camera",
+  "key": {
+    "B": "#minecraft:buttons",
+    "G": "#c:glass_panes/colorless",
+    "I": "#c:ingots/iron",
+    "L": "minecraft:lever"
+  },
+  "pattern": [
+    "LIB",
+    "IGI",
+    "III"
+  ],
+  "result": {
+    "id": "exposure:camera"
+  }
+}

@@ -10,6 +10,8 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.component.DataComponents;
@@ -74,10 +76,9 @@ public class ItemRenameScreen extends AbstractContainerScreen<ItemRenameMenu> {
         onClose();
     }
 
-    @Override
     public void resize(Minecraft minecraft, int width, int height) {
         String string = this.name.getValue();
-        this.init(minecraft, width, height);
+        this.init(width, height);
         this.name.setValue(string);
     }
 
@@ -117,31 +118,31 @@ public class ItemRenameScreen extends AbstractContainerScreen<ItemRenameMenu> {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == 256) {
             onClose();
         }
 
-        if (keyCode == InputConstants.KEY_RETURN) {
+        if (event.key() == InputConstants.KEY_RETURN) {
             confirm();
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f));
             return true;
         }
 
-        if (keyCode != InputConstants.KEY_TAB && (name.keyPressed(keyCode, scanCode, modifiers) || name.canConsumeInput())) {
+        if (event.key() != InputConstants.KEY_TAB && (name.keyPressed(event) || name.canConsumeInput())) {
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == InputConstants.MOUSE_BUTTON_RIGHT && name.isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && name.isMouseOver(event.x(), event.y())) {
             name.setValue("");
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, handled);
     }
 }

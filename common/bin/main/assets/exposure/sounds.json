@@ -1,0 +1,339 @@
+{
+  "block.lightroom.print": {
+    "sounds": [
+      "exposure:block/lightroom/print1",
+      "exposure:block/lightroom/print2",
+      "exposure:block/lightroom/print3",
+      "exposure:block/lightroom/print4",
+      "exposure:block/lightroom/print5"
+    ],
+    "subtitle": "subtitle.exposure.lightroom.print"
+  },
+  "item.camera.generic_click": {
+    "sounds": [
+      {
+        "name": "exposure:item/camera/button_click",
+        "volume": 0.8,
+        "pitch": 0.95
+      },
+      {
+        "name": "exposure:item/camera/button_click",
+        "volume": 0.8,
+        "pitch": 1.05
+      },
+      {
+        "name": "exposure:item/camera/button_click",
+        "volume": 0.8,
+        "pitch": 1.2
+      }
+    ]
+  },
+  "item.camera.button_click": {
+    "sounds": [
+      {
+        "name": "exposure:item/camera/button_click",
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitle.exposure.camera.button_click"
+  },
+  "item.camera.dial_click": {
+    "sounds": [
+      "exposure:item/camera/dial_click"
+    ],
+    "subtitle": "subtitle.exposure.camera.dial_click"
+  },
+  "item.camera.film_advance": {
+    "sounds": [
+      "exposure:item/camera/film_advance1",
+      "exposure:item/camera/film_advance2"
+    ],
+    "subtitle": "subtitle.exposure.camera.film_advance"
+  },
+  "item.camera.film_advance_last": {
+    "sounds": [
+      "exposure:item/camera/film_advance_last"
+    ],
+    "subtitle": "subtitle.exposure.camera.film_advance_last"
+  },
+  "item.camera.filter_insert": {
+    "sounds": [
+      {
+        "name": "exposure:item/camera/filter_place",
+        "volume": 0.8,
+        "pitch": 1
+      },
+      {
+        "name": "exposure:item/camera/filter_place",
+        "volume": 0.8,
+        "pitch": 1.05
+      },
+      {
+        "name": "exposure:item/camera/filter_place",
+        "volume": 0.8,
+        "pitch": 1.15
+      }
+    ]
+  },
+  "item.camera.filter_remove": {
+    "sounds": [
+      {
+        "name": "exposure:item/camera/filter_place",
+        "volume": 0.35,
+        "pitch": 0.8
+      },
+      {
+        "name": "exposure:item/camera/filter_place",
+        "volume": 0.35,
+        "pitch": 0.75
+      }
+    ]
+  },
+  "item.camera.lens_insert": {
+    "sounds": [
+      {
+        "name": "minecraft:item/spyglass/use",
+        "pitch": 1.15
+      },
+      {
+        "name": "minecraft:item/spyglass/use",
+        "pitch": 1.33
+      },
+      {
+        "name": "minecraft:item/spyglass/use",
+        "pitch": 1.4
+      },
+      {
+        "name": "minecraft:item/spyglass/use",
+        "volume": 0.85,
+        "pitch": 1.55
+      }
+    ]
+  },
+  "item.camera.lens_remove": {
+    "sounds": [
+      {
+        "name": "minecraft:item/spyglass/stop",
+        "volume": 0.5
+      },
+      {
+        "name": "minecraft:item/spyglass/stop",
+        "volume": 0.5,
+        "pitch": 0.9
+      },
+      {
+        "name": "minecraft:item/spyglass/stop",
+        "volume": 0.5,
+        "pitch": 1.1
+      }
+    ]
+  },
+  "item.camera.flash": {
+    "sounds": [
+      "exposure:item/camera/flash"
+    ],
+    "subtitle": "subtitle.exposure.camera.flash"
+  },
+  "item.camera.lens_ring_click": {
+    "sounds": [
+      "exposure:item/camera/lens_ring1",
+      "exposure:item/camera/lens_ring2",
+      "exposure:item/camera/lens_ring3"
+    ]
+  },
+  "item.camera.timer_tick": {
+    "sounds": [
+      "exposure:item/camera/timer1",
+      "exposure:item/camera/timer2",
+      "exposure:item/camera/timer3",
+      "exposure:item/camera/timer4"
+    ],
+    "subtitle": "subtitle.exposure.camera.timer"
+  },
+  "item.camera.release_button_click": {
+    "sounds": [
+      "exposure:item/camera/release_button_click"
+    ],
+    "subtitle": "subtitle.exposure.camera.release_button_click"
+  },
+  "item.camera.film_removed": {
+    "sounds": [
+      {
+        "name": "exposure:item/camera/release_button_click",
+        "volume": 0.5
+      }
+    ]
+  },
+  "item.camera.shutter_close": {
+    "sounds": [
+      "exposure:item/camera/shutter_close1",
+      "exposure:item/camera/shutter_close2"
+    ],
+    "subtitle": "subtitle.exposure.camera.shutter"
+  },
+  "item.camera.shutter_open": {
+    "sounds": [
+      "exposure:item/camera/shutter_open1",
+      "exposure:item/camera/shutter_open2"
+    ],
+    "subtitle": "subtitle.exposure.camera.shutter"
+  },
+  "item.camera.shutter_ticking": {
+    "sounds": [
+      "exposure:item/camera/shutter_ticking"
+    ]
+  },
+  "item.camera.viewfinder_close": {
+    "sounds": [
+      "exposure:item/camera/viewfinder_close"
+    ],
+    "subtitle": "subtitle.exposure.camera.viewfinder_close"
+  },
+  "item.camera.viewfinder_open": {
+    "sounds": [
+      "exposure:item/camera/viewfinder_open"
+    ],
+    "subtitle": "subtitle.exposure.camera.viewfinder_open"
+  },
+  "item.photograph.break": {
+    "sounds": [
+      {
+        "name": "exposure:item/photograph/place1",
+        "pitch": 0.8
+      },
+      {
+        "name": "exposure:item/photograph/place2",
+        "pitch": 0.8
+      }
+    ],
+    "subtitle": "subtitle.exposure.photograph.break"
+  },
+  "item.photograph.place": {
+    "sounds": [
+      {
+        "name": "exposure:item/photograph/place1",
+        "pitch": 1.2
+      },
+      {
+        "name": "exposure:item/photograph/place2",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitle.exposure.photograph.place"
+  },
+  "item.photograph.rustle": {
+    "sounds": [
+      "exposure:item/photograph/rustle"
+    ],
+    "subtitle": "subtitle.exposure.photograph.rustle"
+  },
+  "item.photograph_frame.place": {
+    "sounds": [
+      "entity/painting/place1",
+      "entity/painting/place2",
+      "entity/painting/place3",
+      "entity/painting/place4"
+    ],
+    "subtitle": "subtitle.exposure.photograph_frame.place"
+  },
+  "item.photograph_frame.break": {
+    "sounds": [
+      "entity/painting/break1",
+      "entity/painting/break2",
+      "entity/painting/break3"
+    ],
+    "subtitle": "subtitle.exposure.photograph_frame.break"
+  },
+  "item.photograph_frame.add_item": {
+    "sounds": [
+      "entity/itemframe/add_item1",
+      "entity/itemframe/add_item2",
+      "entity/itemframe/add_item3",
+      "entity/itemframe/add_item4"
+    ],
+    "subtitle": "subtitle.exposure.photograph_frame.add_item"
+  },
+  "item.photograph_frame.remove_item": {
+    "sounds": [
+      "entity/itemframe/remove_item1",
+      "entity/itemframe/remove_item2",
+      "entity/itemframe/remove_item3",
+      "entity/itemframe/remove_item4"
+    ],
+    "subtitle": "subtitle.exposure.photograph_frame.remove_item"
+  },
+  "item.photograph_frame.rotate_item": {
+    "sounds": [
+      "exposure:item/photograph/rustle"
+    ],
+    "subtitle": "subtitle.exposure.photograph_frame.rotate_item"
+  },
+  "item.camera.interplanar_projector.project": {
+    "sounds": [
+      {
+        "name": "block/end_portal/endportal",
+        "pitch": 1.3,
+        "volume": 0.5
+      }
+    ],
+    "subtitle": "subtitle.exposure.interplanar_projector.project"
+  },
+  "misc.write": {
+    "sounds": [
+      "ui/cartography_table/drawmap1",
+      "ui/cartography_table/drawmap2",
+      "ui/cartography_table/drawmap3"
+    ]
+  },
+  "misc.bsod": {
+    "sounds": [
+      "exposure:misc/bsod"
+    ],
+    "subtitle": "subtitle.exposure.misc.bsod"
+  },
+  "entity.camera_stand.place": {
+    "sounds": [
+      "dig/stone1",
+      "dig/stone2",
+      "dig/stone3",
+      "dig/stone4"
+    ],
+    "subtitle": "subtitles.block.generic.place"
+  },
+  "entity.camera_stand.hit": {
+    "sounds": [
+      "entity/armorstand/hit1",
+      "entity/armorstand/hit2",
+      "entity/armorstand/hit3",
+      "entity/armorstand/hit4"
+    ],
+    "subtitle": "subtitles.block.generic.hit"
+  },
+  "entity.camera_stand.break": {
+    "sounds": [
+      "entity/armorstand/break1",
+      "entity/armorstand/break2",
+      "entity/armorstand/break3",
+      "entity/armorstand/break4"
+    ],
+    "subtitle": "subtitles.block.generic.break"
+  },
+  "entity.camera_stand.set_camera": {
+    "sounds": [
+      "entity/itemframe/add_item1",
+      "entity/itemframe/add_item2",
+      "entity/itemframe/add_item3",
+      "entity/itemframe/add_item4"
+    ],
+    "subtitle": "subtitle.exposure.camera_stand.set_camera"
+  },
+  "entity.camera_stand.remove_camera": {
+    "sounds": [
+      "entity/itemframe/remove_item1",
+      "entity/itemframe/remove_item2",
+      "entity/itemframe/remove_item3",
+      "entity/itemframe/remove_item4"
+    ],
+    "subtitle": "subtitle.exposure.camera_stand.remove_camera"
+  }
+}

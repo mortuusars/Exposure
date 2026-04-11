@@ -12,6 +12,7 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -50,7 +51,7 @@ public class AlbumSigningScreen extends Screen {
                 () -> titleText, text -> titleText = text)
                 .setFontColor(Config.getColor(Config.Client.ALBUM_FONT_MAIN_COLOR))
                 .setSelectionColor(SELECTION_COLOR, SELECTION_UNFOCUSED_COLOR);
-        titleTextBox.textValidator = text -> text != null && font.wordWrapHeight(text, 108) <= 9 && !text.contains("\n");
+        titleTextBox.textValidator = text -> text != null && font.wordWrapHeight(Component.literal(text), 108) <= 9 && !text.contains("\n");
         titleTextBox.horizontalAlignment = HorizontalAlignment.CENTER;
         addRenderableWidget(titleTextBox);
 
@@ -124,20 +125,20 @@ public class AlbumSigningScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_TAB) {
-            return super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == InputConstants.KEY_TAB) {
+            return super.keyPressed(event);
         }
 
-        if (keyCode == InputConstants.KEY_ESCAPE) {
+        if (event.key() == InputConstants.KEY_ESCAPE) {
             cancelSigning();
             return true;
         }
 
         if (titleTextBox.isFocused()) {
-            return titleTextBox.keyPressed(keyCode, scanCode, modifiers);
+            return titleTextBox.keyPressed(event);
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 }

@@ -36,7 +36,7 @@ public record ExtraDataPredicate(ExtraData data) {
             if (compoundTag2.size() < compoundTag.size()) {
                 return false;
             } else {
-                for (String string : compoundTag.getAllKeys()) {
+                for (String string : compoundTag.keySet()) {
                     Tag tag2 = compoundTag.get(string);
                     if (!NbtUtils.compareNbt(tag2, compoundTag2.get(string), true)) {
                         return false;

@@ -1,0 +1,11 @@
+{
+  "type": "exposure:photograph_aging",
+  "photograph": "exposure:photograph",
+  "ingredients": [
+    "#exposure:photo_agers",
+    "minecraft:brush"
+  ],
+  "result": {
+    "id": "exposure:aged_photograph"
+  }
+}

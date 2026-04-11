@@ -35,6 +35,8 @@ import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.*;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.CommonComponents;
@@ -248,7 +250,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 //        //RenderSystem.setShaderColor(filmColor.r(), filmColor.g(), filmColor.b(), filmColor.a());
 
         if (getMenu().getBlockEntity().isAdvancingFrameOnPrint()) {
-            poseStack.pushPose();
+            poseStack.pushMatrix();
             poseStack.translate(0, 0);
 
             if (selectedFrame < getMenu().getTotalFramesCount() - 1) {
@@ -259,7 +261,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, MAIN_TEXTURE, leftPos + 111, topPos + 44, 210, 0, 10, 10, 256, 256);
             }
 
-            poseStack.popPose();
+            poseStack.popMatrix();
         }
 
 //        //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -347,24 +349,26 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
         return selectedFrame + 1 >= 0 && selectedFrame + 1 < frames.size() && isHovering(116, 22, FRAME_SIZE, FRAME_SIZE, mouseX, mouseY);
     }
 
-    public void renderFrame(@NotNull Frame frame, PoseStack poseStack,
+    public void renderFrame(@NotNull Frame frame, Matrix3x2fStack guiPoseStack,
                             float x, float y, float size, float alpha, ExposureType exposureType) {
         RenderableImage image = ExposureClient.renderedExposures().getOrCreate(frame).modifyWith(ImageEffect.NEGATIVE_FILM);
-
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(x, y, 0f);
+        poseStack.scale(size, size, 1f);
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        ExposureClient.imageRenderer().render(image, poseStack, bufferSource, new RenderCoordinates(x, y, size, size),
+        ExposureClient.imageRenderer().render(image, poseStack, bufferSource, RenderCoordinates.DEFAULT,
                 exposureType.getImageColor().withAlpha((int) (alpha * 255)));
         bufferSource.endBatch();
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
     @Override
@@ -380,8 +384,10 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        if (event.button() == 0) {
             Slot filmSlot = getMenu().getSlot(Lightroom.FILM_SLOT);
             if (!hasShownDevelopingToast && !filmSlot.hasItem()
                     && isHovering(filmSlot.x, filmSlot.y, 16, 16, mouseX, mouseY)
@@ -408,7 +414,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
             }
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, handled);
     }
 
     public void changeFrame(PagingDirection navigation) {
@@ -435,8 +441,8 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
     }
 
     @Override
-    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
-        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop) {
+        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop)
                 && hoveredSlot == null;
     }
 }

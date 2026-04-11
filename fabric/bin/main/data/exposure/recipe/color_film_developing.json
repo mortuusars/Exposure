@@ -1,0 +1,36 @@
+{
+  "type": "exposure:film_developing",
+  "film": "#exposure:color_film_rolls",
+  "ingredients": [
+    {
+      "fabric:type": "fabric:components",
+      "base": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:awkward"
+        }
+      }
+    },
+    {
+      "fabric:type": "fabric:components",
+      "base": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:thick"
+        }
+      }
+    },
+    {
+      "fabric:type": "fabric:components",
+      "base": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:mundane"
+        }
+      }
+    }
+  ],
+  "result": {
+    "id": "exposure:developed_color_film"
+  }
+}

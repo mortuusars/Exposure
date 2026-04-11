@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.client.capture.task;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.image.WrappedNativeImage;
 import io.github.mortuusars.exposure.util.cycles.task.Result;
@@ -38,8 +37,8 @@ public class DirectScreenshotCaptureTask extends Task<Result<Image>> {
 
         if (delay <= 0) {
             try {
-                NativeImage nativeImage = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
-                future.complete(Result.success(new WrappedNativeImage(nativeImage)));
+                Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget(), nativeImage ->
+                        future.complete(Result.success(new WrappedNativeImage(nativeImage))));
             } catch (Exception e) {
                 future.completeExceptionally(e);
             }

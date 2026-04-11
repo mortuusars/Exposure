@@ -1,0 +1,18 @@
+{
+  "type": "exposure:film_developing",
+  "film": "#exposure:black_and_white_film_rolls",
+  "ingredients": [
+    {
+      "fabric:type": "fabric:components",
+      "base": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:water"
+        }
+      }
+    }
+  ],
+  "result": {
+    "id": "exposure:developed_black_and_white_film"
+  }
+}

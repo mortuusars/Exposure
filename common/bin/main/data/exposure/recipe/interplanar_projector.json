@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "P": "minecraft:tinted_glass",
+    "R": "minecraft:redstone",
+    "E": "minecraft:ender_eye"
+  },
+  "pattern": [
+    "PRP",
+    "RER",
+    "PRP"
+  ],
+  "result": {
+    "id": "exposure:interplanar_projector"
+  }
+}

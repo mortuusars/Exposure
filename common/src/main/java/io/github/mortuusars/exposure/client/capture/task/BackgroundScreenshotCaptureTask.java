@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.client.capture.task;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.pipeline.TextureTarget;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.capture.CaptureShader;
@@ -34,34 +33,23 @@ public class BackgroundScreenshotCaptureTask extends Task<Result<Image>> {
         }
 
         Minecraft minecraft = Minecrft.get();
-
-        renderTarget = new TextureTarget(minecraft.getWindow().getWidth(),
-                minecraft.getWindow().getHeight(), true);
-        renderTarget.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
-        renderTarget.clear();
+        CompletableFuture<Result<Image>> future = new CompletableFuture<>();
+        renderTarget = minecraft.getMainRenderTarget();
 
         try {
             capturing = true;
-
-            // For whatever reason setPanoramicMode makes water visible again. So we cannot omit it.
-            minecraft.gameRenderer.setPanoramicMode(true);
-
             minecraft.gameRenderer.setRenderBlockOutline(false);
-
             minecraft.gameRenderer.renderLevel(minecraft.getDeltaTracker());
-
             applyShaderEffects(renderTarget);
-
-            WrappedNativeImage image = new WrappedNativeImage(Screenshot.takeScreenshot(renderTarget));
-
-            return CompletableFuture.completedFuture(Result.success(image));
+            Screenshot.takeScreenshot(renderTarget, nativeImage ->
+                    future.complete(Result.success(new WrappedNativeImage(nativeImage))));
+            return future;
         } catch (Exception e) {
             Exposure.LOGGER.error("Couldn't capture image: ", e);
-            return CompletableFuture.completedFuture(Result.error(Capture.ERROR_FAILED_GENERIC));
+            future.complete(Result.error(Capture.ERROR_FAILED_GENERIC));
+            return future;
         } finally {
-            minecraft.gameRenderer.setPanoramicMode(false);
             minecraft.gameRenderer.setRenderBlockOutline(true);
-            renderTarget.destroyBuffers();
             renderTarget = null;
             capturing = false;
         }

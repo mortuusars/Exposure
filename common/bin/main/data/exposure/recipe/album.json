@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    "minecraft:writable_book",
+    "minecraft:phantom_membrane"
+  ],
+  "result": {
+    "id": "exposure:album"
+  }
+}

@@ -1,0 +1,9 @@
+eclipse.preferences.version=1
+org.eclipse.jdt.apt.aptEnabled=true
+org.eclipse.jdt.apt.genSrcDir=bin/generated-sources/annotations
+org.eclipse.jdt.apt.genTestSrcDir=bin/generated-test-sources/annotations
+org.eclipse.jdt.apt.processorOptions/defaultObfuscationEnv=named\:intermediary
+org.eclipse.jdt.apt.processorOptions/inMapFileNamedIntermediary=/Users/blz/.gradle/caches/fabric-loom/1.21.11/loom.mappings.1_21_11.layered+hash.1830767430-v2/mappings.tiny
+org.eclipse.jdt.apt.processorOptions/outMapFileNamedIntermediary=/Users/blz/\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B(no-icloud)/Exposure/common/build/loom-cache/mixin-map-loom.mappings.1_21_11.layered+hash.1830767430-v2.main.tiny
+org.eclipse.jdt.apt.processorOptions/outRefMapFile=/Users/blz/\u0414\u043E\u043A\u0443\u043C\u0435\u043D\u0442\u044B(no-icloud)/Exposure/common/build/classes/java/main/exposure-common-1.21.11-common-refmap.json
+org.eclipse.jdt.apt.processorOptions/quiet=true

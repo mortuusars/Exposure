@@ -15,9 +15,9 @@ public class UniqueSoundManager {
     private static final Table<String, Identifier, SoundInstance> SOUNDS = HashBasedTable.create();
 
     public static void play(String id, SoundInstance instance) {
-        stop(id, instance.getLocation());
+        stop(id, instance.getIdentifier());
 
-        SOUNDS.put(id, instance.getLocation(), instance);
+        SOUNDS.put(id, instance.getIdentifier(), instance);
         Minecrft.get().getSoundManager().play(instance);
     }
 

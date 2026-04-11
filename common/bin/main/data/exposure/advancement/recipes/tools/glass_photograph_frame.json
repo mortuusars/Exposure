@@ -1,0 +1,36 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_photograph": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "exposure:photograph",
+              "exposure:aged_photograph",
+              "exposure:stacked_photographs"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "exposure:glass_photograph_frame"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_photograph"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "exposure:glass_photograph_frame"
+    ]
+  }
+}

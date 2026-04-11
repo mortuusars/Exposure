@@ -1,0 +1,37 @@
+{
+  "parent": "exposure:adventure/spotlight",
+  "criteria": {
+    "flash_in_darkness": {
+      "conditions": {
+        "frame": {
+          "light_level": {
+            "max": 3
+          },
+          "extra_data": "{flash:1b}"
+        }
+      },
+      "trigger": "exposure:frame_exposed"
+    }
+  },
+  "display": {
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "minecraft:redstone_lamp"
+    },
+    "title": {
+      "translate": "advancement.exposure.lights_up.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.lights_up.description"
+    }
+  },
+  "requirements": [
+    [
+      "flash_in_darkness"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

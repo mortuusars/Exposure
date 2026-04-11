@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "exposure:album",
+    "exposure:signed_album"
+  ]
+}

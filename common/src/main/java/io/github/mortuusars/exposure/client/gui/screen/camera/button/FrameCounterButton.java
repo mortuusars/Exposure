@@ -28,7 +28,7 @@ public class FrameCounterButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float pPartialTick) {
+    public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float pPartialTick) {
         MutableComponent tooltipComponent = Component.translatable("gui.exposure.camera_controls.film_frame_counter.tooltip");
         if (!cameraHasFilmRoll()) {
             tooltipComponent.append(CommonComponents.NEW_LINE)
@@ -37,7 +37,7 @@ public class FrameCounterButton extends ImageButton {
         }
         setTooltip(Tooltip.create(tooltipComponent));
 
-        super.renderWidget(guiGraphics, mouseX, mouseY, pPartialTick);
+        super.renderContents(guiGraphics, mouseX, mouseY, pPartialTick);
 
         String text = createText();
 

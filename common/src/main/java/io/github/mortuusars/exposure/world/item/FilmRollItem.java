@@ -21,12 +21,14 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class FilmRollItem extends Item implements SensitiveFilmItem {
     public static final int BAR_BLACK_AND_WHITE = ARGB.colorFromFloat(1.0F, 0.8F, 0.8F, 0.9F);
@@ -65,29 +67,32 @@ public class FilmRollItem extends Item implements SensitiveFilmItem {
     // --
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> list, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         int exposedFrames = getStoredFramesCount(stack);
         if (exposedFrames > 0) {
             int totalFrames = getMaxFrameCount(stack);
-            list.add(Component.translatable("item.exposure.film_roll.tooltip.frame_count", exposedFrames, totalFrames)
+            tooltipComponents.accept(Component.translatable("item.exposure.film_roll.tooltip.frame_count", exposedFrames, totalFrames)
                     .withStyle(ChatFormatting.GRAY));
         }
 
-        addFrameSizeToTooltip(stack, list);
+        List<Component> details = new ArrayList<>();
+        addFrameSizeToTooltip(stack, details);
 
         if (tooltipFlag.isAdvanced()) {
-            addPaletteToTooltip(stack, list);
-            addStyleToTooltip(stack, list);
+            addPaletteToTooltip(stack, details);
+            addStyleToTooltip(stack, details);
         }
 
         if (Config.Server.FILM_ROLL_EASY_RENAMING.get()) {
-            list.add(Component.translatable("item.exposure.film_roll.tooltip.renaming"));
+            details.add(Component.translatable("item.exposure.film_roll.tooltip.renaming"));
         }
 
         //noinspection ConstantValue
         if (exposedFrames > 0 && !PlatformHelper.isModLoaded("jei") && Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
-            ClientGUI.addFilmRollDevelopingTooltip(stack, context, list, tooltipFlag);
+            ClientGUI.addFilmRollDevelopingTooltip(stack, context, details::add, tooltipFlag);
         }
+
+        details.forEach(tooltipComponents);
     }
 
     @Override

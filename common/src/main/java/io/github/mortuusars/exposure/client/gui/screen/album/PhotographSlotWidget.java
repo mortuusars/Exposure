@@ -16,11 +16,14 @@ import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.screens.inventory.tooltip.DefaultTooltipPositioner;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
@@ -92,23 +95,22 @@ public class PhotographSlotWidget extends AbstractWidget {
                     getX(), getY(), 0, 0, width, height, width, height);
 
             // Exposure
-            guiGraphics.pose().pushPose();
             float scale = 96;
-            guiGraphics.pose().translate(getX() + 6, getY() + 6);
-            guiGraphics.pose().scale(scale, scale);
+            PoseStack poseStack = new PoseStack();
+            poseStack.translate(getX() + 6, getY() + 6, 0f);
+            poseStack.scale(scale, scale, 1f);
             MultiBufferSource.BufferSource bufferSource = Minecrft.get().renderBuffers().bufferSource();
             ExposureClient.photographRenderer().render(photograph, false, false,
-                    guiGraphics.pose(), bufferSource, LightTexture.FULL_BRIGHT);
+                    poseStack, bufferSource, LightTexture.FULL_BRIGHT);
             bufferSource.endBatch();
-            guiGraphics.pose().popPose();
 
             // Paper overlay
             if (photographStyle.hasAlbumOverlayTexture()) {
-                guiGraphics.pose().pushPose();
+                guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(0, 0);
                 guiGraphics.blit(RenderPipelines.GUI_TEXTURED, photographStyle.albumOverlayTexture(),
                         getX(), getY(), 0, 0, width, height, width, height);
-                guiGraphics.pose().popPose();
+                guiGraphics.pose().popMatrix();
             }
         }
         else {
@@ -149,12 +151,12 @@ public class PhotographSlotWidget extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (!this.active || !this.visible || !isMouseOver(mouseX, mouseY)) return false;
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        if (!this.active || !this.visible || !isMouseOver(event.x(), event.y())) return false;
 
-        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             primaryAction.accept(this);
-        } else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+        } else if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
             secondaryAction.accept(this);
         } else return false;
 
@@ -172,8 +174,10 @@ public class PhotographSlotWidget extends AbstractWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (this.active && this.visible && CommonInputs.selected(keyCode)) {
+    public boolean keyPressed(KeyEvent event) {
+        if (this.active && this.visible && (event.key() == InputConstants.KEY_RETURN
+                || event.key() == InputConstants.KEY_NUMPADENTER
+                || event.key() == InputConstants.KEY_SPACE)) {
             if (Minecraft.getInstance().hasShiftDown()) {
                 secondaryAction.accept(this);
             } else {
@@ -182,7 +186,7 @@ public class PhotographSlotWidget extends AbstractWidget {
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override

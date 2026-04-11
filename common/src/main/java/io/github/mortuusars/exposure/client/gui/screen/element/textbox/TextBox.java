@@ -14,7 +14,11 @@ import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +32,7 @@ public class TextBox extends AbstractWidget {
     public Supplier<String> textGetter;
     public Consumer<String> textSetter;
     public Predicate<String> textValidator = text -> text != null
-            && getFont().wordWrapHeight(text, width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height;
+            && getFont().wordWrapHeight(Component.literal(text), width) + (text.endsWith("\n") ? getFont().lineHeight : 0) <= height;
 
     public HorizontalAlignment horizontalAlignment = HorizontalAlignment.LEFT;
     public int fontColor = 0xFF000000;
@@ -151,7 +155,7 @@ public class TextBox extends AbstractWidget {
             int y = getY() + selection.getY();
             int x1 = x + selection.getWidth();
             int y1 = y + selection.getHeight();
-            guiGraphics.fill(RenderType.guiTextHighlight(), x, y - 1, x1, y1, isFocused() ? selectionColor : selectionUnfocusedColor);
+            guiGraphics.fill(RenderPipelines.GUI, x, y - 1, x1, y1, isFocused() ? selectionColor : selectionUnfocusedColor);
         }
     }
 
@@ -161,11 +165,11 @@ public class TextBox extends AbstractWidget {
             if (isEndOfText)
                 guiGraphics.drawString(this.font, "_", cursorPos.x, cursorPos.y, getCurrentFontColor(), false);
             else {
-                guiGraphics.pose().pushPose();
+                guiGraphics.pose().pushMatrix();
                 guiGraphics.pose().translate(0, 0);
                 GlStateManager._disableBlend();
                 guiGraphics.fill(cursorPos.x, cursorPos.y - 1, cursorPos.x + 1, cursorPos.y + this.font.lineHeight, getCurrentFontColor());
-                guiGraphics.pose().popPose();
+                guiGraphics.pose().popMatrix();
             }
         }
     }
@@ -180,18 +184,18 @@ public class TextBox extends AbstractWidget {
         return Component.literal(getText());
     }
 
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+    public boolean keyPressed(KeyEvent event) {
         if (!isFocused())
             return false;
-        boolean handled = handleKeyPressed(keyCode, scanCode, modifiers);
+        boolean handled = handleKeyPressed(event);
         if (handled)
             clearDisplayCache();
         return handled;
     }
 
-    protected boolean handleKeyPressed(int keyCode, int scanCode, int modifiers) {
-        TextFieldHelper.CursorStep cursorStep = Screen.hasControlDown() ? TextFieldHelper.CursorStep.WORD : TextFieldHelper.CursorStep.CHARACTER;
+    protected boolean handleKeyPressed(KeyEvent event) {
+        int keyCode = event.key();
+        TextFieldHelper.CursorStep cursorStep = Minecraft.getInstance().hasControlDown() ? TextFieldHelper.CursorStep.WORD : TextFieldHelper.CursorStep.CHARACTER;
         if (keyCode == InputConstants.KEY_UP) {
             changeLine(-1);
             return true;
@@ -215,25 +219,25 @@ public class TextBox extends AbstractWidget {
             return true;
         }
 
-        return textFieldHelper.keyPressed(keyCode);
+        return textFieldHelper.keyPressed(event);
     }
 
-    public boolean charTyped(char codePoint, int modifiers) {
+    public boolean charTyped(CharacterEvent event) {
         if (!isFocused())
             return false;
 
-        boolean typed = textFieldHelper.charTyped(codePoint);
+        boolean typed = textFieldHelper.charTyped(event);
         if (typed)
             clearDisplayCache();
         return typed;
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isHovered && visible && isActive() && button == 0) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        if (isHovered && visible && isActive() && event.button() == 0) {
             long currentTime = Util.getMillis();
             DisplayCache displayCache = getDisplayCache();
-            int index = displayCache.getIndexAtPosition(font, convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
+            int index = displayCache.getIndexAtPosition(font, convertScreenToLocal(new Pos2i((int) event.x(), (int) event.y())));
 
             if (index >= 0) {
                 if (index == lastIndex && currentTime - lastClickTime < 250L) {
@@ -257,10 +261,10 @@ public class TextBox extends AbstractWidget {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (button == 0) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (event.button() == 0) {
             DisplayCache displayCache = this.getDisplayCache();
-            int index = displayCache.getIndexAtPosition(this.font, this.convertScreenToLocal(new Pos2i((int) mouseX, (int) mouseY)));
+            int index = displayCache.getIndexAtPosition(this.font, this.convertScreenToLocal(new Pos2i((int) event.x(), (int) event.y())));
             this.textFieldHelper.setCursorPos(index, true);
             this.clearDisplayCache();
         }
@@ -280,7 +284,7 @@ public class TextBox extends AbstractWidget {
     }
 
     protected void keyHome() {
-        if (Screen.hasControlDown()) {
+        if (Minecraft.getInstance().hasControlDown()) {
             this.textFieldHelper.setCursorToStart(Minecraft.getInstance().hasShiftDown());
         } else {
             int cursorIndex = this.textFieldHelper.getCursorPos();
@@ -290,7 +294,7 @@ public class TextBox extends AbstractWidget {
     }
 
     protected void keyEnd() {
-        if (Screen.hasControlDown()) {
+        if (Minecraft.getInstance().hasControlDown()) {
             this.textFieldHelper.setCursorToEnd(Minecraft.getInstance().hasShiftDown());
         } else {
             DisplayCache displayCache = this.getDisplayCache();

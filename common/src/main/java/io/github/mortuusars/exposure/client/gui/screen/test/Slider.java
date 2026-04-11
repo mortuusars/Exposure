@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.client.gui.screen.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.realmsclient.RealmsMainScreen;
 import io.github.mortuusars.exposure.client.util.Minecrft;
@@ -15,7 +14,6 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -24,8 +22,6 @@ import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-
 import java.text.DecimalFormat;
 import java.util.function.Consumer;
 
@@ -208,24 +204,17 @@ public class Slider extends AbstractWidget {
                     getY() + getHeight() - 1, horizontalGradient.getFirst(), horizontalGradient.getSecond());
         }
 
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         guiGraphics.pose().translate(0, 0);
 
         guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, getHandleSprite(), getX() + (int)(position * (double)(width - HANDLE_WIDTH)), getY(), HANDLE_WIDTH, getHeight());
         int textColor = (active ? 0xFFFFFF : 0xA0A0A0) | Mth.ceil(alpha * 255.0F) << 24;
-        renderScrollingString(guiGraphics, minecraft.font, TEXT_MARGIN, textColor);
-        guiGraphics.pose().popPose();
+        guiGraphics.drawString(minecraft.font, getMessage(), getX() + TEXT_MARGIN, getY() + 3, textColor, false);
+        guiGraphics.pose().popMatrix();
     }
 
     private void fillHorizontalGradient(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, int colorFrom, int colorTo) {
-        guiGraphics.drawSpecial(multiBufferSource -> {
-            VertexConsumer consumer = multiBufferSource.getBuffer(RenderType.gui());
-            Matrix4f matrix4f = guiGraphics.pose().last().pose();
-            consumer.addVertex(matrix4f, (float) x1, (float) y1, 0).setColor(colorFrom);
-            consumer.addVertex(matrix4f, (float) x1, (float) y2, 0).setColor(colorFrom);
-            consumer.addVertex(matrix4f, (float) x2, (float) y2, 0).setColor(colorTo);
-            consumer.addVertex(matrix4f, (float) x2, (float) y1, 0).setColor(colorTo);
-        });
+        guiGraphics.fillGradient(x1, y1, x2, y2, colorFrom, colorTo);
     }
 
     // --

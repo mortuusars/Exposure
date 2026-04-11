@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "exposure:item/chromatic_sheet_two"
+  }
+}

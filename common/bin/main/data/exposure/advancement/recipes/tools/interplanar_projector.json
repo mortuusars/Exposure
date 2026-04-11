@@ -1,0 +1,39 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_camera_and_eye": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "exposure:camera"
+            ]
+          },
+          {
+            "items": [
+              "minecraft:ender_eye"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "exposure:interplanar_projector"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_camera_and_eye"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "exposure:interplanar_projector"
+    ]
+  }
+}

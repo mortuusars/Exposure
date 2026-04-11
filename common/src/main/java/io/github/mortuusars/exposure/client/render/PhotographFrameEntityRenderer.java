@@ -15,7 +15,6 @@ import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.Sheets;
@@ -35,9 +34,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Matrix4f;
 
 public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> extends EntityRenderer<T, PhotographFrameEntityRenderState> {
     protected final BlockRenderDispatcher blockRenderer;
@@ -85,11 +82,12 @@ public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> exte
     public void submit(PhotographFrameEntityRenderState state, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
         Direction direction = state.direction;
         int size = state.size;
+        MultiBufferSource.BufferSource bufferSource = Minecrft.get().renderBuffers().bufferSource();
+        int packedLight = state.lightCoords;
 
         poseStack.pushPose();
         // Offsets name tag rendering to be like item frame:
         poseStack.translate(direction.getStepX() * 0.3f, direction.getStepY() * 0.3f, direction.getStepZ() * 0.3f);
-        //super.render(state, poseStack, bufferSource, packedLight);
         super.submit(state, poseStack, nodeCollector, cameraRenderState);
         poseStack.popPose();
 
@@ -114,17 +112,7 @@ public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> exte
 
         ItemStack item = state.item;
         if (!item.isEmpty()) {
-            boolean photographRendered = renderPhotograph(state, poseStack, bufferSource, packedLight, item, size);
-
-            if (!photographRendered) {
-                poseStack.pushPose();
-                float scale = 0.65f + state.size * 0.5f;
-                poseStack.translate(0, 0, 0.46875);
-                poseStack.scale(scale, scale, scale * 0.75f);
-                poseStack.mulPose(Axis.ZP.rotationDegrees((state.rotation * 360.0F / 4.0F)));
-                Minecrft.get().getItemRenderer().renderStatic(item, ItemDisplayContext.FIXED, packedLight, OverlayTexture.NO_OVERLAY, poseStack, bufferSource, null, 0);
-                poseStack.popPose();
-            }
+            renderPhotograph(state, poseStack, bufferSource, packedLight, item, size);
         }
 
         if (!state.isInvisible) {
@@ -132,13 +120,7 @@ public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> exte
         }
 
         poseStack.popPose();
-        
-        
-    }
-
-    @Override
-    public void render(@NotNull PhotographFrameEntityRenderState state, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
-        
+        bufferSource.endBatch();
     }
 
     protected void renderFrame(@NotNull PhotographFrameEntityRenderState state, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource,
@@ -148,7 +130,7 @@ public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> exte
         Identifier modelLocation = getModelLocation(state, size);
         BlockStateModel model = PlatformHelperClient.getModel(modelLocation);
         blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(getRenderType()),
-                null, model, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY);
+                model, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
 
@@ -218,41 +200,6 @@ public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> exte
         int missingLight = 255 - shadedBrightness;
         int lightUp = (int)(missingLight * (lightLevel / 15f * 0.5f));
         return Math.min(255, shadedBrightness + lightUp);
-    }
-
-    @Override
-    protected void renderNameTag(PhotographFrameEntityRenderState state, Component displayName, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
-        double d = state.distanceToCameraSq;
-        if (!(d > 4096.0)) {
-            Vec3 vec3 = state.nameTagAttachment;
-            if (vec3 != null) {
-                boolean bl = !state.isDiscrete;
-                poseStack.pushPose();
-
-                double yOffset = state.direction.getAxis().isHorizontal()
-                        ? vec3.y - 0.2 + state.size * 0.5
-                        : state.direction.getStepY() > 0
-                            ? vec3.y - 0.5
-                            : vec3.y - 1;
-
-                poseStack.translate(vec3.x, vec3.y + yOffset, vec3.z);
-                poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
-                poseStack.scale(0.025F, -0.025F, 0.025F);
-                Matrix4f matrix4f = poseStack.last().pose();
-                float f = Minecraft.getInstance().options.getBackgroundOpacity(0.25F);
-                int j = (int)(f * 255.0F) << 24;
-                Font font = this.getFont();
-                float g = (float)(-font.width(displayName) / 2);
-                font.drawInBatch(
-                        displayName, g, 0, 553648127, false, matrix4f, bufferSource, bl ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL, j, packedLight
-                );
-                if (bl) {
-                    font.drawInBatch(displayName, g, 0, -1, false, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, packedLight);
-                }
-
-                poseStack.popPose();
-            }
-        }
     }
 
     @Override

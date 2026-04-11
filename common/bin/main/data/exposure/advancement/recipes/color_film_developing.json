@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_color_film": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "exposure:color_film"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "exposure:color_film_developing"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_color_film"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "exposure:developing_color_film"
+    ]
+  },
+  "sends_telemetry_event": true
+}

@@ -5,7 +5,6 @@ import com.mojang.serialization.MapCodec;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import net.minecraft.advancements.CriterionTrigger;
 import net.minecraft.advancements.criterion.EntitySubPredicate;
-import net.minecraft.advancements.criterion.ItemSubPredicate;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponentType;
@@ -110,11 +109,6 @@ public class Register {
 
     @ExpectPlatform
     public static <T extends CriterionTrigger<?>> Supplier<T> criterionTrigger(String name, Supplier<T> supplier) {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
-    public static <T extends ItemSubPredicate.Type<?>> Supplier<T> itemSubPredicate(String name, Supplier<T> supplier) {
         throw new AssertionError();
     }
 

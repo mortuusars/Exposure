@@ -1,0 +1,11 @@
+{
+	"parent": "exposure:item/camera",
+	"textures": {
+		"texture": "exposure:item/camera/camera",
+		"particle": "exposure:item/camera/camera",
+		"viewfinder": "exposure:item/camera/empty",
+		"selfie_stick": "exposure:item/camera/empty",
+		"lens": "exposure:item/camera/camera_lens",
+		"flash": "exposure:item/camera/camera_flash"
+	}
+}

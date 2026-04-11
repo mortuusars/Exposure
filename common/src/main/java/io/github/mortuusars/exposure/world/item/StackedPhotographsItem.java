@@ -217,7 +217,7 @@ public class StackedPhotographsItem extends Item {
         List<ItemAndStack<PhotographItem>> photographs = getPhotographs(itemInHand);
         if (!photographs.isEmpty()) {
             if (level.isClientSide()) {
-                int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().selected;
+                int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().getSelectedSlot();
                 ClientGUI.openPhotographsScreenFromItem(slot);
                 player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f, 1.1f);
             }

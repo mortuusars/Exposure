@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
+import io.github.mortuusars.exposure.mixin.client.GameRendererAccessor;
 import io.github.mortuusars.exposure.client.gui.screen.FilmFrameInspectScreen;
 import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.sound.UniqueSoundManager;
@@ -48,7 +49,7 @@ public class ClientPacketsHandler {
 
     public static void applyShader(ShaderApplyS2CP packet) {
         packet.shaderLocation().ifPresentOrElse(
-                shader -> Minecrft.get().gameRenderer.setPostEffect(shader),
+                shader -> ((GameRendererAccessor) Minecrft.get().gameRenderer).exposure$setPostEffect(shader),
                 () -> Minecrft.get().gameRenderer.clearPostEffect());
     }
 
@@ -105,7 +106,7 @@ public class ClientPacketsHandler {
 
         Holder<ColorPalette> colorPalette = ColorPalettes.getDefault(Minecrft.registryAccess());
         ColorPalette palette = colorPalette.value();
-        Identifier paletteId = colorPalette.unwrapKey().orElseThrow().location();
+        Identifier paletteId = colorPalette.unwrapKey().orElseThrow().identifier();
 
         ExposureClient.cycles().addParallelTask(new ExposureRetrieveTask(packet.layers(), 20_000)
                 .then(Result::unwrap)

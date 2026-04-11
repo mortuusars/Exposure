@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.fabric;
 
-import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
+import fuzs.forgeconfigapiport.fabric.api.v5.ConfigRegistry;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.data.ColorPalette;
@@ -40,9 +40,9 @@ public class ExposureFabric implements ModInitializer {
         DynamicRegistries.registerSynced(Exposure.Registries.LENS, Lens.CODEC, Lens.CODEC);
         DynamicRegistries.registerSynced(Exposure.Registries.FILTER, Filter.CODEC, Filter.CODEC);
 
-        NeoForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.SERVER, Config.Server.SPEC);
-        NeoForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
-        NeoForgeConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
+        ConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.SERVER, Config.Server.SPEC);
+        ConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.COMMON, Config.Common.SPEC);
+        ConfigRegistry.INSTANCE.register(Exposure.ID, ModConfig.Type.CLIENT, Config.Client.SPEC);
 
         CommandRegistrationCallback.EVENT.register(CommonEvents::registerCommands);
 

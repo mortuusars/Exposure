@@ -38,7 +38,7 @@ public class LoadCommand {
     private static int load(CommandContext<CommandSourceStack> context, CompoundTag properties) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        if (!properties.contains("id", CompoundTag.TAG_STRING)) {
+         if (!properties.contains("id") || properties.get("id").getId() != Tag.TAG_STRING) {
             properties.putString("id", ExposureIdentifier.createId(player));
         }
 
@@ -67,9 +67,7 @@ public class LoadCommand {
             return Component.literal("Loaded exposure: ")
                     .append(Component.literal(exposureId)
                             .withStyle(Style.EMPTY
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                                            "/exposure show id " + exposureId))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(photograph)))
+                                    .withClickEvent(new ClickEvent.RunCommand("/exposure show id " + exposureId))
                                     .withUnderlined(true)));
         };
 

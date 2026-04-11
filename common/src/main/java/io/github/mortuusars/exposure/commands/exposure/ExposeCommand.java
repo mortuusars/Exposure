@@ -37,7 +37,7 @@ public class ExposeCommand {
     private static int expose(CommandContext<CommandSourceStack> context, CompoundTag properties) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
 
-        if (!properties.contains("id", CompoundTag.TAG_STRING)) {
+         if (!properties.contains("id") || properties.get("id").getId() != Tag.TAG_STRING) {
             properties.putString("id", ExposureIdentifier.createId(player));
         }
 
@@ -58,13 +58,11 @@ public class ExposeCommand {
             ItemStack photograph = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
             photograph.set(Exposure.DataComponents.PHOTOGRAPH_FRAME, frame);
 
-            return Component.literal("Exposed: ")
-                    .append(Component.literal(exposureId)
-                            .withStyle(Style.EMPTY
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                                            "/exposure show id " + exposureId))
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_ITEM, new HoverEvent.ItemStackInfo(photograph)))
-                                    .withUnderlined(true)));
+             return Component.literal("Exposed: ")
+                     .append(Component.literal(exposureId)
+                             .withStyle(Style.EMPTY
+                                     .withClickEvent(new ClickEvent.RunCommand("/exposure show id " + exposureId))
+                                     .withUnderlined(true)));
         };
 
         ExposureServer.exposureRepository().expect(player, exposureId, (pl, id) -> context.getSource().sendSuccess(msg, true));

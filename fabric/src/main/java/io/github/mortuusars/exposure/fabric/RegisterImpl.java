@@ -8,8 +8,6 @@ import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.minecraft.advancements.CriterionTrigger;
-import net.minecraft.advancements.critereon.EntitySubPredicate;
-import net.minecraft.advancements.critereon.ItemSubPredicate;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentType;
@@ -129,14 +127,11 @@ public class RegisterImpl {
         return () -> obj;
     }
 
-    public static <T extends ItemSubPredicate.Type<?>> Supplier<T> itemSubPredicate(String name, Supplier<T> supplier) {
-        T obj = Registry.register(BuiltInRegistries.ITEM_SUB_PREDICATE_TYPE, Exposure.resource(name), supplier.get());
-        return () -> obj;
-    }
-
-    public static <T extends MapCodec<EntitySubPredicate>> Supplier<T> entitySubPredicate(String name, Supplier<T> supplier) {
-        T obj = Registry.register(BuiltInRegistries.ENTITY_SUB_PREDICATE_TYPE, Exposure.resource(name), supplier.get());
-        return () -> obj;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <T extends MapCodec<?>> Supplier<T> entitySubPredicate(String name, Supplier<T> supplier) {
+        T codec = supplier.get();
+        Registry.register((Registry) BuiltInRegistries.ENTITY_SUB_PREDICATE_TYPE, Exposure.resource(name), codec);
+        return () -> codec;
     }
 
     public static <A extends ArgumentType<?>, T extends ArgumentTypeInfo.Template<A>, I extends ArgumentTypeInfo<A, T>>

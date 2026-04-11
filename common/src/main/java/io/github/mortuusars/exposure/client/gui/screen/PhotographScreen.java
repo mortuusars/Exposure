@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.client.gui.screen;
 import com.google.common.base.Preconditions;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
@@ -28,6 +29,8 @@ import net.minecraft.util.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
@@ -157,28 +160,26 @@ public class PhotographScreen extends Screen {
 
         renderTransparentBackground(guiGraphics);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(x, y);
-        guiGraphics.pose().translate(width / 2f, height / 2f);
-        guiGraphics.pose().scale(scale, scale);
-        guiGraphics.pose().translate(-0.5f, -0.5f);
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(x + width / 2f, y + height / 2f, 0f);
+        poseStack.scale(scale, scale, 1f);
+        poseStack.translate(-0.5f, -0.5f, 0f);
 
         MultiBufferSource.BufferSource bufferSource = Minecrft.get().renderBuffers().bufferSource();
 
-        ExposureClient.photographRenderer().renderStackedPhotographs(photographs, guiGraphics.pose(), bufferSource,
+        ExposureClient.photographRenderer().renderStackedPhotographs(photographs, poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
 
         bufferSource.endBatch();
-        guiGraphics.pose().popPose();
 
         ItemAndStack<PhotographItem> photograph = getCurrentPhotograph();
 
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         // Places widgets above photograph, because they will be covered when photo is zoomed in
         guiGraphics.pose().translate(0, 0);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderFrameInfoHint(guiGraphics, mouseX, mouseY, photograph);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
         if (Config.Client.EXPORT_PHOTOGRAPH_WHEN_VIEWED.get()) {
             trySaveToFile(photograph);
@@ -225,13 +226,13 @@ public class PhotographScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
     @Override
@@ -247,10 +248,10 @@ public class PhotographScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) return true;
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (super.mouseDragged(event, dragX, dragY)) return true;
 
-        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             float centerX = width / 2f;
             float centerY = height / 2f;
             x = (float) Mth.clamp(x + dragX, -centerX, centerX);

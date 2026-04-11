@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.tooltip;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.inventory.tooltip.PhotographTooltip;
@@ -40,25 +41,23 @@ public class PhotographClientTooltip implements ClientTooltipComponent {
         int photographsCount = photographs.size();
         int additionalPhotographs = Math.min(2, photographsCount - 1);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(mouseX, mouseY);
         float scale = SIZE;
         float nextPhotographOffset = ExposureClient.photographRenderer().getStackedPhotographOffset();
         scale *= 1f - (additionalPhotographs * nextPhotographOffset);
-        guiGraphics.pose().scale(scale, scale);
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(mouseX, mouseY, 0f);
+        poseStack.scale(scale, scale, 1f);
 
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
 
-        ExposureClient.photographRenderer().renderStackedPhotographs(photographs, guiGraphics.pose(), bufferSource,
+        ExposureClient.photographRenderer().renderStackedPhotographs(photographs, poseStack, bufferSource,
                 LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
 
         bufferSource.endBatch();
 
-        guiGraphics.pose().popPose();
-
         // Stack count:
         if (photographsCount > 1) {
-            guiGraphics.pose().pushPose();
+            guiGraphics.pose().pushMatrix();
             String count = Integer.toString(photographsCount);
             int fontWidth = Minecraft.getInstance().font.width(count);
             float fontScale = 1.6f;
@@ -67,7 +66,7 @@ public class PhotographClientTooltip implements ClientTooltipComponent {
                     mouseY + scale - 2 - 8 * fontScale);
             guiGraphics.pose().scale(fontScale, fontScale);
             guiGraphics.drawString(font, count, 0, 0, 0xFFFFFFFF);
-            guiGraphics.pose().popPose();
+            guiGraphics.pose().popMatrix();
         }
     }
 }

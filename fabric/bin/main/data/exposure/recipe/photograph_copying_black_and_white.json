@@ -1,0 +1,17 @@
+{
+  "type": "exposure:photograph_copying",
+  "photograph": {
+    "fabric:type": "fabric:components",
+    "base": "minecraft:potion",
+    "components": {
+      "exposure:photograph_type": "black_and_white"
+    }
+  },
+  "ingredients": [
+    "#exposure:photo_papers",
+    "#exposure:black_printing_dyes"
+  ],
+  "result": {
+    "id": "exposure:photograph"
+  }
+}

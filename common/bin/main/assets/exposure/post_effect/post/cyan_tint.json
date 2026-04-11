@@ -1,0 +1,33 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "program": "exposure:post/exposure_color_processor",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        }
+      ],
+      "output": "swap",
+      "uniforms": [
+        { "name": "Mul", "values": [ 0.49, 0.9, 0.85 ] },
+        { "name": "Add", "values": [ 0.02, 0.04, 0.03 ] },
+        { "name": "Contrast", "values": [ 1.1 ] },
+        { "name": "Saturation", "values": [ 0.9 ] }
+      ]
+    },
+    {
+      "program": "minecraft:post/blit",
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main"
+    }
+  ]
+}

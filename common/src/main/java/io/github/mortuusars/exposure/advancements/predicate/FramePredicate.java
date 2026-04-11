@@ -42,11 +42,6 @@ public record FramePredicate(Optional<ExposureIdentifier> identifier,
         return Exposure.DataComponents.PHOTOGRAPH_FRAME;
     }
 
-    @Override
-    public boolean matches(ItemStack stack, Frame frame) {
-        return matches(frame);
-    }
-
     public boolean matches(Frame frame) {
         return (identifier.isEmpty() || identifier.get().equals(frame.identifier()))
                 && (type.isEmpty() || type.get().equals(frame.type().getSerializedName()))

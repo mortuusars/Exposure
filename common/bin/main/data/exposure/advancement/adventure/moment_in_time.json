@@ -1,0 +1,36 @@
+{
+  "parent": "exposure:adventure/exposure",
+  "criteria": {
+    "print_photograph": {
+      "conditions": {
+        "item": {
+          "items": [
+            "exposure:photograph"
+          ]
+        }
+      },
+      "trigger": "exposure:frame_printed"
+    }
+  },
+  "display": {
+    "frame": "task",
+    "hidden": false,
+    "show_toast": true,
+    "announce_to_chat": true,
+    "icon": {
+      "id": "exposure:photograph"
+    },
+    "title": {
+      "translate": "advancement.exposure.moment_in_time.title"
+    },
+    "description": {
+      "translate": "advancement.exposure.moment_in_time.description"
+    }
+  },
+  "requirements": [
+    [
+      "print_photograph"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

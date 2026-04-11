@@ -43,6 +43,8 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -602,54 +604,50 @@ public class LightroomBlockEntity extends BaseContainerBlockEntity implements Wo
     // Load/Save
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    protected void loadAdditional(ValueInput input) {
         this.items = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(tag, this.items, registries);
+        ContainerHelper.loadAllItems(input, this.items);
 
-        // Backwards compatibility:
-        if (tag.contains("Inventory", Tag.TAG_COMPOUND)) {
-            CompoundTag inventory = tag.getCompound("Inventory");
-            ListTag itemsList = inventory.getList("Items", Tag.TAG_COMPOUND);
+         // Backwards compatibility:
+         input.child("Inventory").ifPresent(inventory -> {
+             ValueInput.ValueInputList itemsList = inventory.childrenListOrEmpty("Items");
 
-            for (int i = 0; i < itemsList.size(); i++) {
-                CompoundTag itemTag = itemsList.getCompound(i);
-                int slot = itemTag.getInt("Slot");
+             for (ValueInput itemTag : itemsList) {
+                 int slot = itemTag.getIntOr("Slot", 0);
+ 
+                 if (slot >= 0 && slot < items.size()) {
+                     itemTag.read(ItemStack.MAP_CODEC).ifPresent(stack -> items.set(slot, stack));
+                 }
+             }
+         });
+ 
+         this.setSelectedFrameIndex(input.getIntOr("SelectedFrame", 0));
+         this.progress = input.getIntOr("Progress", 0);
+         this.printTime = input.getIntOr("PrintTime", 0);
+         this.storedExperience = input.getIntOr("PrintedPhotographsCount", 0);
+         this.advanceFrame = input.getBooleanOr("AdvanceFrame", false);
+         this.printingMode = PrintingMode.fromStringOrDefault(input.getStringOr("PrintMode", ""), PrintingMode.REGULAR);
+         this.lastPlayerId = input.getString("LastPlayerId").map(UUID::fromString).orElse(Util.NIL_UUID);
+     }
 
-                if (slot >= 0 && slot < items.size()) {
-                    ItemStack.parse(registries, itemTag).ifPresent(stack -> items.set(slot, stack));
-                }
-            }
-        }
-
-        this.setSelectedFrameIndex(tag.getInt("SelectedFrame"));
-        this.progress = tag.getInt("Progress");
-        this.printTime = tag.getInt("PrintTime");
-        this.storedExperience = tag.getInt("PrintedPhotographsCount");
-        this.advanceFrame = tag.getBoolean("AdvanceFrame");
-        this.printingMode = PrintingMode.fromStringOrDefault(tag.getString("PrintMode"), PrintingMode.REGULAR);
-        if (tag.contains("LastPlayerId", Tag.TAG_INT_ARRAY)) {
-            this.lastPlayerId = tag.getUUID("LastPlayerId");
-        }
-    }
-
-    @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
-        ContainerHelper.saveAllItems(tag, items, registries);
+     @Override
+    protected void saveAdditional(ValueOutput output) {
+        super.saveAdditional(output);
+        ContainerHelper.saveAllItems(output, items);
         if (getSelectedFrameIndex() > 0)
-            tag.putInt("SelectedFrame", getSelectedFrameIndex());
+            output.putInt("SelectedFrame", getSelectedFrameIndex());
         if (progress > 0)
-            tag.putInt("Progress", progress);
+            output.putInt("Progress", progress);
         if (printTime > 0)
-            tag.putInt("PrintTime", printTime);
+            output.putInt("PrintTime", printTime);
         if (storedExperience > 0)
-            tag.putInt("PrintedPhotographsCount", storedExperience);
+            output.putInt("PrintedPhotographsCount", storedExperience);
         if (advanceFrame)
-            tag.putBoolean("AdvanceFrame", true);
+            output.putBoolean("AdvanceFrame", true);
         if (printingMode != PrintingMode.REGULAR)
-            tag.putString("PrintMode", printingMode.getSerializedName());
+            output.putString("PrintMode", printingMode.getSerializedName());
         if (!lastPlayerId.equals(Util.NIL_UUID))
-            tag.putUUID("LastPlayerId", lastPlayerId);
+            output.putString("LastPlayerId", lastPlayerId.toString());
     }
 
     protected @NotNull NonNullList<ItemStack> getItems() {

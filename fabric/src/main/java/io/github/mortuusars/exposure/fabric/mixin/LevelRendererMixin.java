@@ -30,9 +30,9 @@ public abstract class LevelRendererMixin {
 
     @Inject(method = "collectVisibleEntities", at = @At(value = "TAIL"), cancellable = true)
     private void onRenderLevel(Camera camera, Frustum frustum, List<Entity> output, CallbackInfoReturnable<Boolean> cir) {
-        Vec3 vec3 = camera.getPosition();
         Entity entity = minecraft.player;
-        if (camera.getEntity() instanceof CameraStandEntity) {
+        Vec3 vec3 = entity.position();
+        if (minecraft.getCameraEntity() instanceof CameraStandEntity) {
             if (this.entityRenderDispatcher.shouldRender(entity, frustum, vec3.x, vec3.y, vec3.z)) {
                 BlockPos blockPos = entity.blockPosition();
                 if ((this.level.isOutsideBuildHeight(blockPos.getY()) || this.isSectionCompiled(blockPos))) {

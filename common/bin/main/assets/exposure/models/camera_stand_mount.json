@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"texture_size": [32, 32],
+	"textures": {
+		"particle": "exposure:block/camera_stand",
+		"texture": "exposure:block/camera_stand"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 6],
+			"to": [10, 2, 10],
+			"faces": {
+				"north": {"uv": [10, 0, 12, 1], "rotation": 180, "texture": "#texture"},
+				"east": {"uv": [9, 1, 10, 3], "rotation": 270, "texture": "#texture"},
+				"south": {"uv": [10, 3, 12, 4], "texture": "#texture"},
+				"west": {"uv": [12, 1, 13, 3], "rotation": 90, "texture": "#texture"},
+				"up": {"uv": [10, 1, 12, 3], "texture": "#texture"},
+				"down": {"uv": [10, 4, 12, 6], "texture": "#texture"}
+			}
+		}
+	]
+}

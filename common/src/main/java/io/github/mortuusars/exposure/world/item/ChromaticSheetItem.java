@@ -14,18 +14,21 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.component.CustomData;
-import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class ChromaticSheetItem extends Item {
     public ChromaticSheetItem(Properties properties) {
@@ -48,7 +51,7 @@ public class ChromaticSheetItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         List<Frame> layers = getLayers(stack);
 
         if (!layers.isEmpty()) {
@@ -67,22 +70,25 @@ public class ChromaticSheetItem extends Item {
                         .withStyle(Style.EMPTY.withColor(ColorChannel.BLUE.getRepresentationColor())));
             }
 
-            tooltipComponents.add(component);
+            tooltipComponents.accept(component);
 
             if (layers.size() >= 3) {
-                tooltipComponents.add(Component.translatable("item.exposure.chromatic_sheet.use_tooltip").withStyle(ChatFormatting.GRAY));
+                tooltipComponents.accept(Component.translatable("item.exposure.chromatic_sheet.use_tooltip").withStyle(ChatFormatting.GRAY));
             } else {
-                tooltipComponents.add(Component.translatable("item.exposure.chromatic_sheet.info").withStyle(ChatFormatting.GRAY));
+                tooltipComponents.accept(Component.translatable("item.exposure.chromatic_sheet.info").withStyle(ChatFormatting.GRAY));
             }
         }
     }
 
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @NotNull EquipmentSlot slot) {
         if (entity instanceof ServerPlayer player && canCombine(stack)) {
-            boolean printed = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).contains("printed");
+            boolean printed = stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag().contains("printed");
             ItemStack finalizedItem = combineIntoPhotograph(player, stack, printed);
-            player.getInventory().setItem(slotId, finalizedItem);
+            int slotIndex = player.getInventory().findSlotMatchingItem(stack);
+            if (slotIndex >= 0) {
+                player.getInventory().setItem(slotIndex, finalizedItem);
+            }
         }
     }
 

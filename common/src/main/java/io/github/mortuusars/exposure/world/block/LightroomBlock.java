@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -52,19 +53,19 @@ public class LightroomBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
-                if (level instanceof ServerLevel serverLevel) {
-                    Containers.dropContents(serverLevel, pos, lightroomBlockEntity);
-                    lightroomBlockEntity.dropStoredExperience(null);
-                }
-
-                level.updateNeighbourForOutputSignal(pos, this);
+    public void destroy(@NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state) {
+        if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
+            if (level instanceof ServerLevel serverLevel) {
+                Containers.dropContents(serverLevel, pos, lightroomBlockEntity);
+                lightroomBlockEntity.dropStoredExperience(null);
             }
 
-            super.onRemove(state, level, pos, newState, isMoving);
+            if (level instanceof Level realLevel) {
+                realLevel.updateNeighbourForOutputSignal(pos, this);
+            }
         }
+
+        super.destroy(level, pos, state);
     }
 
     @Override
@@ -73,7 +74,7 @@ public class LightroomBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(@NotNull BlockState blockState, Level level, @NotNull BlockPos pos) {
+    protected int getAnalogOutputSignal(@NotNull BlockState blockState, Level level, @NotNull BlockPos pos, @NotNull Direction direction) {
         if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
             ItemStack resultStack = lightroomBlockEntity.getItem(Lightroom.RESULT_SLOT);
 

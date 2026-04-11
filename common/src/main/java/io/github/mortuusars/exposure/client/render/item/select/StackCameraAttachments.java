@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.render.item.select;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.mortuusars.exposure.client.render.item.CameraAttachments;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
@@ -37,5 +38,10 @@ public record StackCameraAttachments() implements SelectItemModelProperty<Camera
     @Override
     public Type<? extends SelectItemModelProperty<CameraAttachments>, CameraAttachments> type() {
         return TYPE;
+    }
+
+    @Override
+    public Codec<CameraAttachments> valueCodec() {
+        return CameraAttachments.CODEC;
     }
 }

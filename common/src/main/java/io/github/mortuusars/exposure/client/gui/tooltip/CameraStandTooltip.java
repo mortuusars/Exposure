@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
@@ -36,13 +37,12 @@ public class CameraStandTooltip {
         } else {
             TooltipRenderUtil.renderTooltipBackground(guiGraphics, x, y, 18, 18, null);
 
-            guiGraphics.pose().pushPose();
+            guiGraphics.pose().pushMatrix();
             guiGraphics.pose().translate(0, 0);
             guiGraphics.renderItem(stand.getCamera(), x + 1, y + 1);
-            guiGraphics.pose().popPose();
+            guiGraphics.pose().popMatrix();
 
-            // TODO: rendered weird?
-            Tooltips.renderTooltip(guiGraphics, minecraft.font, stand.getCamera(), x + 16, y + 12);
+            Tooltips.renderTooltip(guiGraphics, minecraft.font, Screen.getTooltipFromItem(minecraft, stand.getCamera()), x + 16, y + 12);
         }
     }
 }

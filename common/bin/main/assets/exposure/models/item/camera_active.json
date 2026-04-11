@@ -1,0 +1,42 @@
+{
+  "parent": "exposure:item/camera",
+  "textures": {
+    "texture": "exposure:item/camera/camera",
+    "particle": "exposure:item/camera/camera",
+    "viewfinder": "exposure:item/camera/camera_viewfinder",
+    "selfie_stick": "exposure:item/camera/empty",
+    "lens": "exposure:item/camera/empty",
+    "flash": "exposure:item/camera/empty"
+  },
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [35, -15, 0],
+      "translation": [-1.75, 2.5, 1.5],
+      "scale": [0.95, 0.95, 0.95]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [35, -15, 0],
+      "translation": [-1.75, 2.5, 1.5],
+      "scale": [0.95, 0.95, 0.95]
+    },
+    "firstperson_righthand": {
+      "rotation": [12, -1, 3],
+      "translation": [1.5, 0.75, 2],
+      "scale": [0.9, 0.9, 0.9]
+    },
+    "firstperson_lefthand": {
+      "rotation": [12, -1, 3],
+      "translation": [1.5, 0.75, 2],
+      "scale": [0.9, 0.9, 0.9]
+    },
+    "head": {
+      "translation": [0, 10, 0],
+      "scale": [1.2, 1.2, 1.2]
+    },
+    "fixed": {
+      "rotation": [0, 90, 0],
+      "translation": [1.5, 0, -2.5],
+      "scale": [1.75, 1.75, 1.75]
+    }
+  }
+}

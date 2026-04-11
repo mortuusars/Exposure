@@ -19,18 +19,14 @@ public class BuggerScreenOverlayMixin {
 
         if (Bugger.page == 0) {
             Profiler.get().push("bugger_main");
-            guiGraphics.flush();
             Bugger.renderMainPage(guiGraphics);
-            guiGraphics.flush();
             Profiler.get().pop();
             ci.cancel();
         }
 
         if (Bugger.page == 1) {
             Profiler.get().push("bugger_tag");
-            guiGraphics.flush();
             Bugger.renderTagPage(guiGraphics);
-            guiGraphics.flush();
             Profiler.get().pop();
             ci.cancel();
         }

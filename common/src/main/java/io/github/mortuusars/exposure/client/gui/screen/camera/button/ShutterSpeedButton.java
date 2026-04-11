@@ -42,8 +42,8 @@ public class ShutterSpeedButton extends CycleButton<ShutterSpeed> {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderWidget(guiGraphics, mouseX, mouseY, partialTick);
+    public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.renderContents(guiGraphics, mouseX, mouseY, partialTick);
 
         ShutterSpeed shutterSpeed = getCurrentValue();
         String text = shutterSpeed.getNotation().replace("1/", "");

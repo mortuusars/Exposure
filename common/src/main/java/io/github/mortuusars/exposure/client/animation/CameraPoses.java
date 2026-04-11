@@ -31,7 +31,7 @@ public class CameraPoses<T extends HumanoidRenderState> {
         offHand.yRot += (actionAnim * 0.1F) * (rightHanded ? 1 : -1);
         model.head.xRot += 0.3f; // Applying rest of head rotation after arms
 
-        model.hat.copyFrom(model.head);
+        model.hat.loadPose(model.head.storePose());
     }
 
     public void applySelfie(HumanoidModel<?> model, T renderState, HumanoidArm arm, boolean undoArmBobbing) {
@@ -75,7 +75,7 @@ public class CameraPoses<T extends HumanoidRenderState> {
         offHand.yRot += (actionAnim * 0.1F) * (rightHanded ? 1 : -1);
         model.head.xRot += 0.3f; // Applying rest of head rotation after arms
 
-        model.hat.copyFrom(model.head);
+        model.hat.loadPose(model.head.storePose());
     }
 
     public void applyStand(HumanoidModel<?> model, T renderState, HumanoidArm arm, CameraStandEntity stand) {
@@ -97,7 +97,7 @@ public class CameraPoses<T extends HumanoidRenderState> {
         float pitch = (float)Math.atan2(-direction.y, distanceXZ);
         model.head.xRot = -pitch;
 
-        model.hat.copyFrom(model.head);
+        model.hat.loadPose(model.head.storePose());
 
         // Arms to stand:
         mainHand.yRot = (rightHanded ? -0.2F : 0.2F) + model.head.yRot;

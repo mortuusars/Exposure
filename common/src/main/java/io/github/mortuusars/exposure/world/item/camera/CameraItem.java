@@ -427,7 +427,7 @@ public class CameraItem extends Item {
     public InteractionResult handleStandSneakInteraction(CameraStandEntity stand, Player player, InteractionHand hand, ItemStack cameraStack) {
         ItemStack itemInHand = player.getItemInHand(hand);
         int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().getSelectedSlot();
-        SlotAccess access = SlotAccess.forContainer(player.getInventory(), slot);
+        SlotAccess access = SlotAccess.forListElement(player.getInventory().getNonEquipmentItems(), slot);
         return hotswap(stand, cameraStack, itemInHand, access);
     }
 
@@ -841,7 +841,7 @@ public class CameraItem extends Item {
         data.put(Frame.YAW, cameraHolder.getYRot());
 
         data.put(Frame.DAY_TIME, (int) level.getDayTime());
-        data.put(Frame.DIMENSION, level.dimension().location());
+        data.put(Frame.DIMENSION, level.dimension().identifier());
 
         BlockPos blockPos = cameraHolder.blockPosition();
 
@@ -871,7 +871,7 @@ public class CameraItem extends Item {
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
-                .flatMap(pos -> level.getBiome(pos).unwrapKey().map(ResourceKey::location))
+                .flatMap(pos -> level.getBiome(pos).unwrapKey().map(ResourceKey::identifier))
                 .ifPresent(biome -> data.put(Frame.BIOME, biome));
 
         List<Identifier> structures = positionsInFrame.stream()

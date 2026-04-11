@@ -1,0 +1,259 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:display_context",
+    "cases": [
+      {
+        "when": "gui",
+        "model": {
+          "type": "minecraft:model",
+          "model": "exposure:item/camera_gui"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:select",
+      "property": "exposure:camera_status",
+      "cases": [
+        {
+          "when": "none",
+          "model": {
+            "type": "minecraft:select",
+            "property": "exposure:camera_attachments",
+            "cases": [
+              {
+                "when": "none",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "flash",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_has_flash",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "lens",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_has_lens",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "lens_and_flash",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_has_lens_and_flash",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "when": "active",
+          "model": {
+            "type": "minecraft:select",
+            "property": "exposure:camera_attachments",
+            "cases": [
+              {
+                "when": "none",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_active",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "flash",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_active_has_flash",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "lens",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_active_has_lens",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "lens_and_flash",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_active_has_lens_and_flash",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "when": "selfie",
+          "model": {
+            "type": "minecraft:select",
+            "property": "exposure:camera_attachments",
+            "cases": [
+              {
+                "when": "none",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_selfie",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "flash",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_selfie_has_flash",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "lens",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_selfie_has_lens",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              },
+              {
+                "when": "lens_and_flash",
+                "model": {
+                  "type": "minecraft:model",
+                  "model": "exposure:item/camera_selfie_has_lens_and_flash",
+                  "tints": [
+                    {
+                      "type": "minecraft:constant",
+                      "value": -1
+                    },
+                    {
+                      "type": "exposure:glass_tint",
+                      "default": -1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "when": "selfie_viewfinder",
+          "model": {
+            "type": "minecraft:model",
+            "model": "exposure:item/selfie_stick"
+          }
+        }
+      ]
+    }
+  }
+}

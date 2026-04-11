@@ -1,6 +1,7 @@
 package io.github.mortuusars.exposure.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.input.KeyEvent;
 
 import java.util.function.*;
 
@@ -14,14 +15,14 @@ public record KeyBinding(Key matcher, Supplier<Boolean> handler) {
     }
 
     public boolean matches(int keyCode, int scanCode, int press, int modifiers) {
-        return matcher.matches(keyCode, scanCode, press, modifiers);
+        return matcher.matches(new KeyEvent(press, keyCode, modifiers));
     }
 
     public boolean matchesPress(int keyCode, int scanCode, int modifiers) {
-        return matcher.matches(keyCode, scanCode, InputConstants.PRESS, modifiers);
+        return matcher.matches(new KeyEvent(InputConstants.PRESS, keyCode, modifiers));
     }
 
     public boolean matchesRelease(int keyCode, int scanCode, int modifiers) {
-        return matcher.matches(keyCode, scanCode, InputConstants.RELEASE, modifiers);
+        return matcher.matches(new KeyEvent(InputConstants.RELEASE, keyCode, modifiers));
     }
 }

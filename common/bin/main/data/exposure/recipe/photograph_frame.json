@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "key": {
+    "S": "minecraft:stick",
+    "P": "#minecraft:planks",
+    "F": "minecraft:item_frame"
+  },
+  "pattern": [
+    "SPS",
+    "PFP",
+    "SPS"
+  ],
+  "result": {
+    "id": "exposure:photograph_frame"
+  }
+}

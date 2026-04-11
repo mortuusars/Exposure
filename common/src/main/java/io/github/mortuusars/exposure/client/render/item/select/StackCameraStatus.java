@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.render.item.select;
 
+import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import io.github.mortuusars.exposure.client.render.item.CameraStatus;
 import io.github.mortuusars.exposure.client.util.Minecrft;
@@ -38,5 +39,10 @@ public record StackCameraStatus() implements SelectItemModelProperty<CameraStatu
     @Override
     public Type<? extends SelectItemModelProperty<CameraStatus>, CameraStatus> type() {
         return TYPE;
+    }
+
+    @Override
+    public Codec<CameraStatus> valueCodec() {
+        return CameraStatus.CODEC;
     }
 }
