@@ -105,7 +105,7 @@ subprojects {
         runs {
             client {
                 property 'item_asset_export.render.namespaces', 'exposure'
-                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar', '-Dsodium.checks.issue2561=false'
+                vmArgs '-XX:+.AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar', '-Dsodium.checks.issue2561=false'
             }
         }
     }

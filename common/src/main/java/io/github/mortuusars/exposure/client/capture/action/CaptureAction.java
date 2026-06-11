@@ -50,7 +50,9 @@ public interface CaptureAction {
     }
 
     static CaptureAction hideGui() {
-        return new HideGuiAction();
+        // Looks very weird with my code, so I have to remove it
+        return EMPTY;
+        //return new HideGuiAction();
     }
 
     static CaptureAction disablePostEffect() {
