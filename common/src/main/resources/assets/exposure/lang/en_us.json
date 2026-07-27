@@ -117,7 +117,7 @@
   "exposure.configuration.default_focal_range": "Default Focal Range",
   "exposure.configuration.default_frame_size": "Default Frame Size",
   "exposure.configuration.different_developing_potions_colors": "Colorful developing potions",
-  "exposure.configuration.direct_capture_delay_frames": "Direct capture delay ticks",
+  "exposure.configuration.direct_capture_delay_frames": "Direct capture delay frames",
   "exposure.configuration.dyes_black_and_white": "Dyes per B&W print",
   "exposure.configuration.dyes_chromatic_blue": "Dyes per chromatic blue channel print",
   "exposure.configuration.dyes_chromatic_green": "Dyes per chromatic green channel print",

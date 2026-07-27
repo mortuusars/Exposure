@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+- Updated localization files.
+- Fixed wrong config translation
+
 ## 1.9.18 - 2026-06-10
 - Fixed Stacked Photographs item not behaving correctly in Refined Storage or Create Stock Ticker. 
 
