@@ -1,6 +1,7 @@
 # Changelog
 
 ## UNRELEASED
+- Fixed Camera item in Camera Attachments Menu being movable with 1-9 keys, which was causing a crash
 - Updated localization files.
 - Fixed wrong config translation
 
