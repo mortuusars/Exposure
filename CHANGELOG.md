@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.22 - 2026-09-23
+- Fixed Camera item in Camera Attachments Menu being movable with 1-9 keys, which was causing a crash
+
 ## 1.9.21 - 2026-06-09
 - [Forge] Slight change to the code to support older forge versions. 
 

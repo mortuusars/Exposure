@@ -9,6 +9,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -90,6 +91,14 @@ public class CameraInHandAttachmentsMenu extends AbstractCameraAttachmentsMenu {
             // Fixes item not updating properly when not in "Inventory" tab of creative inventory
             player.getInventory().setItem(cameraSlotIndex, getCameraStack());
         }
+    }
+
+    @Override
+    public void clicked(int slotId, int button, ClickType clickType, Player player) {
+        if (clickType == ClickType.SWAP && cameraSlotIndex == button) {
+            return; // Prevents moving the camera with 1-9 keys
+        }
+        super.clicked(slotId, button, clickType, player);
     }
 
     @Override
