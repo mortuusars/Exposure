@@ -440,6 +440,7 @@ public class Config {
                             "If captured images are still not looking properly - enable 'force_direct_capture'.",
                             "Default: false")
                       .define("background_capture_use_panoramic_mode", false);
+
                 {
                     builder.push("loading");
 
@@ -463,6 +464,7 @@ public class Config {
                                       "cdn.discordapp.com",
                                       "media.discordapp.net",
                                       "raw.githubusercontent.com"),
+                                () -> "",
                                 o -> true);
 
                     URL_LOADING_ALLOWED_SUBDOMAINS = builder
@@ -471,6 +473,7 @@ public class Config {
                                 List.of("multiplayer_url_loading_allowed_subdomains"),
                                 () -> List.of(".imgur.com",
                                       ".discordapp.com"),
+                                () -> "",
                                 o -> true);
 
                     builder.pop();

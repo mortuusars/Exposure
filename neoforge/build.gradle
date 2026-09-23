@@ -64,8 +64,8 @@ dependencies {
     modRuntimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
     modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
-    //runtimeOnly("curse.maven:refined-storage-243076:6391989")
-    //runtimeOnly("maven.modrinth:DistantHorizons:2.3.0-b-1.21.1")
+    // modLocalRuntime("maven.modrinth:cloth-config:15.0.140+neoforge")
+    // modLocalRuntime("maven.modrinth:renderscale:1.4.0-alpha.6-neoforge+1.21.1")
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')

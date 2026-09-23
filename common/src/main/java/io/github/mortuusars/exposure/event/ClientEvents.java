@@ -2,39 +2,25 @@ package io.github.mortuusars.exposure.event;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.client.animation.EasingFunction;
-import io.github.mortuusars.exposure.client.camera.CameraClient;
-import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderRegistry;
-import io.github.mortuusars.exposure.client.capture.template.CameraCaptureTemplate;
-import io.github.mortuusars.exposure.client.capture.template.CaptureTemplates;
-import io.github.mortuusars.exposure.client.capture.template.PreloadingDummyCaptureTemplate;
 import io.github.mortuusars.exposure.client.render.ItemFramePhotographRenderer;
-import io.github.mortuusars.exposure.client.util.Minecrft;
-import io.github.mortuusars.exposure.network.packet.Packet;
-import io.github.mortuusars.exposure.world.camera.Camera;
-import io.github.mortuusars.exposure.world.camera.CameraId;
-import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
-import io.github.mortuusars.exposure.client.sound.UniqueSoundManager;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.decoration.ItemFrame;
-import net.minecraft.world.item.ItemStack;
 
 public class ClientEvents {
     public static void levelUnloaded() {
     }
 
     public static void login() {
-        try {
+        /*try {
             preloadStuffToFixLagSpikes();
         } catch (Exception e) {
             Exposure.LOGGER.warn("Failed to preload stuff: {}", e.getMessage());
-        }
+        }*/
     }
 
+    /* Not sure that this is needed anymore. Doesn't lag as much now.
     private static void preloadStuffToFixLagSpikes() {
         ClientPacketsHandler.clearRenderingCache();
         boolean active = Minecrft.player().getActiveExposureCameraOptional().isEmpty();
@@ -53,7 +39,7 @@ public class ClientEvents {
         ExposureClient.cycles().enqueueTask(new PreloadingDummyCaptureTemplate()
                 .createTask(new CaptureParameters.Builder("dummy").build()));
         UniqueSoundManager.stop(Minecrft.player().getScoreboardName(), Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get());
-    }
+    }*/
 
     public static void disconnect() {
         resetRenderData();

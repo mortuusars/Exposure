@@ -1,9 +1,12 @@
 # Changelog
 
 ## UNRELEASED
+- Added `RenderScale` mod to the `force_direct_capture_default_mods` config
+  - Existing configs will not be affected, so you'll need to add it manually, delete the existing config to regenerate it, or enable `force_direct_capture` to fix the issues with RenderScale
+- Removed preloading (done to reduce the lag spike when camera is first used after launch), as it was causing some issues and doesn't seem to be needed anymore
 - Fixed Camera item in Camera Attachments Menu being movable with 1-9 keys, which was causing a crash
-- Updated localization files.
 - Fixed wrong config translation
+- Updated localization files
 
 ## 1.9.18 - 2026-06-10
 - Fixed Stacked Photographs item not behaving correctly in Refined Storage or Create Stock Ticker. 

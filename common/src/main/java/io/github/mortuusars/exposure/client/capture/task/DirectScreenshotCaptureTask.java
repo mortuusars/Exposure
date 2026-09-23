@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class DirectScreenshotCaptureTask extends Task<Result<Image>> {
     // At least 1 frame of delay is needed because some immediate CaptureComponents may only apply on the next frame
-    // and in this method we take a screenshot of what's already rendered.
-    // BackgroundScreenshotMethod does not have this problem because it renders the level again for himself.
+    // and in this task we take a screenshot of what's already rendered.
+    // BackgroundScreenshotCaptureTask does not have this problem because it renders the level again for himself.
     protected int delay = Math.max(1, Config.Client.DIRECT_CAPTURE_DELAY_FRAMES.get());
 
     @Nullable

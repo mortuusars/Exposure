@@ -82,7 +82,6 @@ public class BackgroundScreenshotCaptureTask extends Task<Result<Image>> {
             }
             minecraft.gameRenderer.setRenderBlockOutline(true);
             renderTarget.destroyBuffers();
-            renderTarget.unbindWrite();
             renderTarget = null;
             capturing = false;
             minecraft.levelRenderer.graphicsChanged();
