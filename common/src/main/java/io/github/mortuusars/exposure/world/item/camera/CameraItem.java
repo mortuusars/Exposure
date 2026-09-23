@@ -561,7 +561,7 @@ public class CameraItem extends Item {
         boolean timerChanged = getTimer().tick(holder, serverLevel, stack);
 
         if (Config.Server.TIMER_ATTRACTS_MOB_ATTENTION.get()
-                && getTimer().isTicking(holder, stack) || getTimer().getTicksSinceLastRelease(holder, stack) < 10) {
+                && (getTimer().isTicking(holder, stack) || getTimer().getTicksSinceLastRelease(holder, stack) < 10)) {
             grabAttentionOfNearbyMobs(holder, stack);
         }
 

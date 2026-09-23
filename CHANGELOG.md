@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Fixed minor issue with camera timer mob attention grab
+
 ## 1.9.19 - 2026-09-23
 - Improved thirdperson camera behavior when viewfinder is opened and closed
 - Added compatibility with `Shoulder Surfing` mod

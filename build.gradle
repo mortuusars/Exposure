@@ -106,7 +106,6 @@ subprojects {
             client {
                 property 'item_asset_export.render.namespaces', 'exposure'
                 vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=core'
-                //  , '-Dmixin.debug.export=true'
             }
         }
     }
