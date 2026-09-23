@@ -1,5 +1,8 @@
 # Changelog
 
+## UNRELEASED
+- Fixed minor issue with camera timer mob attention grab 
+
 ## 1.9.22 - 2026-09-23
 - Fixed Camera item in Camera Attachments Menu being movable with 1-9 keys, which was causing a crash
 
