@@ -6,7 +6,10 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.input.*;
 import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.exposure.integration.Mods;
+import io.github.mortuusars.exposure.integration.shoulder_surfing.ShoulderSurfingCompat;
 import io.github.mortuusars.exposure.world.camera.Camera;
+import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -22,6 +25,7 @@ public class Viewfinder {
     protected final ViewfinderOverlay overlay;
     protected final ViewfinderShader shader;
     protected final ViewfinderSelfie selfie;
+    protected @Nullable CameraType cameraTypeBefore;
 
     protected KeyBindings keyBindings = KeyBindings.of(
           Key.press(Minecrft.options().keyAttack).executes(() -> !canAttack()),
@@ -126,7 +130,27 @@ public class Viewfinder {
         Minecrft.get().setScreen(controlsScreen);
     }
 
+    public void setup() {
+        if (Mods.SHOULDER_SURFING.isLoaded()) {
+            ShoulderSurfingCompat.onViewfinderSetup(camera);
+            return;
+        }
+
+        cameraTypeBefore = Minecrft.options().getCameraType();
+        if (cameraTypeBefore != CameraType.FIRST_PERSON
+              && (cameraTypeBefore == CameraType.THIRD_PERSON_BACK || camera instanceof CameraOnStand)) {
+            Minecrft.options().setCameraType(CameraType.FIRST_PERSON);
+        }
+    }
+
     public void close() {
+        if (Mods.SHOULDER_SURFING.isLoaded()) {
+            ShoulderSurfingCompat.onViewfinderRemove();
+        } else if (cameraTypeBefore != null) {
+            Minecrft.options().setCameraType(cameraTypeBefore);
+            cameraTypeBefore = null;
+        }
+
         if (shader != null) {
             shader.close();
         }

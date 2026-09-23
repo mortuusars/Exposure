@@ -67,6 +67,8 @@ dependencies {
     // modLocalRuntime("maven.modrinth:cloth-config:15.0.140+neoforge")
     // modLocalRuntime("maven.modrinth:renderscale:1.4.0-alpha.6-neoforge+1.21.1")
 
+    // modLocalRuntime("maven.modrinth:shoulder-surfing-reloaded:${shoulder_surfing_modrinth_neoforge_version}")
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
 }

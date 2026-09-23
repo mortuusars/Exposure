@@ -1,6 +1,8 @@
 # Changelog
 
 ## UNRELEASED
+- Improved thirdperson camera behavior when viewfinder is opened and closed
+- Added compatibility with `Shoulder Surfing` mod
 - Added `RenderScale` mod to the `force_direct_capture_default_mods` config
   - Existing configs will not be affected, so you'll need to add it manually, delete the existing config to regenerate it, or enable `force_direct_capture` to fix the issues with RenderScale
 - Removed preloading (done to reduce the lag spike when camera is first used after launch), as it was causing some issues and doesn't seem to be needed anymore

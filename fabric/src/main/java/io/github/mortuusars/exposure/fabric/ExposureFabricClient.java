@@ -64,7 +64,5 @@ public class ExposureFabricClient implements ClientModInitializer {
         HudRenderCallback.EVENT.register(CameraStandTooltip::render);
 
         FabricS2CPacketHandler.register();
-
-        ModCompatibilityClient.handle();
     }
 }

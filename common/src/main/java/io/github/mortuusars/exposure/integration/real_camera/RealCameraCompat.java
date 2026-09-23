@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.integration.compat;
+package io.github.mortuusars.exposure.integration.real_camera;
 
 import com.xtracr.realcamera.compat.DisableHelper;
 import io.github.mortuusars.exposure.Config;

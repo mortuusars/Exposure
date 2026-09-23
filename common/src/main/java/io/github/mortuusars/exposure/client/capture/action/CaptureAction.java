@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.client.capture.action;
 
+import io.github.mortuusars.exposure.integration.Mods;
+import io.github.mortuusars.exposure.integration.shoulder_surfing.ShoulderSurfingForceRegularOrSelfieCameraTypeAction;
 import io.github.mortuusars.exposure.util.TranslatableError;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import io.github.mortuusars.exposure.world.camera.component.ShutterSpeed;
@@ -46,6 +48,9 @@ public interface CaptureAction {
     }
 
     static CaptureAction forceRegularOrSelfieCamera(@Nullable CameraHolder holder) {
+        if (Mods.SHOULDER_SURFING.isLoaded()) {
+            return new ShoulderSurfingForceRegularOrSelfieCameraTypeAction(holder);
+        }
         return new ForceRegularOrSelfieCameraTypeAction(holder);
     }
 

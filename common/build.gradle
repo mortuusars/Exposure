@@ -22,6 +22,7 @@ dependencies {
 
     modCompileOnly("curse.maven:real-camera-851574:${realcamera_neoforge_id}")
     modCompileOnly("maven.modrinth:easy-anvils:${easy_anvils_modrinth_neoforge_version}")
+    modCompileOnly("maven.modrinth:shoulder-surfing-reloaded:${shoulder_surfing_modrinth_neoforge_version}")
 
     testImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")

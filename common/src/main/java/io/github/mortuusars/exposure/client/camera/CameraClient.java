@@ -62,10 +62,7 @@ public class CameraClient {
     public static void setupViewfinder(@NotNull Camera camera) {
         removeViewfinder();
         activeViewfinder = ViewfinderRegistry.get(camera);
-
-        if (camera instanceof CameraOnStand) {
-            Minecrft.options().setCameraType(CameraType.FIRST_PERSON);
-        }
+        activeViewfinder.setup();
     }
 
     public static void removeViewfinder() {
