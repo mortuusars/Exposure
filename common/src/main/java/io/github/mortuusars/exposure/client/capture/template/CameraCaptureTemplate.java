@@ -6,7 +6,10 @@ import io.github.mortuusars.exposure.client.capture.Capture;
 import io.github.mortuusars.exposure.client.capture.action.CaptureAction;
 import io.github.mortuusars.exposure.client.capture.palettizer.Palettizer;
 import io.github.mortuusars.exposure.client.capture.saving.ExposureUploader;
+import io.github.mortuusars.exposure.client.capture.task.StackedScreenshotCaptureTask;
+import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.exposure.util.cycles.task.Result;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.camera.capture.Projection;
 import io.github.mortuusars.exposure.data.ColorPalette;
@@ -36,17 +39,26 @@ public class CameraCaptureTemplate implements CaptureTemplate {
         }
 
         @Nullable CameraHolder holder = entity instanceof CameraHolder cameraHolder ? cameraHolder : null;
-
         Holder<ColorPalette> palette = getColorPalette(params);
 
-        Task<ExposureData> captureTask = Capture.of(Capture.screenshot(),
+        final boolean USE_FRAME_STACKING = Config.Client.USE_FRAME_STACKING.get();
+        Task<Result<Image>> screenshotTask = USE_FRAME_STACKING
+                ? new StackedScreenshotCaptureTask(
+                    params.getShutterSpeed().getDurationTicks(),
+                    // I decrease it because else it looks much brighter than without stacking
+                    params.getShutterSpeed().getBrightness() * 0.5f)
+                : Capture.screenshot();
+
+        Task<ExposureData> captureTask = Capture.of(screenshotTask,
                         CaptureAction.setCameraEntity(entity),
                         CaptureAction.forceRegularOrSelfieCamera(holder),
                         CaptureAction.optional(params.fov(), CaptureAction::setFov),
+                        // Looks weird with my code
+                        // See: HideGuiAction.java
                         CaptureAction.hideGui(),
                         CaptureAction.optional(!Config.Client.KEEP_POST_EFFECT.get(), CaptureAction::disablePostEffect),
                         CaptureAction.setFilter(params.filter()),
-                        CaptureAction.modifyGamma(params.getShutterSpeed()),
+                        CaptureAction.optional(!USE_FRAME_STACKING, CaptureAction.modifyGamma(params.getShutterSpeed())),
                         CaptureAction.optional(params.getFlash(), () -> CaptureAction.flash(entity)))
                 .handleErrorAndGetResult(printCasualErrorInChat())
                 .thenAsync(applyEffectsToImage(params))

@@ -269,6 +269,9 @@ public class Config {
     public static class Client {
         public static final ForgeConfigSpec SPEC;
 
+        // Camera
+        public static final ForgeConfigSpec.BooleanValue USE_FRAME_STACKING;
+
         // UI
         public static final ForgeConfigSpec.BooleanValue RECIPE_TOOLTIPS_WITHOUT_JEI;
         public static final ForgeConfigSpec.BooleanValue CAMERA_SHOW_TOOLTIP_DETAILS;
@@ -329,6 +332,17 @@ public class Config {
 
         static {
             ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
+
+            {
+                builder.push("camera");
+
+                USE_FRAME_STACKING = builder
+                        .comment("Use more realistic frame stacking, instead of just brightening an image." +
+                                "May cause a client-side freeze. Default: false")
+                        .define("use_frame_stacking", false);
+
+                builder.pop();
+            }
 
             {
                 builder.push("ui");
