@@ -542,11 +542,11 @@ public class CameraItem extends Item {
 
         tick(holder, stack);
 
-        if (level.isClientSide && entity instanceof Player player) {
+        if (entity instanceof Player player && isActive(stack)) {
             boolean matchesActive = player.getActiveExposureCameraOptional()
                     .map(camera -> camera.idMatches(getOrCreateId(stack)))
                     .orElse(false);
-            if (isActive(stack) && !matchesActive) {
+            if (!matchesActive) {
                 setActive(stack, false);
             }
         }
