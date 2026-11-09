@@ -14,16 +14,18 @@ dependencies {
     // We depend on Fabric Loader here to use the Fabric @Environment annotations,
     // which get remapped to the correct annotations on each platform.
     // Do NOT use other classes from Fabric Loader.
-    modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
+    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
-    modApi "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api_port_version}"
+    modCompileOnly("io.github.mortuusars.mortaar:mortaar-${minecraft_version}-common:${mortaar_version}")
+    modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api_port_version}")
 
-    modCompileOnlyApi "mezz.jei:jei-${minecraft_version}-common-api:${jei_version}"
+    modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
 
     modCompileOnly("curse.maven:real-camera-851574:${realcamera_neoforge_id}")
     modCompileOnly("maven.modrinth:easy-anvils:${easy_anvils_modrinth_neoforge_version}")
     modCompileOnly("maven.modrinth:shoulder-surfing-reloaded:${shoulder_surfing_modrinth_neoforge_version}")
 
+    // Tests
     testImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     "junit"(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))

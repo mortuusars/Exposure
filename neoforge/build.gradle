@@ -35,44 +35,53 @@ repositories {
 }
 
 dependencies {
-    neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
+    neoForge("net.neoforged:neoforge:${neoforge_version}")
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.4.1"))
     implementation(include("io.github.llamalad7:mixinextras-neoforge:0.4.1"))
 
+    modImplementation(include("io.github.mortuusars.mortaar:mortaar-${minecraft_version}-neoforge:${mortaar_version}"))
+
+    // Integration
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
+    modCompileOnlyApi("dev.latvian.mods:rhino:${rhino_version}") { transitive = false }
+    modCompileOnlyApi("dev.latvian.mods:better-advanced-tooltips:${kjs_better_adv_tooltips_version}") { transitive = false }
+    modCompileOnlyApi("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
+    modCompileOnly("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
 
-    modCompileOnlyApi("dev.latvian.mods:rhino:$rhino_version") { transitive(false) }
-    modCompileOnlyApi("dev.latvian.mods:kubejs-neoforge:$kubejs_version")
+    modLocalRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
+    modLocalRuntime("curse.maven:embeddium-908741:6118392")
+    modLocalRuntime("curse.maven:jade-324717:${jade_neoforge_id}")
+    modLocalRuntime("curse.maven:yeetusexperimentus-635427:5444189")
 
-    modRuntimeOnly("curse.maven:jade-324717:${jade_neoforge_id}") { transitive = false }
-    modRuntimeOnly("curse.maven:yeetusexperimentus-635427:5444189") { transitive = false }
-//    modRuntimeOnly("maven.modrinth:puzzles-lib:${puzzles_lib_modrinth_neoforge_version}")
-//    modRuntimeOnly("maven.modrinth:easy-anvils:${easy_anvils_modrinth_neoforge_version}")
+    // Mods for testing/compat
 
-    modRuntimeOnly("curse.maven:embeddium-908741:6118392")
-
-    modRuntimeOnly("maven.modrinth:essentialsmod:y6XzoYMQ")
-    modRuntimeOnly("maven.modrinth:crossroads:EgSYNn26")
-    modRuntimeOnly("maven.modrinth:refined-storage:lHHiI26k")
-
-    // Create
-    modImplementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
-    modImplementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
-    modCompileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
-    modRuntimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
-    modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
-
+    // modLocalRuntime("maven.modrinth:puzzles-lib:${puzzles_lib_modrinth_neoforge_version}")
+    // modLocalRuntime("maven.modrinth:easy-anvils:${easy_anvils_modrinth_neoforge_version}")
     // modLocalRuntime("maven.modrinth:cloth-config:15.0.140+neoforge")
     // modLocalRuntime("maven.modrinth:renderscale:1.4.0-alpha.6-neoforge+1.21.1")
-
     // modLocalRuntime("maven.modrinth:shoulder-surfing-reloaded:${shoulder_surfing_modrinth_neoforge_version}")
+    // modLocalRuntime("maven.modrinth:essentialsmod:y6XzoYMQ")
+    // modLocalRuntime("maven.modrinth:crossroads:EgSYNn26")
+    // modLocalRuntime("maven.modrinth:refined-storage:lHHiI26k")
 
-    modImplementation "curse.maven:architectury-api-419699:8492726"
-    modImplementation "curse.maven:ftb-library-forge-404465:9350706"
-    modImplementation "curse.maven:ftb-teams-forge-404468:9434081"
-    modImplementation "curse.maven:ftb-chunks-forge-314906:9374151"
+    // FTB Chunks
+    // modLocalRuntime("curse.maven:architectury-api-419699:8492726")
+    // modLocalRuntime("curse.maven:ftb-library-forge-404465:9350706")
+    // modLocalRuntime("curse.maven:ftb-teams-forge-404468:9434081")
+    // modLocalRuntime("curse.maven:ftb-chunks-forge-314906:9374151")
+
+    // KubeJS
+    // modLocalRuntime("dev.latvian.mods:rhino:${rhino_version}")
+    // modLocalRuntime("dev.latvian.mods:better-advanced-tooltips:${kjs_better_adv_tooltips_version}")
+    // modLocalRuntime("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
+
+    // Create
+    // modImplementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    // modImplementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
+    // modCompileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
+    // modLocalRuntime("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
+    // modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')

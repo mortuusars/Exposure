@@ -43,14 +43,16 @@ repositories {
 }
 
 dependencies {
-    modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabric_api_version}")
 
+    modImplementation(include("io.github.mortuusars.mortaar:mortaar-${minecraft_version}-fabric:${mortaar_version}"))
     modImplementation("fuzs.forgeconfigapiport:forgeconfigapiport-fabric:${forge_config_api_port_version}")
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}")
-    modRuntimeOnly("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
-    modRuntimeOnly("maven.modrinth:modmenu:YIfqIJ8q")
+
+    modLocalRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
+    modLocalRuntime("maven.modrinth:modmenu:YIfqIJ8q")
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
