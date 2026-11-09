@@ -1,7 +1,7 @@
 plugins {
     id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
     id "architectury-plugin" version "3.4-SNAPSHOT"
-    id "me.modmuss50.mod-publish-plugin" version "1.1.0"
+    id "me.modmuss50.mod-publish-plugin" version "2.1.0"
     id 'org.moddedmc.wiki.toolkit' version '0.2.6'
     id 'com.gradleup.shadow' version '8.3.6' apply false
 }
@@ -244,7 +244,7 @@ task printLatestVersionChangelog {
 
 publishMods {
     changelog = project.ext.changelog
-    type = BETA
+    type = STABLE
     dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
 
     def cfOptions = curseforgeOptions {
