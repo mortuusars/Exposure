@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.PlatformHelperClient;
 import io.github.mortuusars.exposure.client.image.modifier.ImageEffect;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.client.render.image.RenderCoordinates;
@@ -13,6 +12,7 @@ import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;
@@ -117,7 +117,7 @@ public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> exte
         poseStack.pushPose();
         poseStack.translate(-0.5f, -0.5f, -0.5f);
         ModelResourceLocation modelLocation = getModelLocation(entity, size);
-        BakedModel model = PlatformHelperClient.getModel(modelLocation);
+        BakedModel model = Platform.Client.getModel(modelLocation);
         blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(getRenderType()),
                 null, model, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();

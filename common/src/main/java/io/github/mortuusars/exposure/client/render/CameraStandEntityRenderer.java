@@ -3,10 +3,10 @@ package io.github.mortuusars.exposure.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.PlatformHelperClient;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -58,7 +58,7 @@ public class CameraStandEntityRenderer <T extends CameraStandEntity> extends Ent
         }
     }
 
-    private void renderStand(T entity, float entityYaw, float entityPitch, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    protected void renderStand(T entity, float entityYaw, float entityPitch, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
         if (entity.getVehicle() != null) {
@@ -69,13 +69,13 @@ public class CameraStandEntityRenderer <T extends CameraStandEntity> extends Ent
         poseStack.translate(-0.5f, 0f, -0.5f);
 
         ModelResourceLocation modelLocation = ExposureClient.Models.CAMERA_STAND;
-        BakedModel model = PlatformHelperClient.getModel(modelLocation);
+        BakedModel model = Platform.Client.getModel(modelLocation);
         blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.solid()),
                 null, model, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
 
-    private void renderMount(T entity, float entityYaw, float entityPitch, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    protected void renderMount(T entity, float entityYaw, float entityPitch, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
         poseStack.translate(0, 1.125, 0);
         float scale = MOUNT_SCALE;
@@ -91,13 +91,13 @@ public class CameraStandEntityRenderer <T extends CameraStandEntity> extends Ent
 
         poseStack.translate(-0.5f, 0f, -0.5f);
         ModelResourceLocation mountModelLocation = ExposureClient.Models.CAMERA_STAND_MOUNT;
-        BakedModel mountModel = PlatformHelperClient.getModel(mountModelLocation);
+        BakedModel mountModel = Platform.Client.getModel(mountModelLocation);
         blockRenderer.getModelRenderer().renderModel(poseStack.last(), bufferSource.getBuffer(RenderType.solid()),
                 null, mountModel, 1.0f, 1.0f, 1.0f, packedLight, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
 
-    private void renderCamera(T entity, float entityYaw, float entityPitch, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    protected void renderCamera(T entity, float entityYaw, float entityPitch, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
 
         poseStack.translate(0, 1.125, 0);

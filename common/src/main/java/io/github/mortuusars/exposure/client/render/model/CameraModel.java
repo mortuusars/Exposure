@@ -1,13 +1,12 @@
 package io.github.mortuusars.exposure.client.render.model;
 
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.PlatformHelperClient;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -30,22 +29,22 @@ public class CameraModel {
 
         if (camera.isInSelfieMode(stack)) {
             if (entity != null && entity.equals(Minecrft.get().getCameraEntity())) {
-                return PlatformHelperClient.getModel(ExposureClient.Models.SELFIE_STICK);
+                return Platform.Client.getModel(ExposureClient.Models.SELFIE_STICK);
             }
 
-            original = getModelWithOverrides(ExposureClient.Models.CAMERA_SELFIE, stack, level, entity, seed);
-            models.add(getModelWithOverrides(ExposureClient.Models.CAMERA_SELFIE_STICK, stack, level, entity, seed));
+            original = Platform.Client.getModelWithOverrides(ExposureClient.Models.CAMERA_SELFIE, stack, level, entity, seed);
+            models.add(Platform.Client.getModelWithOverrides(ExposureClient.Models.CAMERA_SELFIE_STICK, stack, level, entity, seed));
         } else if (camera.isActive(stack)) {
-            original = getModelWithOverrides(ExposureClient.Models.CAMERA_ACTIVE, stack, level, entity, seed);
-            models.add(getModelWithOverrides(ExposureClient.Models.CAMERA_VIEWFINDER, stack, level, entity, seed));
+            original = Platform.Client.getModelWithOverrides(ExposureClient.Models.CAMERA_ACTIVE, stack, level, entity, seed);
+            models.add(Platform.Client.getModelWithOverrides(ExposureClient.Models.CAMERA_VIEWFINDER, stack, level, entity, seed));
         }
 
         if (Attachment.FLASH.isPresent(stack)) {
-            models.add(getModelWithOverrides(ExposureClient.Models.CAMERA_FLASH, stack, level, entity, seed));
+            models.add(Platform.Client.getModelWithOverrides(ExposureClient.Models.CAMERA_FLASH, stack, level, entity, seed));
         }
 
         if (Attachment.LENS.isPresent(stack)) {
-            models.add(getModelWithOverrides(ExposureClient.Models.CAMERA_LENS, stack, level, entity, seed));
+            models.add(Platform.Client.getModelWithOverrides(ExposureClient.Models.CAMERA_LENS, stack, level, entity, seed));
         }
 
         if (!models.isEmpty()) {
@@ -54,11 +53,5 @@ public class CameraModel {
         }
 
         return original;
-    }
-
-    private static BakedModel getModelWithOverrides(ModelResourceLocation location, ItemStack stack,
-                                                    @Nullable ClientLevel level, @Nullable LivingEntity entity, int seed) {
-        BakedModel model = PlatformHelperClient.getModel(location);
-        return model.getOverrides().resolve(model, stack, level, entity, seed);
     }
 }

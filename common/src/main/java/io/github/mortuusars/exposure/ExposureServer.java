@@ -4,33 +4,25 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.world.level.storage.ExposureRepository;
 import io.github.mortuusars.exposure.world.level.storage.ExposureFrameHistory;
 import net.minecraft.server.MinecraftServer;
-import org.jetbrains.annotations.Nullable;
 
 public class ExposureServer {
-    private static ExposureRepository vault;
+    private static ExposureRepository repository;
     private static ExposureFrameHistory frameHistory;
 
-    public static boolean debugHighlightEntitiesInFrame = false;
+    public static boolean debugHighlightEntitiesInFrame;
 
     public static void init(MinecraftServer server) {
-        vault = new ExposureRepository(server);
+        repository = new ExposureRepository(server);
         frameHistory = ExposureFrameHistory.loadOrCreate(server);
     }
 
     // --
 
     public static ExposureRepository exposureRepository() {
-        return ensureInitialized(vault);
+        return Preconditions.checkNotNull(repository, "Cannot get ExposureRepository: server is not initialized yet.");
     }
 
     public static ExposureFrameHistory frameHistory() {
-        return ensureInitialized(frameHistory);
-    }
-
-    // --
-
-    private static <T> T ensureInitialized(@Nullable T obj) {
-        Preconditions.checkNotNull(obj, "Cannot get a field in ExposureServer: server is not initialized yet.");
-        return obj;
+        return Preconditions.checkNotNull(frameHistory, "Cannot get ExposureFrameHistory: server is not initialized yet.");
     }
 }
