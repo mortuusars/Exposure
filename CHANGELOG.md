@@ -1,7 +1,8 @@
 # Changelog
 
-## UNRELEASED
-- Fixed minor issue with camera timer mob attention grab 
+## 1.9.23 - 2026-11-09
+- Fixed camera being stuck in active state in some cases (thanks _bbauti_)
+- Fixed minor issue with camera timer mob attention grab
 
 ## 1.9.22 - 2026-09-23
 - Fixed Camera item in Camera Attachments Menu being movable with 1-9 keys, which was causing a crash
