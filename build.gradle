@@ -2,8 +2,8 @@ plugins {
     id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
     id "architectury-plugin" version "3.4-SNAPSHOT"
     id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
-    id "me.modmuss50.mod-publish-plugin" version "0.8.4"
-    id 'org.moddedmc.wiki.toolkit' version '0.2.6'
+    id "me.modmuss50.mod-publish-plugin" version "2.2.1"
+    id 'org.moddedmc.wiki.toolkit' version '0.5.1'
 }
 
 architectury {
@@ -195,7 +195,7 @@ wiki {
     docs {
         exposure {
             root = file('docs/')
-            exportedAssetNamespaces = ['exposure']
+//            exportedAssetNamespaces = ['exposure']
         }
     }
 }
