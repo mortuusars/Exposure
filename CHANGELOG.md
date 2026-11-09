@@ -1,6 +1,7 @@
 # Changelog
 
-## UNRELEASED
+## 1.9.20 - 2026-11-09
+- Fixed camera being stuck in active state in some cases (thanks _bbauti_)
 - Fixed minor issue with camera timer mob attention grab
 
 ## 1.9.19 - 2026-09-23
