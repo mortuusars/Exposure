@@ -2,12 +2,12 @@ package io.github.mortuusars.exposure.world.item;
 
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumContent;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumPage;
 import io.github.mortuusars.exposure.world.item.component.album.SignedAlbumContent;
 import io.github.mortuusars.exposure.world.item.component.album.SignedAlbumPage;
 import io.github.mortuusars.exposure.world.inventory.AlbumMenu;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -92,7 +92,7 @@ public class AlbumItem extends Item {
             }
         };
 
-        PlatformHelper.openMenu(player, menuProvider, buffer -> {
+        Platform.openMenu(player, menuProvider, buffer -> {
             buffer.writeVarInt(albumSlot);
         });
     }

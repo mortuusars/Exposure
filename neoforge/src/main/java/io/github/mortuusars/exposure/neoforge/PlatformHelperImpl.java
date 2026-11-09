@@ -10,42 +10,15 @@ import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.LoadingModList;
-import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 public class PlatformHelperImpl {
-    public static @Nullable MinecraftServer getServer() {
-        return ServerLifecycleHooks.getCurrentServer();
-    }
-
-    public static boolean canShear(ItemStack stack) {
-        return stack.canPerformAction(ItemAbilities.SHEARS_CARVE);
-    }
-
-    public static boolean canStrip(ItemStack stack) {
-        return stack.canPerformAction(ItemAbilities.AXE_STRIP);
-    }
-
-    public static void openMenu(ServerPlayer serverPlayer, MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
-        serverPlayer.openMenu(menuProvider, extraDataWriter);
-    }
-
     public static List<String> getDefaultSpoutDevelopmentColorSequence() {
         return List.of(
                 "{FluidName:\"create:potion\",Amount:250,Tag:{Potion:\"minecraft:awkward\"}}",
@@ -57,20 +30,6 @@ public class PlatformHelperImpl {
         return List.of(
                 "{FluidName:\"minecraft:water\",Amount:250}");
     }
-
-    public static boolean isModLoaded(String modId) {
-        return ModList.get().isLoaded(modId);
-    }
-
-    public static boolean isModLoading(String modId) {
-        return LoadingModList.get().getModFileById(modId) != null;
-    }
-
-    public static boolean isInDevEnv() {
-        return !FMLEnvironment.production;
-    }
-
-    // --
 
     public static boolean isCreateDeployer(Player player, InteractionHand hand) {
         if (Mods.CREATE.isLoaded()) {

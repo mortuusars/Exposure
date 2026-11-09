@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.mixin.client;
 
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.client.animation.CameraModelPoses;
 import io.github.mortuusars.exposure.client.animation.CameraPoses;
 import io.github.mortuusars.exposure.client.util.Minecrft;
@@ -10,6 +9,7 @@ import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.AnimationUtils;
@@ -78,8 +78,10 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
             }
 
             //noinspection ConstantValue
-            if (Minecrft.player().equals(entity) && PlatformHelper.isModLoaded("realcamera")) {
-                return;
+            if (Minecrft.player().equals(entity)) {
+                if (Platform.isModLoaded("realcamera")) {
+                    return;
+                }
             }
 
             poses.applyHolding(((HumanoidModel<?>) (Object) this), entity, arm);

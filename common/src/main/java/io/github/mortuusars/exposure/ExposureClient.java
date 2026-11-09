@@ -22,6 +22,7 @@ import io.github.mortuusars.exposure.world.item.AlbumItem;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import io.github.mortuusars.exposure.world.item.ChromaticSheetItem;
 import io.github.mortuusars.exposure.world.item.StackedPhotographsItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
@@ -86,13 +87,14 @@ public class ExposureClient {
 
     public static boolean shouldUseDirectCapture() {
         //TODO: maybe check if neoforge is ok and then enable it only on fabric?
-        if (PlatformHelper.isModLoaded("distanthorizons")
-                && (PlatformHelper.isModLoaded("oculus") || PlatformHelper.isModLoaded("iris"))) {
-            return true;
+        if (Platform.isModLoaded("distanthorizons")) {
+            if (Platform.isModLoaded("oculus") || Platform.isModLoaded("iris")) {
+                return true;
+            }
         }
 
         return Config.Client.FORCE_DIRECT_CAPTURE.isTrue()
-                || Config.Client.FORCE_DIRECT_CAPTURE_MODS.get().stream().anyMatch(PlatformHelper::isModLoaded);
+                || Config.Client.FORCE_DIRECT_CAPTURE_MODS.get().stream().anyMatch(modId -> Platform.isModLoaded(modId));
     }
 
     // --

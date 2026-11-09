@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.client.gui.screen.ItemRenameScreen;
 import io.github.mortuusars.exposure.client.gui.screen.album.AlbumScreen;
@@ -14,6 +13,7 @@ import io.github.mortuusars.exposure.integration.jei.recipe.ComponentTransferrin
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographPrintingJeiRecipe;
 import io.github.mortuusars.exposure.integration.jei.recipe.PhotographStackingJeiRecipe;
 import io.github.mortuusars.exposure.world.item.crafting.recipe.ComponentTransferringRecipe;
+import io.github.mortuusars.mortaar.Platform;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.gui.handlers.IGuiContainerHandler;
@@ -72,7 +72,7 @@ public class ExposureJeiPlugin implements IModPlugin {
                     Component.translatable("exposure.jei.info.photograph_frame"));
         }
 
-        if (PlatformHelper.isModLoaded("create")) {
+        if (Platform.isModLoaded("create")) {
             addSequencedDevelopingRecipes(registration);
         }
     }

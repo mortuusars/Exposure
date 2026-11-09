@@ -1,10 +1,10 @@
 package io.github.mortuusars.exposure.world.block;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.world.block.entity.Lightroom;
 import io.github.mortuusars.exposure.world.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.world.item.StackedPhotographsItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -107,7 +107,7 @@ public class LightroomBlock extends Block implements EntityBlock {
         if (player instanceof ServerPlayer serverPlayer) {
             lightroomBlockEntity.setLastPlayer(serverPlayer);
             lightroomBlockEntity.setChanged(); // Updates state for client. Without this GUI buttons have some problems. (PrintButton active state)
-            PlatformHelper.openMenu(serverPlayer, lightroomBlockEntity, buffer -> buffer.writeBlockPos(pos));
+            Platform.openMenu(serverPlayer, lightroomBlockEntity, buffer -> buffer.writeBlockPos(pos));
         }
 
         return InteractionResult.sidedSuccess(level.isClientSide);

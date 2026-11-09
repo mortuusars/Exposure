@@ -31,6 +31,7 @@ import io.github.mortuusars.exposure.world.level.LevelUtil;
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.util.*;
 import io.github.mortuusars.exposure.world.sound.Sound;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -523,10 +524,10 @@ public class CameraItem extends Item {
                 }
             };
 
-            PlatformHelper.openMenu(serverPlayer, menuProvider, buffer -> {
-                buffer.writeInt(slotIndex);
-                buffer.writeBoolean(openedFromGUI);
-            });
+            Platform.openMenu(serverPlayer, menuProvider, buffer -> {
+                    buffer.writeInt(slotIndex);
+                    buffer.writeBoolean(openedFromGUI);
+                });
         }
 
         setDisassembled(stack, true);

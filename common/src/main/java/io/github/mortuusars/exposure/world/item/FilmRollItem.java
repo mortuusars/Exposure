@@ -3,17 +3,13 @@ package io.github.mortuusars.exposure.world.item;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.PlatformHelper;
-import io.github.mortuusars.exposure.data.ColorPalette;
-import io.github.mortuusars.exposure.data.ColorPalettes;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
-import io.github.mortuusars.exposure.world.camera.film.properties.FilmProperties;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.inventory.ItemRenameMenu;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -89,8 +85,10 @@ public class FilmRollItem extends Item implements SensitiveFilmItem {
         }
 
         //noinspection ConstantValue
-        if (exposedFrames > 0 && !PlatformHelper.isModLoaded("jei") && Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
-            ClientGUI.addFilmRollDevelopingTooltip(stack, context, list, tooltipFlag);
+        if (exposedFrames > 0) {
+            if (!Platform.isModLoaded("jei") && Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
+                ClientGUI.addFilmRollDevelopingTooltip(stack, context, list, tooltipFlag);
+            }
         }
     }
 
@@ -112,7 +110,7 @@ public class FilmRollItem extends Item implements SensitiveFilmItem {
                 return new ItemRenameMenu(containerId, playerInventory, slot);
             }
         };
-        PlatformHelper.openMenu(serverPlayer, menuProvider, buffer -> buffer.writeInt(slot));
+        Platform.openMenu(serverPlayer, menuProvider, buffer -> buffer.writeInt(slot));
         return InteractionResultHolder.success(player.getItemInHand(usedHand));
     }
 

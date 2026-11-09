@@ -2,13 +2,13 @@ package io.github.mortuusars.exposure.world.item;
 
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.client.gui.ClientGUI;
 import io.github.mortuusars.exposure.world.photograph.PhotographType;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.inventory.tooltip.PhotographTooltip;
 import io.github.mortuusars.exposure.world.item.util.ItemAndStack;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
@@ -70,7 +70,7 @@ public class PhotographItem extends Item {
         }
 
         if (Config.Client.RECIPE_TOOLTIPS_WITHOUT_JEI.get()) {
-            boolean jeiLoaded = PlatformHelper.isModLoaded("jei");
+            boolean jeiLoaded = Platform.isModLoaded("jei");
             if ((generation == null || generation < 2) && !jeiLoaded) {
                 ClientGUI.addPhotographCopyingTooltip(stack, context, tooltipComponents, tooltipFlag);
             }

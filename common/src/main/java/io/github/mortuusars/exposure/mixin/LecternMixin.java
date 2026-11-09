@@ -1,9 +1,9 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.world.item.AlbumItem;
 import io.github.mortuusars.exposure.world.inventory.LecternAlbumMenu;
 import io.github.mortuusars.exposure.world.item.SignedAlbumItem;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -53,7 +53,7 @@ public abstract class LecternMixin {
             }
         };
 
-        PlatformHelper.openMenu(player, menuProvider, buffer -> {
+        Platform.openMenu(player, menuProvider, buffer -> {
             ItemStack.STREAM_CODEC.encode(buffer, book);
         });
     }

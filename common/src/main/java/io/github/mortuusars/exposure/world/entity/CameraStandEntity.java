@@ -14,6 +14,7 @@ import io.github.mortuusars.exposure.world.item.InterplanarProjectorItem;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import io.github.mortuusars.exposure.world.sound.Sound;
+import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.core.component.DataComponents;
@@ -402,8 +403,7 @@ public class CameraStandEntity extends Entity implements CameraHolder {
 
             forceUpdate();
 
-            PlatformHelper.openMenu(serverPlayer, menuProvider,
-                    buffer -> buffer.writeInt(getId()));
+            Platform.openMenu(serverPlayer, menuProvider, buffer -> buffer.writeInt(getId()));
         }
 
         cameraItem.setDisassembled(cameraStack, true);
