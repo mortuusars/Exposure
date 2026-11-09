@@ -101,7 +101,7 @@ public abstract class PlayerMixin extends LivingEntity implements CameraHolder, 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         if (!level().isClientSide() && activeExposureCamera != null && !activeExposureCamera.isActive()) {
-            activeExposureCamera.deactivate();
+            activeExposureCamera.deactivate(((Player)(Object)this));
             removeActiveExposureCamera();
         }
 

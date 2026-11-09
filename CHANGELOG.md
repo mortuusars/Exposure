@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.21 - 2026-11-09
+- Viewfinder opening/closing sounds will now properly play from camera position (if on the stand, for example), rather than from the player in some cases 
+- Fixed player ending up stuck after opening viewfinder on a Camera Stand that's placed in a chunk protected by a claiming mod (like FTB Chunks)
+
 ## 1.9.20 - 2026-11-09
 - Fixed camera being stuck in active state in some cases (thanks _bbauti_)
 - Fixed minor issue with camera timer mob attention grab

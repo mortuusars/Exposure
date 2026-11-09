@@ -307,7 +307,7 @@ public class CameraItem extends Item {
         if (player.level().isClientSide) {
             Minecrft.releaseUseButton(); // Releasing use key to not take a shot immediately, if right click is still held.
         }
-        return activate(player, stack);
+        return activate(player, player, stack);
     }
 
     public @NotNull InteractionResultHolder<ItemStack> activateOnStand(Player player, ItemStack stack, CameraStandEntity cameraStand) {
@@ -315,22 +315,22 @@ public class CameraItem extends Item {
         if (player.level().isClientSide) {
             Minecrft.releaseUseButton(); // Releasing use key to not take a shot immediately, if right click is still held.
         }
-        return activate(player, stack);
+        return activate(player, cameraStand, stack);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> activate(Entity entity, ItemStack stack) {
+    public @NotNull InteractionResultHolder<ItemStack> activate(Entity operator, Entity holder, ItemStack stack) {
         setActive(stack, true);
         setDisassembled(stack, false);
-        Sound.play(entity, getViewfinderOpenSound(), entity.getSoundSource(), 0.35f, 0.9f, 0.2f);
-        entity.gameEvent(GameEvent.EQUIP);
+        Sound.play(holder, getViewfinderOpenSound(), holder.getSoundSource(), 0.35f, 0.9f, 0.2f);
+        operator.gameEvent(GameEvent.EQUIP);
         return InteractionResultHolder.consume(stack);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> deactivate(Entity entity, ItemStack stack) {
+    public @NotNull InteractionResultHolder<ItemStack> deactivate(Entity operator, Entity holder, ItemStack stack) {
         setActive(stack, false);
         CameraSettings.SELFIE_MODE.set(stack, false);
-        Sound.play(entity, getViewfinderCloseSound(), entity.getSoundSource(), 0.35f, 0.9f, 0.2f);
-        entity.gameEvent(GameEvent.EQUIP);
+        Sound.play(holder, getViewfinderCloseSound(), holder.getSoundSource(), 0.35f, 0.9f, 0.2f);
+        operator.gameEvent(GameEvent.EQUIP);
         return InteractionResultHolder.consume(stack);
     }
 
