@@ -20,7 +20,7 @@ public enum ActiveCameraDeactivateCommonPacket implements Packet {
     @Override
     public boolean handle(PacketFlow flow, Player player) {
         player.getActiveExposureCameraOptional().ifPresent(camera -> {
-            camera.map((item, stack) -> item.deactivate(camera.getHolder().asHolderEntity(), stack));
+            camera.map((item, stack) -> item.deactivate(player, camera.getHolder().asHolderEntity(), stack));
             player.removeActiveExposureCamera();
         });
         return true;

@@ -429,19 +429,24 @@ public class CameraStandEntity extends Entity implements CameraHolder {
     }
 
     public void stopControlling() {
+        CameraOperator operator = operator();
+
         if (getCamera().getItem() instanceof CameraItem cameraItem && cameraItem.isActive(getCamera())) {
-            cameraItem.deactivate(this, getCamera());
+            Entity operatorEntity = operator != null ? operator.asOperatorEntity() : this;
+            cameraItem.deactivate(operatorEntity, this, getCamera());
         }
-        if (operator() != null) {
+
+        if (operator != null) {
             if (isClientSide()) {
                 CameraClient.resetCameraEntity();
-            } else if (operator() instanceof ServerPlayer serverPlayer) {
+            } else if (operator instanceof ServerPlayer serverPlayer) {
                 // This method is usually called on both sides, but in the case of client/server desync,
                 // (which is sometimes happening on contraptions)
                 // this will ensure that client will be updated properly, otherwise cameraEntity will not be set back to player.
                 Packets.sendToClient(new CameraStandStopControllingS2CP(this.getId()), serverPlayer);
             }
         }
+
         setOperator(null);
 
         if (!isClientSide()) {
@@ -514,7 +519,7 @@ public class CameraStandEntity extends Entity implements CameraHolder {
         @Nullable CameraOperator operator = operator();
         if (operator == null) {
             if (getCamera().getItem() instanceof CameraItem cameraItem && cameraItem.isActive(getCamera())) {
-                cameraItem.deactivate(this, getCamera());
+                cameraItem.deactivate(this, this, getCamera());
             }
         } else {
             if (!isInInteractionRange(operator.asOperatorEntity())) {

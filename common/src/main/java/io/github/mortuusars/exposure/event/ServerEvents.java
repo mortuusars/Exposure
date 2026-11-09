@@ -38,7 +38,7 @@ public class ServerEvents {
             player.getActiveExposureCameraOptional().ifPresentOrElse(
                     camera -> {
                         player.removeActiveExposureCamera();
-                        cameraItem.deactivate(player, droppedItem);
+                        cameraItem.deactivate(player, player, droppedItem);
                     },
                     () -> cameraItem.setActive(droppedItem, false));
         }

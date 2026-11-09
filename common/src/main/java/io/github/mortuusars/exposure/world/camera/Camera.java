@@ -5,6 +5,7 @@ import io.github.mortuusars.exposure.network.packet.Packet;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
@@ -64,10 +65,10 @@ public abstract class Camera {
         return map((item, stack) -> item.getShutter().isOpen(stack), false);
     }
 
-    public boolean deactivate() {
+    public boolean deactivate(Player player) {
         ItemStack stack = getItemStack();
         if (getId().matches(stack) && stack.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(stack)) {
-            cameraItem.deactivate(getHolder().asHolderEntity(), stack);
+            cameraItem.deactivate(player, getHolder().asHolderEntity(), stack);
             return true;
         }
         return false;
