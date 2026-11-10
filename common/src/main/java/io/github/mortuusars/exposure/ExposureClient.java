@@ -11,6 +11,8 @@ import io.github.mortuusars.exposure.client.render.image.ImageRenderer;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographStyle;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographRenderer;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographStyles;
+import io.github.mortuusars.exposure.util.bugger.ExposureBuggerPage;
+import io.github.mortuusars.mortaar.bugger.screen.BuggerScreen;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.integration.ModCompatibilityClient;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureType;
@@ -61,6 +63,8 @@ public class ExposureClient {
         registerItemModelProperties();
 
         ModCompatibilityClient.init();
+
+        BuggerScreen.addPage(new ExposureBuggerPage());
     }
 
     public static Cycles cycles() {
