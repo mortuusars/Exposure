@@ -15,7 +15,7 @@ import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
 import io.github.mortuusars.exposure.client.input.Modifier;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographStyle;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.world.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.world.photograph.PhotographType;
@@ -269,7 +269,7 @@ public class PhotographScreen extends Screen {
     // --
 
     protected boolean dropAsItem() {
-        if (!Minecrft.player().isCreative()) {
+        if (!Minecrft.playerOrThrow().isCreative()) {
             return false;
         }
         ItemStack droppedStack = getCurrentPhotograph().getItemStack().copy();
@@ -279,20 +279,20 @@ public class PhotographScreen extends Screen {
         ExposureType type = frame.type();
         droppedStack.set(Exposure.DataComponents.PHOTOGRAPH_TYPE, type);
 
-        Minecrft.gameMode().handleCreativeModeItemDrop(droppedStack);
-        Minecrft.player().displayClientMessage(Component.translatable("gui.exposure.photograph_screen.item_dropped_message",
+        Minecrft.gameModeOrThrow().handleCreativeModeItemDrop(droppedStack);
+        Minecrft.playerOrThrow().displayClientMessage(Component.translatable("gui.exposure.photograph_screen.item_dropped_message",
                 droppedStack.getDisplayName()), false);
         return true;
     }
 
     protected boolean copyIdentifierToClipboard() {
         Frame frame = getCurrentPhotograph().map(PhotographItem::getFrame);
-        if (!Minecrft.player().isCreative() || frame.equals(Frame.EMPTY)) {
+        if (!Minecrft.playerOrThrow().isCreative() || frame.equals(Frame.EMPTY)) {
             return false;
         }
         String text = frame.identifier().map(id -> id, ResourceLocation::toString);
         Minecrft.get().keyboardHandler.setClipboard(text);
-        Minecrft.player().displayClientMessage(
+        Minecrft.playerOrThrow().displayClientMessage(
                 Component.translatable("gui.exposure.photograph_screen.copied_message", text), false);
         return true;
     }
@@ -304,7 +304,7 @@ public class PhotographScreen extends Screen {
                 .mapId(id -> {
                     if (savedExposureFiles.get(id) instanceof File file) {
                         Minecrft.get().keyboardHandler.setClipboard(file.getAbsolutePath());
-                        Minecrft.player().displayClientMessage(
+                        Minecrft.playerOrThrow().displayClientMessage(
                                 Component.translatable("gui.exposure.photograph_screen.copied_message", file.getAbsolutePath()), false);
                         return true;
                     }
@@ -330,7 +330,7 @@ public class PhotographScreen extends Screen {
     protected void trySaveToFile(ItemAndStack<PhotographItem> photograph) {
         Frame frame = photograph.getItem().getFrame(photograph.getItemStack());
 
-        if (frame == Frame.EMPTY || !frame.identifier().isId() || !frame.isTakenBy(Minecrft.player())) {
+        if (frame == Frame.EMPTY || !frame.identifier().isId() || !frame.isTakenBy(Minecrft.playerOrThrow())) {
             return;
         }
 
@@ -399,7 +399,7 @@ public class PhotographScreen extends Screen {
         }
 
         static PhotographProvider fromPhotographItem(int slot) {
-            return new ItemProvider(() -> Minecrft.player().getInventory().getItem(slot));
+            return new ItemProvider(() -> Minecrft.playerOrThrow().getInventory().getItem(slot));
         }
 
         class ItemProvider implements PhotographProvider {

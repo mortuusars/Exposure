@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.client.gui.screen.camera.button.FrameCounte
 import io.github.mortuusars.exposure.client.gui.screen.camera.button.ShutterSpeedButton;
 import io.github.mortuusars.exposure.client.input.KeyboardHandler;
 import io.github.mortuusars.exposure.client.input.MouseHandler;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.client.util.ZoomDirection;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.camera.component.*;
@@ -71,7 +71,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
         super(CommonComponents.EMPTY);
         this.camera = camera;
         this.viewfinder = viewfinder;
-        this.openedAt = Minecrft.level().getGameTime();
+        this.openedAt = Minecrft.levelOrThrow().getGameTime();
     }
 
     public Camera getCamera() {
@@ -311,7 +311,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
         int windowHeight = Minecrft.get().getWindow().getHeight();
         double xRot = (dragY / windowHeight) * fov;
         double yRot = (dragX / windowWidth) * (fov * ((double) windowHeight / windowWidth));
-        Minecrft.player().turn(-yRot * 20, -xRot * 20);
+        Minecrft.playerOrThrow().turn(-yRot * 20, -xRot * 20);
 
         return true;
     }
@@ -329,7 +329,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
     }
 
     protected boolean isToggleTimeReached() {
-        return Minecrft.level().getGameTime() - openedAt >= 5;
+        return Minecrft.levelOrThrow().getGameTime() - openedAt >= 5;
     }
 
     @Override

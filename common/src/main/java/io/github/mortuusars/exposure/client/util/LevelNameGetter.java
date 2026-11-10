@@ -39,7 +39,7 @@ public class LevelNameGetter {
                 return "Unknown";
             }
         } catch (Exception e) {
-            Exposure.LOGGER.error("Failed to get level name: " + e);
+            Exposure.LOGGER.error("Failed to get level name: ", e);
             return "Unknown";
         }
     }

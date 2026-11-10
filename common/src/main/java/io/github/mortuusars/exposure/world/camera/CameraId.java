@@ -7,6 +7,7 @@ import net.minecraft.Util;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public record CameraId(UUID uuid) {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return uuid().toString();
     }
 }

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.tooltip;
 
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;

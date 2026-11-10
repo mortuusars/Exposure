@@ -14,7 +14,7 @@ public abstract class CameraItemNeoForgeMixin extends Item implements IItemExten
     }
 
     @Override
-    public boolean shouldCauseReequipAnimation(ItemStack oldStack, @NotNull ItemStack newStack, boolean slotChanged) {
+    public boolean shouldCauseReequipAnimation(@NotNull ItemStack oldStack, @NotNull ItemStack newStack, boolean slotChanged) {
         return !ItemStack.isSameItemSameComponents(newStack, oldStack);
     }
 }

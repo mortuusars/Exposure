@@ -6,6 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import org.jetbrains.annotations.NotNull;
 
 public record Levels(int shadows, int midtones, int highlights, int black, int white) {
     public Levels {
@@ -40,7 +41,7 @@ public record Levels(int shadows, int midtones, int highlights, int black, int w
     );
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "%s, %s, %s | %s, %s".formatted(shadows, midtones, highlights, black, white);
     }
 }

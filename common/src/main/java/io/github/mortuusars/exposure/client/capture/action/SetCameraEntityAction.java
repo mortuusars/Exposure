@@ -1,16 +1,17 @@
 package io.github.mortuusars.exposure.client.capture.action;
 
 import io.github.mortuusars.exposure.client.camera.CameraClient;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import net.minecraft.world.entity.Entity;
+import org.jetbrains.annotations.Nullable;
 
 public class SetCameraEntityAction implements CaptureAction {
     private final Entity cameraEntity;
-    private Entity cameraEntityBeforeCapture;
+    private @Nullable Entity cameraEntityBeforeCapture;
 
     public SetCameraEntityAction(Entity cameraEntity) {
         this.cameraEntity = cameraEntity;
-        this.cameraEntityBeforeCapture = Minecrft.player();
+        this.cameraEntityBeforeCapture = Minecrft.get().getCameraEntity();
     }
 
     @Override

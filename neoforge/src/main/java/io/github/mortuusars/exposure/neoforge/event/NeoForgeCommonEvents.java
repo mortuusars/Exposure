@@ -31,15 +31,13 @@ import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
 @SuppressWarnings("unused")
 public class NeoForgeCommonEvents {
-    @EventBusSubscriber(modid = Exposure.ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Exposure.ID)
     public static class ModBus {
         @SubscribeEvent
         public static void commonSetup(FMLCommonSetupEvent event) {
             event.enqueueWork(() -> {
                 // Makes stats show up in stat screen
-                Exposure.Stats.STATS.forEach((location, statFormatter) -> {
-                    Stats.CUSTOM.get(location);
-                });
+                Exposure.Stats.STATS.forEach((location, statFormatter) -> Stats.CUSTOM.get(location));
             });
         }
 
@@ -76,10 +74,7 @@ public class NeoForgeCommonEvents {
             event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, Exposure.BlockEntityTypes.LIGHTROOM.get(),
                     (be, side) -> side == null ? new InvWrapper(be) : new SidedInvWrapper(be, side));
         }
-    }
 
-    @EventBusSubscriber(modid = Exposure.ID, bus = EventBusSubscriber.Bus.GAME)
-    public static class GameBus {
         @SubscribeEvent
         public static void serverStarted(ServerStartedEvent event) {
             ServerEvents.serverStarted(event.getServer());

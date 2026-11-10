@@ -6,7 +6,7 @@ import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.util.UnixTimestamp;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.item.camera.CameraSettings;
@@ -62,7 +62,7 @@ public class ViewfinderOverlay {
     protected long forceDrawShutterUntil = -1;
 
     public ViewfinderOverlay(Camera camera, Viewfinder viewfinder) {
-        this.player = Minecrft.player();
+        this.player = Minecrft.playerOrThrow();
         this.camera = camera;
         this.viewfinder = viewfinder;
         this.backgroundColor = Config.getColor(Config.Client.VIEWFINDER_BACKGROUND_COLOR);

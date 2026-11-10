@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.sound;
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.resources.ResourceLocation;

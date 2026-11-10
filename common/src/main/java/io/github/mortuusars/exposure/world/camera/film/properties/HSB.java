@@ -7,6 +7,7 @@ import io.github.mortuusars.exposure.util.Codecs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import org.jetbrains.annotations.NotNull;
 
 public record HSB(float hue, float saturation, float brightness) {
     public HSB {
@@ -33,7 +34,7 @@ public record HSB(float hue, float saturation, float brightness) {
     // --
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "H:%s, S:%s, B:%s".formatted(hue, saturation, brightness);
     }
 }

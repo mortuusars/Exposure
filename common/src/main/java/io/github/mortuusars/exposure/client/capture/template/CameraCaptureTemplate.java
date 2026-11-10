@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.client.capture.Capture;
 import io.github.mortuusars.exposure.client.capture.action.CaptureAction;
 import io.github.mortuusars.exposure.client.capture.palettizer.Palettizer;
 import io.github.mortuusars.exposure.client.capture.saving.ExposureUploader;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.camera.capture.Projection;
 import io.github.mortuusars.exposure.data.ColorPalette;
@@ -29,7 +29,7 @@ public class CameraCaptureTemplate implements CaptureTemplate {
             return new EmptyTask<>();
         }
 
-        @Nullable Entity entity = Minecrft.level().getEntity(params.cameraHolderId().orElse(Minecrft.player().getId()));
+        @Nullable Entity entity = Minecrft.levelOrThrow().getEntity(params.cameraHolderId().orElse(Minecrft.playerOrThrow().getId()));
         if (entity == null) {
             LOGGER.error("Failed to create capture task: camera holder entity cannot be obtained. '{}'", params);
             return new EmptyTask<>();

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.input.*;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.integration.Mods;
 import io.github.mortuusars.exposure.integration.shoulder_surfing.ShoulderSurfingCompat;
 import io.github.mortuusars.exposure.world.camera.Camera;

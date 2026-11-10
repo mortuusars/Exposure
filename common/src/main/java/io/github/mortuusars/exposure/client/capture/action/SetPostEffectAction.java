@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.capture.action;
 
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;

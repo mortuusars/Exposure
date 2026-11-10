@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.client.image.PalettedImage;
 import io.github.mortuusars.exposure.client.image.ResourceImage;
 import io.github.mortuusars.exposure.client.image.modifier.ImageEffect;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.data.ColorPalette;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
@@ -68,7 +68,7 @@ public class RenderedExposures {
     }
 
     private @NotNull Image imageFromExposure(ExposureData exposure) {
-        ColorPalette palette = ColorPalettes.get(Minecrft.level().registryAccess(), exposure.getPaletteId()).value();
+        ColorPalette palette = ColorPalettes.get(Minecrft.levelOrThrow().registryAccess(), exposure.getPaletteId()).value();
         return new PalettedImage(exposure.getWidth(), exposure.getHeight(), exposure.getPixels(), palette);
     }
 

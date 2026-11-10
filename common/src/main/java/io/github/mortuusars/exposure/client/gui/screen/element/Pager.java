@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.element;
 
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.world.sound.SoundEffect;
 import net.minecraft.Util;

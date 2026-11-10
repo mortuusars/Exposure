@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 import java.util.function.*;
@@ -191,7 +192,7 @@ public record Attachment<T extends Item>(ResourceLocation id,
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "Attachment{id='" + id + "'}";
     }
 }

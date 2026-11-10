@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.client.gui.screen.element.ToggleImageButton
 import io.github.mortuusars.exposure.client.gui.toast.BetterTutorialToast;
 import io.github.mortuusars.exposure.client.gui.toast.ToastIcon;
 import io.github.mortuusars.exposure.client.input.KeyboardHandler;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.data.Lenses;
 import io.github.mortuusars.exposure.data.Filter;
@@ -55,27 +55,27 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
     protected final Player player;
 
     protected Map<Integer, Rect2i> slotPlaceholders = Map.of(
-            0, new Rect2i(238, 0, 18, 18),
-            1, new Rect2i(238, 18, 18, 18),
-            2, new Rect2i(238, 36, 18, 18),
-            3, new Rect2i(238, 54, 18, 18)
+          0, new Rect2i(238, 0, 18, 18),
+          1, new Rect2i(238, 18, 18, 18),
+          2, new Rect2i(238, 36, 18, 18),
+          3, new Rect2i(238, 54, 18, 18)
     );
 
     protected final HoveredElement flash = new HoveredElement(List.of(new Rect2i(96, 11, 28, 27)),
-            () -> getMenu().getSlot(1).hasItem());
+          () -> getMenu().getSlot(1).hasItem());
     protected final HoveredElement filterOnLens = new HoveredElement(List.of(new Rect2i(114, 57, 13, 6),
-            new Rect2i(110, 63, 17, 24)), () -> getMenu().getSlot(2).hasItem());
+          new Rect2i(110, 63, 17, 24)), () -> getMenu().getSlot(2).hasItem());
     protected final HoveredElement lens = new HoveredElement(List.of(new Rect2i(93, 48, 33, 34)),
-            () -> getMenu().getSlot(2).hasItem());
+          () -> getMenu().getSlot(2).hasItem());
     protected final HoveredElement filter = new HoveredElement(List.of(new Rect2i(110, 55, 13, 6),
-            new Rect2i(106, 61, 17, 24)), () -> !getMenu().getSlot(2).hasItem());
+          new Rect2i(106, 61, 17, 24)), () -> !getMenu().getSlot(2).hasItem());
     protected final HoveredElement lensBuiltIn = new HoveredElement(List.of(new Rect2i(93, 48, 29, 32)),
-            () -> !getMenu().getSlot(2).hasItem());
+          () -> !getMenu().getSlot(2).hasItem());
     protected final HoveredElement selfTimer = new HoveredElement(List.of(new Rect2i(92, 77, 6, 7)), () -> true);
     protected final HoveredElement viewfinder = new HoveredElement(List.of(new Rect2i(65, 25, 30, 12),
-            new Rect2i(72, 31, 39, 11), new Rect2i(80, 42, 24, 5)), () -> true);
+          new Rect2i(72, 31, 39, 11), new Rect2i(80, 42, 24, 5)), () -> true);
     protected final HoveredElement film = new HoveredElement(List.of(new Rect2i(48, 33, 15, 38),
-            new Rect2i(52, 24, 16, 11)), () -> true);
+          new Rect2i(52, 24, 16, 11)), () -> true);
     protected final HoveredElement shutterSpeedKnob = new HoveredElement(List.of(new Rect2i(68, 49, 21, 26)), () -> true);
 
     protected long openedAt = System.currentTimeMillis();
@@ -90,25 +90,25 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
     protected void showTutorialToasts() {
         if (Config.Client.ATTACHMENTS_SHOW_INFO_TOAST.get()) {
             Minecrft.get().getToasts().addToast(new BetterTutorialToast(ToastIcon.HOVER,
-                    Component.translatable("gui.exposure.camera_attachments.mouse_over_toast.title"),
-                    Component.translatable("gui.exposure.camera_attachments.mouse_over_toast.message"),
-                    () -> {
-                        if (Minecrft.get().screen != this) {
-                            // Show again on next open:
-                            Config.Client.ATTACHMENTS_SHOW_INFO_TOAST.set(true);
-                            Config.Client.SPEC.save();
-                            return true;
-                        }
-                        return hasHoveredOverPart;
-                    }));
+                  Component.translatable("gui.exposure.camera_attachments.mouse_over_toast.title"),
+                  Component.translatable("gui.exposure.camera_attachments.mouse_over_toast.message"),
+                  () -> {
+                      if (Minecrft.get().screen != this) {
+                          // Show again on next open:
+                          Config.Client.ATTACHMENTS_SHOW_INFO_TOAST.set(true);
+                          Config.Client.SPEC.save();
+                          return true;
+                      }
+                      return hasHoveredOverPart;
+                  }));
             Config.Client.ATTACHMENTS_SHOW_INFO_TOAST.set(false);
             Config.Client.SPEC.save();
         }
         if (Config.Client.ATTACHMENTS_SHOW_WIKI_TOAST.get()) {
             Minecrft.get().getToasts().addToast(new BetterTutorialToast(ToastIcon.F1,
-                    Component.translatable("gui.exposure.camera_attachments.wiki_toast.title"),
-                    Component.translatable("gui.exposure.camera_attachments.wiki_toast.message"),
-                    BetterTutorialToast.DEFAULT_SHOW_DURATION_MS, () -> {
+                  Component.translatable("gui.exposure.camera_attachments.wiki_toast.title"),
+                  Component.translatable("gui.exposure.camera_attachments.wiki_toast.message"),
+                  BetterTutorialToast.DEFAULT_SHOW_DURATION_MS, () -> {
                 if (Minecrft.get().screen != this && !(Minecrft.get().screen instanceof ConfirmLinkScreen)) {
                     // Show again on next open:
                     Config.Client.ATTACHMENTS_SHOW_WIKI_TOAST.set(true);
@@ -128,9 +128,9 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
         inventoryLabelY = this.imageHeight - 94;
         super.init();
 
-        if (Supporters.isEligibleForGoldenRewards(Minecrft.player().getUUID())) {
+        if (Supporters.isEligibleForGoldenRewards(Minecrft.playerOrThrow().getUUID())) {
             ToggleImageButton button = new ToggleImageButton(leftPos + 8, topPos + 18, 7, 7,
-                    SKIN_GOLD_BUTTON_SPRITES, SKIN_REGULAR_BUTTON_SPRITES, this::changeSkin);
+                  SKIN_GOLD_BUTTON_SPRITES, SKIN_REGULAR_BUTTON_SPRITES, this::changeSkin);
             button.setState(getMenu().getCamera().map((i, s) -> s.getOrDefault(Exposure.DataComponents.CAMERA_GOLD, false)));
             button.setTooltip(Tooltip.create(Component.translatable("gui.exposure.camera_attachments.change_skin")));
             addRenderableWidget(button);
@@ -139,9 +139,9 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
 
     protected void changeSkin(boolean gold) {
         int buttonId = gold
-                ? AbstractCameraAttachmentsMenu.SKIN_GOLD_BUTTON_ID
-                : AbstractCameraAttachmentsMenu.SKIN_REGULAR_BUTTON_ID;
-        Minecrft.gameMode().handleInventoryButtonClick(getMenu().containerId, buttonId);
+              ? AbstractCameraAttachmentsMenu.SKIN_GOLD_BUTTON_ID
+              : AbstractCameraAttachmentsMenu.SKIN_REGULAR_BUTTON_ID;
+        Minecrft.gameModeOrThrow().handleInventoryButtonClick(getMenu().containerId, buttonId);
     }
 
     @Override
@@ -201,9 +201,8 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
         int filterX = hasLens ? 102 : 98;
         int filterY = hasLens ? 54 : 52;
         if (filterSlot.hasItem()) {
-            Filters.of(Minecrft.registryAccess(), filterSlot.getItem()).ifPresent(filter -> {
-                renderFilter(guiGraphics, mouseX, mouseY, filter, filterX, filterY);
-            });
+            Filters.of(Minecrft.registryAccess(), filterSlot.getItem())
+                  .ifPresent(filter -> renderFilter(guiGraphics, mouseX, mouseY, filter, filterX, filterY));
         } else if (isMouseOver(filterOnLens, mouseX, mouseY)) {
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
@@ -254,7 +253,7 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
 
         for (Rect2i area : element.hoverArea) {
             if (mouseX >= area.getX() && mouseX < area.getX() + area.getWidth() &&
-                    mouseY >= area.getY() && mouseY < area.getY() + area.getHeight()) {
+                  mouseY >= area.getY() && mouseY < area.getY() + area.getHeight()) {
                 return true;
             }
         }
@@ -268,7 +267,7 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
             if (!slot.hasItem()) {
                 Rect2i placeholder = slotPlaceholders.get(slotIndex);
                 guiGraphics.blit(TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1,
-                        placeholder.getX(), placeholder.getY(), placeholder.getWidth(), placeholder.getHeight());
+                      placeholder.getX(), placeholder.getY(), placeholder.getWidth(), placeholder.getHeight());
             }
         }
     }
@@ -282,12 +281,12 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
         } else if (isMouseOver(viewfinder, x, y)) {
             Component controlsKey = translateKey(KeyboardHandler.getCameraControlsKey(), ChatFormatting.GRAY);
             Component middleClick = Config.Client.VIEWFINDER_MIDDLE_CLICK_CONTROLS.get()
-                    ? translate("viewfinder.tooltip.or_middle_click")
-                    : Component.empty();
+                  ? translate("viewfinder.tooltip.or_middle_click")
+                  : Component.empty();
             Component selfieKey = translateKey(Minecrft.options().keyTogglePerspective, ChatFormatting.GRAY);
             Component sprintKey = translateKey(Minecrft.options().keySprint, ChatFormatting.GRAY);
             guiGraphics.renderTooltip(font, getTooltipLines(
-                    translate("viewfinder.tooltip", controlsKey, middleClick, selfieKey, sprintKey)), x, y);
+                  translate("viewfinder.tooltip", controlsKey, middleClick, selfieKey, sprintKey)), x, y);
         } else if (isMouseOver(shutterSpeedKnob, x, y)) {
             guiGraphics.renderTooltip(font, getTooltipLines(translate("shutter_speed.tooltip")), x, y);
         } else if (isMouseOver(filter, x, y) || isMouseOver(filterOnLens, x, y)) {
@@ -316,14 +315,13 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
     public @NotNull List<Component> getTooltipFromContainerItem(ItemStack stack) {
         List<Component> tooltip = super.getTooltipFromContainerItem(stack);
 
-        Lenses.getFocalRange(Minecrft.registryAccess(), stack).ifPresent(focalRange -> {
-            tooltip.add(Component.translatable("gui.exposure.camera_controls.focal_range", focalRange.getSerializedName())
-                    .withStyle(ChatFormatting.GOLD));
-        });
+        Lenses.getFocalRange(Minecrft.registryAccess(), stack)
+              .ifPresent(focalRange -> tooltip.add(Component.translatable("gui.exposure.camera_controls.focal_range", focalRange.getSerializedName())
+                    .withStyle(ChatFormatting.GOLD)));
 
         Filters.of(Minecrft.registryAccess(), stack).filter(f -> Minecrft.options().advancedItemTooltips).ifPresent(filter ->
-                tooltip.add(Component.literal(filter.shader().toString())
-                        .withStyle(ChatFormatting.GRAY)));
+              tooltip.add(Component.literal(filter.shader().toString())
+                    .withStyle(ChatFormatting.GRAY)));
 
         return tooltip;
     }

@@ -1,9 +1,8 @@
 package io.github.mortuusars.exposure.client.gui.screen.album;
 
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.inventory.LecternAlbumMenu;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
@@ -44,7 +43,7 @@ public class LecternAlbumScreen extends AlbumViewScreen implements MenuAccess<Le
     protected void init() {
         super.init();
 
-        if (Minecrft.player().mayBuild()) {
+        if (Minecrft.playerOrThrow().mayBuild()) {
             addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, b -> this.onClose())
                     .bounds(this.width / 2 - 100, topPos + 196, 98, 20).build());
             addRenderableWidget(Button.builder(Component.translatable("lectern.take_book"),
@@ -81,7 +80,7 @@ public class LecternAlbumScreen extends AlbumViewScreen implements MenuAccess<Le
     }
 
     protected void sendButtonClick(int buttonId) {
-        Minecrft.gameMode().handleInventoryButtonClick(this.menu.containerId, buttonId);
+        Minecrft.gameModeOrThrow().handleInventoryButtonClick(this.menu.containerId, buttonId);
     }
 
     @Override

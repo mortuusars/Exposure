@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.mixin.client;
 
 import io.github.mortuusars.exposure.client.animation.CameraModelPoses;
 import io.github.mortuusars.exposure.client.animation.CameraPoses;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.camera.CameraInHand;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
@@ -77,8 +77,7 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
                 return;
             }
 
-            //noinspection ConstantValue
-            if (Minecrft.player().equals(entity)) {
+            if (Minecrft.playerOrThrow().equals(entity)) {
                 if (Platform.isModLoaded("realcamera")) {
                     return;
                 }

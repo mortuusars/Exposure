@@ -12,7 +12,7 @@ import io.github.mortuusars.exposure.client.task.ExportExposuresTask;
 import io.github.mortuusars.exposure.client.task.ExposureRetrieveTask;
 import io.github.mortuusars.exposure.client.capture.template.CaptureTemplate;
 import io.github.mortuusars.exposure.client.image.TrichromeImage;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.client.capture.template.CaptureTemplates;
 import io.github.mortuusars.exposure.client.capture.palettizer.Palettizer;
 import io.github.mortuusars.exposure.client.capture.saving.ExposureUploader;
@@ -76,7 +76,7 @@ public class ClientPacketsHandler {
 
     public static void stopExportTask() {
         if (!ExportExposuresTask.stopCurrentTask()) {
-            Minecrft.player().displayClientMessage(Component.translatable("task.exposure.export.not_running")
+            Minecrft.playerOrThrow().displayClientMessage(Component.translatable("task.exposure.export.not_running")
                     .withStyle(ChatFormatting.RED), false);
         }
     }
@@ -112,7 +112,7 @@ public class ClientPacketsHandler {
                 .thenAsync(layers -> (Image) new TrichromeImage(layers.get(0), layers.get(1), layers.get(2)))
                 .thenAsync(Palettizer.DITHERED.palettizeAndClose(palette))
                 .thenAsync(img -> new ExposureData(img.width(), img.height(), img.pixels(), paletteId,
-                        new ExposureData.Tag(ExposureType.COLOR, Minecrft.player().getScoreboardName(),
+                        new ExposureData.Tag(ExposureType.COLOR, Minecrft.playerOrThrow().getScoreboardName(),
                                 UnixTimestamp.Seconds.now(), false, false)))
                 .acceptAsync(ExposureUploader.upload(packet.id())));
     }
@@ -138,7 +138,7 @@ public class ClientPacketsHandler {
     }
 
     public static void playShutterTickingSound(UniqueSoundPlayShutterTickingS2CP packet) {
-        Entity entity = Minecrft.player().level().getEntity(packet.entityId());
+        Entity entity = Minecrft.playerOrThrow().level().getEntity(packet.entityId());
         if (entity != null) {
             SoundInstance instance = new ShutterTickingSoundInstance(entity, packet.cameraId(),
                     Exposure.SoundEvents.SHUTTER_TICKING.get(), entity.getSoundSource(),
@@ -148,9 +148,9 @@ public class ClientPacketsHandler {
     }
 
     public static void stopControllingCameraStand(CameraStandStopControllingS2CP packet) {
-        if (Minecrft.get().cameraEntity != Minecrft.player() && Minecrft.level().getEntity(packet.standId()) instanceof CameraStandEntity stand) {
+        if (Minecrft.get().cameraEntity != Minecrft.playerOrThrow() && Minecrft.levelOrThrow().getEntity(packet.standId()) instanceof CameraStandEntity stand) {
             stand.stopControlling();
-            CameraClient.setCameraEntity(Minecrft.player());
+            CameraClient.setCameraEntity(Minecrft.playerOrThrow());
         }
     }
 }

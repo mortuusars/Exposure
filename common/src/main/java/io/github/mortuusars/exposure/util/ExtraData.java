@@ -132,43 +132,49 @@ public class ExtraData extends CompoundTag {
 
         public static <T extends StringRepresentable> Type<T> stringRepresentable(String key, Function<String, @Nullable T> deserializeFunction) {
             return new Type<>(key,
-                    (data, k) -> deserializeFunction.apply(data.getString(k)),
-                    (data, k, value) -> data.putString(k, value.getSerializedName()));
+                  (data, k) -> deserializeFunction.apply(data.getString(k)),
+                  (data, k, value) -> {
+                      if (value == null) {
+                          data.remove(k);
+                      } else {
+                          data.putString(k, value.getSerializedName());
+                      }
+                  });
         }
 
         public static Type<Vec3> vec3(String key) {
             return new Type<>(key,
-                    (data, k) -> {
-                        ListTag pos = data.getList(k, DoubleTag.TAG_DOUBLE);
-                        return new Vec3(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
-                    },
-                    (data, k, value) -> {
-                        ListTag pos = new ListTag();
-                        pos.add(DoubleTag.valueOf(value.x()));
-                        pos.add(DoubleTag.valueOf(value.y()));
-                        pos.add(DoubleTag.valueOf(value.z()));
-                        data.put(k, pos);
-                    });
+                  (data, k) -> {
+                      ListTag pos = data.getList(k, DoubleTag.TAG_DOUBLE);
+                      return new Vec3(pos.getDouble(0), pos.getDouble(1), pos.getDouble(2));
+                  },
+                  (data, k, value) -> {
+                      ListTag pos = new ListTag();
+                      pos.add(DoubleTag.valueOf(value.x()));
+                      pos.add(DoubleTag.valueOf(value.y()));
+                      pos.add(DoubleTag.valueOf(value.z()));
+                      data.put(k, pos);
+                  });
         }
 
         public static Type<ResourceLocation> resourceLocation(String key) {
             return new Type<>(key,
-                    (data, k) -> ResourceLocation.parse(data.getString(k)),
-                    (data, k, value) -> data.putString(k, value.toString()));
+                  (data, k) -> ResourceLocation.parse(data.getString(k)),
+                  (data, k, value) -> data.putString(k, value.toString()));
         }
 
         public static <T> Type<List<T>> list(String key, int tagType, Function<Tag, T> extractFunc, Function<T, Tag> packFunc) {
             return new Type<>(key,
-                    (data, k) -> data.getList(k, tagType).stream()
-                            .map(extractFunc)
-                            .toList(),
-                    (data, k, value) -> {
-                        ListTag list = new ListTag();
-                        list.addAll(value.stream()
-                                .map(packFunc)
-                                .toList());
-                        data.put(k, list);
-                    });
+                  (data, k) -> data.getList(k, tagType).stream()
+                        .map(extractFunc)
+                        .toList(),
+                  (data, k, value) -> {
+                      ListTag list = new ListTag();
+                      list.addAll(value.stream()
+                            .map(packFunc)
+                            .toList());
+                      data.put(k, list);
+                  });
         }
 
         public static <T> Type<List<T>> stringBasedList(String key, Function<String, T> extractFunc, Function<T, String> packFunc) {

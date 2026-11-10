@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.render.model;
 
 import io.github.mortuusars.exposure.ExposureClient;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import io.github.mortuusars.mortaar.Platform;

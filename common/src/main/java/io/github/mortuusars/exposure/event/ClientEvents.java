@@ -23,10 +23,10 @@ public class ClientEvents {
     /* Not sure that this is needed anymore. Doesn't lag as much now.
     private static void preloadStuffToFixLagSpikes() {
         ClientPacketsHandler.clearRenderingCache();
-        boolean active = Minecrft.player().getActiveExposureCameraOptional().isEmpty();
+        boolean active = Minecrft.playerOrThrow().getActiveExposureCameraOptional().isEmpty();
 
         Easing.EASE_OUT_EXPO.ease(0.5);
-        ViewfinderRegistry.getConstructor(Exposure.Items.CAMERA.get()).apply(new Camera(Minecrft.player(), CameraId.create()) {
+        ViewfinderRegistry.getConstructor(Exposure.Items.CAMERA.get()).apply(new Camera(Minecrft.playerOrThrow(), CameraId.create()) {
             @Override
             public ItemStack getItemStack() { return new ItemStack(Exposure.Items.CAMERA.get()); }
             @Override
@@ -38,7 +38,7 @@ public class ClientEvents {
         CameraCaptureTemplate cameraCaptureTemplate = new CameraCaptureTemplate();
         ExposureClient.cycles().enqueueTask(new PreloadingDummyCaptureTemplate()
                 .createTask(new CaptureParameters.Builder("dummy").build()));
-        UniqueSoundManager.stop(Minecrft.player().getScoreboardName(), Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get());
+        UniqueSoundManager.stop(Minecrft.playerOrThrow().getScoreboardName(), Exposure.SoundEvents.CAMERA_BUTTON_CLICK.get());
     }*/
 
     public static void disconnect() {

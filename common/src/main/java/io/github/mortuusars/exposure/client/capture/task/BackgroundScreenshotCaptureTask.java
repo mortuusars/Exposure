@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.capture.CaptureShader;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.client.util.Shader;
 import io.github.mortuusars.exposure.client.image.WrappedNativeImage;
 import io.github.mortuusars.exposure.client.capture.Capture;

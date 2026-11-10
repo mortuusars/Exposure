@@ -7,9 +7,9 @@ import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.image.ResizedImage;
 import io.github.mortuusars.exposure.client.image.modifier.pixel.*;
 import io.github.mortuusars.exposure.world.camera.ColorChannel;
-import io.github.mortuusars.exposure.util.Rect2i;
 import io.github.mortuusars.exposure.world.camera.film.properties.HSB;
 import io.github.mortuusars.exposure.world.camera.film.properties.Levels;
+import net.minecraft.client.renderer.Rect2i;
 import net.minecraft.util.Mth;
 
 import java.util.Arrays;
@@ -90,7 +90,7 @@ public interface ImageEffect {
                 int newHeight = (int) (image.height() * clampedFactor);
                 int x = (image.width() - newWidth) / 2;
                 int y = (image.height() - newHeight) / 2;
-                return new CroppedImage(image, new Rect2i(x, y, newWidth, newHeight));
+                return new CroppedImage(image, new net.minecraft.client.renderer.Rect2i(x, y, newWidth, newHeight));
             });
         }
 

@@ -31,8 +31,9 @@ public record ExtraDataPredicate(ExtraData data) {
             return true;
         } else if (other == null) {
             return false;
-        } else if (data instanceof CompoundTag compoundTag) {
-            CompoundTag compoundTag2 = (CompoundTag)other;
+        } else {
+            CompoundTag compoundTag = data;
+            CompoundTag compoundTag2 = (CompoundTag) other;
             if (compoundTag2.size() < compoundTag.size()) {
                 return false;
             } else {
@@ -45,8 +46,6 @@ public record ExtraDataPredicate(ExtraData data) {
 
                 return true;
             }
-        } else {
-            return data.equals(other);
         }
     }
 }

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.fabric.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -28,7 +28,7 @@ public abstract class LevelRendererMixin {
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;entitiesForRendering()Ljava/lang/Iterable;"))
     private void onRenderLevel(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
         if (camera.getEntity() instanceof CameraStandEntity) {
-            exposure$renderEntity(deltaTracker, camera, Minecrft.player());
+            exposure$renderEntity(deltaTracker, camera, Minecrft.playerOrThrow());
         }
     }
 
@@ -51,7 +51,7 @@ public abstract class LevelRendererMixin {
             multiBufferSource = this.renderBuffers.bufferSource();
         }
 
-        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(!Minecrft.level().tickRateManager().isEntityFrozen(entity));
+        float partialTick = deltaTracker.getGameTimeDeltaPartialTick(!Minecrft.levelOrThrow().tickRateManager().isEntityFrozen(entity));
         Vec3 position = camera.getPosition();
         PoseStack poseStack = new PoseStack();
         this.renderEntity(entity, position.x, position.y, position.z, partialTick, poseStack, multiBufferSource);

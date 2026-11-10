@@ -5,13 +5,12 @@ import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.capture.task.file.ImageFileLoader;
 import io.github.mortuusars.exposure.client.image.Image;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.util.TranslatableError;
 import io.github.mortuusars.exposure.util.cycles.task.Result;
 import io.github.mortuusars.exposure.util.cycles.task.Task;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
-import io.github.mortuusars.exposure.util.TranslatableError;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.StringUtil;
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +84,7 @@ public class FileCaptureTask extends Task<Result<Image>> {
             if (file.isAbsolute()) {
                 LOGGER.error("Absolute paths are not supported. Path: {}", filepath);
                 LOGGER.info("Place image into a game directory and use a relative path.");
-                Minecrft.player().displayClientMessage(Component.literal("Absolute path is not allowed for image projecting. Loading is allowed only from a game directory.")
+                Minecrft.playerOrThrow().displayClientMessage(Component.literal("Absolute path is not allowed for image projecting. Loading is allowed only from a game directory.")
                       .withStyle(ChatFormatting.RED), false);
                 return Result.error(ERROR_PATH_INVALID);
             }

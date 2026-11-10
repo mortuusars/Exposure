@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.camera.viewfinder;
 
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraSettings;

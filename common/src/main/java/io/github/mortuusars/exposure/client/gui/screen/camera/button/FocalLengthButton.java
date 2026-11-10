@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen.camera.button;
 
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.util.Fov;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

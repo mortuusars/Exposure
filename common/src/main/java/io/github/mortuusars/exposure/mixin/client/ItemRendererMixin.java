@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.render.model.CameraModel;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -32,7 +32,7 @@ public abstract class ItemRendererMixin {
 
         if (displayContext == ItemDisplayContext.GUI) {
             BakedModel guiModel = Platform.Client.getModel(ExposureClient.Models.CAMERA_GUI);
-            return guiModel.getOverrides().resolve(guiModel, stack, Minecrft.level(), Minecrft.player(), 0);
+            return guiModel.getOverrides().resolve(guiModel, stack, Minecrft.levelOrThrow(), Minecrft.playerOrThrow(), 0);
         }
 
         return model;

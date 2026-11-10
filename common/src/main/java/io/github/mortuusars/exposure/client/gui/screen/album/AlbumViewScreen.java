@@ -9,7 +9,7 @@ import io.github.mortuusars.exposure.client.gui.screen.element.TextBlock;
 import io.github.mortuusars.exposure.client.gui.screen.element.textbox.HorizontalAlignment;
 import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.util.Side;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
@@ -267,7 +267,7 @@ public class AlbumViewScreen extends Screen {
         Minecrft.get().setScreen(new ChildPhotographScreen(this, List.of(new ItemAndStack<>(photograph))));
         Minecrft.get().getSoundManager()
                 .play(SimpleSoundInstance.forUI(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(),
-                        Minecrft.level().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
+                        Minecrft.levelOrThrow().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
     }
 
     protected void forEachPage(Consumer<Page> pageAction) {

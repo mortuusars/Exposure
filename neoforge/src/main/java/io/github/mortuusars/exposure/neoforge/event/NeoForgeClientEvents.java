@@ -16,8 +16,6 @@ import io.github.mortuusars.exposure.client.render.GlassPhotographFrameEntityRen
 import io.github.mortuusars.exposure.client.render.PhotographFrameEntityRenderer;
 import io.github.mortuusars.exposure.world.inventory.tooltip.PhotographTooltip;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -26,7 +24,7 @@ import net.neoforged.neoforge.client.event.*;
 
 @SuppressWarnings("unused")
 public class NeoForgeClientEvents {
-    @EventBusSubscriber(modid = Exposure.ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = Exposure.ID, value = Dist.CLIENT)
     public static class ModBus {
         @SubscribeEvent
         public static void clientSetup(FMLClientSetupEvent event) {
@@ -77,10 +75,7 @@ public class NeoForgeClientEvents {
                 return key;
             });
         }
-    }
 
-    @EventBusSubscriber(modid = Exposure.ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
-    public static class GameBus {
         @SubscribeEvent
         public static void onRenderGuiPost(RenderGuiEvent.Post event) {
             CameraStandTooltip.render(event.getGuiGraphics(), event.getPartialTick());

@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.client.camera.viewfinder;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.data.Filter;
 import io.github.mortuusars.exposure.data.Filters;

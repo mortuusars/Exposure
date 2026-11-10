@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
@@ -202,7 +202,7 @@ public class ItemListScreen extends Screen {
     protected boolean isHovering(int x, int y, int width, int height, double mouseX, double mouseY) {
         int i = this.leftPos;
         int j = this.topPos;
-        return (mouseX -= (double) i) >= (double) (x - 1) && mouseX < (double) (x + width + 1) && (mouseY -= (double) j) >= (double) (y - 1) && mouseY < (double) (y + height + 1);
+        return (mouseX -= i) >= (double) (x - 1) && mouseX < (double) (x + width + 1) && (mouseY -= j) >= (double) (y - 1) && mouseY < (double) (y + height + 1);
     }
 
     @Override

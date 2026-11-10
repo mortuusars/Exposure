@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.client.gui.toast.BetterTutorialToast;
 import io.github.mortuusars.exposure.client.gui.toast.ToastIcon;
 import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.block.entity.Lightroom;
 import io.github.mortuusars.exposure.world.block.entity.LightroomBlockEntity;
 import io.github.mortuusars.exposure.client.gui.component.CycleButton;
@@ -32,7 +32,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
-import net.minecraft.client.gui.components.toasts.TutorialToast;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -161,7 +160,7 @@ public class LightroomScreen extends AbstractContainerScreen<LightroomMenu> {
 
     protected void clickButton(int buttonId) {
         getMenu().clickMenuButton(player, buttonId);
-        Minecrft.gameMode().handleInventoryButtonClick(getMenu().containerId, buttonId);
+        Minecrft.gameModeOrThrow().handleInventoryButtonClick(getMenu().containerId, buttonId);
     }
 
     @Override

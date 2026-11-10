@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.image.WrappedBufferedImage;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.util.TranslatableError;
 import io.github.mortuusars.exposure.util.cycles.task.Result;
 import io.github.mortuusars.exposure.util.cycles.task.Task;
@@ -67,7 +67,7 @@ public class UrlCaptureTask extends Task<Result<Image>> {
                 if (!Config.Client.URL_LOADING_ALLOWED_DOMAINS.get().contains(host)
                       && Config.Client.URL_LOADING_ALLOWED_SUBDOMAINS.get().stream().noneMatch(host::endsWith)) {
                     LOGGER.error("Domain is not allowed for image loading. URL: {}", uri);
-                    Minecrft.player().displayClientMessage(Component.literal("Domain is not allowed for image projecting.")
+                    Minecrft.playerOrThrow().displayClientMessage(Component.literal("Domain is not allowed for image projecting.")
                           .withStyle(ChatFormatting.RED), false);
                     yield false;
                 }

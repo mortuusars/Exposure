@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.image.PalettedImage;
 import io.github.mortuusars.exposure.client.image.modifier.ImageEffect;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.data.ColorPalette;
 import io.github.mortuusars.exposure.data.ColorPalettes;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
@@ -55,13 +55,13 @@ public interface CaptureTemplate {
     }
 
     default ExposureData.Tag createExposureTag(CaptureParameters params, boolean isLoaded) {
-        return new ExposureData.Tag(params.filmProperties().type(), Minecrft.player().getScoreboardName(),
+        return new ExposureData.Tag(params.filmProperties().type(), Minecrft.playerOrThrow().getScoreboardName(),
                 UnixTimestamp.Seconds.now(), isLoaded, false);
     }
 
     default @NotNull Consumer<TranslatableError> printCasualErrorInChat() {
         return err -> {
-            Minecrft.execute(() -> Minecrft.player().displayClientMessage(
+            Minecrft.execute(() -> Minecrft.playerOrThrow().displayClientMessage(
                     err.casual().withStyle(ChatFormatting.RED), false));
             Exposure.LOGGER.error(err.technical().getString());
         };

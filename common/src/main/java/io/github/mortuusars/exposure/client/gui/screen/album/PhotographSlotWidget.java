@@ -5,7 +5,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographStyle;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.util.ItemAndStack;
 import net.minecraft.client.gui.GuiGraphics;
@@ -199,7 +199,7 @@ public class PhotographSlotWidget extends AbstractWidget {
 
         Minecrft.get().setScreen(new ChildPhotographScreen(parent, List.of(new ItemAndStack<>(photograph))));
         Minecrft.get().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(),
-                        Minecrft.level().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
+                        Minecrft.levelOrThrow().getRandom().nextFloat() * 0.2f + 1.3f, 0.75f));
         return true;
     }
 }

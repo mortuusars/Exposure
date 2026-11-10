@@ -68,7 +68,7 @@ public class PhotographFrameEntity extends HangingEntity {
     }
 
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         ItemStack item = getItem();
         return !item.isEmpty() ? item.getHoverName() : CommonComponents.EMPTY;
     }

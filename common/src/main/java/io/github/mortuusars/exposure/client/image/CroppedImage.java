@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.image;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.util.Rect2i;
+import net.minecraft.client.renderer.Rect2i;
 
 public class CroppedImage implements Image {
     private final Image original;

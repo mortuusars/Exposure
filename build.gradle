@@ -233,7 +233,7 @@ def getLatestVersionChangelog() {
 
 project.ext.changelog = getLatestVersionChangelog()
 
-task printLatestVersionChangelog {
+tasks.register('printLatestVersionChangelog') {
     doLast {
         println project.changelog
     }

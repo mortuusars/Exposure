@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.animation;
 
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import io.github.mortuusars.mortaar.util.Easing;
@@ -53,7 +53,7 @@ public class CameraPoses {
     }
 
     public void applyDisassembled(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm) {
-        if (Minecrft.player().equals(entity) && Minecrft.options().getCameraType() == CameraType.FIRST_PERSON) {
+        if (Minecrft.playerOrThrow().equals(entity) && Minecrft.options().getCameraType() == CameraType.FIRST_PERSON) {
             return;
         }
 

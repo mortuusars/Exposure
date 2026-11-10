@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.capture.CaptureShader;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import net.minecraft.client.renderer.PostChain;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;

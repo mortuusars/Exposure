@@ -44,7 +44,7 @@ public class PhotographPrintingCategory implements IRecipeCategory<PhotographPri
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, @NotNull PhotographPrintingJeiRecipe recipe, @NotNull IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 78, 17)
-                .addItemStack(new ItemStack(recipe.getExposureType() == ExposureType.COLOR ?
+                .addItemStack(new ItemStack(recipe.exposureType() == ExposureType.COLOR ?
                         Exposure.Items.DEVELOPED_COLOR_FILM.get()
                         : Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get()))
                 .setSlotName("Film");
@@ -59,7 +59,7 @@ public class PhotographPrintingCategory implements IRecipeCategory<PhotographPri
                 .addItemStacks(papers)
                 .setSlotName("Paper");
 
-        if (recipe.getExposureType() == ExposureType.COLOR) {
+        if (recipe.exposureType() == ExposureType.COLOR) {
             List<ItemStack> cyanDyes = BuiltInRegistries.ITEM.getTag(Exposure.Tags.Items.CYAN_PRINTING_DYES)
                     .map(holders -> holders.stream()
                             .map(itemHolder -> new ItemStack(itemHolder.value())).collect(Collectors.toList()))
@@ -98,13 +98,13 @@ public class PhotographPrintingCategory implements IRecipeCategory<PhotographPri
                 .setSlotName("Black");
 
         ItemStack resultItemStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-        resultItemStack.set(Exposure.DataComponents.PHOTOGRAPH_TYPE, recipe.getExposureType());
+        resultItemStack.set(Exposure.DataComponents.PHOTOGRAPH_TYPE, recipe.exposureType());
         builder.addSlot(RecipeIngredientRole.OUTPUT, 144, 55).addItemStack(resultItemStack);
     }
 
     @Override
     public void draw(PhotographPrintingJeiRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView, @NotNull GuiGraphics guiGraphics, double mouseX, double mouseY) {
-        if (recipe.getExposureType() == ExposureType.COLOR) {
+        if (recipe.exposureType() == ExposureType.COLOR) {
             RenderSystem.setShaderColor(1.1F, 0.86F, 0.66F, 1F);
         }
         filmDrawable.draw(guiGraphics);

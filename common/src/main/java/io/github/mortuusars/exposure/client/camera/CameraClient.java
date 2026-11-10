@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.camera;
 
 import io.github.mortuusars.exposure.client.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderRegistry;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.common.ActiveCameraDeactivateCommonPacket;
@@ -23,7 +23,7 @@ public class CameraClient {
     }
 
     public static Optional<Camera> getActive() {
-        return Minecrft.player().getActiveExposureCameraOptional();
+        return Minecrft.playerOrThrow().getActiveExposureCameraOptional();
     }
 
     public static boolean isActive() {
@@ -31,10 +31,10 @@ public class CameraClient {
     }
 
     public static void deactivate() {
-        Minecrft.player().getActiveExposureCameraOptional().ifPresent(
+        Minecrft.playerOrThrow().getActiveExposureCameraOptional().ifPresent(
               camera -> {
-                  camera.map((item, stack) -> item.deactivate(Minecrft.player(), camera.getHolder().asHolderEntity(), stack));
-                  Minecrft.player().removeActiveExposureCamera();
+                  camera.map((item, stack) -> item.deactivate(Minecrft.playerOrThrow(), camera.getHolder().asHolderEntity(), stack));
+                  Minecrft.playerOrThrow().removeActiveExposureCamera();
                   // Fixes camera getting stuck in some cases, requiring a relog to fix
                   if (Minecrft.get().getCameraEntity() instanceof CameraStandEntity) {
                       resetCameraEntity();
@@ -43,18 +43,20 @@ public class CameraClient {
         Packets.sendToServer(ActiveCameraDeactivateCommonPacket.INSTANCE);
     }
 
-    public static void setCameraEntity(Entity entity) {
+    public static void setCameraEntity(@Nullable Entity entity) {
         // Not using Minecraft#setCameraEntity because it updates postEffect
         Minecrft.get().cameraEntity = entity;
 
-        // Set eye height to final value to skip transition animation
-        Minecrft.get().gameRenderer.getMainCamera().eyeHeight = entity.getEyeHeight();
-        Minecrft.get().gameRenderer.getMainCamera().eyeHeightOld = entity.getEyeHeight();
-        Minecrft.get().gameRenderer.getMainCamera().reset();
+        if (entity != null) {
+            // Set eye height to final value to skip transition animation
+            Minecrft.get().gameRenderer.getMainCamera().eyeHeight = entity.getEyeHeight();
+            Minecrft.get().gameRenderer.getMainCamera().eyeHeightOld = entity.getEyeHeight();
+            Minecrft.get().gameRenderer.getMainCamera().reset();
+        }
     }
 
     public static void resetCameraEntity() {
-        setCameraEntity(Minecrft.player());
+        setCameraEntity(Minecrft.playerOrThrow());
     }
 
     // --

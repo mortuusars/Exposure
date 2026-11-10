@@ -11,7 +11,7 @@ import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.image.modifier.ImageEffect;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.client.render.image.RenderCoordinates;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.data.ColorPalettes;
 import io.github.mortuusars.exposure.util.UnixTimestamp;
 import io.github.mortuusars.mortaar.util.color.Color;
@@ -280,7 +280,7 @@ public class TestImageScreen extends Screen {
     protected void capture() {
         if (isCapturing) {
             Minecrft.get().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_GENERIC_CLICK.get(), 1f));
-            Minecrft.player().displayClientMessage(Component.literal("Capture is in progress."), false);
+            Minecrft.playerOrThrow().displayClientMessage(Component.literal("Capture is in progress."), false);
             return;
         }
         isCapturing = true;
@@ -289,17 +289,17 @@ public class TestImageScreen extends Screen {
 
         ExposureClient.cycles().enqueueTask(Capture.of(Capture.screenshot(), CaptureAction.hideGui())
                 .handleErrorAndGetResult(err -> Minecrft.execute(() ->
-                        Minecrft.player().displayClientMessage(err.casual().withStyle(ChatFormatting.RED), false)))
+                        Minecrft.playerOrThrow().displayClientMessage(err.casual().withStyle(ChatFormatting.RED), false)))
                 .thenAsync(ImageEffect.Crop.SQUARE_CENTER::modify)
                 .onError(err -> Minecrft.execute(() ->
-                        Minecrft.player().displayClientMessage(err.casual().withStyle(ChatFormatting.RED), false)))
+                        Minecrft.playerOrThrow().displayClientMessage(err.casual().withStyle(ChatFormatting.RED), false)))
                 .accept(this::setImage));
     }
 
     protected void applyEdits() {
         if (renderableImage == null) {
             Minecrft.get().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_GENERIC_CLICK.get(), 1f));
-            Minecrft.player().displayClientMessage(Component.literal("No image to modify."), false);
+            Minecrft.playerOrThrow().displayClientMessage(Component.literal("No image to modify."), false);
             return;
         }
 
@@ -330,7 +330,7 @@ public class TestImageScreen extends Screen {
             ExposureClient.imageRenderer().clearCacheOf("test_image");
         } catch (Exception e) {
             Minecrft.get().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_GENERIC_CLICK.get(), 1f));
-            Minecrft.player().displayClientMessage(Component.literal("Failed to apply edits. " + e.getMessage()), false);
+            Minecrft.playerOrThrow().displayClientMessage(Component.literal("Failed to apply edits. " + e.getMessage()), false);
             Exposure.LOGGER.error("Failed to apply edits: ", e);
         }
         applyEditsAt = -1;
@@ -439,7 +439,7 @@ public class TestImageScreen extends Screen {
         int windowHeight = Minecrft.get().getWindow().getHeight();
         double xRot = (dragY / windowHeight) * fov;
         double yRot = (dragX / windowWidth) * (fov * ((double) windowHeight / windowWidth));
-        Minecrft.player().turn(-yRot * 20, -xRot * 20);
+        Minecrft.playerOrThrow().turn(-yRot * 20, -xRot * 20);
 
         return true;
     }

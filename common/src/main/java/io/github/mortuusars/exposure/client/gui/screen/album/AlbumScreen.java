@@ -11,7 +11,7 @@ import io.github.mortuusars.exposure.client.gui.screen.element.textbox.Horizonta
 import io.github.mortuusars.exposure.client.gui.screen.element.textbox.TextBox;
 import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.AlbumSyncNoteC2SP;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
@@ -431,8 +431,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     protected void clickButton(int buttonId) {
-        getMenu().clickMenuButton(Minecrft.player(), buttonId);
-        Minecrft.gameMode().handleInventoryButtonClick(getMenu().containerId, buttonId);
+        getMenu().clickMenuButton(Minecrft.playerOrThrow(), buttonId);
+        Minecrft.gameModeOrThrow().handleInventoryButtonClick(getMenu().containerId, buttonId);
 
         if (buttonId == AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON) {
             setFocused(null);

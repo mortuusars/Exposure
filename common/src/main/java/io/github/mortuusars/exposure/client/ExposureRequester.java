@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client;
 
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.ExposureRequestC2SP;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +50,7 @@ public class ExposureRequester {
     }
 
     private long getGameTime() {
-        return Minecrft.level().getGameTime();
+        return Minecrft.levelOrThrow().getGameTime();
     }
 
     public void clear() {

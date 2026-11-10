@@ -54,8 +54,7 @@ public class CameraInHandAttachmentsMenu extends AbstractCameraAttachmentsMenu {
 
         //Hotbar
         for (int slot = 0; slot < 9; slot++) {
-            int finalSlot = slot;
-            addSlot(new Slot(playerInventory, finalSlot, slot * 18 + 8, 161) {
+            addSlot(new Slot(playerInventory, slot, slot * 18 + 8, 161) {
                 @Override
                 public boolean mayPickup(@NotNull Player player) {
                     return super.mayPickup(player) && getContainerSlot() != cameraSlotIndex;

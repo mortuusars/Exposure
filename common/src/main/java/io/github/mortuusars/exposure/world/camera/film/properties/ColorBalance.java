@@ -7,6 +7,7 @@ import io.github.mortuusars.exposure.util.Codecs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import org.jetbrains.annotations.NotNull;
 
 public record ColorBalance(float r, float g, float b) {
     public ColorBalance {
@@ -34,7 +35,7 @@ public record ColorBalance(float r, float g, float b) {
 
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "R:%s, G:%s, B:%s".formatted(r, g, b);
     }
 }

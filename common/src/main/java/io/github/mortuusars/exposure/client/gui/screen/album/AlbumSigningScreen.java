@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.gui.screen.element.textbox.HorizontalAlignment;
 import io.github.mortuusars.exposure.client.gui.screen.element.textbox.TextBox;
-import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
@@ -106,14 +106,14 @@ public class AlbumSigningScreen extends Screen {
         MutableComponent component = Component.translatable("gui.exposure.album.enter_title");
         guiGraphics.drawString(font, component,  leftPos + 149 / 2 - font.width(component) / 2, topPos + 50, 0xf5ebd0, false);
 
-        component = Component.translatable("gui.exposure.album.by_author", Minecrft.player().getScoreboardName());
+        component = Component.translatable("gui.exposure.album.by_author", Minecrft.playerOrThrow().getScoreboardName());
         guiGraphics.drawString(font, component, leftPos + 149 / 2 - font.width(component) / 2, topPos + 84, 0xc7b496, false);
     }
 
     protected void signAlbum() {
         if (canSign()) {
             parentScreen.getMenu().setTitle(titleText);
-            parentScreen.getMenu().signAlbum(Minecrft.player());
+            parentScreen.getMenu().signAlbum(Minecrft.playerOrThrow());
             this.onClose();
         }
     }
