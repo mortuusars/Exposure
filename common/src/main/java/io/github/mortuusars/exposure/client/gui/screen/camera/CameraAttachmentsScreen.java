@@ -11,13 +11,13 @@ import io.github.mortuusars.exposure.client.gui.toast.BetterTutorialToast;
 import io.github.mortuusars.exposure.client.gui.toast.ToastIcon;
 import io.github.mortuusars.exposure.client.input.KeyboardHandler;
 import io.github.mortuusars.exposure.client.util.Minecrft;
-import io.github.mortuusars.exposure.util.supporter.Supporters;
 import io.github.mortuusars.exposure.util.color.Color;
 import io.github.mortuusars.exposure.data.Lenses;
 import io.github.mortuusars.exposure.data.Filter;
 import io.github.mortuusars.exposure.data.Filters;
 import io.github.mortuusars.exposure.world.inventory.AbstractCameraAttachmentsMenu;
 import io.github.mortuusars.exposure.world.inventory.CameraInHandAttachmentsMenu;
+import io.github.mortuusars.mortaar.util.supporter.Supporters;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
@@ -128,7 +128,7 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
         inventoryLabelY = this.imageHeight - 94;
         super.init();
 
-        if (Supporters.hasAccessToGoldenSkin(Minecrft.player().getUUID())) {
+        if (Supporters.isEligibleForGoldenRewards(Minecrft.player().getUUID())) {
             ToggleImageButton button = new ToggleImageButton(leftPos + 8, topPos + 18, 7, 7,
                     SKIN_GOLD_BUTTON_SPRITES, SKIN_REGULAR_BUTTON_SPRITES, this::changeSkin);
             button.setState(getMenu().getCamera().map((i, s) -> s.getOrDefault(Exposure.DataComponents.CAMERA_GOLD, false)));

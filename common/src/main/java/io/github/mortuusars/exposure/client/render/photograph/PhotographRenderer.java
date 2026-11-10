@@ -17,12 +17,12 @@ import java.util.List;
 
 public class PhotographRenderer {
     public boolean render(ItemStack itemStack, boolean renderPaper, boolean renderBackside, PoseStack poseStack,
-                              MultiBufferSource bufferSource, int packedLight) {
+                          MultiBufferSource bufferSource, int packedLight) {
         return render(itemStack, renderPaper, renderBackside, poseStack, bufferSource, packedLight, 255, 255, 255, 255);
     }
 
     public boolean render(ItemStack itemStack, boolean renderPaper, boolean renderBackside, PoseStack poseStack,
-                              MultiBufferSource bufferSource, int packedLight, int r, int g, int b, int a) {
+                          MultiBufferSource bufferSource, int packedLight, int r, int g, int b, int a) {
         if (itemStack.getItem() instanceof PhotographItem photographItem)
             return renderPhotograph(poseStack, bufferSource, photographItem, itemStack, renderPaper, renderBackside, packedLight, r, g, b, a);
         else if (itemStack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem)
@@ -31,8 +31,8 @@ public class PhotographRenderer {
     }
 
     public boolean renderPhotograph(PoseStack poseStack, MultiBufferSource bufferSource,
-                                        PhotographItem photographItem, ItemStack photographStack,
-                                        boolean renderPaper, boolean renderBackside, int packedLight, int r, int g, int b, int a) {
+                                    PhotographItem photographItem, ItemStack photographStack,
+                                    boolean renderPaper, boolean renderBackside, int packedLight, int r, int g, int b, int a) {
 
         PhotographStyle style = PhotographStyle.of(photographStack);
 
@@ -62,7 +62,7 @@ public class PhotographRenderer {
                 poseStack.translate(-0.5f, -0.5f, 0);
 
                 TextureRenderer.render(poseStack, bufferSource, style.paperTexture(),
-                        packedLight, (int) (r * 0.85f), (int) (g * 0.85f), (int) (b * 0.85f), a);
+                      packedLight, (int) (r * 0.85f), (int) (g * 0.85f), (int) (b * 0.85f), a);
 
                 poseStack.popPose();
             }
@@ -95,15 +95,15 @@ public class PhotographRenderer {
     }
 
     public boolean renderStackedPhotographs(StackedPhotographsItem stackedPhotographsItem, ItemStack stack,
-                                                PoseStack poseStack, MultiBufferSource bufferSource,
-                                                int packedLight, int r, int g, int b, int a) {
+                                            PoseStack poseStack, MultiBufferSource bufferSource,
+                                            int packedLight, int r, int g, int b, int a) {
         List<ItemAndStack<PhotographItem>> photographs = stackedPhotographsItem.getPhotographs(stack).photographsItemAndStacks();
         return renderStackedPhotographs(photographs, poseStack, bufferSource, packedLight, r, g, b, a);
     }
 
     public boolean renderStackedPhotographs(List<ItemAndStack<PhotographItem>> photographs,
-                                                PoseStack poseStack, MultiBufferSource bufferSource,
-                                                int packedLight, int r, int g, int b, int a) {
+                                            PoseStack poseStack, MultiBufferSource bufferSource,
+                                            int packedLight, int r, int g, int b, int a) {
         if (photographs.isEmpty()) return false;
 
         boolean photographRendered = false;
@@ -119,7 +119,7 @@ public class PhotographRenderer {
                 poseStack.pushPose();
                 poseStack.translate(0, 0, 0.002);
                 photographRendered = renderPhotograph(poseStack, bufferSource, photograph.getItem(), photograph.getItemStack(),
-                        true, false, packedLight, r, g, b, a);
+                      true, false, packedLight, r, g, b, a);
                 poseStack.popPose();
                 break;
             }
@@ -143,7 +143,7 @@ public class PhotographRenderer {
             PhotographStyle photographStyle = PhotographStyle.of(photograph.getItemStack());
 
             TextureRenderer.render(poseStack, bufferSource, photographStyle.paperTexture(),
-                    packedLight, (int)(r * brightness), (int)(g * brightness), (int)(b * brightness), a);
+                  packedLight, (int) (r * brightness), (int) (g * brightness), (int) (b * brightness), a);
 
             poseStack.popPose();
         }

@@ -1,10 +1,10 @@
 package io.github.mortuusars.exposure.world.inventory;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.util.supporter.Supporters;
 import io.github.mortuusars.exposure.world.inventory.slot.FilteredSlot;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
+import io.github.mortuusars.mortaar.util.supporter.Supporters;
 import net.minecraft.world.Container;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
@@ -218,7 +218,7 @@ public abstract class AbstractCameraAttachmentsMenu extends AbstractContainerMen
 
     @Override
     public boolean clickMenuButton(Player player, int id) {
-        if (Supporters.hasAccessToGoldenSkin(player.getUUID())) {
+        if (Supporters.isEligibleForGoldenRewards(player.getUUID())) {
             if (id == SKIN_REGULAR_BUTTON_ID) {
                 getCamera().apply((i, s) -> s.set(Exposure.DataComponents.CAMERA_GOLD, false));
                 return true;
