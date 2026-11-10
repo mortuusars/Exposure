@@ -46,29 +46,29 @@ import java.util.List;
 public class ClientPacketsHandler {
     private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static void applyShader(ShaderApplyS2CP packet) {
-        packet.shaderLocation().ifPresentOrElse(
-                shader -> Minecrft.get().gameRenderer.loadEffect(shader),
-                () -> Minecrft.get().gameRenderer.shutdownEffect());
-    }
+//    public static void applyShader(ShaderApplyS2CP packet) {
+//        packet.shaderLocation().ifPresentOrElse(
+//                shader -> Minecrft.get().gameRenderer.loadEffect(shader),
+//                () -> Minecrft.get().gameRenderer.shutdownEffect());
+//    }
 
-    public static void showExposure(ShowExposureCommandS2CP packet) {
-        if (packet.negative()) {
-            Screen screen = new FilmFrameInspectScreen(packet.frames());
-            Minecrft.get().setScreen(screen);
-            return;
-        }
-
-        List<ItemAndStack<PhotographItem>> photographs = new ArrayList<>(packet.frames().stream().map(frame -> {
-            ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
-            photographStack.set(Exposure.DataComponents.PHOTOGRAPH_FRAME, frame);
-            return new ItemAndStack<PhotographItem>(photographStack);
-        }).toList());
-        Collections.reverse(photographs);
-
-        Screen screen = new PhotographScreen(photographs);
-        Minecrft.get().setScreen(screen);
-    }
+//    public static void showExposure(ShowExposureCommandS2CP packet) {
+//        if (packet.negative()) {
+//            Screen screen = new FilmFrameInspectScreen(packet.frames());
+//            Minecrft.get().setScreen(screen);
+//            return;
+//        }
+//
+//        List<ItemAndStack<PhotographItem>> photographs = new ArrayList<>(packet.frames().stream().map(frame -> {
+//            ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
+//            photographStack.set(Exposure.DataComponents.PHOTOGRAPH_FRAME, frame);
+//            return new ItemAndStack<PhotographItem>(photographStack);
+//        }).toList());
+//        Collections.reverse(photographs);
+//
+//        Screen screen = new PhotographScreen(photographs);
+//        Minecrft.get().setScreen(screen);
+//    }
 
     public static void exportExposures(ExportS2CP packet) {
         ExportExposuresTask.start(packet.ids(), packet.size(), packet.look());

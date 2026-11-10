@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -35,7 +35,15 @@ public record ShaderApplyS2CP(Optional<ResourceLocation> shaderLocation) impleme
 
     @Override
     public boolean handle(PacketFlow direction, Player player) {
-        ClientPacketsHandler.applyShader(this);
+        Client.applyShader(shaderLocation);
         return true;
+    }
+
+    public static class Client {
+        public static void applyShader(Optional<ResourceLocation> shaderLocation) {
+            shaderLocation.ifPresentOrElse(
+                  shader -> Minecrft.get().gameRenderer.loadEffect(shader),
+                  () -> Minecrft.get().gameRenderer.shutdownEffect());
+        }
     }
 }
