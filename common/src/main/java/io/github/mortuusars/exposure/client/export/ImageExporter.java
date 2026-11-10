@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.image.PalettedImage;
 import io.github.mortuusars.exposure.client.util.LevelNameGetter;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.world.level.storage.ExposureData;
 import org.jetbrains.annotations.Nullable;
 

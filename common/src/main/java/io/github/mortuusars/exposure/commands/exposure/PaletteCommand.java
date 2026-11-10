@@ -6,7 +6,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.serialization.JsonOps;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.commands.argument.ColorPaletteArgument;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.data.ColorPalette;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;

@@ -25,7 +25,7 @@ public class ClientEvents {
         ClientPacketsHandler.clearRenderingCache();
         boolean active = Minecrft.player().getActiveExposureCameraOptional().isEmpty();
 
-        EasingFunction.EASE_OUT_EXPO.ease(0.5);
+        Easing.EASE_OUT_EXPO.ease(0.5);
         ViewfinderRegistry.getConstructor(Exposure.Items.CAMERA.get()).apply(new Camera(Minecrft.player(), CameraId.create()) {
             @Override
             public ItemStack getItemStack() { return new ItemStack(Exposure.Items.CAMERA.get()); }

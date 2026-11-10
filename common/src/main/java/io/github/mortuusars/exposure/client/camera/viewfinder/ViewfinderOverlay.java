@@ -6,7 +6,6 @@ import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.animation.EasingFunction;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.util.UnixTimestamp;
 import io.github.mortuusars.exposure.world.camera.Camera;
@@ -17,6 +16,7 @@ import io.github.mortuusars.exposure.world.item.component.StoredItemStack;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
 import io.github.mortuusars.exposure.client.util.GuiUtil;
 import io.github.mortuusars.exposure.util.Rect2f;
+import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
@@ -69,7 +69,7 @@ public class ViewfinderOverlay {
         this.opening = new Rect2f(0, 0, 0, 0);
         recalculateOpening();
 
-        this.scaleAnimation = new Animation(300, EasingFunction.EASE_OUT_EXPO);
+        this.scaleAnimation = new Animation(300, Easing.OUT_EXPO);
         this.initialScale = 0.5f;
         this.scale = 0.5f; // Start small to animate expanding
 

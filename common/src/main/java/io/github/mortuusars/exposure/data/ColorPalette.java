@@ -4,14 +4,7 @@ package io.github.mortuusars.exposure.data;
 import com.google.common.base.Preconditions;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.util.color.Color;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.core.Holder;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.RegistryFixedCodec;
+import io.github.mortuusars.mortaar.util.color.Color;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,15 +21,6 @@ public record ColorPalette(int[] colors) {
     public static final Codec<ColorPalette> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                     Color.HEX_STRING_CODEC.listOf().fieldOf("colors").forGetter(ColorPalette::toColorList))
             .apply(instance, ColorPalette::new));
-
-//    public static final Codec<Holder<ColorPalette>> HOLDER_CODEC = RegistryFixedCodec.create(Exposure.Registries.COLOR_PALETTE);
-//
-//    public static final StreamCodec<ByteBuf, ColorPalette> DIRECT_STREAM_CODEC = ByteBufCodecs.INT.apply(ByteBufCodecs.list())
-//            .map(list -> new ColorPalette(list.stream().mapToInt(Integer::intValue).toArray()),
-//                    palette -> Arrays.stream(palette.colors()).boxed().toList());
-//
-//    public static final StreamCodec<RegistryFriendlyByteBuf, Holder<ColorPalette>> STREAM_CODEC =
-//            ByteBufCodecs.holder(Exposure.Registries.COLOR_PALETTE, DIRECT_STREAM_CODEC);
 
     public ColorPalette {
         Preconditions.checkState(colors.length > 0, "Cannot create palette that's empty.");

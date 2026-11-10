@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
 import com.google.common.base.Preconditions;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 

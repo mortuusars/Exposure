@@ -11,7 +11,7 @@ import io.github.mortuusars.exposure.client.gui.toast.BetterTutorialToast;
 import io.github.mortuusars.exposure.client.gui.toast.ToastIcon;
 import io.github.mortuusars.exposure.client.input.KeyboardHandler;
 import io.github.mortuusars.exposure.client.util.Minecrft;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.data.Lenses;
 import io.github.mortuusars.exposure.data.Filter;
 import io.github.mortuusars.exposure.data.Filters;

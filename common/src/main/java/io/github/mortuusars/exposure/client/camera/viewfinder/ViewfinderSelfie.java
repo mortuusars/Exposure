@@ -2,11 +2,11 @@ package io.github.mortuusars.exposure.client.camera.viewfinder;
 
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.animation.EasingFunction;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraSettings;
+import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.client.CameraType;
 import net.minecraft.util.Mth;
 
@@ -15,8 +15,8 @@ public class ViewfinderSelfie {
     protected final Viewfinder viewfinder;
 
     protected double rawXRot, rawYRot, xRot, yRot, prevXRot, prevYRot;
-    protected Animation xRotAnimation = new Animation(200, EasingFunction.EASE_OUT_EXPO);
-    protected Animation yRotAnimation = new Animation(200, EasingFunction.EASE_OUT_EXPO);
+    protected Animation xRotAnimation = new Animation(200, Easing.OUT_EXPO);
+    protected Animation yRotAnimation = new Animation(200, Easing.OUT_EXPO);
 
     public ViewfinderSelfie(Camera camera, Viewfinder viewfinder) {
         this.camera = camera;

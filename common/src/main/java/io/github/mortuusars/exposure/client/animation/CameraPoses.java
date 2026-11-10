@@ -3,6 +3,7 @@ package io.github.mortuusars.exposure.client.animation;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
@@ -116,7 +117,7 @@ public class CameraPoses {
 
     public float getCameraActionAnim(LivingEntity entity) {
         float actionProgress = getCameraActionProgress(entity);
-        actionProgress = (float)EasingFunction.EASE_OUT_CUBIC.ease(actionProgress);
+        actionProgress = (float) Easing.OUT_CUBIC.ease(actionProgress);
         return actionProgress > 0.5F ? (1F - actionProgress) : actionProgress;
     }
 }

@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImageIdentifier;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.*;
 import net.minecraft.resources.ResourceLocation;

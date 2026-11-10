@@ -14,7 +14,7 @@ import io.github.mortuusars.exposure.client.render.image.RenderCoordinates;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.data.ColorPalettes;
 import io.github.mortuusars.exposure.util.UnixTimestamp;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.world.camera.film.properties.Levels;
 import io.github.mortuusars.exposure.world.camera.component.ShutterSpeed;
 import net.minecraft.ChatFormatting;

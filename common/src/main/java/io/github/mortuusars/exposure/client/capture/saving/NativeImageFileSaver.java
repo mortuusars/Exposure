@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.client.capture.saving;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.client.image.Image;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import org.slf4j.Logger;
 
 import java.io.File;

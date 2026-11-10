@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure.client.render;
 
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.animation.EasingFunction;
 import io.github.mortuusars.exposure.client.camera.viewfinder.Viewfinder;
+import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -49,7 +49,7 @@ public class FovModifier {
         }
 
         if (restoringAnimation == null) {
-            restoringAnimation = new Animation(300, EasingFunction.EASE_OUT_EXPO);
+            restoringAnimation = new Animation(300, Easing.OUT_EXPO);
         }
 
         double fov = Mth.lerp(restoringAnimation.getValue(), lastFov, originalValue);

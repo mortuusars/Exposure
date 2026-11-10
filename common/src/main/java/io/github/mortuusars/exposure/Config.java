@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure;
 import io.github.mortuusars.exposure.client.capture.task.UrlLoading;
 import io.github.mortuusars.exposure.world.block.FlashBlock;
 import io.github.mortuusars.exposure.world.camera.component.FocalRange;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import net.minecraft.world.item.DyeColor;
 import net.neoforged.neoforge.common.ModConfigSpec;
 

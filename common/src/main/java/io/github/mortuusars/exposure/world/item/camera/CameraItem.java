@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.*;
 import io.github.mortuusars.exposure.data.*;
 import io.github.mortuusars.exposure.network.packet.clientbound.ShutterOpenedS2CP;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.camera.*;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureType;

@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.animation.EasingFunction;
 import io.github.mortuusars.exposure.client.util.Minecrft;
+import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
@@ -52,7 +52,7 @@ public class ItemListScreen extends Screen {
         this.items = items;
         List<List<ItemStack>> rows = Lists.partition(items, 9);
         this.rowsCount = rows.size();
-        this.openingAnimation = new Animation(200, EasingFunction.EASE_OUT_EXPO);
+        this.openingAnimation = new Animation(200, Easing.OUT_EXPO);
 
         this.openedAt = Util.getMillis();
 

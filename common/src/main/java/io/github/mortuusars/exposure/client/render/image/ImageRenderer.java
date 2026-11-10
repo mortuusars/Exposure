@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.client.render.image;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImageIdentifier;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 

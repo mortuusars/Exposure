@@ -2,12 +2,12 @@ package io.github.mortuusars.exposure.client.camera.viewfinder;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import io.github.mortuusars.exposure.client.animation.Animation;
-import io.github.mortuusars.exposure.client.animation.EasingFunction;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.item.camera.CameraSettings;
 import io.github.mortuusars.exposure.world.camera.component.FocalRange;
 import io.github.mortuusars.exposure.client.util.ZoomDirection;
+import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 
@@ -29,7 +29,7 @@ public class ViewfinderZoom {
 
         focalRange = camera.map((cameraItem, cameraStack) -> cameraItem.getFocalRange(Minecrft.registryAccess(), cameraStack))
                 .orElse(FocalRange.getDefault());
-        animation = new Animation(300, EasingFunction.EASE_OUT_EXPO);
+        animation = new Animation(300, Easing.OUT_EXPO);
 
         double defaultFov = Minecrft.options().fov().get();
         currentFov = defaultFov;

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.core.color;
 
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.JsonOps;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

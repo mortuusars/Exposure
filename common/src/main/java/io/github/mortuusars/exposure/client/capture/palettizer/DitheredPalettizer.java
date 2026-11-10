@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.capture.palettizer;
 
 import io.github.mortuusars.exposure.client.image.Image;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.data.ColorPalette;
 import io.github.mortuusars.exposure.client.image.PalettedImage;
 

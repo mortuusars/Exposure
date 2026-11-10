@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.world.camera;
 
 import com.mojang.serialization.Codec;
-import io.github.mortuusars.exposure.util.color.Color;
+import io.github.mortuusars.mortaar.util.color.Color;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

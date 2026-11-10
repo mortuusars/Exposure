@@ -1,12 +1,14 @@
 package io.github.mortuusars.exposure.client.animation;
 
+import io.github.mortuusars.mortaar.util.Easing;
+
 public class Animation {
     protected final int duration;
-    protected final EasingFunction easing;
+    protected final Easing easing;
 
     protected long startedAt;
 
-    public Animation(int duration, EasingFunction easing) {
+    public Animation(int duration, Easing easing) {
         this.duration = duration;
         this.easing = easing;
         startedAt = getCurrentTime();
@@ -14,7 +16,7 @@ public class Animation {
 
     public Animation(int duration) {
         this.duration = duration;
-        this.easing = EasingFunction.LINEAR;
+        this.easing = Easing.LINEAR;
         startedAt = getCurrentTime();
     }
 
@@ -22,7 +24,7 @@ public class Animation {
         return duration;
     }
 
-    public EasingFunction getEasing() {
+    public Easing getEasing() {
         return easing;
     }
 
