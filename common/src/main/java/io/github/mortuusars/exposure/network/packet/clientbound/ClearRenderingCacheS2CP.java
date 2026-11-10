@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,7 +28,14 @@ public class ClearRenderingCacheS2CP implements Packet {
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.clearRenderingCache();
+        Client.clearRenderingCache();
         return true;
+    }
+
+    public static class Client {
+        public static void clearRenderingCache() {
+            ExposureClient.imageRenderer().clearCache();
+            ExposureClient.renderedExposures().clearCache();
+        }
     }
 }

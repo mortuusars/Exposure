@@ -1,7 +1,9 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.client.camera.CameraClient;
+import io.github.mortuusars.mortaar.client.Minecrft;
+import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,7 +30,17 @@ public record CameraStandStopControllingS2CP(int standId) implements Packet {
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.stopControllingCameraStand(this);
+        Client.stopControllingCameraStand(standId);
         return true;
+    }
+
+    public static class Client {
+        public static void stopControllingCameraStand(int standId) {
+            if (Minecrft.get().cameraEntity != Minecrft.playerOrThrow()
+                    && Minecrft.levelOrThrow().getEntity(standId) instanceof CameraStandEntity stand) {
+                stand.stopControlling();
+                CameraClient.setCameraEntity(Minecrft.playerOrThrow());
+            }
+        }
     }
 }

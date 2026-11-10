@@ -2,7 +2,10 @@ package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.client.capture.template.CaptureTemplate;
+import io.github.mortuusars.exposure.client.capture.template.CaptureTemplates;
+import io.github.mortuusars.exposure.util.cycles.task.Task;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -32,7 +35,17 @@ public record CaptureStartDebugRGBS2CP(ResourceLocation templateId, List<Capture
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.startDebugRGBCapture(this);
+        Client.startDebugRGBCapture(templateId, captureProperties);
         return true;
+    }
+
+    public static class Client {
+        public static void startDebugRGBCapture(ResourceLocation templateId, List<CaptureParameters> captureProperties) {
+            CaptureTemplate template = CaptureTemplates.getOrThrow(templateId);
+            for (CaptureParameters captureParameters : captureProperties) {
+                Task<?> captureTask = template.createTask(captureParameters);
+                ExposureClient.cycles().enqueueTask(captureTask);
+            }
+        }
     }
 }

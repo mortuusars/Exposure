@@ -2,7 +2,9 @@ package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.client.capture.template.CaptureTemplates;
+import io.github.mortuusars.exposure.util.cycles.task.Task;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -29,7 +31,14 @@ public record CaptureStartS2CP(ResourceLocation templateId, CaptureParameters ca
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.startCapture(this);
+        Client.startCapture(templateId, captureParameters);
         return true;
+    }
+
+    public static class Client {
+        public static void startCapture(ResourceLocation templateId, CaptureParameters captureParameters) {
+            Task<?> captureTask = CaptureTemplates.getOrThrow(templateId).createTask(captureParameters);
+            ExposureClient.cycles().enqueueTask(captureTask);
+        }
     }
 }

@@ -1,7 +1,10 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.client.task.ExportExposuresTask;
+import io.github.mortuusars.mortaar.client.Minecrft;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,7 +31,16 @@ public class ExportStopS2CP implements Packet {
 
     @Override
     public boolean handle(PacketFlow direction, Player player) {
-        ClientPacketsHandler.stopExportTask();
+        Client.stopExportTask();
         return true;
+    }
+
+    public static class Client {
+        public static void stopExportTask() {
+            if (!ExportExposuresTask.stopCurrentTask()) {
+                Minecrft.playerOrThrow().displayClientMessage(Component.translatable("task.exposure.export.not_running")
+                        .withStyle(ChatFormatting.RED), false);
+            }
+        }
     }
 }

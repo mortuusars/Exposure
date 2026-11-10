@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -28,7 +28,15 @@ public class ShutterOpenedS2CP implements Packet {
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.shutterOpened();
+        Client.shutterOpened();
         return true;
+    }
+
+    public static class Client {
+        public static void shutterOpened() {
+            if (CameraClient.viewfinder() != null) {
+                CameraClient.viewfinder().overlay().startDrawingShutter();
+            }
+        }
     }
 }

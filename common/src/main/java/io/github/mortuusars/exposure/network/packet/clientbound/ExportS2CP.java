@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.network.packet.clientbound;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.data.export.ExportLook;
 import io.github.mortuusars.exposure.data.export.ExportSize;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.client.task.ExportExposuresTask;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -33,7 +33,13 @@ public record ExportS2CP(List<String> ids, ExportSize size, ExportLook look) imp
 
     @Override
     public boolean handle(PacketFlow direction, Player player) {
-        ClientPacketsHandler.exportExposures(this);
+        Client.exportExposures(ids, size, look);
         return true;
+    }
+
+    public static class Client {
+        public static void exportExposures(List<String> ids, ExportSize size, ExportLook look) {
+            ExportExposuresTask.start(ids, size, look);
+        }
     }
 }

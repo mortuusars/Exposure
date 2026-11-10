@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,7 +28,15 @@ public record ExposureDataChangedS2CP(String id) implements Packet {
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.exposureDataChanged(this);
+        Client.exposureDataChanged(id);
         return true;
+    }
+
+    public static class Client {
+        public static void exposureDataChanged(String id) {
+            ExposureClient.exposureStore().refresh(id);
+            ExposureClient.imageRenderer().clearCacheOf(id);
+            ExposureClient.renderedExposures().clearCacheOf(id);
+        }
     }
 }

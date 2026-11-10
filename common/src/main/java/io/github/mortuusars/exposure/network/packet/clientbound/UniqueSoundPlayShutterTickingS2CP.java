@@ -1,7 +1,10 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
+import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.client.sound.UniqueSoundManager;
+import io.github.mortuusars.exposure.client.sound.instance.ShutterTickingSoundInstance;
+import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,6 +14,8 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import org.jetbrains.annotations.NotNull;
 
 public record UniqueSoundPlayShutterTickingS2CP(int entityId,
@@ -37,7 +42,19 @@ public record UniqueSoundPlayShutterTickingS2CP(int entityId,
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        ClientPacketsHandler.playShutterTickingSound(this);
+        Client.playShutterTickingSound(entityId, cameraId, volume, pitch, durationTicks);
         return true;
+    }
+
+    public static class Client {
+        public static void playShutterTickingSound(int entityId, CameraId cameraId, float volume, float pitch, int durationTicks) {
+            Entity entity = Minecrft.playerOrThrow().level().getEntity(entityId);
+            if (entity != null) {
+                SoundInstance instance = new ShutterTickingSoundInstance(entity, cameraId,
+                        Exposure.SoundEvents.SHUTTER_TICKING.get(), entity.getSoundSource(),
+                        volume, pitch, durationTicks);
+                UniqueSoundManager.play(cameraId.toString(), instance);
+            }
+        }
     }
 }
