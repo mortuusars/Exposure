@@ -50,7 +50,7 @@ dependencies {
     modCompileOnly("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
 
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
-    modLocalRuntime("curse.maven:embeddium-908741:6118392")
+    modLocalRuntime("maven.modrinth:sodium:mc1.21.1-0.8.13-neoforge")
     modLocalRuntime("curse.maven:jade-324717:${jade_neoforge_id}")
     modLocalRuntime("curse.maven:yeetusexperimentus-635427:5444189")
 
