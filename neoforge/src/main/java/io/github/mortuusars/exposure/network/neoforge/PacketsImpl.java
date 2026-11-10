@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.neoforge;
 
 
-import io.github.mortuusars.exposure.network.packet.Packet;
+import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;

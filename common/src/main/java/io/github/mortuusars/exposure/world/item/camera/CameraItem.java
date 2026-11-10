@@ -22,7 +22,7 @@ import io.github.mortuusars.exposure.world.item.InterplanarProjectorItem;
 import io.github.mortuusars.exposure.world.item.SensitiveFilmItem;
 import io.github.mortuusars.exposure.world.item.component.StoredItemStack;
 import io.github.mortuusars.exposure.world.inventory.CameraInHandAttachmentsMenu;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.CaptureStartS2CP;
 import io.github.mortuusars.exposure.network.packet.serverbound.OpenCameraAttachmentsInCreativePacketC2SP;
 import io.github.mortuusars.exposure.server.CameraInstance;

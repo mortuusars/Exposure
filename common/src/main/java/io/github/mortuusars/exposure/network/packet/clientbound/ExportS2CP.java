@@ -4,7 +4,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.data.export.ExportLook;
 import io.github.mortuusars.exposure.data.export.ExportSize;
 import io.github.mortuusars.exposure.network.handler.ClientPacketsHandler;
-import io.github.mortuusars.exposure.network.packet.Packet;
+import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

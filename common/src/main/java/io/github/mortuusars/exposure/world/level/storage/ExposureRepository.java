@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.world.level.storage;
 
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ExposureDataChangedS2CP;
 import io.github.mortuusars.exposure.network.packet.clientbound.ExposureDataResponseS2CP;
 import io.github.mortuusars.exposure.util.UnixTimestamp;

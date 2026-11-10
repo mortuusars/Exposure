@@ -12,7 +12,7 @@ import io.github.mortuusars.exposure.client.gui.screen.element.textbox.TextBox;
 import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
 import io.github.mortuusars.mortaar.client.Minecrft;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.AlbumSyncNoteC2SP;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumPage;

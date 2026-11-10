@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client;
 
 import io.github.mortuusars.mortaar.client.Minecrft;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.ExposureRequestC2SP;
 import org.jetbrains.annotations.Nullable;
 

@@ -4,7 +4,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraSetting;
-import io.github.mortuusars.exposure.network.packet.Packet;
+import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;

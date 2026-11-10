@@ -8,19 +8,15 @@ import io.github.mortuusars.exposure.data.Filter;
 import io.github.mortuusars.exposure.data.Lens;
 import io.github.mortuusars.exposure.event.CommonEvents;
 import io.github.mortuusars.exposure.event.ServerEvents;
-import io.github.mortuusars.exposure.network.fabric.FabricC2SPackets;
-import io.github.mortuusars.exposure.network.fabric.FabricS2CPackets;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.registry.DynamicRegistries;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -62,9 +58,6 @@ public class ExposureFabric implements ModInitializer {
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ServerEvents.syncDatapack(Stream.of(player)));
 
         LootTableEvents.MODIFY.register(ExposureFabric::modifyLoot);
-
-        FabricC2SPackets.register();
-        FabricS2CPackets.register();
     }
 
     private static void modifyLoot(ResourceKey<LootTable> tableKey, LootTable.Builder builder,

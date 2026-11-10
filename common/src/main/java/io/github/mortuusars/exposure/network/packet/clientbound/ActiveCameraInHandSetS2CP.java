@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.network.packet.Packet;
+import io.github.mortuusars.mortaar.network.packet.Packet;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import io.github.mortuusars.exposure.world.camera.CameraInHand;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;

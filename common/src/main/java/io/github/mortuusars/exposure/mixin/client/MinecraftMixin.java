@@ -2,12 +2,11 @@ package io.github.mortuusars.exposure.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderCameraControlsScreen;
 import io.github.mortuusars.exposure.client.capture.task.BackgroundScreenshotCaptureTask;
 import io.github.mortuusars.exposure.event.ClientEvents;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.ActiveCameraReleaseC2SP;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import net.minecraft.client.Minecraft;

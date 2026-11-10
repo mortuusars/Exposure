@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.mortuusars.exposure.event.ServerEvents;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ActiveCameraRemoveS2CP;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import net.minecraft.core.BlockPos;

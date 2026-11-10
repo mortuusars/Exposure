@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.CameraStandSetRotationsS2CP;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import net.minecraft.server.level.ServerEntity;

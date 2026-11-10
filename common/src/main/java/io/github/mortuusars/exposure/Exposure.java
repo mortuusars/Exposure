@@ -8,6 +8,9 @@ import io.github.mortuusars.exposure.advancements.predicate.FramePredicate;
 import io.github.mortuusars.exposure.advancements.predicate.TamedPredicate;
 import io.github.mortuusars.exposure.advancements.trigger.FrameExposedTrigger;
 import io.github.mortuusars.exposure.advancements.trigger.FramePrintedTrigger;
+import io.github.mortuusars.exposure.network.packet.clientbound.*;
+import io.github.mortuusars.exposure.network.packet.common.ActiveCameraDeactivateCommonPacket;
+import io.github.mortuusars.exposure.network.packet.serverbound.*;
 import io.github.mortuusars.exposure.world.block.FlashBlock;
 import io.github.mortuusars.exposure.world.block.LightroomBlock;
 import io.github.mortuusars.exposure.world.block.entity.LightroomBlockEntity;
@@ -96,6 +99,38 @@ public class Exposure {
         RecipeSerializers.init();
         SoundEvents.init();
         ArgumentTypes.init();
+
+        io.github.mortuusars.mortaar.Register.serverboundPacket(AlbumSignC2SP.TYPE, AlbumSignC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(AlbumSyncNoteC2SP.TYPE, AlbumSyncNoteC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(ActiveCameraSetSettingC2SP.TYPE, ActiveCameraSetSettingC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(OpenCameraAttachmentsInCreativePacketC2SP.TYPE, OpenCameraAttachmentsInCreativePacketC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(ExposureRequestC2SP.TYPE, ExposureRequestC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(ActiveCameraReleaseC2SP.TYPE, ActiveCameraReleaseC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(InterplanarProjectionFinishedC2SP.TYPE, InterplanarProjectionFinishedC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(ExposureDataC2SP.TYPE, ExposureDataC2SP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.serverboundPacket(CameraStandTurnC2SP.TYPE, CameraStandTurnC2SP.STREAM_CODEC);
+
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ActiveCameraRemoveS2CP.TYPE, ActiveCameraRemoveS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ActiveCameraInHandSetS2CP.TYPE, ActiveCameraInHandSetS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ActiveCameraOnStandSetS2CP.TYPE, ActiveCameraOnStandSetS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(CameraStandSetRotationsS2CP.TYPE, CameraStandSetRotationsS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(CameraStandStopControllingS2CP.TYPE, CameraStandStopControllingS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ShaderApplyS2CP.TYPE, ShaderApplyS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ClearRenderingCacheS2CP.TYPE, ClearRenderingCacheS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(CreateChromaticExposureS2CP.TYPE, CreateChromaticExposureS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ExposureDataChangedS2CP.TYPE, ExposureDataChangedS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(UniqueSoundPlayS2CP.TYPE, UniqueSoundPlayS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(UniqueSoundPlayShutterTickingS2CP.TYPE, UniqueSoundPlayShutterTickingS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(UniqueSoundStopS2CP.TYPE, UniqueSoundStopS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ShowExposureCommandS2CP.TYPE, ShowExposureCommandS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ExposureDataResponseS2CP.TYPE, ExposureDataResponseS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ShutterOpenedS2CP.TYPE, ShutterOpenedS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(CaptureStartS2CP.TYPE, CaptureStartS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(CaptureStartDebugRGBS2CP.TYPE, CaptureStartDebugRGBS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ExportS2CP.TYPE, ExportS2CP.STREAM_CODEC);
+        io.github.mortuusars.mortaar.Register.clientboundPacket(ExportStopS2CP.TYPE, ExportStopS2CP.STREAM_CODEC);
+
+        io.github.mortuusars.mortaar.Register.bidirectionalPacket(ActiveCameraDeactivateCommonPacket.TYPE, ActiveCameraDeactivateCommonPacket.STREAM_CODEC);
     }
 
     public static void initServer(MinecraftServer server) {

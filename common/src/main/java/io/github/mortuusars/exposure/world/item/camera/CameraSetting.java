@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.world.item.camera;
 
 import com.mojang.serialization.Codec;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.ActiveCameraSetSettingC2SP;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;

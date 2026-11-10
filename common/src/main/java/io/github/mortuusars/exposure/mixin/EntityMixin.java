@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.CameraStandTurnC2SP;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;

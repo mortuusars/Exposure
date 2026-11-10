@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.ExposureServer;
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.CreateChromaticExposureS2CP;
 import io.github.mortuusars.exposure.world.camera.ColorChannel;
 import net.minecraft.ChatFormatting;
@@ -53,18 +53,18 @@ public class ChromaticSheetItem extends Item {
 
         if (!layers.isEmpty()) {
             MutableComponent component = Component.translatable("gui.exposure.channel.red")
-                    .withStyle(Style.EMPTY.withColor(ColorChannel.RED.getRepresentationColor()));
+                  .withStyle(Style.EMPTY.withColor(ColorChannel.RED.getRepresentationColor()));
 
             if (layers.size() >= 2) {
                 component.append(Component.translatable("gui.exposure.channel.separator").withStyle(ChatFormatting.GRAY));
                 component.append(Component.translatable("gui.exposure.channel.green")
-                        .withStyle(Style.EMPTY.withColor(ColorChannel.GREEN.getRepresentationColor())));
+                      .withStyle(Style.EMPTY.withColor(ColorChannel.GREEN.getRepresentationColor())));
             }
 
             if (layers.size() >= 3) {
                 component.append(Component.translatable("gui.exposure.channel.separator").withStyle(ChatFormatting.GRAY));
                 component.append(Component.translatable("gui.exposure.channel.blue")
-                        .withStyle(Style.EMPTY.withColor(ColorChannel.BLUE.getRepresentationColor())));
+                      .withStyle(Style.EMPTY.withColor(ColorChannel.BLUE.getRepresentationColor())));
             }
 
             tooltipComponents.add(component);
@@ -95,10 +95,9 @@ public class ChromaticSheetItem extends Item {
 
         ItemStack photographStack = createPhotographStack(ExposureIdentifier.id(exposureId), layers);
 
-        ExposureServer.exposureRepository().expect(player, exposureId, (pl, id) -> {
-            ExposureServer.exposureRepository().update(id, exposure ->
-                    exposure.withTag(tag -> tag.withWasPrintedSetTo(printed)));
-        });
+        ExposureServer.exposureRepository().expect(player, exposureId, (pl, id) ->
+              ExposureServer.exposureRepository().update(id, exposure ->
+                    exposure.withTag(tag -> tag.withWasPrintedSetTo(printed))));
         Packets.sendToClient(new CreateChromaticExposureS2CP(exposureId, layersIdentifiers), player);
 
         return photographStack;
@@ -107,9 +106,9 @@ public class ChromaticSheetItem extends Item {
     protected ItemStack createPhotographStack(ExposureIdentifier identifier, List<Frame> layers) {
         Frame frameData = Frame.intersect(identifier, layers);
         frameData = frameData.toMutable()
-                .setType(ExposureType.COLOR)
-                .setChromatic(true)
-                .toImmutable();
+              .setType(ExposureType.COLOR)
+              .setChromatic(true)
+              .toImmutable();
 
         ItemStack photographStack = new ItemStack(Exposure.Items.PHOTOGRAPH.get());
         photographStack.set(Exposure.DataComponents.PHOTOGRAPH_FRAME, frameData);

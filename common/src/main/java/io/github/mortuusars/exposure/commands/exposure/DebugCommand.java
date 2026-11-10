@@ -18,7 +18,7 @@ import io.github.mortuusars.exposure.world.item.camera.CameraSettings;
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.item.*;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ClearRenderingCacheS2CP;
 import io.github.mortuusars.exposure.network.packet.clientbound.CaptureStartDebugRGBS2CP;
 import net.minecraft.ChatFormatting;

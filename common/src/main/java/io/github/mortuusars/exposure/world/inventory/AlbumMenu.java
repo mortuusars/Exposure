@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.world.item.AlbumItem;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumContent;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumPage;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.serverbound.AlbumSignC2SP;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.network.RegistryFriendlyByteBuf;

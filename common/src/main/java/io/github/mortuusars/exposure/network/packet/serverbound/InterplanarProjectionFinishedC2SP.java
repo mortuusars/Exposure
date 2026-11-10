@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.network.packet.serverbound;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.CameraId;
-import io.github.mortuusars.exposure.network.packet.Packet;
+import io.github.mortuusars.mortaar.network.packet.Packet;
 import io.github.mortuusars.exposure.server.CameraInstances;
 import io.github.mortuusars.exposure.util.TranslatableError;
 import net.minecraft.network.FriendlyByteBuf;

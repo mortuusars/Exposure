@@ -8,7 +8,7 @@ import io.github.mortuusars.exposure.commands.suggestion.ExposureIdSuggestionPro
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.world.level.storage.RequestedPalettedExposure;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ExposureDataResponseS2CP;
 import io.github.mortuusars.exposure.network.packet.clientbound.ShowExposureCommandS2CP;
 import net.minecraft.commands.CommandSourceStack;

@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.commands.argument.ExposureLookArgument;
 import io.github.mortuusars.exposure.commands.argument.SizeMultiplierArgument;
 import io.github.mortuusars.exposure.commands.suggestion.ExposureIdSuggestionProvider;
 import io.github.mortuusars.exposure.data.export.ExportLook;
-import io.github.mortuusars.exposure.network.Packets;
+import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ExportS2CP;
 import io.github.mortuusars.exposure.network.packet.clientbound.ExportStopS2CP;
 import net.minecraft.commands.CommandSourceStack;

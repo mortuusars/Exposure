@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.world.camera;
 
-import io.github.mortuusars.exposure.network.packet.Packet;
+import io.github.mortuusars.mortaar.network.packet.Packet;
 import io.github.mortuusars.exposure.network.packet.clientbound.ActiveCameraInHandSetS2CP;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
