@@ -13,14 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record AlbumSyncNoteC2SP(int pageIndex, String text) implements Packet {
+public record ServerboundAlbumSyncNotePacket(int pageIndex, String text) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("album_update_note");
-    public static final CustomPacketPayload.Type<AlbumSyncNoteC2SP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ServerboundAlbumSyncNotePacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, AlbumSyncNoteC2SP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, AlbumSyncNoteC2SP::pageIndex,
-            ByteBufCodecs.STRING_UTF8, AlbumSyncNoteC2SP::text,
-            AlbumSyncNoteC2SP::new
+    public static final StreamCodec<FriendlyByteBuf, ServerboundAlbumSyncNotePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ServerboundAlbumSyncNotePacket::pageIndex,
+            ByteBufCodecs.STRING_UTF8, ServerboundAlbumSyncNotePacket::text,
+            ServerboundAlbumSyncNotePacket::new
     );
 
     @Override

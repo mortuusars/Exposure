@@ -2,8 +2,8 @@ package io.github.mortuusars.exposure.world.sound;
 
 import io.github.mortuusars.exposure.client.sound.UniqueSoundManager;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.UniqueSoundPlayShutterTickingS2CP;
-import io.github.mortuusars.exposure.network.packet.clientbound.UniqueSoundPlayS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundUniqueSoundPlayShutterTickingPacket;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundUniqueSoundPlayPacket;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -102,7 +102,7 @@ public class Sound {
                                   float volume, float pitch, float pitchVariability) {
         pitch = vary(pitch, pitchVariability);
         if (entity.level() instanceof ServerLevel serverLevel) {
-            UniqueSoundPlayS2CP packet = new UniqueSoundPlayS2CP(id, entity.getId(), sound, source, volume, pitch);
+            ClientboundUniqueSoundPlayPacket packet = new ClientboundUniqueSoundPlayPacket(id, entity.getId(), sound, source, volume, pitch);
             Packets.sendToPlayersNear(packet, serverLevel, null, entity, sound.getRange(1f) * 4);
         }
     }
@@ -112,7 +112,7 @@ public class Sound {
 
         float pitch = vary(sound.pitch(), sound.pitchVariability());
         if (entity.level() instanceof ServerLevel serverLevel) {
-            UniqueSoundPlayS2CP packet = new UniqueSoundPlayS2CP(id, entity.getId(), sound.get(), source, sound.volume(), sound.pitch());
+            ClientboundUniqueSoundPlayPacket packet = new ClientboundUniqueSoundPlayPacket(id, entity.getId(), sound.get(), source, sound.volume(), sound.pitch());
             Packets.sendToPlayersNear(packet, serverLevel, excludedPlayer, entity, sound.get().getRange(1f) * 4);
         } else if (entity instanceof Player && entity.level().isClientSide()) {
             UniqueSoundManager.play(id, entity, sound.get(), source, sound.volume(), pitch);
@@ -127,7 +127,7 @@ public class Sound {
                                        float volume, float pitch, float pitchVariability) {
         pitch = vary(pitch, pitchVariability);
         if (player.level() instanceof ServerLevel serverLevel) {
-            UniqueSoundPlayS2CP packet = new UniqueSoundPlayS2CP(id, entity.getId(), sound, source, volume, pitch);
+            ClientboundUniqueSoundPlayPacket packet = new ClientboundUniqueSoundPlayPacket(id, entity.getId(), sound, source, volume, pitch);
             Packets.sendToPlayersNear(packet, serverLevel, ((ServerPlayer) player), entity, sound.getRange(1f) * 4);
         } else if (player.level().isClientSide()) {
             UniqueSoundManager.play(id, entity, sound, source, volume, pitch);
@@ -140,7 +140,7 @@ public class Sound {
 
     public static void playShutterTicking(Entity entity, CameraId cameraId, int duration) {
         if (!entity.level().isClientSide()) {
-            Packets.sendToAllClients(new UniqueSoundPlayShutterTickingS2CP(entity.getId(), cameraId, 1F, 1F, duration));
+            Packets.sendToAllClients(new ClientboundUniqueSoundPlayShutterTickingPacket(entity.getId(), cameraId, 1F, 1F, duration));
         }
     }
 }

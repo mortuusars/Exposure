@@ -11,7 +11,7 @@ import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumContent;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumPage;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.AlbumSignC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundAlbumSignPacket;
 import io.github.mortuusars.exposure.util.Side;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.SimpleContainer;
@@ -210,7 +210,7 @@ public class AlbumMenu extends AbstractContainerMenu {
             throw new IllegalStateException("Cannot sign the album.\n" + Arrays.toString(getPages().toArray()));
         }
 
-        Packets.sendToServer(new AlbumSignC2SP(albumSlot, title, player.getScoreboardName()));
+        Packets.sendToServer(new ServerboundAlbumSignPacket(albumSlot, title, player.getScoreboardName()));
     }
 
     public List<AlbumPlayerInventorySlot> getPlayerInventorySlots() {

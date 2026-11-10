@@ -11,15 +11,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class ClearRenderingCacheS2CP implements Packet {
-    public static final ClearRenderingCacheS2CP INSTANCE = new ClearRenderingCacheS2CP();
+public class ClientboundClearRenderingCachePacket implements Packet {
+    public static final ClientboundClearRenderingCachePacket INSTANCE = new ClientboundClearRenderingCachePacket();
 
     public static final ResourceLocation ID = Exposure.resource("clear_rendering_cache");
-    public static final CustomPacketPayload.Type<ClearRenderingCacheS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ClientboundClearRenderingCachePacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ClearRenderingCacheS2CP> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundClearRenderingCachePacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    private ClearRenderingCacheS2CP() { }
+    private ClientboundClearRenderingCachePacket() { }
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

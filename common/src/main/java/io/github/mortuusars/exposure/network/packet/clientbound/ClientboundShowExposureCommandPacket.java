@@ -24,15 +24,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public record ShowExposureCommandS2CP(List<Frame> frames,
+public record ClientboundShowExposureCommandPacket(List<Frame> frames,
                                       boolean negative) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("show_exposure_command");
-    public static final CustomPacketPayload.Type<ShowExposureCommandS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ClientboundShowExposureCommandPacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ShowExposureCommandS2CP> STREAM_CODEC = StreamCodec.composite(
-            Frame.STREAM_CODEC.apply(ByteBufCodecs.list()), ShowExposureCommandS2CP::frames,
-            ByteBufCodecs.BOOL, ShowExposureCommandS2CP::negative,
-            ShowExposureCommandS2CP::new
+    public static final StreamCodec<FriendlyByteBuf, ClientboundShowExposureCommandPacket> STREAM_CODEC = StreamCodec.composite(
+            Frame.STREAM_CODEC.apply(ByteBufCodecs.list()), ClientboundShowExposureCommandPacket::frames,
+            ByteBufCodecs.BOOL, ClientboundShowExposureCommandPacket::negative,
+            ClientboundShowExposureCommandPacket::new
     );
 
     @Override
@@ -40,9 +40,9 @@ public record ShowExposureCommandS2CP(List<Frame> frames,
         return TYPE;
     }
 
-    public static ShowExposureCommandS2CP identifier(ExposureIdentifier identifier, boolean negative) {
+    public static ClientboundShowExposureCommandPacket identifier(ExposureIdentifier identifier, boolean negative) {
         Frame frame = Frame.create().setIdentifier(identifier).toImmutable();
-        return new ShowExposureCommandS2CP(List.of(frame), negative);
+        return new ClientboundShowExposureCommandPacket(List.of(frame), negative);
     }
 
     @Override

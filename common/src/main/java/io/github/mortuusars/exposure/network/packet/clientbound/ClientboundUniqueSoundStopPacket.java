@@ -13,14 +13,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record UniqueSoundStopS2CP(String id, SoundEvent sound) implements Packet {
+public record ClientboundUniqueSoundStopPacket(String id, SoundEvent sound) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("unique_sound_stop");
-    public static final CustomPacketPayload.Type<UniqueSoundStopS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ClientboundUniqueSoundStopPacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UniqueSoundStopS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, UniqueSoundStopS2CP::id,
-            SoundEvent.DIRECT_STREAM_CODEC, UniqueSoundStopS2CP::sound,
-            UniqueSoundStopS2CP::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUniqueSoundStopPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ClientboundUniqueSoundStopPacket::id,
+            SoundEvent.DIRECT_STREAM_CODEC, ClientboundUniqueSoundStopPacket::sound,
+            ClientboundUniqueSoundStopPacket::new
     );
 
     @Override

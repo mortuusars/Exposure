@@ -9,8 +9,8 @@ import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.world.level.storage.RequestedPalettedExposure;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.ExposureDataResponseS2CP;
-import io.github.mortuusars.exposure.network.packet.clientbound.ShowExposureCommandS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundExposureDataResponsePacket;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundShowExposureCommandPacket;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -58,7 +58,7 @@ public class ShowCommand {
             return 0;
         }
 
-        Packets.sendToClient(new ShowExposureCommandS2CP(frames, negative), player);
+        Packets.sendToClient(new ClientboundShowExposureCommandPacket(frames, negative), player);
         return 0;
     }
 
@@ -75,8 +75,8 @@ public class ShowCommand {
             return 0;
         }
 
-        Packets.sendToClient(new ExposureDataResponseS2CP(id, palettedExposure), player);
-        Packets.sendToClient(ShowExposureCommandS2CP.identifier(ExposureIdentifier.id(id), negative), player);
+        Packets.sendToClient(new ClientboundExposureDataResponsePacket(id, palettedExposure), player);
+        Packets.sendToClient(ClientboundShowExposureCommandPacket.identifier(ExposureIdentifier.id(id), negative), player);
 
         return 0;
     }
@@ -89,7 +89,7 @@ public class ShowCommand {
         }
 
         ExposureIdentifier identifier = ExposureIdentifier.texture(path);
-        Packets.sendToClient(ShowExposureCommandS2CP.identifier(identifier, negative), player);
+        Packets.sendToClient(ClientboundShowExposureCommandPacket.identifier(identifier, negative), player);
 
         return 0;
     }

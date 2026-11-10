@@ -5,7 +5,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureServer;
-import io.github.mortuusars.exposure.network.packet.clientbound.CaptureStartS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCaptureStartPacket;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureType;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
@@ -70,7 +70,7 @@ public class ExposeCommand {
         ExposureServer.exposureRepository().expect(player, exposureId, (pl, id) -> context.getSource().sendSuccess(msg, true));
         ExposureServer.frameHistory().add(player, frame);
 
-        Packets.sendToClient(new CaptureStartS2CP(CaptureType.EXPOSE_COMMAND, captureParameters), player);
+        Packets.sendToClient(new ClientboundCaptureStartPacket(CaptureType.EXPOSE_COMMAND, captureParameters), player);
 
         return 0;
     }

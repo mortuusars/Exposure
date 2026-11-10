@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.world.item.camera;
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.*;
 import io.github.mortuusars.exposure.data.*;
-import io.github.mortuusars.exposure.network.packet.clientbound.ShutterOpenedS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundShutterOpenedPacket;
 import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.*;
@@ -23,8 +23,8 @@ import io.github.mortuusars.exposure.world.item.SensitiveFilmItem;
 import io.github.mortuusars.exposure.world.item.component.StoredItemStack;
 import io.github.mortuusars.exposure.world.inventory.CameraInHandAttachmentsMenu;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.CaptureStartS2CP;
-import io.github.mortuusars.exposure.network.packet.serverbound.OpenCameraAttachmentsInCreativePacketC2SP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCaptureStartPacket;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundOpenCameraAttachmentsInCreativePacket;
 import io.github.mortuusars.exposure.server.CameraInstance;
 import io.github.mortuusars.exposure.server.CameraInstances;
 import io.github.mortuusars.exposure.world.level.LevelUtil;
@@ -408,7 +408,7 @@ public class CameraItem extends Item {
             }
 
             if (player.isCreative() && player.level().isClientSide()) {
-                Packets.sendToServer(new OpenCameraAttachmentsInCreativePacketC2SP(slot.getContainerSlot()));
+                Packets.sendToServer(new ServerboundOpenCameraAttachmentsInCreativePacket(slot.getContainerSlot()));
                 return true;
             }
 
@@ -736,13 +736,13 @@ public class CameraItem extends Item {
         addNewFrame(level, holder, stack, captureParameters);
 
         ExposureServer.exposureRepository().expect(executingPlayer, exposureId);
-        Packets.sendToClient(new CaptureStartS2CP(getCaptureType(stack), captureParameters), executingPlayer);
+        Packets.sendToClient(new ClientboundCaptureStartPacket(getCaptureType(stack), captureParameters), executingPlayer);
     }
 
     protected void onShutterOpen(CameraHolder holder, ServerLevel serverLevel, ItemStack stack) {
         holder.getExposureCameraOperator().ifPresent(operator -> {
             if (operator instanceof ServerPlayer player) {
-                Packets.sendToClient(ShutterOpenedS2CP.INSTANCE, player);
+                Packets.sendToClient(ClientboundShutterOpenedPacket.INSTANCE, player);
             }
         });
     }

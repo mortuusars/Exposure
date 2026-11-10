@@ -11,8 +11,8 @@ import io.github.mortuusars.exposure.commands.argument.SizeMultiplierArgument;
 import io.github.mortuusars.exposure.commands.suggestion.ExposureIdSuggestionProvider;
 import io.github.mortuusars.exposure.data.export.ExportLook;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.ExportS2CP;
-import io.github.mortuusars.exposure.network.packet.clientbound.ExportStopS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundExportPacket;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundExportStopPacket;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -34,7 +34,7 @@ public class ExportCommand {
                 .then(all())
                 .then(literal("stop")
                         .executes(context -> {
-                            Packets.sendToClient(ExportStopS2CP.INSTANCE, context.getSource().getPlayerOrException());
+                            Packets.sendToClient(ClientboundExportStopPacket.INSTANCE, context.getSource().getPlayerOrException());
                             return 0;
                         }));
     }
@@ -107,7 +107,7 @@ public class ExportCommand {
 
     private static int exportExposures(CommandSourceStack stack, List<String> exposureIds, ExportSize size, ExportLook look) throws CommandSyntaxException {
         ServerPlayer player = stack.getPlayerOrException();
-        Packets.sendToClient(new ExportS2CP(exposureIds, size, look), player);
+        Packets.sendToClient(new ClientboundExportPacket(exposureIds, size, look), player);
         return 0;
     }
 }

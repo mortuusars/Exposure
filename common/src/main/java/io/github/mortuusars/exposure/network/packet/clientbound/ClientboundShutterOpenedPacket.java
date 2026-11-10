@@ -11,15 +11,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class ShutterOpenedS2CP implements Packet {
-    public static final ShutterOpenedS2CP INSTANCE = new ShutterOpenedS2CP();
+public class ClientboundShutterOpenedPacket implements Packet {
+    public static final ClientboundShutterOpenedPacket INSTANCE = new ClientboundShutterOpenedPacket();
 
     public static final ResourceLocation ID = Exposure.resource("shutter_opened");
-    public static final Type<ShutterOpenedS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundShutterOpenedPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ShutterOpenedS2CP> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundShutterOpenedPacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    private ShutterOpenedS2CP() { }
+    private ClientboundShutterOpenedPacket() { }
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.world.camera;
 
 import io.github.mortuusars.mortaar.network.packet.Packet;
-import io.github.mortuusars.exposure.network.packet.clientbound.ActiveCameraInHandSetS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundActiveCameraInHandSetPacket;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import net.minecraft.world.InteractionHand;
@@ -55,7 +55,7 @@ public class CameraInHand extends Camera {
 
     @Override
     public Packet createSyncPacket() {
-        return new ActiveCameraInHandSetS2CP(getHolder().asHolderEntity().getId(), getId(), getHand());
+        return new ClientboundActiveCameraInHandSetPacket(getHolder().asHolderEntity().getId(), getId(), getHand());
     }
 
     public InteractionHand getHand() {

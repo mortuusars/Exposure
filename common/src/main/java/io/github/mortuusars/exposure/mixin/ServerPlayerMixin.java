@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.mortuusars.exposure.event.ServerEvents;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.ActiveCameraRemoveS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundActiveCameraRemovePacket;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -41,6 +41,6 @@ public abstract class ServerPlayerMixin extends Player {
     @Override
     public void removeActiveExposureCamera() {
         super.removeActiveExposureCamera();
-        Packets.sendToAllClients(new ActiveCameraRemoveS2CP(getId()));
+        Packets.sendToAllClients(new ClientboundActiveCameraRemovePacket(getId()));
     }
 }

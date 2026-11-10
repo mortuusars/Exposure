@@ -18,21 +18,21 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import org.jetbrains.annotations.NotNull;
 
-public record UniqueSoundPlayShutterTickingS2CP(int entityId,
+public record ClientboundUniqueSoundPlayShutterTickingPacket(int entityId,
                                                 CameraId cameraId,
                                                 float volume,
                                                 float pitch,
                                                 int durationTicks) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("unique_sound_play_shutter_ticking");
-    public static final Type<UniqueSoundPlayShutterTickingS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundUniqueSoundPlayShutterTickingPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UniqueSoundPlayShutterTickingS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, UniqueSoundPlayShutterTickingS2CP::entityId,
-            CameraId.STREAM_CODEC, UniqueSoundPlayShutterTickingS2CP::cameraId,
-            ByteBufCodecs.FLOAT, UniqueSoundPlayShutterTickingS2CP::volume,
-            ByteBufCodecs.FLOAT, UniqueSoundPlayShutterTickingS2CP::pitch,
-            ByteBufCodecs.VAR_INT, UniqueSoundPlayShutterTickingS2CP::durationTicks,
-            UniqueSoundPlayShutterTickingS2CP::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUniqueSoundPlayShutterTickingPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ClientboundUniqueSoundPlayShutterTickingPacket::entityId,
+            CameraId.STREAM_CODEC, ClientboundUniqueSoundPlayShutterTickingPacket::cameraId,
+            ByteBufCodecs.FLOAT, ClientboundUniqueSoundPlayShutterTickingPacket::volume,
+            ByteBufCodecs.FLOAT, ClientboundUniqueSoundPlayShutterTickingPacket::pitch,
+            ByteBufCodecs.VAR_INT, ClientboundUniqueSoundPlayShutterTickingPacket::durationTicks,
+            ClientboundUniqueSoundPlayShutterTickingPacket::new
     );
 
     @Override

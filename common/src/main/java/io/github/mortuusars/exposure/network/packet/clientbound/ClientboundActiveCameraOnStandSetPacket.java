@@ -15,15 +15,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record ActiveCameraOnStandSetS2CP(int operatorEntityId, int cameraStandId, CameraId cameraId) implements Packet {
+public record ClientboundActiveCameraOnStandSetPacket(int operatorEntityId, int cameraStandId, CameraId cameraId) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("active_camera_on_stand_set");
-    public static final Type<ActiveCameraOnStandSetS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundActiveCameraOnStandSetPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, ActiveCameraOnStandSetS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, ActiveCameraOnStandSetS2CP::operatorEntityId,
-            CameraId.STREAM_CODEC, ActiveCameraOnStandSetS2CP::cameraId,
-            ByteBufCodecs.VAR_INT, ActiveCameraOnStandSetS2CP::cameraStandId,
-            (operatorEntityId1, cameraId1, cameraStandId1) -> new ActiveCameraOnStandSetS2CP(operatorEntityId1, cameraStandId1, cameraId1)
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundActiveCameraOnStandSetPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ClientboundActiveCameraOnStandSetPacket::operatorEntityId,
+            CameraId.STREAM_CODEC, ClientboundActiveCameraOnStandSetPacket::cameraId,
+            ByteBufCodecs.VAR_INT, ClientboundActiveCameraOnStandSetPacket::cameraStandId,
+            (operatorEntityId1, cameraId1, cameraStandId1) -> new ClientboundActiveCameraOnStandSetPacket(operatorEntityId1, cameraStandId1, cameraId1)
     );
 
     @Override

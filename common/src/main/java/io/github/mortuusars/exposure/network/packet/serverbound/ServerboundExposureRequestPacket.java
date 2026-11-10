@@ -13,13 +13,13 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record ExposureRequestC2SP(String id) implements Packet {
+public record ServerboundExposureRequestPacket(String id) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("exposure_request");
-    public static final Type<ExposureRequestC2SP> TYPE = new Type<>(ID);
+    public static final Type<ServerboundExposureRequestPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ExposureRequestC2SP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, ExposureRequestC2SP::id,
-            ExposureRequestC2SP::new
+    public static final StreamCodec<FriendlyByteBuf, ServerboundExposureRequestPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ServerboundExposureRequestPacket::id,
+            ServerboundExposureRequestPacket::new
     );
 
     @Override

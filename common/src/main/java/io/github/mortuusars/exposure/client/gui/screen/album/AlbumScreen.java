@@ -13,7 +13,7 @@ import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.AlbumSyncNoteC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundAlbumSyncNotePacket;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumPage;
 import io.github.mortuusars.exposure.world.inventory.AlbumMenu;
@@ -186,7 +186,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     protected void onNoteChanged(Side side, String noteText) {
         int pageIndex = getMenu().getCurrentSpreadIndex() * 2 + side.getIndex();
         getMenu().updatePage(pageIndex, page -> page.setNote(noteText));
-        Packets.sendToServer(new AlbumSyncNoteC2SP(pageIndex, noteText));
+        Packets.sendToServer(new ServerboundAlbumSyncNotePacket(pageIndex, noteText));
     }
 
     // RENDER

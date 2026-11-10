@@ -15,14 +15,14 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record ActiveCameraSetSettingC2SP(CameraSetting<?> setting, byte[] encodedValue) implements Packet {
+public record ServerboundActiveCameraSetSettingPacket(CameraSetting<?> setting, byte[] encodedValue) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("active_camera_set_setting");
-    public static final Type<ActiveCameraSetSettingC2SP> TYPE = new Type<>(ID);
+    public static final Type<ServerboundActiveCameraSetSettingPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ActiveCameraSetSettingC2SP> STREAM_CODEC = StreamCodec.composite(
-            CameraSetting.STREAM_CODEC, ActiveCameraSetSettingC2SP::setting,
-            ByteBufCodecs.byteArray(4096), ActiveCameraSetSettingC2SP::encodedValue,
-            ActiveCameraSetSettingC2SP::new
+    public static final StreamCodec<FriendlyByteBuf, ServerboundActiveCameraSetSettingPacket> STREAM_CODEC = StreamCodec.composite(
+            CameraSetting.STREAM_CODEC, ServerboundActiveCameraSetSettingPacket::setting,
+            ByteBufCodecs.byteArray(4096), ServerboundActiveCameraSetSettingPacket::encodedValue,
+            ServerboundActiveCameraSetSettingPacket::new
     );
 
     @Override

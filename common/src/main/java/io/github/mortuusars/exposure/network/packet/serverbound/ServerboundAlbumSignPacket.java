@@ -15,15 +15,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public record AlbumSignC2SP(int slot, String title, String author) implements Packet {
+public record ServerboundAlbumSignPacket(int slot, String title, String author) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("album_sign");
-    public static final CustomPacketPayload.Type<AlbumSignC2SP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ServerboundAlbumSignPacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, AlbumSignC2SP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, AlbumSignC2SP::slot,
-            ByteBufCodecs.STRING_UTF8, AlbumSignC2SP::title,
-            ByteBufCodecs.STRING_UTF8, AlbumSignC2SP::author,
-            AlbumSignC2SP::new
+    public static final StreamCodec<FriendlyByteBuf, ServerboundAlbumSignPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ServerboundAlbumSignPacket::slot,
+            ByteBufCodecs.STRING_UTF8, ServerboundAlbumSignPacket::title,
+            ByteBufCodecs.STRING_UTF8, ServerboundAlbumSignPacket::author,
+            ServerboundAlbumSignPacket::new
     );
 
     @Override

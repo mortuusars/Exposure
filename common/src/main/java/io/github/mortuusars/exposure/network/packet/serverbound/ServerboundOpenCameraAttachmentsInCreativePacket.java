@@ -14,13 +14,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
-public record OpenCameraAttachmentsInCreativePacketC2SP(int cameraSlotIndex) implements Packet {
+public record ServerboundOpenCameraAttachmentsInCreativePacket(int cameraSlotIndex) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("open_camera_attachments");
-    public static final CustomPacketPayload.Type<OpenCameraAttachmentsInCreativePacketC2SP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ServerboundOpenCameraAttachmentsInCreativePacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, OpenCameraAttachmentsInCreativePacketC2SP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, OpenCameraAttachmentsInCreativePacketC2SP::cameraSlotIndex,
-            OpenCameraAttachmentsInCreativePacketC2SP::new
+    public static final StreamCodec<FriendlyByteBuf, ServerboundOpenCameraAttachmentsInCreativePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ServerboundOpenCameraAttachmentsInCreativePacket::cameraSlotIndex,
+            ServerboundOpenCameraAttachmentsInCreativePacket::new
     );
 
     @Override

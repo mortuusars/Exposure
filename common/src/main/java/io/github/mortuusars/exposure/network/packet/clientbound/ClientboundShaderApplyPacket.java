@@ -14,19 +14,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record ShaderApplyS2CP(Optional<ResourceLocation> shaderLocation) implements Packet {
+public record ClientboundShaderApplyPacket(Optional<ResourceLocation> shaderLocation) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("shader_apply");
-    public static final CustomPacketPayload.Type<ShaderApplyS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
-    public static final StreamCodec<FriendlyByteBuf, ShaderApplyS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), ShaderApplyS2CP::shaderLocation,
-            ShaderApplyS2CP::new
+    public static final CustomPacketPayload.Type<ClientboundShaderApplyPacket> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundShaderApplyPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), ClientboundShaderApplyPacket::shaderLocation,
+            ClientboundShaderApplyPacket::new
     );
 
-    public ShaderApplyS2CP(ResourceLocation location) {
+    public ClientboundShaderApplyPacket(ResourceLocation location) {
         this(Optional.of(location));
     }
 
-    public static final ShaderApplyS2CP REMOVE = new ShaderApplyS2CP(Optional.empty());
+    public static final ClientboundShaderApplyPacket REMOVE = new ClientboundShaderApplyPacket(Optional.empty());
 
     @Override
     public @NotNull Type<? extends CustomPacketPayload> type() {

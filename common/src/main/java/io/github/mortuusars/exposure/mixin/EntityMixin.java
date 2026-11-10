@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.mixin;
 
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.CameraStandTurnC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundCameraStandTurnPacket;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
@@ -19,7 +19,7 @@ public class EntityMixin {
         if (!(operator.getActiveExposureCamera() instanceof CameraOnStand cameraOnStand)) return;
         CameraStandEntity stand = cameraOnStand.getStand();
         stand.turn(yRot, xRot);
-        Packets.sendToServer(new CameraStandTurnC2SP(stand.getId(), yRot, xRot));
+        Packets.sendToServer(new ServerboundCameraStandTurnPacket(stand.getId(), yRot, xRot));
         ci.cancel();
     }
 }

@@ -14,14 +14,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record CaptureStartS2CP(ResourceLocation templateId, CaptureParameters captureParameters) implements Packet {
+public record ClientboundCaptureStartPacket(ResourceLocation templateId, CaptureParameters captureParameters) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("capture_start");
-    public static final Type<CaptureStartS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundCaptureStartPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, CaptureStartS2CP> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, CaptureStartS2CP::templateId,
-            CaptureParameters.STREAM_CODEC, CaptureStartS2CP::captureParameters,
-            CaptureStartS2CP::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCaptureStartPacket> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, ClientboundCaptureStartPacket::templateId,
+            CaptureParameters.STREAM_CODEC, ClientboundCaptureStartPacket::captureParameters,
+            ClientboundCaptureStartPacket::new
     );
 
     @Override

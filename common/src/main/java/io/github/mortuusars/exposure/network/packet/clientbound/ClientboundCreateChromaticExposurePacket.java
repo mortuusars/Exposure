@@ -29,15 +29,15 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-public record CreateChromaticExposureS2CP(String id, List<ExposureIdentifier> layers) implements Packet {
+public record ClientboundCreateChromaticExposurePacket(String id, List<ExposureIdentifier> layers) implements Packet {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ResourceLocation ID = Exposure.resource("create_chromatic_exposure");
-    public static final CustomPacketPayload.Type<CreateChromaticExposureS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ClientboundCreateChromaticExposurePacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, CreateChromaticExposureS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, CreateChromaticExposureS2CP::id,
-            ExposureIdentifier.STREAM_CODEC.apply(ByteBufCodecs.list()), CreateChromaticExposureS2CP::layers,
-            CreateChromaticExposureS2CP::new
+    public static final StreamCodec<FriendlyByteBuf, ClientboundCreateChromaticExposurePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ClientboundCreateChromaticExposurePacket::id,
+            ExposureIdentifier.STREAM_CODEC.apply(ByteBufCodecs.list()), ClientboundCreateChromaticExposurePacket::layers,
+            ClientboundCreateChromaticExposurePacket::new
     );
 
     @Override

@@ -16,17 +16,17 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record InterplanarProjectionFinishedC2SP(CameraId cameraId,
+public record ServerboundInterplanarProjectionFinishedPacket(CameraId cameraId,
                                                 boolean successful,
                                                 Optional<TranslatableError> error) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("interplanar_projection_finished");
-    public static final Type<InterplanarProjectionFinishedC2SP> TYPE = new Type<>(ID);
+    public static final Type<ServerboundInterplanarProjectionFinishedPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, InterplanarProjectionFinishedC2SP> STREAM_CODEC = StreamCodec.composite(
-            CameraId.STREAM_CODEC, InterplanarProjectionFinishedC2SP::cameraId,
-            ByteBufCodecs.BOOL, InterplanarProjectionFinishedC2SP::successful,
-            ByteBufCodecs.optional(TranslatableError.STREAM_CODEC), InterplanarProjectionFinishedC2SP::error,
-            InterplanarProjectionFinishedC2SP::new
+    public static final StreamCodec<FriendlyByteBuf, ServerboundInterplanarProjectionFinishedPacket> STREAM_CODEC = StreamCodec.composite(
+            CameraId.STREAM_CODEC, ServerboundInterplanarProjectionFinishedPacket::cameraId,
+            ByteBufCodecs.BOOL, ServerboundInterplanarProjectionFinishedPacket::successful,
+            ByteBufCodecs.optional(TranslatableError.STREAM_CODEC), ServerboundInterplanarProjectionFinishedPacket::error,
+            ServerboundInterplanarProjectionFinishedPacket::new
     );
 
     @Override

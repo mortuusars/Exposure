@@ -10,14 +10,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class ActiveCameraDeactivateCommonPacket implements Packet {
-    public static final ActiveCameraDeactivateCommonPacket INSTANCE = new ActiveCameraDeactivateCommonPacket();
+public class CommonActiveCameraDeactivatePacket implements Packet {
+    public static final CommonActiveCameraDeactivatePacket INSTANCE = new CommonActiveCameraDeactivatePacket();
 
     public static final ResourceLocation ID = Exposure.resource("active_camera_deactivate");
-    public static final Type<ActiveCameraDeactivateCommonPacket> TYPE = new Type<>(ID);
-    public static final StreamCodec<FriendlyByteBuf, ActiveCameraDeactivateCommonPacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final Type<CommonActiveCameraDeactivatePacket> TYPE = new Type<>(ID);
+    public static final StreamCodec<FriendlyByteBuf, CommonActiveCameraDeactivatePacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    private ActiveCameraDeactivateCommonPacket() {
+    private CommonActiveCameraDeactivatePacket() {
     }
 
     @Override

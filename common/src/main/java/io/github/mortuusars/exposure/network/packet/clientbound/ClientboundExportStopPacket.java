@@ -14,14 +14,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class ExportStopS2CP implements Packet {
-    public static final ExportStopS2CP INSTANCE = new ExportStopS2CP();
+public class ClientboundExportStopPacket implements Packet {
+    public static final ClientboundExportStopPacket INSTANCE = new ClientboundExportStopPacket();
 
     public static final ResourceLocation ID = Exposure.resource("export_stop");
-    public static final Type<ExportStopS2CP> TYPE = new Type<>(ID);
-    public static final StreamCodec<FriendlyByteBuf, ExportStopS2CP> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    public static final Type<ClientboundExportStopPacket> TYPE = new Type<>(ID);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundExportStopPacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
 
-    private ExportStopS2CP() { }
+    private ClientboundExportStopPacket() { }
 
     @Override
 

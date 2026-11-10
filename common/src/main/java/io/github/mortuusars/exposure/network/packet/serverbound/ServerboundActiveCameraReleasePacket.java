@@ -10,11 +10,11 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class ActiveCameraReleaseC2SP implements Packet {
-    public static final ActiveCameraReleaseC2SP INSTANCE = new ActiveCameraReleaseC2SP();
-    public static final Type<ActiveCameraReleaseC2SP> TYPE = new Type<>(Exposure.resource("active_camera_release"));
-    public static final StreamCodec<FriendlyByteBuf, ActiveCameraReleaseC2SP> STREAM_CODEC = StreamCodec.unit(INSTANCE);
-    private ActiveCameraReleaseC2SP() {
+public class ServerboundActiveCameraReleasePacket implements Packet {
+    public static final ServerboundActiveCameraReleasePacket INSTANCE = new ServerboundActiveCameraReleasePacket();
+    public static final Type<ServerboundActiveCameraReleasePacket> TYPE = new Type<>(Exposure.resource("active_camera_release"));
+    public static final StreamCodec<FriendlyByteBuf, ServerboundActiveCameraReleasePacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
+    private ServerboundActiveCameraReleasePacket() {
     }
 
     @Override

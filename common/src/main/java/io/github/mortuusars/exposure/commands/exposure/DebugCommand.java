@@ -19,8 +19,8 @@ import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.item.*;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.ClearRenderingCacheS2CP;
-import io.github.mortuusars.exposure.network.packet.clientbound.CaptureStartDebugRGBS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundClearRenderingCachePacket;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCaptureStartDebugRGBPacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -56,7 +56,7 @@ public class DebugCommand {
     private static int clearRenderingCache(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         CommandSourceStack stack = context.getSource();
         ServerPlayer player = stack.getPlayerOrException();
-        Packets.sendToClient(ClearRenderingCacheS2CP.INSTANCE, player);
+        Packets.sendToClient(ClientboundClearRenderingCachePacket.INSTANCE, player);
         return 0;
     }
 
@@ -118,7 +118,7 @@ public class DebugCommand {
             ExposureServer.frameHistory().add(player, frame);
         }
 
-        Packets.sendToClient(new CaptureStartDebugRGBS2CP(CaptureType.DEBUG_RGB, properties), player);
+        Packets.sendToClient(new ClientboundCaptureStartDebugRGBPacket(CaptureType.DEBUG_RGB, properties), player);
 
         context.getSource().sendSuccess(() -> Component.translatable("command.exposure.debug.expose_rgb.success.capturing"), true);
 

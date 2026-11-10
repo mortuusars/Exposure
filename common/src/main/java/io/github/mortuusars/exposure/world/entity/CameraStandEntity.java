@@ -6,8 +6,8 @@ import io.github.mortuusars.exposure.PlatformHelper;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.CameraStandSetRotationsS2CP;
-import io.github.mortuusars.exposure.network.packet.clientbound.CameraStandStopControllingS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCameraStandSetRotationsPacket;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCameraStandStopControllingPacket;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import io.github.mortuusars.exposure.world.inventory.CameraOnStandAttachmentsMenu;
 import io.github.mortuusars.exposure.world.item.InterplanarProjectorItem;
@@ -443,7 +443,7 @@ public class CameraStandEntity extends Entity implements CameraHolder {
                 // This method is usually called on both sides, but in the case of client/server desync,
                 // (which is sometimes happening on contraptions)
                 // this will ensure that client will be updated properly, otherwise cameraEntity will not be set back to player.
-                Packets.sendToClient(new CameraStandStopControllingS2CP(this.getId()), serverPlayer);
+                Packets.sendToClient(new ClientboundCameraStandStopControllingPacket(this.getId()), serverPlayer);
             }
         }
 
@@ -821,6 +821,6 @@ public class CameraStandEntity extends Entity implements CameraHolder {
     }
 
     public void syncRotationToClients() {
-        Packets.sendToClients(new CameraStandSetRotationsS2CP(this.getId(), getYRot(), getXRot()), pl -> !pl.equals(operator()));
+        Packets.sendToClients(new ClientboundCameraStandSetRotationsPacket(this.getId(), getYRot(), getXRot()), pl -> !pl.equals(operator()));
     }
 }

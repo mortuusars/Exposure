@@ -3,8 +3,8 @@ package io.github.mortuusars.exposure.world.level.storage;
 import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.ExposureDataChangedS2CP;
-import io.github.mortuusars.exposure.network.packet.clientbound.ExposureDataResponseS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundExposureDataChangedPacket;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundExposureDataResponsePacket;
 import io.github.mortuusars.exposure.util.UnixTimestamp;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -89,7 +89,7 @@ public class ExposureRepository {
             String saveDataName = EXPOSURES_DIRECTORY_NAME + "/" + id;
             dataStorage.set(saveDataName, data);
             data.setDirty();
-            Packets.sendToAllClients(new ExposureDataChangedS2CP(id));
+            Packets.sendToAllClients(new ClientboundExposureDataChangedPacket(id));
         }
     }
 
@@ -128,7 +128,7 @@ public class ExposureRepository {
             result = load(id);
         }
 
-        Packets.sendToClient(new ExposureDataResponseS2CP(id, result), player);
+        Packets.sendToClient(new ClientboundExposureDataResponsePacket(id, result), player);
     }
 
     public void receiveClientUpload(ServerPlayer player, String id, ExposureData exposure) {

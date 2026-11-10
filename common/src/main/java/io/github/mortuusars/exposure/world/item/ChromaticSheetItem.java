@@ -7,7 +7,7 @@ import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.clientbound.CreateChromaticExposureS2CP;
+import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCreateChromaticExposurePacket;
 import io.github.mortuusars.exposure.world.camera.ColorChannel;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponents;
@@ -98,7 +98,7 @@ public class ChromaticSheetItem extends Item {
         ExposureServer.exposureRepository().expect(player, exposureId, (pl, id) ->
               ExposureServer.exposureRepository().update(id, exposure ->
                     exposure.withTag(tag -> tag.withWasPrintedSetTo(printed))));
-        Packets.sendToClient(new CreateChromaticExposureS2CP(exposureId, layersIdentifiers), player);
+        Packets.sendToClient(new ClientboundCreateChromaticExposurePacket(exposureId, layersIdentifiers), player);
 
         return photographStack;
     }

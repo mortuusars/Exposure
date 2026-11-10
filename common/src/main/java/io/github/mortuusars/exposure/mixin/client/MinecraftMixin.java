@@ -7,7 +7,7 @@ import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderCameraCo
 import io.github.mortuusars.exposure.client.capture.task.BackgroundScreenshotCaptureTask;
 import io.github.mortuusars.exposure.event.ClientEvents;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.ActiveCameraReleaseC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundActiveCameraReleasePacket;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
@@ -35,7 +35,7 @@ public abstract class MinecraftMixin {
 
         if (player.getActiveExposureCamera() instanceof CameraOnStand cameraOnStand && cameraOnStand.isActive()) {
             cameraOnStand.release();
-            Packets.sendToServer(ActiveCameraReleaseC2SP.INSTANCE);
+            Packets.sendToServer(ServerboundActiveCameraReleasePacket.INSTANCE);
             ci.cancel();
         }
     }

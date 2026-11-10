@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.world.level.storage.ExposureData;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.ExposureDataC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundExposureDataPacket;
 import net.minecraft.util.StringUtil;
 import org.slf4j.Logger;
 
@@ -17,7 +17,7 @@ public class ExposureUploader {
         Preconditions.checkArgument(!StringUtil.isBlank(id), "Cannot upload exposure with null or empty id.");
 
         LOGGER.debug("Sending exposure '{}' to server...", id);
-        Packets.sendToServer(new ExposureDataC2SP(id, exposure));
+        Packets.sendToServer(new ServerboundExposureDataPacket(id, exposure));
     }
 
     public static Consumer<ExposureData> upload(String id) {

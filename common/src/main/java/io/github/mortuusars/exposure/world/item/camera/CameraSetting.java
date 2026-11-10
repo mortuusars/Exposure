@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.world.item.camera;
 
 import com.mojang.serialization.Codec;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.ActiveCameraSetSettingC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundActiveCameraSetSettingPacket;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import io.github.mortuusars.exposure.world.sound.Sound;
@@ -101,7 +101,7 @@ public record CameraSetting<T>(DataComponentType<T> component, T defaultValue, O
         return camera.map((item, stack) -> {
             if (set(camera.getHolder(), stack, value)) {
                 byte[] bytes = encodeValue(camera.getHolder().asHolderEntity().registryAccess(), value);
-                Packets.sendToServer(new ActiveCameraSetSettingC2SP(this, bytes));
+                Packets.sendToServer(new ServerboundActiveCameraSetSettingPacket(this, bytes));
                 return true;
             }
             return false;

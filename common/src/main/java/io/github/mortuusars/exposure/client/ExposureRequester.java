@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client;
 
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.ExposureRequestC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundExposureRequestPacket;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -45,7 +45,7 @@ public class ExposureRequester {
     }
 
     private long requestExposure(String id) {
-        Packets.sendToServer(new ExposureRequestC2SP(id));
+        Packets.sendToServer(new ServerboundExposureRequestPacket(id));
         return getGameTime();
     }
 

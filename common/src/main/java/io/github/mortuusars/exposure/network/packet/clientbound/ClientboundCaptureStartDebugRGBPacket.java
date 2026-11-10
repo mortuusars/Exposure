@@ -18,14 +18,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record CaptureStartDebugRGBS2CP(ResourceLocation templateId, List<CaptureParameters> captureProperties) implements Packet {
+public record ClientboundCaptureStartDebugRGBPacket(ResourceLocation templateId, List<CaptureParameters> captureProperties) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("capture_start_debug_rgb");
-    public static final Type<CaptureStartDebugRGBS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundCaptureStartDebugRGBPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, CaptureStartDebugRGBS2CP> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, CaptureStartDebugRGBS2CP::templateId,
-            CaptureParameters.STREAM_CODEC.apply(ByteBufCodecs.list(3)), CaptureStartDebugRGBS2CP::captureProperties,
-            CaptureStartDebugRGBS2CP::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCaptureStartDebugRGBPacket> STREAM_CODEC = StreamCodec.composite(
+            ResourceLocation.STREAM_CODEC, ClientboundCaptureStartDebugRGBPacket::templateId,
+            CaptureParameters.STREAM_CODEC.apply(ByteBufCodecs.list(3)), ClientboundCaptureStartDebugRGBPacket::captureProperties,
+            ClientboundCaptureStartDebugRGBPacket::new
     );
 
     @Override

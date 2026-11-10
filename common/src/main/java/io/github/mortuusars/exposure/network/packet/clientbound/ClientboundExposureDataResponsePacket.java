@@ -13,14 +13,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record ExposureDataResponseS2CP(String id, RequestedPalettedExposure result) implements Packet {
+public record ClientboundExposureDataResponsePacket(String id, RequestedPalettedExposure result) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("exposure_data_response");
-    public static final Type<ExposureDataResponseS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundExposureDataResponsePacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ExposureDataResponseS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, ExposureDataResponseS2CP::id,
-            RequestedPalettedExposure.STREAM_CODEC, ExposureDataResponseS2CP::result,
-            ExposureDataResponseS2CP::new
+    public static final StreamCodec<FriendlyByteBuf, ClientboundExposureDataResponsePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ClientboundExposureDataResponsePacket::id,
+            RequestedPalettedExposure.STREAM_CODEC, ClientboundExposureDataResponsePacket::result,
+            ClientboundExposureDataResponsePacket::new
     );
 
     @Override

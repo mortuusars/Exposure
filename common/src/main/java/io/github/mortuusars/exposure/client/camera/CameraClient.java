@@ -4,7 +4,7 @@ import io.github.mortuusars.exposure.client.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderRegistry;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
-import io.github.mortuusars.exposure.network.packet.common.ActiveCameraDeactivateCommonPacket;
+import io.github.mortuusars.exposure.network.packet.common.CommonActiveCameraDeactivatePacket;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import io.github.mortuusars.mortaar.network.Packets;
 import net.minecraft.world.entity.Entity;
@@ -40,7 +40,7 @@ public class CameraClient {
                       resetCameraEntity();
                   }
               });
-        Packets.sendToServer(ActiveCameraDeactivateCommonPacket.INSTANCE);
+        Packets.sendToServer(CommonActiveCameraDeactivatePacket.INSTANCE);
     }
 
     public static void setCameraEntity(@Nullable Entity entity) {

@@ -16,19 +16,19 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public record UniqueSoundPlayS2CP(String id, int entityId, SoundEvent sound, SoundSource source,
+public record ClientboundUniqueSoundPlayPacket(String id, int entityId, SoundEvent sound, SoundSource source,
                                   float volume, float pitch) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("unique_sound_play");
-    public static final CustomPacketPayload.Type<UniqueSoundPlayS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ClientboundUniqueSoundPlayPacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, UniqueSoundPlayS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8, UniqueSoundPlayS2CP::id,
-            ByteBufCodecs.VAR_INT, UniqueSoundPlayS2CP::entityId,
-            SoundEvent.DIRECT_STREAM_CODEC, UniqueSoundPlayS2CP::sound,
-            ByteBufCodecs.idMapper(i -> SoundSource.values()[i], SoundSource::ordinal), UniqueSoundPlayS2CP::source,
-            ByteBufCodecs.FLOAT, UniqueSoundPlayS2CP::volume,
-            ByteBufCodecs.FLOAT, UniqueSoundPlayS2CP::pitch,
-            UniqueSoundPlayS2CP::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundUniqueSoundPlayPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8, ClientboundUniqueSoundPlayPacket::id,
+            ByteBufCodecs.VAR_INT, ClientboundUniqueSoundPlayPacket::entityId,
+            SoundEvent.DIRECT_STREAM_CODEC, ClientboundUniqueSoundPlayPacket::sound,
+            ByteBufCodecs.idMapper(i -> SoundSource.values()[i], SoundSource::ordinal), ClientboundUniqueSoundPlayPacket::source,
+            ByteBufCodecs.FLOAT, ClientboundUniqueSoundPlayPacket::volume,
+            ByteBufCodecs.FLOAT, ClientboundUniqueSoundPlayPacket::pitch,
+            ClientboundUniqueSoundPlayPacket::new
     );
 
     @Override

@@ -14,13 +14,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record CameraStandStopControllingS2CP(int standId) implements Packet {
+public record ClientboundCameraStandStopControllingPacket(int standId) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("camera_stand_stop_controlling");
-    public static final Type<CameraStandStopControllingS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundCameraStandStopControllingPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<RegistryFriendlyByteBuf, CameraStandStopControllingS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, CameraStandStopControllingS2CP::standId,
-            CameraStandStopControllingS2CP::new
+    public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundCameraStandStopControllingPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ClientboundCameraStandStopControllingPacket::standId,
+            ClientboundCameraStandStopControllingPacket::new
     );
 
     @Override

@@ -12,15 +12,15 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record CameraStandSetRotationsS2CP(int entityId, float yRot, float xRot) implements Packet {
+public record ClientboundCameraStandSetRotationsPacket(int entityId, float yRot, float xRot) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("camera_stand_set_rotations");
-    public static final Type<CameraStandSetRotationsS2CP> TYPE = new Type<>(ID);
+    public static final Type<ClientboundCameraStandSetRotationsPacket> TYPE = new Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, CameraStandSetRotationsS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, CameraStandSetRotationsS2CP::entityId,
-            ByteBufCodecs.FLOAT, CameraStandSetRotationsS2CP::yRot,
-            ByteBufCodecs.FLOAT, CameraStandSetRotationsS2CP::xRot,
-            CameraStandSetRotationsS2CP::new
+    public static final StreamCodec<FriendlyByteBuf, ClientboundCameraStandSetRotationsPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ClientboundCameraStandSetRotationsPacket::entityId,
+            ByteBufCodecs.FLOAT, ClientboundCameraStandSetRotationsPacket::yRot,
+            ByteBufCodecs.FLOAT, ClientboundCameraStandSetRotationsPacket::xRot,
+            ClientboundCameraStandSetRotationsPacket::new
     );
 
     @Override

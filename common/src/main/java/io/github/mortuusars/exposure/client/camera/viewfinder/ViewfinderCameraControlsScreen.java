@@ -16,7 +16,7 @@ import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.world.camera.component.*;
 import io.github.mortuusars.exposure.world.item.camera.CameraSettings;
 import io.github.mortuusars.mortaar.network.Packets;
-import io.github.mortuusars.exposure.network.packet.serverbound.ActiveCameraReleaseC2SP;
+import io.github.mortuusars.exposure.network.packet.serverbound.ServerboundActiveCameraReleasePacket;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -270,7 +270,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
         if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             if (camera.isActive()) {
                 camera.release();
-                Packets.sendToServer(ActiveCameraReleaseC2SP.INSTANCE);
+                Packets.sendToServer(ServerboundActiveCameraReleasePacket.INSTANCE);
             }
             return true;
         }

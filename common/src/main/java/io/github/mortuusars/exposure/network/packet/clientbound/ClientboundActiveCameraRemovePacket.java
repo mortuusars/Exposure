@@ -12,13 +12,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
-public record ActiveCameraRemoveS2CP(int operatorEntityId) implements Packet {
+public record ClientboundActiveCameraRemovePacket(int operatorEntityId) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("active_camera_remove");
-    public static final CustomPacketPayload.Type<ActiveCameraRemoveS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
+    public static final CustomPacketPayload.Type<ClientboundActiveCameraRemovePacket> TYPE = new CustomPacketPayload.Type<>(ID);
 
-    public static final StreamCodec<FriendlyByteBuf, ActiveCameraRemoveS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, ActiveCameraRemoveS2CP::operatorEntityId,
-            ActiveCameraRemoveS2CP::new
+    public static final StreamCodec<FriendlyByteBuf, ClientboundActiveCameraRemovePacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.VAR_INT, ClientboundActiveCameraRemovePacket::operatorEntityId,
+            ClientboundActiveCameraRemovePacket::new
     );
 
 

@@ -16,14 +16,14 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record ExportS2CP(List<String> ids, ExportSize size, ExportLook look) implements Packet {
+public record ClientboundExportPacket(List<String> ids, ExportSize size, ExportLook look) implements Packet {
     public static final ResourceLocation ID = Exposure.resource("export");
-    public static final Type<ExportS2CP> TYPE = new Type<>(ID);
-    public static final StreamCodec<FriendlyByteBuf, ExportS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ExportS2CP::ids,
-            ByteBufCodecs.VAR_INT.map(i -> ExportSize.values()[i], ExportSize::ordinal), ExportS2CP::size,
-            ByteBufCodecs.VAR_INT.map(i -> ExportLook.values()[i], ExportLook::ordinal), ExportS2CP::look,
-            ExportS2CP::new
+    public static final Type<ClientboundExportPacket> TYPE = new Type<>(ID);
+    public static final StreamCodec<FriendlyByteBuf, ClientboundExportPacket> STREAM_CODEC = StreamCodec.composite(
+            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ClientboundExportPacket::ids,
+            ByteBufCodecs.VAR_INT.map(i -> ExportSize.values()[i], ExportSize::ordinal), ClientboundExportPacket::size,
+            ByteBufCodecs.VAR_INT.map(i -> ExportLook.values()[i], ExportLook::ordinal), ClientboundExportPacket::look,
+            ClientboundExportPacket::new
     );
 
     @Override
