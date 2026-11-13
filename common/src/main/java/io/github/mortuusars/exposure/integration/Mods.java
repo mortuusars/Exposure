@@ -6,6 +6,7 @@ public class Mods {
     public static final Mod CREATE = new Mod("create");
     public static final Mod REAL_CAMERA = new Mod("realcamera");
     public static final Mod SHOULDER_SURFING = new Mod("shouldersurfing");
+    public static final Mod IRIS = new Mod("iris");
 
     public record Mod(String id) {
         public boolean isLoaded() {

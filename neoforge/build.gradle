@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id "com.gradleup.shadow"
 }
 
 architectury {
@@ -8,6 +8,12 @@ architectury {
 }
 
 configurations {
+    sodiumShell {
+        canBeResolved = true
+        canBeConsumed = false
+        transitive = false
+    }
+
     common {
         canBeResolved = true
         canBeConsumed = false
@@ -30,6 +36,10 @@ repositories {
         url = 'https://maven.neoforged.net/releases'
     }
     maven {
+        name = 'CaffeineMC'
+        url = 'https://maven.caffeinemc.net/releases'
+    }
+    maven {
         url 'https://maven.sinytra.org/'
     }
 }
@@ -50,9 +60,12 @@ dependencies {
     modCompileOnly("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
 
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}") { transitive = false }
-    modLocalRuntime("maven.modrinth:sodium:mc1.21.1-0.8.13-neoforge")
     modLocalRuntime("curse.maven:jade-324717:${jade_neoforge_id}")
     modLocalRuntime("curse.maven:yeetusexperimentus-635427:5444189")
+
+    // Sodium doesn't work properly on NeoForge. Fabric works.
+    // modLocalRuntime("net.caffeinemc:sodium-neoforge-mod:0.8.13+mc1.21.1")
+    // modLocalRuntime("maven.modrinth:iris:1.8.14-beta.1+1.21.1-neoforge")
 
     // Mods for testing/compat
 
@@ -104,6 +117,7 @@ loom {
 
 shadowJar {
     exclude("architectury.common.json")
+    exclude("hotswap-agent.properties")
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
 }

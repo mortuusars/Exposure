@@ -1,7 +1,7 @@
 plugins {
     id "dev.architectury.loom" version "1.13-SNAPSHOT" apply false
     id "architectury-plugin" version "3.5-SNAPSHOT"
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'com.gradleup.shadow' version '9.2.2' apply false
     id "me.modmuss50.mod-publish-plugin" version "2.2.1"
     id 'org.moddedmc.wiki.toolkit' version '0.5.1'
 }
@@ -25,6 +25,8 @@ subprojects {
     }
 
     repositories {
+        mavenCentral()
+
         var localPath = System.getenv("MAVEN_LOCAL")
         if (localPath != null) {
             maven {

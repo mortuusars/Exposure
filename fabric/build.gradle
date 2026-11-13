@@ -1,5 +1,5 @@
 plugins {
-    id "com.github.johnrengelman.shadow"
+    id "com.gradleup.shadow"
 }
 
 architectury {
@@ -53,6 +53,17 @@ dependencies {
 
     modLocalRuntime("mezz.jei:jei-${minecraft_version}-fabric:${jei_version}")
     modLocalRuntime("maven.modrinth:modmenu:YIfqIJ8q")
+    modLocalRuntime("maven.modrinth:jade:15.10.6+fabric")
+    modLocalRuntime("maven.modrinth:yeetus-experimentus:b7C4gGUr")
+
+    modLocalRuntime("maven.modrinth:sodium:mc1.21.1-0.8.13-fabric")
+    modLocalRuntime("maven.modrinth:iris:1.8.14-beta.1+1.21.1-fabric")
+    // These three are needed for iris to work properly:
+    modLocalRuntime('org.anarres:jcpp:1.4.14')
+    modLocalRuntime('org.antlr:antlr4-runtime:4.13.1')
+    modLocalRuntime("io.github.douira:glsl-transformer:3.0.0-pre3")
+
+    modLocalRuntime("maven.modrinth:distanthorizons:9w34y8ai")
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')

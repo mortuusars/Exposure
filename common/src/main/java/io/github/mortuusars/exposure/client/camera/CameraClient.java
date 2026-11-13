@@ -44,6 +44,10 @@ public class CameraClient {
     }
 
     public static void setCameraEntity(@Nullable Entity entity) {
+        if (Minecrft.get().cameraEntity == entity) {
+            return;
+        }
+
         // Not using Minecraft#setCameraEntity because it updates postEffect
         Minecrft.get().cameraEntity = entity;
 
@@ -56,7 +60,9 @@ public class CameraClient {
     }
 
     public static void resetCameraEntity() {
-        setCameraEntity(Minecrft.playerOrThrow());
+        if (Minecrft.get().cameraEntity != Minecrft.playerOrThrow()) {
+            setCameraEntity(Minecrft.playerOrThrow());
+        }
     }
 
     // --

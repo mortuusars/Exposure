@@ -90,6 +90,10 @@ public class ExposureClient {
     // --
 
     public static boolean shouldUseDirectCapture() {
+        //TODO: REMOVE TESTING
+        if (true)
+            return false;
+
         //TODO: maybe check if neoforge is ok and then enable it only on fabric?
         if (Platform.isModLoaded("distanthorizons")) {
             if (Platform.isModLoaded("oculus") || Platform.isModLoaded("iris")) {

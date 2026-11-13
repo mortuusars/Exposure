@@ -2,11 +2,11 @@ package io.github.mortuusars.exposure.client.capture;
 
 import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.capture.action.CompositeAction;
 import io.github.mortuusars.exposure.client.capture.task.*;
 import io.github.mortuusars.exposure.client.image.Image;
+import io.github.mortuusars.exposure.integration.Mods;
+import io.github.mortuusars.exposure.integration.iris.IrisCompat;
 import io.github.mortuusars.exposure.util.cycles.task.Result;
 import io.github.mortuusars.exposure.util.cycles.task.Task;
 import io.github.mortuusars.exposure.util.TranslatableError;
@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URL;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -106,9 +105,21 @@ public class Capture<T> extends Task<Result<T>> {
     }
 
     public static Task<Result<Image>> screenshot() {
-        return ExposureClient.shouldUseDirectCapture()
-                ? new DirectScreenshotCaptureTask()
-                : new BackgroundScreenshotCaptureTask();
+        //TODO: come up with a good way to configure when direct capture is enabled
+        // Maybe only when player enables it? But in this case background rendering should support pretty much all mods.
+        if (Config.Client.FORCE_DIRECT_CAPTURE.get()) {
+            return new DirectScreenshotCaptureTask();
+        }
+
+        if (Mods.IRIS.isLoaded() && IrisCompat.isShaderPackActive()) {
+            return new IrisCompatibleBackgroundScreenshotCaptureTask();
+        }
+
+        return new BackgroundScreenshotCaptureTask();
+
+//        return ExposureClient.shouldUseDirectCapture()
+//                ? new DirectScreenshotCaptureTask()
+//                : new BackgroundScreenshotCaptureTask();
     }
 
     public static Task<Result<Image>> fromFile(File file) {

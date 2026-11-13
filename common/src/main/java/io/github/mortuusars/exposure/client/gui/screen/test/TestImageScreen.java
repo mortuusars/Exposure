@@ -277,6 +277,11 @@ public class TestImageScreen extends Screen {
         }
     }
 
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+//        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+    }
+
     protected void capture() {
         if (isCapturing) {
             Minecrft.get().getSoundManager().play(SimpleSoundInstance.forUI(Exposure.SoundEvents.CAMERA_GENERIC_CLICK.get(), 1f));

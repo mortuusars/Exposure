@@ -55,7 +55,7 @@ public interface CaptureAction {
     }
 
     static CaptureAction hideGui() {
-        return new HideGuiAction();
+        return new HideGuiAndOverlaysAction();
     }
 
     static CaptureAction disablePostEffect() {

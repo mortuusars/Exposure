@@ -22,6 +22,10 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class Flash {
+    public SoundEvent getSound() {
+        return Exposure.SoundEvents.FLASH.get();
+    }
+
     public int getCooldown() {
         return 10; //Ticks
     }
@@ -42,7 +46,9 @@ public class Flash {
         Entity entity = holder.asHolderEntity();
 
         @Nullable BlockPos flashPosition = findPosition(holder);
-        if (flashPosition == null) return false;
+        if (flashPosition == null) {
+            return false;
+        }
 
         level.setBlock(flashPosition, Exposure.Blocks.FLASH.get().defaultBlockState()
                 .setValue(FlashBlock.WATERLOGGED, level.getFluidState(flashPosition)
@@ -53,14 +59,14 @@ public class Flash {
         entity.gameEvent(GameEvent.PRIME_FUSE);
         holder.getServerPlayerAwardedForExposure().ifPresent(player -> player.awardStat(Exposure.Stats.FLASHES_TRIGGERED));
 
-        sendParticles(holder, level);
+        sendParticlesToOtherPlayers(holder, level);
 
         return true;
     }
 
     protected @Nullable BlockPos findPosition(CameraHolder holder) {
         Entity entity = holder.asHolderEntity();
-        BlockPos headPos = entity.blockPosition().above();
+        BlockPos headPos = BlockPos.containing(entity.getEyePosition());;
         if (isPositionSuitable(entity.level(), headPos))
             return headPos;
         else {
@@ -81,7 +87,7 @@ public class Flash {
 
     // --
 
-    protected void sendParticles(CameraHolder holder, ServerLevel level) {
+    protected void sendParticlesToOtherPlayers(CameraHolder holder, ServerLevel level) {
         Vec3 pos = getFlashEffectsPosition(holder);
 
         @Nullable ServerPlayer executingPlayer = holder.getServerPlayerExecutingExposure().orElse(null);
@@ -100,11 +106,5 @@ public class Flash {
         return holder.asHolderEntity().position()
                 .add(0, 1.1, 0)
                 .add(holder.asHolderEntity().getLookAngle().scale(0.8));
-    }
-
-    // --
-
-    public SoundEvent getSound() {
-        return Exposure.SoundEvents.FLASH.get();
     }
 }

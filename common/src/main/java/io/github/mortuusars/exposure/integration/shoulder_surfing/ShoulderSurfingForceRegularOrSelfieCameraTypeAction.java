@@ -18,24 +18,9 @@ public class ShoulderSurfingForceRegularOrSelfieCameraTypeAction extends ForceRe
         super.beforeCapture();
     }
 
-    //    @Override
-//    public void beforeCapture() {
-//        cameraTypeBeforeCapture = Minecraft.getInstance().options.getCameraType();
-//        isShoulderSurfingBeforeCapture = IShoulderSurfing.getInstance().isShoulderSurfing();
-//        if (cameraTypeBeforeCapture == CameraType.THIRD_PERSON_BACK) {
-//            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
-//        } else if (cameraTypeBeforeCapture == CameraType.THIRD_PERSON_FRONT && !cameraInHandInSelfieMode()) {
-//            Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
-//        }
-//    }
-
     @Override
     public void afterCapture() {
         Perspective perspectiveBefore = Perspective.of(cameraTypeBeforeCapture, isShoulderSurfingBeforeCapture);
         IShoulderSurfing.getInstance().changePerspective(perspectiveBefore);
-
-//        super.afterCapture();
-//
-//        Minecraft.getInstance().options.setCameraType(cameraTypeBeforeCapture);
     }
 }
