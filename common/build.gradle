@@ -17,7 +17,6 @@ dependencies {
     modImplementation("net.fabricmc:fabric-loader:${fabric_loader_version}")
 
     modCompileOnly("io.github.mortuusars.mortaar:mortaar-${minecraft_version}-common:${mortaar_version}")
-    testRuntimeOnly("io.github.mortuusars.mortaar:mortaar-${minecraft_version}-common:${mortaar_version}")
     modApi("fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api_port_version}")
 
     modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
@@ -32,6 +31,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testRuntimeOnly("io.github.mortuusars.mortaar:mortaar-${minecraft_version}-common:${mortaar_version}")
     "junit"(platform("org.junit:junit-bom:${project.property("jupiterVersion")}"))
     "junit"("org.junit.jupiter:junit-jupiter")
 }

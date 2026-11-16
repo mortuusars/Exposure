@@ -24,7 +24,6 @@ import io.github.mortuusars.exposure.world.item.AlbumItem;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import io.github.mortuusars.exposure.world.item.ChromaticSheetItem;
 import io.github.mortuusars.exposure.world.item.StackedPhotographsItem;
-import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.component.DataComponents;
@@ -85,13 +84,6 @@ public class ExposureClient {
 
     public static PhotographRenderer photographRenderer() {
         return PHOTOGRAPH_RENDERER;
-    }
-
-    // --
-
-    public static boolean shouldUseDirectCapture() {
-        return Config.Client.DIRECT_CAPTURE.isTrue()
-                || Config.Client.FORCE_DIRECT_CAPTURE_MODS.get().stream().anyMatch(Platform::isModLoaded);
     }
 
     // --

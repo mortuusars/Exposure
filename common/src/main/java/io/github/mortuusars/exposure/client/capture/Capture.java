@@ -105,8 +105,6 @@ public class Capture<T> extends Task<Result<T>> {
     }
 
     public static Task<Result<Image>> screenshot() {
-        //TODO: come up with a good way to configure when direct capture is enabled
-        // Maybe only when player enables it? But in this case background rendering should support pretty much all mods.
         if (Config.Client.DIRECT_CAPTURE.get()) {
             return new DirectScreenshotCaptureTask();
         }
@@ -116,10 +114,6 @@ public class Capture<T> extends Task<Result<T>> {
         }
 
         return new BackgroundScreenshotCaptureTask();
-
-//        return ExposureClient.shouldUseDirectCapture()
-//                ? new DirectScreenshotCaptureTask()
-//                : new BackgroundScreenshotCaptureTask();
     }
 
     public static Task<Result<Image>> fromFile(File file) {
