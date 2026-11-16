@@ -18,9 +18,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class RenderedExposures {
-    private final Map<String, RenderedExposureInstance> cachedRenderedExposures = new HashMap<>();
+    private final Map<String, RenderedExposureInstance> cache = new HashMap<>();
 
     public RenderableImage getOrCreate(Frame frame) {
         RenderableImage image = getOrCreateRaw(frame.identifier());
@@ -34,7 +35,7 @@ public class RenderedExposures {
     }
 
     public RenderableImage getOrCreateRaw(String id) {
-        @Nullable RenderedExposureInstance existingImage = cachedRenderedExposures.get(id);
+        @Nullable RenderedExposureInstance existingImage = cache.get(id);
         if (existingImage != null) {
             existingImage.setLastAccess(UnixTimestamp.Milliseconds.now());
             return existingImage.getImage();
@@ -43,22 +44,22 @@ public class RenderedExposures {
         return ExposureClient.exposureStore().getOrRequest(id).map(
                 exposure -> {
                     RenderableImage image = RenderableImage.of(id, imageFromExposure(exposure));
-                    cachedRenderedExposures.put(id, new RenderedExposureInstance(image, UnixTimestamp.Milliseconds.now()));
+                    cache.put(id, new RenderedExposureInstance(image, UnixTimestamp.Milliseconds.now()));
                     return image;
                 },
                 RenderableImage.EMPTY);
     }
 
     public void clearCacheOf(String id) {
-        cachedRenderedExposures.remove(id);
+        cache.remove(id);
     }
 
     public void clearCache() {
-        cachedRenderedExposures.clear();
+        cache.clear();
     }
 
     public void clearStale() {
-        cachedRenderedExposures.entrySet().removeIf(entry -> {
+        cache.entrySet().removeIf(entry -> {
             boolean stale = UnixTimestamp.Milliseconds.now() - entry.getValue().getLastAccess() > 120_000; // 2 minutes
             if (stale) {
                 ExposureClient.imageRenderer().clearCacheOf(entry.getKey());
@@ -72,8 +73,13 @@ public class RenderedExposures {
         return new PalettedImage(exposure.getWidth(), exposure.getHeight(), exposure.getPixels(), palette);
     }
 
+    public void addDebugInfo(Consumer<String> lines) {
+        lines.accept("Cache: " + cache.size());
+    }
+
     private static class RenderedExposureInstance {
         private final RenderableImage image;
+
         private long lastAccess;
 
         public RenderedExposureInstance(RenderableImage image, long lastAccess) {
@@ -88,7 +94,6 @@ public class RenderedExposures {
         public long getLastAccess() {
             return lastAccess;
         }
-
         public void setLastAccess(long lastAccess) {
             this.lastAccess = lastAccess;
         }

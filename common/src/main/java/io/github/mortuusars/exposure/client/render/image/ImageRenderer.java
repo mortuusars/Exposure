@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class ImageRenderer implements AutoCloseable {
@@ -77,5 +78,9 @@ public class ImageRenderer implements AutoCloseable {
     @Override
     public void close() {
         clearCache();
+    }
+
+    public void addDebugInfo(Consumer<String> lines) {
+        lines.accept("Cache: " + cache.size());
     }
 }
