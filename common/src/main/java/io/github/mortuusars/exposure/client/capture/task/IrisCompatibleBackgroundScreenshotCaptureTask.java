@@ -3,7 +3,6 @@ package io.github.mortuusars.exposure.client.capture.task;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.integration.iris.IrisCompat;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import net.minecraft.client.Minecraft;
@@ -47,7 +46,6 @@ public class IrisCompatibleBackgroundScreenshotCaptureTask extends BackgroundScr
                 minecraft.gameRenderer.renderLevel(minecraft.getTimer());
                 applyPostEffects(target);
             }
-            Exposure.LOGGER.info("Captured using Iris-compatible background task.");
         } finally {
             // Still not sure if clearing is needed or not
             // RenderSystem.clear(GL11.GL_DEPTH_BUFFER_BIT, Minecraft.ON_OSX);

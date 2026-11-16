@@ -1,5 +1,18 @@
 # Changelog
 
+## UNRELEASED
+### Fixes and Improvements
+- Improved default image capture method (background)
+  - It's now compatible with many mods that were requiring direct capture before:
+    - **Render Scale**, **Veil**, **ProtoManly's Weather**, **Iris + Distant Horizons** - these are the ones that were tested, others should work as well
+  - Some shaderpacks will still have issues with it - direct capture remains the best option for them
+
+### Technical Changes
+Config:
+- Renamed config option `force_direct_capture` to `direct_capture`
+- Removed `background_capture_use_panoramic_mode` config option
+- Removed `force_direct_capture_default_mods` config option
+
 ## 1.9.21 - 2026-11-09
 - Viewfinder opening/closing sounds will now properly play from camera position (if on the stand, for example), rather than from the player in some cases 
 - Fixed player ending up stuck after opening viewfinder on a Camera Stand that's placed in a chunk protected by a claiming mod (like FTB Chunks)

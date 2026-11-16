@@ -82,7 +82,6 @@ public class Exposure {
     public static final String ID = "exposure";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final List<String> MODS_REQUIRING_DIRECT_CAPTURE = List.of("veil", "pmweather", "renderscale");
     public static final int MAX_ENTITIES_IN_FRAME = 10;
 
     public static void init() {

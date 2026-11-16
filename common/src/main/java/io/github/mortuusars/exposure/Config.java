@@ -16,7 +16,7 @@ public class Config {
     public static class Server {
         public static final ModConfigSpec SPEC;
 
-        // Camera
+        // CAMERA
         public static final ModConfigSpec.ConfigValue<String> CAMERA_DEFAULT_FOCAL_RANGE;
         public static final ModConfigSpec.BooleanValue CAMERA_VIEWFINDER_ATTACK;
         public static final ModConfigSpec.BooleanValue WAIST_LEVEL_VIEWFINDER;
@@ -26,18 +26,18 @@ public class Config {
         public static final ModConfigSpec.BooleanValue TIMER_ATTRACTS_MOB_ATTENTION;
         public static final ModConfigSpec.IntValue TIMER_ATTENTION_RADIUS;
 
-        // Camera Stand
+        // CAMERA STAND
         public static final ModConfigSpec.IntValue CAMERA_STAND_WORKING_RANGE;
         public static final ModConfigSpec.BooleanValue CAMERA_STAND_RANGE_MALFUNCTION;
         public static final ModConfigSpec.BooleanValue CAMERA_STAND_FALLBACK_TO_OTHER_PLAYERS;
         public static final ModConfigSpec.BooleanValue CAMERA_STAND_FALLBACK_TO_OTHER_PLAYERS_PROJECTOR;
 
-        // Capture
+        // CAPTURE
         public static final ModConfigSpec.IntValue DEFAULT_FRAME_SIZE;
         public static final ModConfigSpec.BooleanValue CAN_PROJECT;
         public static final ModConfigSpec.IntValue PROJECT_TIMEOUT_TICKS;
 
-        // Lightroom
+        // LIGHTROOM
         public static final ModConfigSpec.IntValue LIGHTROOM_LIGHT_REQUIREMENT;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> LIGHTROOM_BW_DYES;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> LIGHTROOM_COLOR_DYES;
@@ -51,17 +51,17 @@ public class Config {
         public static final ModConfigSpec.IntValue LIGHTROOM_COLOR_EXPERIENCE;
         public static final ModConfigSpec.IntValue LIGHTROOM_CHROMATIC_EXPERIENCE;
 
-        // Photographs
+        // PHOTOGRAPHS
         public static final ModConfigSpec.IntValue STACKED_PHOTOGRAPHS_MAX_SIZE;
 
-        // Misc
+        // MISC
         public static final ModConfigSpec.BooleanValue FILM_ROLL_EASY_RENAMING;
         public static final ModConfigSpec.BooleanValue INTERPLANAR_PROJECTOR_LARGER_RENAMING_LIMIT;
 
-        // Integration
+        // INTEGRATION
         public static final ModConfigSpec.BooleanValue CREATE_DEPLOYER_STAND_HOTSWAP;
 
-        // Debug
+        // DEBUG
         public static final ModConfigSpec.BooleanValue CLEANUP_TIMED_OUT_EXPECTED_EXPOSURES;
 
         static {
@@ -93,10 +93,10 @@ public class Config {
                                 "Default: true")
                         .define("right_click_hotswap", true);
                 TIMER_ATTRACTS_MOB_ATTENTION = builder
-                        .comment("Self-timer will attract attention of nearby entities and makes them look at the Camera. Default: true")
+                        .comment("Self-timer will attract attention of nearby entities, making them look at the Camera. Default: true")
                         .define("timer_attracts_mob_attention", true);
                 TIMER_ATTENTION_RADIUS = builder
-                        .comment("Radius in blocks around the camera in which mobs will be affected by the timer. Default: 16")
+                        .comment("Radius in blocks around the camera in which mobs will be affected by the timer attention. Default: 16")
                         .defineInRange("timer_attention_radius", 16, 1, 64);
                 builder.pop();
             }
@@ -273,6 +273,7 @@ public class Config {
         public static final ModConfigSpec.BooleanValue PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR;
         public static final ModConfigSpec.BooleanValue CAMERA_STAND_TOOLTIP;
 
+        // UI - ALBUM
         public static final ModConfigSpec.BooleanValue ALBUM_PHOTOS_COUNT_TOOLTIP;
         public static final ModConfigSpec.ConfigValue<String> ALBUM_FONT_MAIN_COLOR;
         public static final ModConfigSpec.ConfigValue<String> ALBUM_FONT_SECONDARY_COLOR;
@@ -292,14 +293,13 @@ public class Config {
         // CAPTURE
         public static final ModConfigSpec.BooleanValue KEEP_POST_EFFECT;
         public static final ModConfigSpec.IntValue FLASH_CAPTURE_DELAY_TICKS;
-        public static final ModConfigSpec.BooleanValue FORCE_DIRECT_CAPTURE;
-        public static final ModConfigSpec.ConfigValue<List<? extends String>> FORCE_DIRECT_CAPTURE_MODS;
+        public static final ModConfigSpec.BooleanValue DIRECT_CAPTURE;
         public static final ModConfigSpec.IntValue DIRECT_CAPTURE_DELAY_FRAMES;
-        public static final ModConfigSpec.BooleanValue BACKGROUND_CAPTURE_USE_PANORAMIC_MODE;
         public static final ModConfigSpec.BooleanValue FILE_LOADING_ONLY_RELATIVE_TO_EXPOSURES_DIR;
         public static final ModConfigSpec.EnumValue<UrlLoading> URL_LOADING;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> URL_LOADING_ALLOWED_DOMAINS;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> URL_LOADING_ALLOWED_SUBDOMAINS;
+
         // RENDER
         public static final ModConfigSpec.BooleanValue PIXEL_PERFECT_PHOTOGRAPH_FRAME;
         public static final ModConfigSpec.BooleanValue PHOTOGRAPH_RENDERS_IN_ITEM_FRAME;
@@ -417,29 +417,21 @@ public class Config {
                                 "Default: false")
                         .define("keep_post_effect", false);
                 FLASH_CAPTURE_DELAY_TICKS = builder
-                        .comment("Delay in ticks before capturing an image when shooting with flash." +
-                                "\nIf you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
+                        .comment("Delay (in ticks) before capturing an image when shooting with flash.",
+                                "If you experience flash synchronization issues (Flash having no effect on the image) - try increasing the value.")
                         .defineInRange("flash_capture_delay_ticks", 4, 1, FlashBlock.LIFETIME_TICKS);
-                FORCE_DIRECT_CAPTURE = builder
-                        .comment("Force legacy (pre 1.21) capturing method for taking images. Enable if you experiencing issues with resulting images.",
-                                "Direct method will be used regardless of this setting if mods defined in 'force_direct_capture_default_mods' is installed.",
-                                "Default: false")
-                        .define("force_direct_capture", false);
-                FORCE_DIRECT_CAPTURE_MODS = builder
-                        .comment("Direct capture will be used if any of these mods is installed.",
-                                "Format: '[\"mod_id\", \"mod_id\"]'. Default: [" + String.join(", ", Exposure.MODS_REQUIRING_DIRECT_CAPTURE) + "]")
-                        .defineListAllowEmpty("force_direct_capture_default_mods", () -> Exposure.MODS_REQUIRING_DIRECT_CAPTURE, () -> "mod_id", o -> true);
+                DIRECT_CAPTURE = builder
+                        .comment("Forces the use of a direct capture method. Enable if you experiencing issues with resulting images (some shaderpacks are the most common cause).",
+                              "Direct capture is capturing what's being rendered on the screen, instead of rendering the view separately.",
+                              "Because of the need to 'prepare' the next frame (hide hud, set the camera, increase gamma, add/remove post effect, etc.), direct capture causes a visible flicker on the screen, which will be especially noticeable when photographing remotely from the Camera Stand.",
+                              "But it might be the only way to have a proper image in some cases.",
+                              "Default: false")
+                        .define("direct_capture", false);
                 DIRECT_CAPTURE_DELAY_FRAMES = builder
                         .comment("Delay in frames before capturing an image if 'direct_capture' method is in use.",
                                 "Set to higher value when leftovers of GUI elements (such as nameplates) are visible on the images",
                                 "(some shaders have temporal effects that take several frames to disappear fully)")
                         .defineInRange("direct_capture_delay_frames", 0, 0, 100);
-                BACKGROUND_CAPTURE_USE_PANORAMIC_MODE = builder
-                      .comment("Sets the game to 'panoramic mode' when capturing the image with background capture method (default).",
-                            "Enabling this might fix some graphical issues, such as water being invisible.",
-                            "If captured images are still not looking properly - enable 'force_direct_capture'.",
-                            "Default: false")
-                      .define("background_capture_use_panoramic_mode", false);
 
                 {
                     builder.push("loading");
