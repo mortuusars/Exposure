@@ -1,12 +1,13 @@
 package io.github.mortuusars.exposure.mixin.client.compat.iris;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.mortuusars.exposure.integration.iris.IrisCompat;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.renderer.LevelRenderer;
 
@@ -25,11 +26,11 @@ public abstract class IrisRenderingPipelineMixin {
         }
     }
 
-    @Redirect(method = "beginLevelRendering", at = @At(value = "INVOKE",
+    @WrapOperation(method = "beginLevelRendering", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/renderer/LevelRenderer;allChanged()V"), remap = false)
-    private void exposure$skipChunkReloadForCapture(LevelRenderer levelRenderer) {
+    private void exposure$skipChunkReloadForCapture(LevelRenderer instance, Operation<Void> original) {
         if (!IrisCompat.shouldSkipCaptureChunkReload()) {
-            levelRenderer.allChanged();
+            original.call(instance);
         }
     }
 }

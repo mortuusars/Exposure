@@ -1,12 +1,14 @@
 package io.github.mortuusars.exposure.mixin.client.compat.iris;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.mortuusars.exposure.integration.iris.IrisCompat;
+import net.irisshaders.iris.pipeline.WorldRenderingPipeline;
 import net.irisshaders.iris.shaderpack.materialmap.NamespacedId;
 import net.irisshaders.iris.shaderpack.materialmap.WorldRenderingSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.function.Function;
@@ -20,17 +22,16 @@ public abstract class PipelineManagerMixin {
         return IrisCompat.getCapturePipelineId(worldId);
     }
 
-    @SuppressWarnings("unchecked")
-    @Redirect(method = "preparePipeline", at = @At(value = "INVOKE",
+    @WrapOperation(method = "preparePipeline", at = @At(value = "INVOKE",
             target = "Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;"), remap = false)
-    private Object exposure$buildCapturePipeline(Function<NamespacedId, ?> factory, Object pipelineKey) {
-        NamespacedId shaderWorldId = IrisCompat.getPipelineFactoryId((NamespacedId) pipelineKey);
-        return factory.apply(shaderWorldId);
+    private <T, R> Object exposure$buildCapturePipeline(Function<NamespacedId, WorldRenderingPipeline> instance, T t, Operation<R> original) {
+        NamespacedId shaderWorldId = IrisCompat.getPipelineFactoryId((NamespacedId)original.call(instance, t));
+        return instance.apply(shaderWorldId);
     }
 
-    @Redirect(method = "preparePipeline", at = @At(value = "INVOKE",
+    @WrapOperation(method = "preparePipeline", at = @At(value = "INVOKE",
             target = "Lnet/irisshaders/iris/shaderpack/materialmap/WorldRenderingSettings;isReloadRequired()Z"), remap = false)
-    private boolean exposure$deferChunkReloadDuringCapture(WorldRenderingSettings settings) {
-        return !IrisCompat.isBackgroundCaptureActive() && settings.isReloadRequired();
+    private boolean exposure$deferChunkReloadDuringCapture(WorldRenderingSettings instance, Operation<Boolean> original) {
+        return !IrisCompat.isBackgroundCaptureActive() && original.call(instance);
     }
 }
