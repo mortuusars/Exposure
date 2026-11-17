@@ -57,7 +57,7 @@ public class Flash {
         Sound.play(entity, getSound(), entity.getSoundSource());
 
         entity.gameEvent(GameEvent.PRIME_FUSE);
-        holder.getServerPlayerAwardedForExposure().ifPresent(player -> player.awardStat(Exposure.Stats.FLASHES_TRIGGERED));
+        holder.getServerPlayerAwardedForExposure().ifPresent(player -> player.awardStat(Exposure.Stats.FLASHES_TRIGGERED.get()));
 
         sendParticlesToOtherPlayers(holder, level);
 

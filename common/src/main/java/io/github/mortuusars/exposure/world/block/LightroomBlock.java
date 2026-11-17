@@ -102,7 +102,7 @@ public class LightroomBlock extends Block implements EntityBlock {
         if (!(level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity))
             return super.useWithoutItem(state, level, pos, player, hitResult);
 
-        player.awardStat(Exposure.Stats.INTERACT_WITH_LIGHTROOM);
+        player.awardStat(Exposure.Stats.INTERACT_WITH_LIGHTROOM.get());
 
         if (player instanceof ServerPlayer serverPlayer) {
             lightroomBlockEntity.setLastPlayer(serverPlayer);

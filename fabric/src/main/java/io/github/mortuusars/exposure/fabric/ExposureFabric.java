@@ -44,8 +44,6 @@ public class ExposureFabric implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register(CommonEvents::registerCommands);
 
-        Exposure.Stats.register();
-
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             ServerEvents.serverStarted(server);
             ExposureFabric.server = server;

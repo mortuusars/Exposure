@@ -925,7 +925,7 @@ public class CameraItem extends Item {
               .filter(player -> player instanceof ServerPlayer)
               .ifPresent(player -> {
                   ServerPlayer serverPlayer = (ServerPlayer) player;
-                  serverPlayer.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED);
+                  serverPlayer.awardStat(Exposure.Stats.FILM_FRAMES_EXPOSED.get());
                   Exposure.CriteriaTriggers.FRAME_EXPOSED.get().trigger(
                         serverPlayer, holder, stack, frame, positionsInFrame, entitiesInFrame);
               });
