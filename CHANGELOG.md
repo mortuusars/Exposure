@@ -1,6 +1,8 @@
 # Changelog
 
 ## UNRELEASED
+- Camera Stand movement works the same as Armor Stand 
+
 ### Fixes and Improvements
 - Improved default image capture method (background)
   - It's now compatible with many mods that were requiring direct capture before:
