@@ -24,9 +24,9 @@ configurations {
     }
 }
 
-loom {
-    accessWidenerPath = project(":common").loom.accessWidenerPath
-}
+//loom {
+//    accessWidenerPath = project(":common").loom.accessWidenerPath
+//}
 
 repositories {
     maven { url = "https://api.modrinth.com/maven" } // LazyDFU
@@ -70,12 +70,14 @@ dependencies {
 }
 
 shadowJar {
+    exclude("architectury.common.json")
+    exclude("hotswap-agent.properties")
     configurations = [project.configurations.shadowBundle]
     archiveClassifier = 'dev-shadow'
 }
 
 remapJar {
     injectAccessWidener = true
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
+    atAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
+    inputFile.set shadowJar.archiveFile
 }

@@ -25,8 +25,6 @@ subprojects {
     }
 
     repositories {
-        mavenCentral()
-
         var localPath = System.getenv("MAVEN_LOCAL")
         if (localPath != null) {
             maven {
@@ -44,55 +42,26 @@ subprojects {
         }
 
         maven {
+            name = "mortuusars github resources"
+            url = "https://raw.githubusercontent.com/mortuusars/resources/main/maven/"
+        }
+
+        maven {
+            name = 'NeoForged'
+            url = 'https://maven.neoforged.net/releases'
+        }
+        maven {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
         }
 
         maven {
-            url = "https://maven.architectury.dev"
+            name = "Curseforge"
+            url 'https://www.cursemaven.com'
             content {
-                includeGroup "dev.architectury"
+                includeGroup "curse.maven"
             }
         }
-
-        maven {
-            url = "https://cursemaven.com"
-        }
-
-        // Forge Config Api Port
-        maven {
-            name = "Fuzs Mod Resources"
-            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-        }
-
-        // JEI
-        maven {
-            name = "Jared's maven"
-            url = "https://maven.blamejared.com/"
-        }
-
-        maven {
-            name = "FabricMC"
-            url = "https://maven.fabricmc.net/"
-        }
-
-        maven {
-            url "https://maven.latvian.dev/releases"
-            content {
-                includeGroup "dev.latvian.mods"
-                includeGroup "dev.latvian.apps"
-            }
-        }
-
-        maven {
-            url 'https://jitpack.io'
-            content {
-                includeGroup "com.github.rtyley"
-            }
-        }
-
-        maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
-        maven { url = "https://mvn.devos.one/snapshots" } // Registrate
         maven {
             name = "Modrinth"
             url = "https://api.modrinth.com/maven"
@@ -100,14 +69,96 @@ subprojects {
                 includeGroup "maven.modrinth"
             }
         }
+        maven {
+            name = "ModMaven"
+            url = "https://modmaven.dev"
+        }
+
+        // Forge Config API Port
+        maven {
+            name = "Fuzs Mod Resources"
+            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        }
+
+        // CarryOn
+        maven {
+            url "https://maven.blamejared.com/"
+        }
+
+        // KubeJS
+        maven {
+            url "https://maven.latvian.dev/releases"
+            content {
+                includeGroup "dev.latvian.mods"
+                includeGroup "dev.latvian.apps"
+            }
+        }
+        maven {
+            url 'https://jitpack.io'
+            content {
+                includeGroup "com.github.rtyley"
+            }
+        }
+
+        // Create, Ponder, Flywheel
+        maven {
+            url "https://maven.createmod.net"
+        }
+        // Registrate
+        maven {
+            url "https://maven.ithundxr.dev/snapshots"
+        }
+
+        // Sable
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url = "https://maven.ryanhcode.dev/releases/"
+                }
+            }
+            filter {
+                includeGroup "dev.ryanhcode.sable-companion"
+                includeGroup "dev.ryanhcode.sable"
+                includeGroup "dev.simulated_team.simulated"
+                includeGroup "dev.eriksonn.aeronautics"
+                includeGroup "dev.ryanhcode.offroad"
+            }
+        }
+
+        // moddedmc.wiki, etc.
+        maven {
+            url "https://maven.sinytra.org"
+        }
+
+        // EMI
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/"
+        }
+
+        // Every Compat
+        maven {
+            url "https://registry.somethingcatchy.net/repository/maven-public/"
+        }
     }
 
     loom {
         silentMojangMappingsLicense()
+        accessWidenerPath = project(":common").loom.accessWidenerPath
+
         runs {
             client {
-                property 'item_asset_export.render.namespaces', 'exposure'
-                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=core'
+                programArgs "--username", "Dev"
+                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=fatjar', '-Dfabric-tag-conventions-v2.missingTagTranslationWarning=VERBOSE'
+            }
+
+            create("client2") {
+                inherit(getByName("client"))
+
+                name("Second Client")
+                programArgs("--username", "AnotherDev")
+
+                client()
             }
         }
     }
@@ -140,23 +191,23 @@ subprojects {
 
     processResources {
         var expandProps = [
-                minecraft_version            : minecraft_version,
-                minecraft_version_range      : minecraft_version_range,
-                neoforge_version             : neoforge_version,
-                neoforge_version_range       : neoforge_version_range,
-                neoforge_loader_version_range: neoforge_loader_version_range,
-                create_version_range         : create_version_range,
-                create_version_range_reason  : create_version_range_reason,
-                mod_id                       : mod_id,
-                mod_name                     : mod_name,
-                mod_version                  : mod_version,
-                mod_authors                  : mod_authors,
-                mod_description              : mod_description,
-                mod_issues                   : mod_issues,
-                mod_page                     : mod_page,
-                mod_github                   : mod_github,
-                mod_license                  : mod_license,
-                maven_group                  : maven_group
+                minecraft_version                                   : minecraft_version,
+                neoforge_version                                    : neoforge_version,
+                required_neoforge_version_range                     : required_neoforge_version_range,
+                neoforge_loader_version_range                       : neoforge_loader_version_range,
+                neoforge_required_minecraft_version                 : neoforge_required_minecraft_version,
+                fabric_required_minecraft_version                   : fabric_required_minecraft_version,
+                fabric_required_forgeconfigapiport_version          : fabric_required_forgeconfigapiport_version,
+                mod_id                                              : mod_id,
+                mod_name                                            : mod_name,
+                mod_version                                         : mod_version,
+                mod_authors                                         : mod_authors,
+                mod_description                                     : mod_description,
+                mod_issues                                          : mod_issues,
+                mod_page                                            : mod_page,
+                mod_github                                          : mod_github,
+                mod_license                                         : mod_license,
+                maven_group                                         : maven_group
         ]
         filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', "*.mixins.json"]) {
             expand expandProps

@@ -8,12 +8,6 @@ architectury {
 }
 
 configurations {
-    sodiumShell {
-        canBeResolved = true
-        canBeConsumed = false
-        transitive = false
-    }
-
     common {
         canBeResolved = true
         canBeConsumed = false
@@ -27,20 +21,6 @@ configurations {
     shadowBundle {
         canBeResolved = true
         canBeConsumed = false
-    }
-}
-
-repositories {
-    maven {
-        name = 'NeoForged'
-        url = 'https://maven.neoforged.net/releases'
-    }
-    maven {
-        name = 'CaffeineMC'
-        url = 'https://maven.caffeinemc.net/releases'
-    }
-    maven {
-        url 'https://maven.sinytra.org/'
     }
 }
 
@@ -90,27 +70,40 @@ dependencies {
     // modLocalRuntime("dev.latvian.mods:kubejs-neoforge:${kubejs_version}")
 
     // Create
-    // modImplementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
-    // modImplementation("net.createmod.ponder:Ponder-NeoForge-${minecraft_version}:${ponder_version}")
-    // modCompileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
+    // modLocalRuntime("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
+    // modLocalRuntime("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
     // modLocalRuntime("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
-    // modImplementation("com.tterrag.registrate:Registrate:${registrate_version}")
+    // modLocalRuntime("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    // Sable + Aeronautics
+    // localRuntime("foundry.veil:veil-neoforge-${minecraft_version}:4.5.2")
+    // modLocalRuntime("dev.ryanhcode.sable:sable-neoforge-${minecraft_version}:${sable_version}")
+    // modLocalRuntime("dev.simulated_team.simulated:simulated-neoforge-${minecraft_version}:${create_aeronautics_version}")  { transitive false }
+    // modLocalRuntime("dev.eriksonn.aeronautics:aeronautics-neoforge-${minecraft_version}:${create_aeronautics_version}")  { transitive false }
+    // modLocalRuntime("dev.ryanhcode.offroad:offroad-neoforge-${minecraft_version}:${create_aeronautics_version}")  { transitive false }
 
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionNeoForge')
 }
 
 loom {
-    accessWidenerPath.set(project(":common").loom.accessWidenerPath)
-
     runs {
-        create("client2") {
-            inherit(getByName("client"))
 
-            name("Second Client")
-            programArgs("--username", "AnotherDev")
+        data {
+            data()
+            programArgs "--all", "--mod", "${mod_id}"
+            programArgs "--output", project(':common').file("src/generated").absolutePath // Outputs to common project
+            programArgs "--existing", project(':common').file("src/main/resources").absolutePath // Makes datagen see resources from common folder
+        }
 
+        exportClient {
             client()
+            property('wiki_exporter.enabled', 'true')
+        }
+        exportServer {
+            server()
+            programArgs('nogui')
+            property('wiki_exporter.enabled', 'true')
         }
     }
 }
@@ -125,6 +118,5 @@ shadowJar {
 remapJar {
     injectAccessWidener = true
     atAccessWideners.add(loom.accessWidenerPath.get().asFile.name)
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
+    inputFile.set shadowJar.archiveFile
 }
