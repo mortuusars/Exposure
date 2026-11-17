@@ -13,28 +13,28 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class CaptureShader {
+public class CapturePostEffect {
     @Nullable
-    private static PostChain shader = null;
+    private static PostChain effect = null;
 
-    public static boolean hasShader() {
-        return shader != null;
+    public static boolean hasEffect() {
+        return effect != null;
     }
 
     public static void apply(ResourceLocation shaderLocation) {
-        if (shader != null) {
-            if (shader.getName().equals(shaderLocation.toString())) {
+        if (effect != null) {
+            if (effect.getName().equals(shaderLocation.toString())) {
                 return;
             }
 
-            shader.close();
+            effect.close();
         }
 
         try {
             Minecraft minecraft = Minecrft.get();
-            shader = new PostChain(minecraft.getTextureManager(), minecraft.getResourceManager(),
+            effect = new PostChain(minecraft.getTextureManager(), minecraft.getResourceManager(),
                     minecraft.getMainRenderTarget(), shaderLocation);
-            shader.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
+            effect.resize(minecraft.getWindow().getWidth(), minecraft.getWindow().getHeight());
         } catch (IOException e) {
             Exposure.LOGGER.warn("Failed to load shader: {}", shaderLocation, e);
             remove();
@@ -45,17 +45,17 @@ public class CaptureShader {
     }
 
     public static void resize(int width, int height) {
-        if (shader != null) {
-            shader.resize(width, height);
+        if (effect != null) {
+            effect.resize(width, height);
         }
     }
 
     public static void process() {
-        if (shader != null) {
+        if (effect != null) {
             RenderSystem.disableBlend();
             RenderSystem.disableDepthTest();
             RenderSystem.resetTextureMatrix();
-            shader.process(Minecrft.get().getTimer().getGameTimeDeltaTicks());
+            effect.process(Minecrft.get().getTimer().getGameTimeDeltaTicks());
         }
     }
 
@@ -66,8 +66,8 @@ public class CaptureShader {
      * Main use for this is to apply a shader when capturing a photograph.
      */
     public static void process(RenderTarget renderTarget) {
-        if (shader != null) {
-            process(shader, renderTarget);
+        if (effect != null) {
+            process(effect, renderTarget);
         }
     }
 
@@ -98,10 +98,10 @@ public class CaptureShader {
     }
 
     public static void remove() {
-        if (shader != null) {
-            shader.close();
+        if (effect != null) {
+            effect.close();
         }
 
-        shader = null;
+        effect = null;
     }
 }

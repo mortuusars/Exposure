@@ -4,7 +4,7 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Config;
-import io.github.mortuusars.exposure.client.capture.CaptureShader;
+import io.github.mortuusars.exposure.client.capture.CapturePostEffect;
 import io.github.mortuusars.exposure.client.util.Shader;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.client.image.WrappedNativeImage;
@@ -62,6 +62,6 @@ public class BackgroundScreenshotCaptureTask extends Task<Result<Image>> {
             Shader.process(postEffect, renderTarget);
         }
 
-        CaptureShader.process(renderTarget);
+        CapturePostEffect.process(renderTarget);
     }
 }

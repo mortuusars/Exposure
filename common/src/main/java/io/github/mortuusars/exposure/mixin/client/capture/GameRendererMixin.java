@@ -1,4 +1,4 @@
-package io.github.mortuusars.exposure.mixin.client;
+package io.github.mortuusars.exposure.mixin.client.capture;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -41,10 +41,5 @@ public abstract class GameRendererMixin {
         if (useFOVSetting && FovModifier.shouldOverride()) {
             cir.setReturnValue(FovModifier.modify(cir.getReturnValue()));
         }
-    }
-
-    @Inject(method = "resetData", at = @At(value = "RETURN"))
-    void onResetData(CallbackInfo ci) {
-        ClientEvents.resetRenderData();
     }
 }

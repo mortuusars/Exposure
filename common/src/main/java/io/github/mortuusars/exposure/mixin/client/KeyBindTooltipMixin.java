@@ -22,7 +22,7 @@ public abstract class KeyBindTooltipMixin {
 
     @Inject(method = "refreshEntry", at = @At(value = "INVOKE", ordinal = 1, shift = At.Shift.AFTER,
             target = "Lnet/minecraft/client/gui/components/Button;setTooltip(Lnet/minecraft/client/gui/components/Tooltip;)V"))
-    private void changeBackpackKeyHover(CallbackInfo ci) {
+    private void changeCameraControlsKeyHover(CallbackInfo ci) {
         if (name.equals(Component.translatable("key.exposure.camera_controls"))) {
             this.changeButton.setTooltip(Tooltip.create(Component.translatable("key.exposure.camera_controls.tooltip")));
         }

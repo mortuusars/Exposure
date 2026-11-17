@@ -30,7 +30,8 @@ public abstract class GuiMixin {
     private void renderCrosshair(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         LocalPlayer player = Minecrft.playerOrThrow();
         if (Config.Client.PHOTOGRAPH_IN_HAND_HIDE_CROSSHAIR.get() && player.getXRot() > 25f
-                && (player.getMainHandItem().getItem() instanceof PhotographItem || player.getMainHandItem().getItem() instanceof StackedPhotographsItem)
+                && (player.getMainHandItem().getItem() instanceof PhotographItem
+                    || player.getMainHandItem().getItem() instanceof StackedPhotographsItem)
                 && player.getOffhandItem().isEmpty())
             ci.cancel();
     }

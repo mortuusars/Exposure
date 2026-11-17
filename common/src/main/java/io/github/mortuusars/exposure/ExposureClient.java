@@ -34,10 +34,6 @@ import java.util.Set;
 
 public class ExposureClient {
     private static final Cycles CYCLES = new Cycles();
-    private static final ExposureStore EXPOSURE_STORE = new ExposureStore();
-    private static final RenderedExposures RENDERED_EXPOSURES = new RenderedExposures();
-    private static final ImageRenderer IMAGE_RENDERER = new ImageRenderer();
-    private static final PhotographRenderer PHOTOGRAPH_RENDERER = new PhotographRenderer();
 
     public static void init() {
         CameraModelPoses.register(Exposure.Items.CAMERA.get(), new CameraPoses());
@@ -71,19 +67,19 @@ public class ExposureClient {
     }
 
     public static ExposureStore exposureStore() {
-        return EXPOSURE_STORE;
+        return Minecrft.gameRenderer().getExposureStore();
     }
 
     public static RenderedExposures renderedExposures() {
-        return RENDERED_EXPOSURES;
+        return Minecrft.gameRenderer().getRenderedExposures();
     }
 
     public static ImageRenderer imageRenderer() {
-        return IMAGE_RENDERER;
+        return Minecrft.gameRenderer().getExposureImageRenderer();
     }
 
     public static PhotographRenderer photographRenderer() {
-        return PHOTOGRAPH_RENDERER;
+        return Minecrft.gameRenderer().getExposurePhotographRenderer();
     }
 
     // --

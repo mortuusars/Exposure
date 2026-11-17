@@ -20,14 +20,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-public class RenderedExposures {
+public class RenderedExposures implements AutoCloseable {
     private final Map<String, RenderedExposureInstance> cache = new HashMap<>();
 
     public RenderableImage getOrCreate(Frame frame) {
         RenderableImage image = getOrCreateRaw(frame.identifier());
         return Censor.isAllowedToRender(frame)
-                ? image
-                : image.modifyWith(ImageEffect.CENSORED);
+              ? image
+              : image.modifyWith(ImageEffect.CENSORED);
     }
 
     public RenderableImage getOrCreateRaw(ExposureIdentifier identifier) {
@@ -42,12 +42,12 @@ public class RenderedExposures {
         }
 
         return ExposureClient.exposureStore().getOrRequest(id).map(
-                exposure -> {
-                    RenderableImage image = RenderableImage.of(id, imageFromExposure(exposure));
-                    cache.put(id, new RenderedExposureInstance(image, UnixTimestamp.Milliseconds.now()));
-                    return image;
-                },
-                RenderableImage.EMPTY);
+              exposure -> {
+                  RenderableImage image = RenderableImage.of(id, imageFromExposure(exposure));
+                  cache.put(id, new RenderedExposureInstance(image, UnixTimestamp.Milliseconds.now()));
+                  return image;
+              },
+              RenderableImage.EMPTY);
     }
 
     public void clearCacheOf(String id) {
@@ -66,6 +66,11 @@ public class RenderedExposures {
             }
             return stale;
         });
+    }
+
+    @Override
+    public void close() {
+        clearCache();
     }
 
     private @NotNull Image imageFromExposure(ExposureData exposure) {
@@ -94,6 +99,7 @@ public class RenderedExposures {
         public long getLastAccess() {
             return lastAccess;
         }
+
         public void setLastAccess(long lastAccess) {
             this.lastAccess = lastAccess;
         }

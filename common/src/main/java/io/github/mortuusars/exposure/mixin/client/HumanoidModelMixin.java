@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.mortuusars.exposure.client.animation.CameraModelPoses;
 import io.github.mortuusars.exposure.client.animation.CameraPoses;
 import io.github.mortuusars.mortaar.client.Minecrft;
@@ -104,15 +106,15 @@ public abstract class HumanoidModelMixin<T extends LivingEntity> extends Ageable
         exposure$RightArmBobbingMultiplier = 1F;
     }
 
-    @Redirect(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V",
+    @WrapOperation(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/AnimationUtils;bobModelPart(Lnet/minecraft/client/model/geom/ModelPart;FF)V"))
-    private void removeBobbing(ModelPart modelPart, float ageInTicks, float multiplier) {
+    private void removeBobbing(ModelPart modelPart, float ageInTicks, float multiplier, Operation<Void> original) {
         if (exposure$LeftArmBobbingMultiplier != 1F && modelPart == leftArm) {
             multiplier = exposure$LeftArmBobbingMultiplier * -1;
         }
         if (exposure$RightArmBobbingMultiplier != 1F && modelPart == rightArm) {
             multiplier = exposure$RightArmBobbingMultiplier;
         }
-        AnimationUtils.bobModelPart(modelPart, ageInTicks, multiplier);
+        original.call(modelPart, ageInTicks, multiplier);
     }
 }

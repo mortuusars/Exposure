@@ -6,10 +6,8 @@
   "client": [
     "client.AnvilScreenMixin",
     "client.CameraMixin",
-    "client.ClientPacketListenerMixin",
     "client.EntityMixin",
-    "client.ExposureLightTextureMixin",
-    "client.GameRendererMixin",
+    "client.capture.LightTextureMixin",
     "client.GuiMixin",
     "client.HumanoidModelMixin",
     "client.ItemFrameRendererMixin",
@@ -23,6 +21,8 @@
     "client.MouseHandlerMixin",
     "client.MultiPlayerGameModeMixin",
     "client.capture.DebugRendererMixin",
+    "client.capture.GameRendererExtension",
+    "client.capture.GameRendererMixin",
     "client.compat.iris.IrisRenderingPipelineMixin",
     "client.compat.iris.PipelineManagerMixin",
     "compat.easy_anvils.ModAnvilScreenMixin"

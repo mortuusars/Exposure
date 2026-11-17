@@ -34,7 +34,7 @@ public class ClientboundClearRenderingCachePacket implements Packet {
 
     public static class Client {
         public static void clearRenderingCache() {
-            ExposureClient.imageRenderer().clearCache();
+            ExposureClient.imageRenderer().resetData();
             ExposureClient.renderedExposures().clearCache();
         }
     }

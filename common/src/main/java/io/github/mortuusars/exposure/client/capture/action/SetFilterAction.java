@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.capture.action;
 
-import io.github.mortuusars.exposure.client.capture.CaptureShader;
+import io.github.mortuusars.exposure.client.capture.CapturePostEffect;
 import io.github.mortuusars.exposure.client.util.Shader;
 import net.minecraft.resources.ResourceLocation;
 
@@ -16,12 +16,12 @@ public class SetFilterAction implements CaptureAction {
     @Override
     public void beforeCapture() {
         Shader.setSuppressViewfinder(true);
-        filter.ifPresent(CaptureShader::apply);
+        filter.ifPresent(CapturePostEffect::apply);
     }
 
     @Override
     public void afterCapture() {
         Shader.setSuppressViewfinder(false);
-        filter.ifPresent(f -> CaptureShader.remove());
+        filter.ifPresent(f -> CapturePostEffect.remove());
     }
 }

@@ -4,6 +4,9 @@
     "net/minecraft/class_1657": [
       "io/github/mortuusars/exposure/world/entity/CameraHolder",
       "io/github/mortuusars/exposure/world/entity/CameraOperator"
+    ],
+    "net/minecraft/class_757": [
+      "io/github/mortuusars/exposure/client/ExposureGameRenderer"
     ]
   }
 }

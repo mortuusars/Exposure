@@ -50,7 +50,7 @@ public class ImageRenderer implements AutoCloseable {
         });
     }
 
-    public void clearCache() {
+    public void resetData() {
         cache.values().forEach(RenderedImageInstance::close);
         cache.clear();
     }
@@ -77,7 +77,7 @@ public class ImageRenderer implements AutoCloseable {
 
     @Override
     public void close() {
-        clearCache();
+        resetData();
     }
 
     public void addDebugInfo(Consumer<String> lines) {
