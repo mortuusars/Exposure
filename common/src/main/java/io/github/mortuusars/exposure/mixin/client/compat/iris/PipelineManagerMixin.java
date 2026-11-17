@@ -25,8 +25,7 @@ public abstract class PipelineManagerMixin {
     @WrapOperation(method = "preparePipeline", at = @At(value = "INVOKE",
             target = "Ljava/util/function/Function;apply(Ljava/lang/Object;)Ljava/lang/Object;"), remap = false)
     private <T, R> Object exposure$buildCapturePipeline(Function<NamespacedId, WorldRenderingPipeline> instance, T t, Operation<R> original) {
-        NamespacedId shaderWorldId = IrisCompat.getPipelineFactoryId((NamespacedId)original.call(instance, t));
-        return instance.apply(shaderWorldId);
+        return original.call(instance, IrisCompat.getPipelineFactoryId((NamespacedId) t));
     }
 
     @WrapOperation(method = "preparePipeline", at = @At(value = "INVOKE",
