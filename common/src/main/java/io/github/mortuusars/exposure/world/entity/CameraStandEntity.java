@@ -17,6 +17,7 @@ import io.github.mortuusars.exposure.world.sound.Sound;
 import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
@@ -29,7 +30,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -50,6 +50,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -531,53 +532,69 @@ public class CameraStandEntity extends Entity implements CameraHolder {
         }
     }
 
-    protected void travel() {
-        this.xo = this.getX();
-        this.yo = this.getY();
-        this.zo = this.getZ();
+    // Movement largely copied from LivingEntity (and simplified a bit), to make it move like an Armor Stand
 
-        this.applyGravity();
+    public void travel() {
+        double gravity = getGravity();
+        boolean falling = getDeltaMovement().y <= 0.0;
 
-        if (this.isInWater() && this.getFluidHeight(FluidTags.WATER) > 0.1F) {
-            this.setUnderwaterMovement();
-        } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > 0.1F) {
-            this.setUnderLavaMovement();
-        }
+        FluidState fluidState = level().getFluidState(blockPosition());
+        if (isInWater()) {
+            double y = getY();
+            float waterMovementEfficiency = onGround() ? 1f : 0.5f;
+            if (!onGround()) {
+                waterMovementEfficiency *= 0.5f;
+            }
 
-        if (this.level().isClientSide) {
-            this.noPhysics = false;
+            float waterSlowdown = 1.05f + ((0.54600006f - 0.8f) * waterMovementEfficiency);
+
+            move(MoverType.SELF, getDeltaMovement());
+            Vec3 deltaMovement = getDeltaMovement();
+
+            setDeltaMovement(deltaMovement.multiply(waterSlowdown, 0.8F, waterSlowdown));
+            Vec3 fluidMovement = getFluidFallingAdjustedMovement(gravity, falling, getDeltaMovement());
+            setDeltaMovement(fluidMovement);
+            if (horizontalCollision && isFree(fluidMovement.x, fluidMovement.y + 0.6F - getY() + y, fluidMovement.z)) {
+                setDeltaMovement(fluidMovement.x, 0.3F, fluidMovement.z);
+            }
         } else {
-            this.noPhysics = !this.level().noCollision(this, this.getBoundingBox().deflate(1.0E-7));
-            if (this.noPhysics) {
-                this.moveTowardsClosestSpace(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
+            BlockPos belowPos = getBlockPosBelowThatAffectsMyMovement();
+            float friction = level().getBlockState(belowPos).getBlock().getFriction();
+            float fxx = onGround() ? friction * 0.91F : 0.91F;
+            Vec3 calculatedMovement = handleRelativeFrictionAndCalculateMovement(Vec3.ZERO, friction);
+            double y = calculatedMovement.y;
+            if (!level().isClientSide || level().isLoaded(belowPos)) {
+                y -= gravity;
+            } else if (getY() > level().getMinBuildHeight()) {
+                y = -0.1;
+            } else {
+                y = 0.0;
             }
-        }
 
-        if (!this.onGround() || this.getDeltaMovement().horizontalDistanceSqr() > 1.0E-5F || (this.tickCount + this.getId()) % 4 == 0) {
-            this.move(MoverType.SELF, this.getDeltaMovement());
-            float f = 0.98F;
-            if (this.onGround()) {
-                f = this.level().getBlockState(this.getBlockPosBelowThatAffectsMyMovement()).getBlock().getFriction() * 0.98F;
-            }
-
-            this.setDeltaMovement(this.getDeltaMovement().multiply(f, 0.98, f));
-            if (this.onGround()) {
-                Vec3 vec32 = this.getDeltaMovement();
-                if (vec32.y < 0.0) {
-                    this.setDeltaMovement(vec32.multiply(1.0, -0.5, 1.0));
-                }
-            }
+            setDeltaMovement(calculatedMovement.x * fxx, y * 0.98F, calculatedMovement.z * fxx);
         }
     }
 
-    protected void setUnderwaterMovement() {
-        Vec3 vec3 = this.getDeltaMovement();
-        this.setDeltaMovement(vec3.x * 0.9F, vec3.y * 0.23F, vec3.z * 0.9F);
+    public Vec3 getFluidFallingAdjustedMovement(double gravity, boolean isFalling, Vec3 deltaMovement) {
+        if (gravity != 0.0 && !isSprinting()) {
+            double y;
+            if (isFalling && Math.abs(deltaMovement.y - 0.005) >= 0.003 && Math.abs(deltaMovement.y - gravity / 16.0) < 0.003) {
+                y = -0.003;
+            } else {
+                y = deltaMovement.y - gravity / 16.0;
+            }
+
+            return new Vec3(deltaMovement.x, y, deltaMovement.z);
+        } else {
+            return deltaMovement;
+        }
     }
 
-    protected void setUnderLavaMovement() {
-        Vec3 vec3 = this.getDeltaMovement();
-        this.setDeltaMovement(vec3.x * 0.5F, vec3.y * 0.1F, vec3.z * 0.5F);
+    public Vec3 handleRelativeFrictionAndCalculateMovement(Vec3 deltaMovement, float friction) {
+        moveRelative(0, deltaMovement);
+        setDeltaMovement(getDeltaMovement());
+        move(MoverType.SELF, getDeltaMovement());
+        return getDeltaMovement();
     }
 
     protected void checkForBoats() {
