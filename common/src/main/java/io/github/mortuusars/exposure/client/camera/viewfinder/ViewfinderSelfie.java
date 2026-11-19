@@ -81,20 +81,20 @@ public class ViewfinderSelfie {
         }
     }
 
-    public boolean mouseMove(double xRotDelta, double yRotDelta) {
+    public boolean turn(double yRot, double xRot) {
         if (!viewfinder.controlsActive() && camera.inSelfieMode() && Minecrft.options().keySprint.isDown) {
-            rotateCamera(xRotDelta, yRotDelta, false);
+            rotateCamera(yRot, xRot, false);
             return true;
         }
 
         return false;
     }
 
-    public void rotateCamera(double xRotDelta, double yRotDelta, boolean precise) {
+    public void rotateCamera(double yRot, double xRot, boolean precise) {
         double maxX = getMaxRotationXDegrees();
         double maxY = getMaxRotationYDegrees();
-        this.rawXRot = Mth.clamp(this.rawXRot + xRotDelta * 0.15, -maxX, maxX);
-        this.rawYRot = Mth.clamp(this.rawYRot + yRotDelta * 0.15, -maxY, maxY);
+        this.rawXRot = Mth.clamp(this.rawXRot + xRot * 0.15, -maxX, maxX);
+        this.rawYRot = Mth.clamp(this.rawYRot + yRot * 0.15, -maxY, maxY);
 
         double stepX = getRotationXStepDegrees() * (precise ? 0.25 : 1);
         double stepY = getRotationYStepDegrees() * (precise ? 0.25 : 1);

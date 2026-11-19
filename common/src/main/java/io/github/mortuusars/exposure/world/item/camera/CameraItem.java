@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.*;
 import io.github.mortuusars.exposure.data.*;
 import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundShutterOpenedPacket;
+import io.github.mortuusars.exposure.world.entity.stand.FlashStandFunctionality;
 import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.*;
@@ -16,7 +17,7 @@ import io.github.mortuusars.exposure.world.camera.capture.Projection;
 import io.github.mortuusars.exposure.world.camera.film.properties.FilmProperties;
 import io.github.mortuusars.exposure.world.camera.frame.*;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import io.github.mortuusars.exposure.world.item.FilmRollItem;
 import io.github.mortuusars.exposure.world.item.InterplanarProjectorItem;
 import io.github.mortuusars.exposure.world.item.SensitiveFilmItem;
@@ -311,7 +312,7 @@ public class CameraItem extends Item {
         return activate(player, player, stack);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> activateOnStand(Player player, ItemStack stack, CameraStandEntity cameraStand) {
+    public @NotNull InteractionResultHolder<ItemStack> activateOnStand(Player player, ItemStack stack, CameraStand cameraStand) {
         player.setActiveExposureCamera(new CameraOnStand(player, cameraStand, getOrCreateId(stack)));
         if (player.level().isClientSide) {
             Minecrft.releaseUseButton(); // Releasing use key to not take a shot immediately, if right click is still held.
@@ -367,7 +368,7 @@ public class CameraItem extends Item {
         }
 
         if (Config.Client.CAMERA_SHOW_TOOLTIP_DETAILS.get()) {
-            if (stack.getEntityRepresentation() instanceof CameraStandEntity) {
+            if (stack.getEntityRepresentation() instanceof CameraStand) {
                 if (Screen.hasShiftDown()) {
                     components.add(Component.translatable("item.exposure.camera.tooltip.details_attachments_screen_on_stand"));
                     components.add(Component.translatable("item.exposure.camera.tooltip.details_hotswap_on_stand"));
@@ -425,7 +426,7 @@ public class CameraItem extends Item {
         return false;
     }
 
-    public InteractionResult handleStandSneakInteraction(CameraStandEntity stand, Player player, InteractionHand hand, ItemStack cameraStack) {
+    public InteractionResult handleStandSneakInteraction(CameraStand stand, Player player, InteractionHand hand, ItemStack cameraStack) {
         ItemStack itemInHand = player.getItemInHand(hand);
         int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().selected;
         SlotAccess access = SlotAccess.forContainer(player.getInventory(), slot);
@@ -646,7 +647,7 @@ public class CameraItem extends Item {
     public boolean isOnCooldown(CameraHolder holder, ItemStack stack) {
         if (holder.asHolderEntity() instanceof Player player) {
             return player.getCooldowns().isOnCooldown(this);
-        } else if (holder instanceof CameraStandEntity stand) {
+        } else if (holder instanceof CameraStand stand) {
             return stand.isOnCooldown();
         }
         return false;
@@ -657,7 +658,7 @@ public class CameraItem extends Item {
             return player.getCooldowns().isOnCooldown(stack.getItem())
                   ? player.getCooldowns().getCooldownPercent(stack.getItem(), 0)
                   : 0;
-        } else if (holder instanceof CameraStandEntity stand) {
+        } else if (holder instanceof CameraStand stand) {
             return stand.isOnCooldown()
                   ? stand.getCooldownPercent()
                   : 0;
@@ -701,9 +702,23 @@ public class CameraItem extends Item {
         CameraId cameraId = getOrCreateId(stack);
         String exposureId = ExposureIdentifier.createId(executingPlayer);
         int lightLevel = LevelUtil.getLightLevelAt(level, entity.blockPosition());
-        boolean flash = getFlash().isAvailable(stack)
+        boolean flashFired = getFlash().isAvailable(stack)
               && getFlash().shouldFire(stack, lightLevel)
               && getFlash().fire(holder, level, stack);
+
+//        if (flashFired) {
+//            level.getEntitiesOfClass(CameraStand.class, new AABB(holder.asHolderEntity().blockPosition()).inflate(16))
+//                  .forEach(stand -> {
+//                      if (stand != holder.asHolderEntity()
+//                            && stand.getItemFunctionality() instanceof FlashStandFunctionality flashFunctionality
+//                            && flashFunctionality.isDetecting()) {
+//                          stand.activate();
+//                      }
+//                  });
+//        }
+//
+//        if (true)
+//            return;
 
         CaptureParameters captureParameters = new CaptureParameters.Builder(exposureId)
               .setCameraID(cameraId)
@@ -715,7 +730,7 @@ public class CameraItem extends Item {
               .setChromaticChannel(getChromaticChannel(stack))
               .setFilmProperties(getFilmProperties(stack))
               .extraData(CaptureParameters.SHUTTER_SPEED, CameraSettings.SHUTTER_SPEED.getOrDefault(stack))
-              .extraData(CaptureParameters.FLASH, flash)
+              .extraData(CaptureParameters.FLASH, flashFired)
               .extraData(CaptureParameters.LIGHT_LEVEL, lightLevel)
               .build();
 
@@ -751,7 +766,7 @@ public class CameraItem extends Item {
         if (holder instanceof Player player) {
             int cooldown = CameraInstances.getOptional(stack).map(CameraInstance::getDeferredCooldown).orElse(BASE_COOLDOWN);
             player.getCooldowns().addCooldown(this, cooldown);
-        } else if (holder instanceof CameraStandEntity stand) {
+        } else if (holder instanceof CameraStand stand) {
             int cooldown = CameraInstances.getOptional(stack).map(CameraInstance::getDeferredCooldown).orElse(BASE_COOLDOWN);
             stand.startCooldown(cooldown);
         }
@@ -817,7 +832,7 @@ public class CameraItem extends Item {
         if (isInSelfieMode(camera)) {
             data.put(Frame.SELFIE, true);
         }
-        if (holder instanceof CameraStandEntity) {
+        if (holder instanceof CameraStand) {
             data.put(Frame.ON_STAND, true);
         }
 

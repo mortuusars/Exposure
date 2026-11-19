@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.world.item;
 
-import io.github.mortuusars.exposure.world.entity.GlassPhotographFrameEntity;
-import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
+import io.github.mortuusars.exposure.world.entity.GlassPhotographFrame;
+import io.github.mortuusars.exposure.world.entity.PhotographFrame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -13,7 +13,7 @@ public class GlassPhotographFrameItem extends PhotographFrameItem {
     }
 
     @Override
-    public @NotNull PhotographFrameEntity createEntity(Level level, BlockPos pos, Direction direction) {
-        return new GlassPhotographFrameEntity(level, pos, direction);
+    public @NotNull PhotographFrame createEntity(Level level, BlockPos pos, Direction direction) {
+        return new GlassPhotographFrame(level, pos, direction);
     }
 }

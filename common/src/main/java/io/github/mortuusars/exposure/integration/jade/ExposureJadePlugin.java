@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.integration.jade;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.block.LightroomBlock;
 import io.github.mortuusars.exposure.world.block.entity.LightroomBlockEntity;
-import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
+import io.github.mortuusars.exposure.world.entity.PhotographFrame;
 import io.github.mortuusars.exposure.integration.jade.component_provider.LightroomComponentProvider;
 import io.github.mortuusars.exposure.integration.jade.component_provider.PhotographFrameProvider;
 import net.minecraft.resources.ResourceLocation;
@@ -25,6 +25,6 @@ public class ExposureJadePlugin implements IWailaPlugin {
     @Override
     public void registerClient(IWailaClientRegistration registration) {
         registration.registerBlockComponent(LightroomComponentProvider.INSTANCE, LightroomBlock.class);
-        registration.registerEntityComponent(PhotographFrameProvider.INSTANCE, PhotographFrameEntity.class);
+        registration.registerEntityComponent(PhotographFrameProvider.INSTANCE, PhotographFrame.class);
     }
 }

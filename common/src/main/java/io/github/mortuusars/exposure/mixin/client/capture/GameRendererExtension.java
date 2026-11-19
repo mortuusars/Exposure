@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
-public class GameRendererExtension implements ExposureGameRenderer {
+public abstract class GameRendererExtension implements ExposureGameRenderer {
     @Unique
     private final ExposureStore exposure$exposureStore = new ExposureStore();
     @Unique

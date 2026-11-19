@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.client.render.image.RenderCoordinates;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographStyle;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
-import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
+import io.github.mortuusars.exposure.world.entity.PhotographFrame;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.mortaar.Platform;
 import net.minecraft.client.Minecraft;
@@ -39,7 +39,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4f;
 
-public class PhotographFrameEntityRenderer<T extends PhotographFrameEntity> extends EntityRenderer<T> {
+public class PhotographFrameEntityRenderer<T extends PhotographFrame> extends EntityRenderer<T> {
     protected final BlockRenderDispatcher blockRenderer;
 
     public PhotographFrameEntityRenderer(EntityRendererProvider.Context context) {

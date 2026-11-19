@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.mixin;
 
 import io.github.mortuusars.mortaar.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundCameraStandSetRotationsPacket;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -21,14 +21,14 @@ public class ServerEntityMixin {
 
     @Inject(method = "addPairing", at = @At("RETURN"))
     private void onAddPairing(ServerPlayer player, CallbackInfo ci) {
-        if (this.entity instanceof CameraStandEntity stand) {
+        if (this.entity instanceof CameraStand stand) {
             Packets.sendToClient(new ClientboundCameraStandSetRotationsPacket(stand.getId(), stand.getYRot(), stand.getXRot()), player);
         }
     }
 
     @Inject(method = "sendChanges", at = @At("RETURN"))
     private void onSendChanges(CallbackInfo ci) {
-        if (this.entity instanceof CameraStandEntity stand) {
+        if (this.entity instanceof CameraStand stand) {
             stand.syncRotationToClientsIfNeeded();
         }
     }

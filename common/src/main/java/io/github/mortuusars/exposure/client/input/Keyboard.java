@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 
-public class KeyboardHandler {
+public class Keyboard {
     @Nullable
     private static KeyMapping openCameraControlsKey = null;
 

@@ -42,26 +42,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
-public class PhotographFrameEntity extends HangingEntity {
+public class PhotographFrame extends HangingEntity {
     public static final Logger LOGGER = Exposure.LOGGER;
 
-    protected static final EntityDataAccessor<Integer> DATA_SIZE = SynchedEntityData.defineId(PhotographFrameEntity.class, EntityDataSerializers.INT);
-    protected static final EntityDataAccessor<ItemStack> DATA_FRAME_ITEM = SynchedEntityData.defineId(PhotographFrameEntity.class, EntityDataSerializers.ITEM_STACK);
-    protected static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(PhotographFrameEntity.class, EntityDataSerializers.ITEM_STACK);
-    protected static final EntityDataAccessor<Integer> DATA_ITEM_ROTATION = SynchedEntityData.defineId(PhotographFrameEntity.class, EntityDataSerializers.INT);
-    protected static final EntityDataAccessor<Boolean> DATA_GLOWING = SynchedEntityData.defineId(PhotographFrameEntity.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Integer> DATA_SIZE = SynchedEntityData.defineId(PhotographFrame.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<ItemStack> DATA_FRAME_ITEM = SynchedEntityData.defineId(PhotographFrame.class, EntityDataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<ItemStack> DATA_ITEM = SynchedEntityData.defineId(PhotographFrame.class, EntityDataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<Integer> DATA_ITEM_ROTATION = SynchedEntityData.defineId(PhotographFrame.class, EntityDataSerializers.INT);
+    protected static final EntityDataAccessor<Boolean> DATA_GLOWING = SynchedEntityData.defineId(PhotographFrame.class, EntityDataSerializers.BOOLEAN);
 
     protected int size = 0;
 
-    public PhotographFrameEntity(EntityType<? extends PhotographFrameEntity> entityType, Level level) {
+    public PhotographFrame(EntityType<? extends PhotographFrame> entityType, Level level) {
         super(entityType, level);
     }
 
-    public PhotographFrameEntity(Level level, BlockPos pos, Direction facingDirection) {
+    public PhotographFrame(Level level, BlockPos pos, Direction facingDirection) {
         this(Exposure.EntityTypes.PHOTOGRAPH_FRAME.get(), level, pos, facingDirection);
     }
 
-    protected PhotographFrameEntity(EntityType<? extends PhotographFrameEntity> entityType, Level level, BlockPos pos, Direction facingDirection) {
+    protected PhotographFrame(EntityType<? extends PhotographFrame> entityType, Level level, BlockPos pos, Direction facingDirection) {
         super(entityType, level, pos);
         setDirection(facingDirection);
         setItem(ItemStack.EMPTY);
@@ -428,12 +428,12 @@ public class PhotographFrameEntity extends HangingEntity {
 
                 @Override
                 public @NotNull ItemStack get() {
-                    return PhotographFrameEntity.this.getItem();
+                    return PhotographFrame.this.getItem();
                 }
 
                 @Override
                 public boolean set(ItemStack carried) {
-                    PhotographFrameEntity.this.setItem(carried);
+                    PhotographFrame.this.setItem(carried);
                     return true;
                 }
             };

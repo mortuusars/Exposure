@@ -39,7 +39,7 @@ public class Viewfinder {
                   close();
               }
           }),
-          Key.press(KeyboardHandler.getCameraControlsKey())
+          Key.press(Keyboard.getCameraControlsKey())
                 .onlyIf(this::isLookingThrough)
                 .onlyIf(() -> !controlsActive())
                 .executes(() -> {
@@ -176,7 +176,7 @@ public class Viewfinder {
         if (!canAttack() && Minecrft.options().keyAttack.matchesMouse(button))
             return true; // Block attacks
 
-        if (KeyboardHandler.getCameraControlsKey().matchesMouse(button)) {
+        if (Keyboard.getCameraControlsKey().matchesMouse(button)) {
             openControlsScreen();
             return false; // Do not cancel the event to keep sneaking
         }

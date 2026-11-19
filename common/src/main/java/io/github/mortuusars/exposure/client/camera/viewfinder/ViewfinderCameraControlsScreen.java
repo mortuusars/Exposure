@@ -8,8 +8,8 @@ import io.github.mortuusars.exposure.client.gui.component.CycleButton;
 import io.github.mortuusars.exposure.client.gui.screen.camera.button.FocalLengthButton;
 import io.github.mortuusars.exposure.client.gui.screen.camera.button.FrameCounterButton;
 import io.github.mortuusars.exposure.client.gui.screen.camera.button.ShutterSpeedButton;
-import io.github.mortuusars.exposure.client.input.KeyboardHandler;
-import io.github.mortuusars.exposure.client.input.MouseHandler;
+import io.github.mortuusars.exposure.client.input.Keyboard;
+import io.github.mortuusars.exposure.client.input.Mouse;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.client.util.ZoomDirection;
 import io.github.mortuusars.exposure.world.camera.Camera;
@@ -218,14 +218,14 @@ public class ViewfinderCameraControlsScreen extends Screen {
     protected void refreshMovementKeys() {
         Consumer<KeyMapping> update = keyMapping -> {
             if (keyMapping.key.getType() == InputConstants.Type.MOUSE) {
-                keyMapping.setDown(MouseHandler.isMouseButtonHeld(keyMapping.key.getValue()));
+                keyMapping.setDown(Mouse.isMouseButtonHeld(keyMapping.key.getValue()));
             } else {
                 long windowId = Minecraft.getInstance().getWindow().getWindow();
                 keyMapping.setDown(InputConstants.isKeyDown(windowId, keyMapping.key.getValue()));
             }
         };
 
-        update.accept(KeyboardHandler.getCameraControlsKey());
+        update.accept(Keyboard.getCameraControlsKey());
         Options opt = Minecrft.options();
         update.accept(opt.keyUp);
         update.accept(opt.keyDown);
@@ -280,7 +280,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (KeyboardHandler.getCameraControlsKey().matchesMouse(button)
+        if (Keyboard.getCameraControlsKey().matchesMouse(button)
                 || (Config.Client.VIEWFINDER_MIDDLE_CLICK_CONTROLS.get() && button == InputConstants.MOUSE_BUTTON_MIDDLE)) {
             if (isToggleTimeReached()) {
                 this.onClose();
@@ -301,7 +301,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
         if (camera.inSelfieMode() && Minecrft.options().keySprint.isDown) {
             // Parameters are correct. Stop nagging me, Intellij
             //noinspection SuspiciousNameCombination
-            viewfinder.selfie.rotateCamera(dragY, dragX, true);
+            viewfinder.selfie.rotateCamera(dragX, dragY, true);
             return true;
         }
 
@@ -318,7 +318,7 @@ public class ViewfinderCameraControlsScreen extends Screen {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (KeyboardHandler.getCameraControlsKey().matches(keyCode, scanCode)) {
+        if (Keyboard.getCameraControlsKey().matches(keyCode, scanCode)) {
             if (isToggleTimeReached())
                 this.onClose();
 

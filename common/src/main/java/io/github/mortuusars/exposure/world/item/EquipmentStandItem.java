@@ -1,21 +1,14 @@
 package io.github.mortuusars.exposure.world.item;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.render.CameraStandEntityRenderer;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.EquipmentStand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
@@ -30,8 +23,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 
-public class CameraStandItem extends Item {
-    public CameraStandItem(Properties properties) {
+public class EquipmentStandItem extends Item {
+    public EquipmentStandItem(Properties properties) {
         super(properties);
     }
 
@@ -45,24 +38,21 @@ public class CameraStandItem extends Item {
         BlockPos blockPos = blockPlaceContext.getClickedPos();
         ItemStack itemStack = context.getItemInHand();
         Vec3 pos = Vec3.atBottomCenterOf(blockPos);
-        AABB aabb = Exposure.EntityTypes.CAMERA_STAND.get().getDimensions().makeBoundingBox(pos.x(), pos.y(), pos.z());
+        AABB aabb = Exposure.EntityTypes.EQUIPMENT_STAND.get().getDimensions().makeBoundingBox(pos.x(), pos.y(), pos.z());
         if (!level.noCollision(null, aabb) || !level.getEntities(null, aabb).isEmpty()) return InteractionResult.FAIL;
 
         if (level instanceof ServerLevel serverLevel) {
-            Consumer<CameraStandEntity> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
-            CameraStandEntity cameraStand = Exposure.EntityTypes.CAMERA_STAND.get()
+            Consumer<EquipmentStand> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
+            EquipmentStand stand = Exposure.EntityTypes.EQUIPMENT_STAND.get()
                     .create(serverLevel, consumer, blockPos, MobSpawnType.SPAWN_EGG, true, true);
-            if (cameraStand == null) {
+            if (stand == null) {
                 return InteractionResult.FAIL;
             }
 
-            if (context.getPlayer() != null) {
-                cameraStand.setOwnerPlayer(context.getPlayer());
-            }
-            cameraStand.moveTo(cameraStand.getX(), cameraStand.getY(), cameraStand.getZ(), 0.0F, 0.0F);
-            serverLevel.addFreshEntityWithPassengers(cameraStand);
-            cameraStand.playPlaceSound();
-            cameraStand.gameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
+            stand.moveTo(stand.getX(), stand.getY(), stand.getZ(), 0.0F, 0.0F);
+            serverLevel.addFreshEntityWithPassengers(stand);
+            stand.playPlaceSound();
+            stand.gameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
         }
 
         itemStack.shrink(1);
@@ -72,25 +62,23 @@ public class CameraStandItem extends Item {
     public InteractionResult interactWithBoat(Player player, InteractionHand hand, Boat boat) {
         if (!player.isSecondaryUseActive()) return InteractionResult.PASS;
         ItemStack itemStack = player.getItemInHand(hand);
-        if (!(itemStack.getItem() instanceof CameraStandItem)) return InteractionResult.PASS;
+        if (!(itemStack.getItem() instanceof EquipmentStandItem)) return InteractionResult.PASS;
         if (boat.getPassengers().size() >= 2) return InteractionResult.PASS;
 
         if (player.level() instanceof ServerLevel serverLevel) {
-            Consumer<CameraStandEntity> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, player);
-            CameraStandEntity cameraStand = Exposure.EntityTypes.CAMERA_STAND.get()
+            Consumer<EquipmentStand> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, player);
+            EquipmentStand stand = Exposure.EntityTypes.EQUIPMENT_STAND.get()
                     .create(serverLevel, consumer, boat.blockPosition(), MobSpawnType.SPAWN_EGG, true, true);
-            if (cameraStand == null) {
+            if (stand == null) {
                 return InteractionResult.FAIL;
             }
 
-            cameraStand.setOwnerPlayer(player);
+            stand.startRiding(boat);
+            boat.positionRider(stand);
 
-            cameraStand.startRiding(boat);
-            boat.positionRider(cameraStand);
-
-            serverLevel.addFreshEntityWithPassengers(cameraStand);
-            cameraStand.playPlaceSound();
-            cameraStand.gameEvent(GameEvent.ENTITY_PLACE, player);
+            serverLevel.addFreshEntityWithPassengers(stand);
+            stand.playPlaceSound();
+            stand.gameEvent(GameEvent.ENTITY_PLACE, player);
 
             itemStack.shrink(1);
             player.setItemInHand(hand, itemStack);

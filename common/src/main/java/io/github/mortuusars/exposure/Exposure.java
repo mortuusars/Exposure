@@ -26,10 +26,11 @@ import io.github.mortuusars.exposure.world.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.data.ColorPalette;
 import io.github.mortuusars.exposure.data.Filter;
 import io.github.mortuusars.exposure.data.Lens;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
-import io.github.mortuusars.exposure.world.entity.GlassPhotographFrameEntity;
-import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
+import io.github.mortuusars.exposure.world.entity.GlassPhotographFrame;
+import io.github.mortuusars.exposure.world.entity.PhotographFrame;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
+import io.github.mortuusars.exposure.world.entity.stand.EquipmentStand;
 import io.github.mortuusars.exposure.world.inventory.*;
 import io.github.mortuusars.exposure.world.item.*;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
@@ -246,8 +247,8 @@ public class Exposure {
         public static final Supplier<GlassPhotographFrameItem> CLEAR_PHOTOGRAPH_FRAME = REGISTRAR.item("glass_photograph_frame",
                 () -> new GlassPhotographFrameItem(new Item.Properties()));
 
-        public static final Supplier<CameraStandItem> CAMERA_STAND = REGISTRAR.item("camera_stand",
-                () -> new CameraStandItem(new Item.Properties()));
+        public static final Supplier<EquipmentStandItem> EQUIPMENT_STAND = REGISTRAR.item("equipment_stand",
+                () -> new EquipmentStandItem(new Item.Properties()));
 
         public static final Supplier<BlockItem> LIGHTROOM = REGISTRAR.item("lightroom",
                 () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));
@@ -263,7 +264,8 @@ public class Exposure {
                         .icon(() -> new ItemStack(Items.CAMERA.get()))
                         .displayItems((params, output) -> {
                             output.accept(Items.CAMERA.get());
-                            output.accept(Items.CAMERA_STAND.get());
+                            output.accept(Items.EQUIPMENT_STAND.get());
+                            output.accept(Items.INTERPLANAR_PROJECTOR.get());
                             output.accept(Items.BLACK_AND_WHITE_FILM.get());
                             output.accept(Items.COLOR_FILM.get());
                             output.accept(Items.HIGH_SENSITIVITY_BLACK_AND_WHITE_FILM.get());
@@ -276,7 +278,6 @@ public class Exposure {
                             output.accept(Items.ALBUM.get());
                             output.accept(Items.PHOTOGRAPH_FRAME.get());
                             output.accept(Items.CLEAR_PHOTOGRAPH_FRAME.get());
-                            output.accept(Items.INTERPLANAR_PROJECTOR.get());
                             output.accept(Items.LIGHTROOM.get());
                         })
                         .build());
@@ -421,20 +422,26 @@ public class Exposure {
     }
 
     public static class EntityTypes {
-        public static final Supplier<EntityType<PhotographFrameEntity>> PHOTOGRAPH_FRAME = REGISTRAR.entityType("photograph_frame",
-                PhotographFrameEntity::new, MobCategory.MISC, false, builder -> builder
+        public static final Supplier<EntityType<PhotographFrame>> PHOTOGRAPH_FRAME = REGISTRAR.entityType("photograph_frame",
+                PhotographFrame::new, MobCategory.MISC, false, builder -> builder
                         .sized(0.5f, 0.5f)
                         .updateInterval(Integer.MAX_VALUE)
                         .eyeHeight(0));
 
-        public static final Supplier<EntityType<GlassPhotographFrameEntity>> CLEAR_PHOTOGRAPH_FRAME = REGISTRAR.entityType("glass_photograph_frame",
-                GlassPhotographFrameEntity::new, MobCategory.MISC, false, builder -> builder
+        public static final Supplier<EntityType<GlassPhotographFrame>> CLEAR_PHOTOGRAPH_FRAME = REGISTRAR.entityType("glass_photograph_frame",
+                GlassPhotographFrame::new, MobCategory.MISC, false, builder -> builder
                         .sized(0.5f, 0.5f)
                         .updateInterval(Integer.MAX_VALUE)
                         .eyeHeight(0));
 
-        public static final Supplier<EntityType<CameraStandEntity>> CAMERA_STAND = REGISTRAR.entityType("camera_stand",
-                CameraStandEntity::new, MobCategory.MISC, false, builder -> builder
+        public static final Supplier<EntityType<EquipmentStand>> EQUIPMENT_STAND = REGISTRAR.entityType("equipment_stand",
+              EquipmentStand::new, MobCategory.MISC, false, builder -> builder
+                    .sized(0.7f, 1.6f)
+                    .updateInterval(3)
+                    .eyeHeight(1.40625f));
+
+        public static final Supplier<EntityType<CameraStand>> CAMERA_STAND = REGISTRAR.entityType("camera_stand",
+                CameraStand::new, MobCategory.MISC, false, builder -> builder
                         .sized(0.7f, 1.6f)
                         .updateInterval(3)
                         .eyeHeight(1.40625f));
@@ -445,7 +452,7 @@ public class Exposure {
 
     public static class MenuTypes {
         public static final Supplier<MenuType<CameraInHandAttachmentsMenu>> CAMERA_IN_HAND = REGISTRAR.menuType("camera_in_hand", CameraInHandAttachmentsMenu::fromBuffer);
-        public static final Supplier<MenuType<CameraOnStandAttachmentsMenu>> CAMERA_ON_STAND = REGISTRAR.menuType("camera_on_stand", CameraOnStandAttachmentsMenu::fromBuffer);
+        public static final Supplier<MenuType<CameraOnStandAttachmentsMenu>> CAMERA_ON_STAND = REGISTRAR.menuType("camera_on_stand", CameraOnStandAttachmentsMenu::fromNetwork);
         public static final Supplier<MenuType<AlbumMenu>> ALBUM = REGISTRAR.menuType("album", AlbumMenu::fromBuffer);
         public static final Supplier<MenuType<SignedAlbumMenu>> SIGNED_ALBUM = REGISTRAR.menuType("signed_album", SignedAlbumMenu::fromBuffer);
         public static final Supplier<MenuType<LecternAlbumMenu>> LECTERN_ALBUM = REGISTRAR.menuType("lectern_album", LecternAlbumMenu::new);
@@ -507,6 +514,7 @@ public class Exposure {
         public static final Supplier<SoundEvent> PHOTOGRAPH_FRAME_REMOVE_ITEM = register("item", "photograph_frame.remove_item");
         public static final Supplier<SoundEvent> PHOTOGRAPH_FRAME_ROTATE_ITEM = register("item", "photograph_frame.rotate_item");
 
+        //TODO: Rename sounds (and subtitles)
         public static final Supplier<SoundEvent> CAMERA_STAND_PLACE = register("entity", "camera_stand.place");
         public static final Supplier<SoundEvent> CAMERA_STAND_HIT = register("entity", "camera_stand.hit");
         public static final Supplier<SoundEvent> CAMERA_STAND_BREAK = register("entity", "camera_stand.break");

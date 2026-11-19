@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.world.item;
 
-import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
+import io.github.mortuusars.exposure.world.entity.PhotographFrame;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
@@ -31,7 +31,7 @@ public class PhotographFrameItem extends Item {
             return InteractionResult.FAIL;
 
         Level level = context.getLevel();
-        PhotographFrameEntity frameEntity = createEntity(level, resultPos, direction);
+        PhotographFrame frameEntity = createEntity(level, resultPos, direction);
 
         CustomData customData = itemInHand.getOrDefault(DataComponents.ENTITY_DATA, CustomData.EMPTY);
         if (!customData.isEmpty()) {
@@ -56,7 +56,7 @@ public class PhotographFrameItem extends Item {
         return InteractionResult.FAIL;
     }
 
-    public @NotNull PhotographFrameEntity createEntity(Level level, BlockPos pos, Direction direction) {
-        return new PhotographFrameEntity(level, pos, direction);
+    public @NotNull PhotographFrame createEntity(Level level, BlockPos pos, Direction direction) {
+        return new PhotographFrame(level, pos, direction);
     }
 }

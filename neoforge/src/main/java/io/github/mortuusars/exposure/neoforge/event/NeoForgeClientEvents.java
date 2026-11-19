@@ -4,14 +4,15 @@ import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.ExposureClientReloadListener;
 import io.github.mortuusars.exposure.client.gui.tooltip.CameraStandTooltip;
-import io.github.mortuusars.exposure.client.input.KeyboardHandler;
+import io.github.mortuusars.exposure.client.input.Keyboard;
 import io.github.mortuusars.exposure.client.gui.tooltip.PhotographClientTooltip;
 import io.github.mortuusars.exposure.client.gui.screen.ItemRenameScreen;
 import io.github.mortuusars.exposure.client.gui.screen.album.AlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.album.LecternAlbumScreen;
 import io.github.mortuusars.exposure.client.gui.screen.camera.CameraAttachmentsScreen;
 import io.github.mortuusars.exposure.client.gui.screen.LightroomScreen;
-import io.github.mortuusars.exposure.client.render.CameraStandEntityRenderer;
+import io.github.mortuusars.exposure.client.render.CameraStandRenderer;
+import io.github.mortuusars.exposure.client.render.EquipmentStandRenderer;
 import io.github.mortuusars.exposure.client.render.GlassPhotographFrameEntityRenderer;
 import io.github.mortuusars.exposure.client.render.PhotographFrameEntityRenderer;
 import io.github.mortuusars.exposure.world.inventory.tooltip.PhotographTooltip;
@@ -50,7 +51,8 @@ public class NeoForgeClientEvents {
         public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(Exposure.EntityTypes.PHOTOGRAPH_FRAME.get(), PhotographFrameEntityRenderer::new);
             event.registerEntityRenderer(Exposure.EntityTypes.CLEAR_PHOTOGRAPH_FRAME.get(), GlassPhotographFrameEntityRenderer::new);
-            event.registerEntityRenderer(Exposure.EntityTypes.CAMERA_STAND.get(), CameraStandEntityRenderer::new);
+            event.registerEntityRenderer(Exposure.EntityTypes.EQUIPMENT_STAND.get(), EquipmentStandRenderer::new);
+            event.registerEntityRenderer(Exposure.EntityTypes.CAMERA_STAND.get(), CameraStandRenderer::new);
         }
 
         @SubscribeEvent
@@ -70,7 +72,7 @@ public class NeoForgeClientEvents {
 
         @SubscribeEvent
         public static void registerKeyMappings(RegisterKeyMappingsEvent event) {
-            KeyboardHandler.registerKeymappings(key -> {
+            Keyboard.registerKeymappings(key -> {
                 event.register(key);
                 return key;
             });

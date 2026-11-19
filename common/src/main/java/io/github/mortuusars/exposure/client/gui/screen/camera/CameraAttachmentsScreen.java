@@ -9,7 +9,7 @@ import io.github.mortuusars.exposure.client.gui.screen.ItemListScreen;
 import io.github.mortuusars.exposure.client.gui.screen.element.ToggleImageButton;
 import io.github.mortuusars.exposure.client.gui.toast.BetterTutorialToast;
 import io.github.mortuusars.exposure.client.gui.toast.ToastIcon;
-import io.github.mortuusars.exposure.client.input.KeyboardHandler;
+import io.github.mortuusars.exposure.client.input.Keyboard;
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.mortaar.util.color.Color;
 import io.github.mortuusars.exposure.data.Lenses;
@@ -279,7 +279,7 @@ public class CameraAttachmentsScreen extends AbstractContainerScreen<AbstractCam
         if (isMouseOver(flash, x, y)) {
             guiGraphics.renderTooltip(font, getTooltipLines(translate("flash.tooltip")), x, y);
         } else if (isMouseOver(viewfinder, x, y)) {
-            Component controlsKey = translateKey(KeyboardHandler.getCameraControlsKey(), ChatFormatting.GRAY);
+            Component controlsKey = translateKey(Keyboard.getCameraControlsKey(), ChatFormatting.GRAY);
             Component middleClick = Config.Client.VIEWFINDER_MIDDLE_CLICK_CONTROLS.get()
                   ? translate("viewfinder.tooltip.or_middle_click")
                   : Component.empty();

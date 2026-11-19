@@ -5,7 +5,7 @@ import io.github.mortuusars.mortaar.network.packet.Packet;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -34,7 +34,7 @@ public record ClientboundActiveCameraOnStandSetPacket(int operatorEntityId, int 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
         if (player.level().getEntity(operatorEntityId) instanceof CameraOperator operator
-                && player.level().getEntity(cameraStandId) instanceof CameraStandEntity cameraStand) {
+                && player.level().getEntity(cameraStandId) instanceof CameraStand cameraStand) {
             operator.setActiveExposureCamera(new CameraOnStand(operator, cameraStand, cameraId));
         }
         return true;

@@ -6,8 +6,6 @@
   "client": [
     "client.AnvilScreenMixin",
     "client.CameraMixin",
-    "client.EntityMixin",
-    "client.capture.LightTextureMixin",
     "client.GuiMixin",
     "client.HumanoidModelMixin",
     "client.ItemFrameRendererMixin",
@@ -18,19 +16,19 @@
     "client.KeyMappingMixin",
     "client.LocalPlayerMixin",
     "client.MinecraftMixin",
-    "client.MouseHandlerMixin",
     "client.MultiPlayerGameModeMixin",
     "client.capture.DebugRendererMixin",
     "client.capture.GameRendererExtension",
     "client.capture.GameRendererMixin",
+    "client.capture.LightTextureMixin",
     "client.compat.iris.IrisRenderingPipelineMixin",
     "client.compat.iris.PipelineManagerMixin",
+    "client.control.MouseHandlerMixin",
     "compat.easy_anvils.ModAnvilScreenMixin"
   ],
   "mixins": [
     "AnvilMenuMixin",
     "BoatMixin",
-    "EntityMixin",
     "LecternBlockEntityAccessor",
     "LecternBlockEntityMixin",
     "LecternMixin",
@@ -41,7 +39,9 @@
     "ServerEntityMixin",
     "ServerGamePacketListenerMixin",
     "ServerPlayerMixin",
-    "compat.easy_anvils.ModAnvilMenuMixin"
+    "client.control.EntityMixin",
+    "compat.easy_anvils.ModAnvilMenuMixin",
+    "stand_spyglass.PlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

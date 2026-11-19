@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.network.packet.clientbound;
 
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.mortaar.network.packet.Packet;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -30,7 +30,7 @@ public record ClientboundCameraStandSetRotationsPacket(int entityId, float yRot,
 
     @Override
     public boolean handle(PacketFlow direction, Player player) {
-        if (player.level().getEntity(entityId) instanceof CameraStandEntity stand) {
+        if (player.level().getEntity(entityId) instanceof CameraStand stand) {
             stand.setYRot(yRot);
             stand.setXRot(xRot);
         }

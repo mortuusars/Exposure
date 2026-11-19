@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.gui.tooltip;
 
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.mortaar.client.Minecrft;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -22,7 +22,7 @@ public class CameraStandTooltip {
         if (minecraft.options.hideGui) return;
         if (minecraft.level == null || minecraft.player == null) return;
         if (minecraft.screen != null || !(minecraft.hitResult instanceof EntityHitResult entityHitResult)) return;
-        if (!(entityHitResult.getEntity() instanceof CameraStandEntity stand)) return;
+        if (!(entityHitResult.getEntity() instanceof CameraStand stand)) return;
         if (stand.getCamera().isEmpty()) return;
 
         int x = minecraft.getWindow().getGuiScaledWidth() / 2 + 16;

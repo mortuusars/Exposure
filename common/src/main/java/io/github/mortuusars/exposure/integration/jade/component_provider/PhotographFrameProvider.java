@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.integration.jade.component_provider;
 
-import io.github.mortuusars.exposure.world.entity.PhotographFrameEntity;
+import io.github.mortuusars.exposure.world.entity.PhotographFrame;
 import io.github.mortuusars.exposure.integration.jade.ExposureJadePlugin;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -14,7 +14,7 @@ public enum PhotographFrameProvider implements IEntityComponentProvider {
     INSTANCE;
 
     public void appendTooltip(ITooltip tooltip, EntityAccessor accessor, IPluginConfig config) {
-        if (accessor.getEntity() instanceof PhotographFrameEntity photographFrame) {
+        if (accessor.getEntity() instanceof PhotographFrame photographFrame) {
             ItemStack item = photographFrame.getItem();
             if (!item.isEmpty()) {
                 tooltip.add(IDisplayHelper.get().stripColor(item.getHoverName()));

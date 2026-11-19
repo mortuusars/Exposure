@@ -6,6 +6,7 @@ import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import io.github.mortuusars.exposure.world.sound.Sound;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,6 +21,10 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class Flash {
     public SoundEvent getSound() {
@@ -42,6 +47,33 @@ public class Flash {
         };
     }
 
+//    public boolean fire(CameraHolder holder, ServerLevel level, ItemStack stack) {
+//        Entity entity = holder.asHolderEntity();
+//
+//        List<BlockPos> flashPositions = findPositions(holder, 8);
+//        if (flashPositions.isEmpty()) {
+//            return false;
+//        }
+//
+//        for (BlockPos pos : flashPositions) {
+//            level.setBlock(pos, Exposure.Blocks.FLASH.get().defaultBlockState()
+//                  .setValue(FlashBlock.WATERLOGGED, level.getFluidState(pos).isSourceOfType(Fluids.WATER)), Block.UPDATE_ALL_IMMEDIATE);
+////            level.sendParticles(new BlockParticleOption(ParticleTypes.BLOCK_MARKER, Blocks.LIGHT.defaultBlockState()),
+////                  pos.getX() + 0.5f,
+////                  pos.getY() + 0.5f,
+////                  pos.getZ() + 0.5f,
+////                  1, 0, 0, 0, 0
+////            );
+//        }
+//
+//        Sound.play(entity, getSound(), entity.getSoundSource());
+//
+//        entity.gameEvent(GameEvent.PRIME_FUSE);
+//        holder.getServerPlayerAwardedForExposure().ifPresent(player -> player.awardStat(Exposure.Stats.FLASHES_TRIGGERED.get()));
+//        sendParticlesToOtherPlayers(holder, level);
+//        return true;
+//    }
+
     public boolean fire(CameraHolder holder, ServerLevel level, ItemStack stack) {
         Entity entity = holder.asHolderEntity();
 
@@ -63,6 +95,44 @@ public class Flash {
 
         return true;
     }
+
+//    protected List<BlockPos> findPositions(CameraHolder holder, int distance) {
+//        Entity entity = holder.asHolderEntity();
+//        BlockPos headPos = BlockPos.containing(entity.getEyePosition());
+//
+//        List<BlockPos> positions = new ArrayList<>();
+//
+////        if (isPositionSuitable(entity.level(), headPos)) {
+////            positions.add(headPos);
+////        }
+////        else {
+////            for (Direction direction : Direction.values()) {
+////                BlockPos relative = headPos.relative(direction);
+////                if (isPositionSuitable(entity.level(), relative)) {
+////                    positions.add(relative);
+////                    break;
+////                }
+////            }
+////        }
+//
+//        for (int i = 0; i < distance; i++) {
+//            Vec3 further = holder.asHolderEntity().getEyePosition().add(holder.asHolderEntity().getLookAngle().scale(i));
+//            BlockPos furtherPos = BlockPos.containing(further);
+//            if (isPositionSuitable(entity.level(), furtherPos)) {
+//                positions.add(furtherPos);
+//            } else {
+//                for (Direction direction : Direction.values()) {
+//                    BlockPos relative = furtherPos.relative(direction);
+//                    if (isPositionSuitable(entity.level(), relative)) {
+//                        positions.add(relative);
+//                        break;
+//                    }
+//                }
+//            }
+//        }
+//
+//        return positions;
+//    }
 
     protected @Nullable BlockPos findPosition(CameraHolder holder) {
         Entity entity = holder.asHolderEntity();

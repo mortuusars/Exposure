@@ -4,8 +4,9 @@ import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.client.ConfigScreenFactory
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.gui.tooltip.CameraStandTooltip;
-import io.github.mortuusars.exposure.client.input.KeyboardHandler;
-import io.github.mortuusars.exposure.client.render.CameraStandEntityRenderer;
+import io.github.mortuusars.exposure.client.input.Keyboard;
+import io.github.mortuusars.exposure.client.render.CameraStandRenderer;
+import io.github.mortuusars.exposure.client.render.EquipmentStandRenderer;
 import io.github.mortuusars.exposure.client.render.GlassPhotographFrameEntityRenderer;
 import io.github.mortuusars.exposure.fabric.resources.ExposureFabricClientReloadListener;
 import io.github.mortuusars.exposure.client.gui.tooltip.PhotographClientTooltip;
@@ -38,7 +39,7 @@ public class ExposureFabricClient implements ClientModInitializer {
 
         ColorProviderRegistry.ITEM.register(CameraItem::getGlassTintColor, Exposure.Items.CAMERA.get());
 
-        KeyboardHandler.registerKeymappings(KeyBindingHelper::registerKeyBinding);
+        Keyboard.registerKeymappings(KeyBindingHelper::registerKeyBinding);
 
         MenuScreens.register(Exposure.MenuTypes.CAMERA_IN_HAND.get(), CameraAttachmentsScreen::new);
         MenuScreens.register(Exposure.MenuTypes.CAMERA_ON_STAND.get(), CameraAttachmentsScreen::new);
@@ -54,7 +55,8 @@ public class ExposureFabricClient implements ClientModInitializer {
 
         EntityRendererRegistry.register(Exposure.EntityTypes.PHOTOGRAPH_FRAME.get(), PhotographFrameEntityRenderer::new);
         EntityRendererRegistry.register(Exposure.EntityTypes.CLEAR_PHOTOGRAPH_FRAME.get(), GlassPhotographFrameEntityRenderer::new);
-        EntityRendererRegistry.register(Exposure.EntityTypes.CAMERA_STAND.get(), CameraStandEntityRenderer::new);
+        EntityRendererRegistry.register(Exposure.EntityTypes.EQUIPMENT_STAND.get(), EquipmentStandRenderer::new);
+        EntityRendererRegistry.register(Exposure.EntityTypes.CAMERA_STAND.get(), CameraStandRenderer::new);
 
         TooltipComponentCallback.EVENT.register(data -> data instanceof PhotographTooltip photographTooltip
                 ? new PhotographClientTooltip(photographTooltip) : null);

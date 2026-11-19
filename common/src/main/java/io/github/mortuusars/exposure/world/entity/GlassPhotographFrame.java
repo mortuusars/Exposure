@@ -7,16 +7,16 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
-public class GlassPhotographFrameEntity extends PhotographFrameEntity {
-    public GlassPhotographFrameEntity(EntityType<? extends PhotographFrameEntity> entityType, Level level) {
+public class GlassPhotographFrame extends PhotographFrame {
+    public GlassPhotographFrame(EntityType<? extends PhotographFrame> entityType, Level level) {
         super(entityType, level);
     }
 
-    public GlassPhotographFrameEntity(Level level, BlockPos pos, Direction facingDirection) {
+    public GlassPhotographFrame(Level level, BlockPos pos, Direction facingDirection) {
         super(Exposure.EntityTypes.CLEAR_PHOTOGRAPH_FRAME.get(), level, pos, facingDirection);
     }
 
-    protected GlassPhotographFrameEntity(EntityType<? extends PhotographFrameEntity> entityType, Level level, BlockPos pos, Direction facingDirection) {
+    protected GlassPhotographFrame(EntityType<? extends PhotographFrame> entityType, Level level, BlockPos pos, Direction facingDirection) {
         super(entityType, level, pos, facingDirection);
     }
 

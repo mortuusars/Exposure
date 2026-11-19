@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderRegistry
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.network.packet.common.CommonActiveCameraDeactivatePacket;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import io.github.mortuusars.mortaar.network.Packets;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +36,7 @@ public class CameraClient {
                   camera.map((item, stack) -> item.deactivate(Minecrft.playerOrThrow(), camera.getHolder().asHolderEntity(), stack));
                   Minecrft.playerOrThrow().removeActiveExposureCamera();
                   // Fixes camera getting stuck in some cases, requiring a relog to fix
-                  if (Minecrft.get().getCameraEntity() instanceof CameraStandEntity) {
+                  if (Minecrft.get().getCameraEntity() instanceof CameraStand) {
                       resetCameraEntity();
                   }
               });

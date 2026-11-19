@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.mixin.client;
 
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
 import net.minecraft.client.player.LocalPlayer;
@@ -27,7 +27,7 @@ public abstract class MultiPlayerGameModeMixin {
     void onInteractAt(Player player, Entity target, EntityHitResult ray, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack stack = player.getItemInHand(hand);
         if (stack.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(stack)
-                && (!(ray.getEntity() instanceof CameraStandEntity standEntity) || !standEntity.getCamera().isEmpty())) {
+                && (!(ray.getEntity() instanceof CameraStand standEntity) || !standEntity.getCamera().isEmpty())) {
             cir.setReturnValue(useItem(player, hand));
         }
     }

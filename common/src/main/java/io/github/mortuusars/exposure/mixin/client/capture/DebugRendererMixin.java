@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DebugRenderer.class)
-public class DebugRendererMixin {
+public abstract class DebugRendererMixin {
     @Inject(method = "render", at = @At("HEAD"), cancellable = true)
     private void onRender(PoseStack poseStack, MultiBufferSource.BufferSource bufferSource,
                           double camX, double camY, double camZ, CallbackInfo ci) {

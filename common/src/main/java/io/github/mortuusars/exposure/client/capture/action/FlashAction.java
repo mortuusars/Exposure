@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.client.capture.action;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.block.FlashBlock;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -62,7 +62,7 @@ public class FlashAction implements CaptureAction {
         }
 
         // FLASH is omitted from the player held camera
-        if (cameraHolder instanceof CameraStandEntity) {
+        if (cameraHolder instanceof CameraStand) {
             level.addParticle(ParticleTypes.FLASH, pos.x, pos.y, pos.z, 0, 0, 0);
         }
     }

@@ -3,14 +3,14 @@ package io.github.mortuusars.exposure.world.camera;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import io.github.mortuusars.exposure.network.packet.clientbound.ClientboundActiveCameraOnStandSetPacket;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.world.item.ItemStack;
 
 public class CameraOnStand extends Camera {
     protected final CameraOperator cameraOperator;
-    protected final CameraStandEntity cameraStand;
+    protected final CameraStand cameraStand;
 
-    public CameraOnStand(CameraOperator cameraOperator, CameraStandEntity cameraStand, CameraId id) {
+    public CameraOnStand(CameraOperator cameraOperator, CameraStand cameraStand, CameraId id) {
         super(cameraStand, id);
         this.cameraOperator = cameraOperator;
         this.cameraStand = cameraStand;
@@ -20,7 +20,7 @@ public class CameraOnStand extends Camera {
         return cameraOperator;
     }
 
-    public CameraStandEntity getStand() {
+    public CameraStand getStand() {
         return cameraStand;
     }
 
@@ -31,7 +31,7 @@ public class CameraOnStand extends Camera {
 
     @Override
     public void release() {
-        getStand().release();
+        getStand().activate();
     }
 
     @Override

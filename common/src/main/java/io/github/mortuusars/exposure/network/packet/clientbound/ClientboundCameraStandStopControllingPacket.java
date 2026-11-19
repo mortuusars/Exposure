@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.network.packet.clientbound;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.mortaar.client.Minecrft;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import io.github.mortuusars.mortaar.network.packet.Packet;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -37,7 +37,7 @@ public record ClientboundCameraStandStopControllingPacket(int standId) implement
     public static class Client {
         public static void stopControllingCameraStand(int standId) {
             if (Minecrft.get().cameraEntity != Minecrft.playerOrThrow()
-                    && Minecrft.levelOrThrow().getEntity(standId) instanceof CameraStandEntity stand) {
+                    && Minecrft.levelOrThrow().getEntity(standId) instanceof CameraStand stand) {
                 stand.stopControlling();
                 CameraClient.setCameraEntity(Minecrft.playerOrThrow());
             }

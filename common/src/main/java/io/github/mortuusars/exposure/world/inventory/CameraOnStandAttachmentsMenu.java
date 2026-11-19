@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.world.inventory;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.world.Container;
@@ -11,11 +11,15 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public class CameraOnStandAttachmentsMenu extends AbstractCameraAttachmentsMenu {
-    protected final CameraStandEntity stand;
+    protected final CameraStand stand;
 
-    public CameraOnStandAttachmentsMenu(int containerId, Inventory playerInventory, CameraStandEntity stand) {
+    public CameraOnStandAttachmentsMenu(int containerId, Inventory playerInventory, CameraStand stand) {
         super(Exposure.MenuTypes.CAMERA_ON_STAND.get(), containerId, playerInventory, new StandCameraAccess(stand));
         this.stand = stand;
+    }
+
+    public CameraStand getStand() {
+        return stand;
     }
 
     @Override
@@ -31,17 +35,17 @@ public class CameraOnStandAttachmentsMenu extends AbstractCameraAttachmentsMenu 
         return stand.getCamera().getItem() instanceof CameraItem && stand.isInInteractionRange(player);
     }
 
-    public static CameraOnStandAttachmentsMenu fromBuffer(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
-        if (!(playerInventory.player.level().getEntity(buffer.readInt()) instanceof CameraStandEntity stand)) {
+    public static CameraOnStandAttachmentsMenu fromNetwork(int containerId, Inventory playerInventory, RegistryFriendlyByteBuf buffer) {
+        if (!(playerInventory.player.level().getEntity(buffer.readInt()) instanceof CameraStand stand)) {
             throw new IllegalStateException("Cannot open attachments on stand: Camera Stand entity does not exist on client.");
         }
         return new CameraOnStandAttachmentsMenu(containerId, playerInventory, stand);
     }
 
     public static class StandCameraAccess implements CameraAccess {
-        protected final CameraStandEntity stand;
+        protected final CameraStand stand;
 
-        public StandCameraAccess(CameraStandEntity stand) {
+        public StandCameraAccess(CameraStand stand) {
             this.stand = stand;
             Preconditions.checkState(getStack().getItem() instanceof CameraItem,
                     "Failed to open access the camera. " + getStack() + " is not a CameraItem.");

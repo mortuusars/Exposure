@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.mixin;
 
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
-import io.github.mortuusars.exposure.world.item.CameraStandItem;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
+import io.github.mortuusars.exposure.world.item.EquipmentStandItem;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -26,8 +26,8 @@ public abstract class BoatMixin extends VehicleEntity {
     @Inject(method = "interact", at = @At("HEAD"), cancellable = true)
     private void onInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack itemInHand = player.getItemInHand(hand);
-        if (itemInHand.getItem() instanceof CameraStandItem cameraStandItem) {
-            InteractionResult result = cameraStandItem.interactWithBoat(player, hand, ((Boat)(Object) this));
+        if (itemInHand.getItem() instanceof EquipmentStandItem equipmentStandItem) {
+            InteractionResult result = equipmentStandItem.interactWithBoat(player, hand, ((Boat)(Object) this));
             if (result != InteractionResult.PASS) {
                 cir.setReturnValue(result);
             }
@@ -36,7 +36,8 @@ public abstract class BoatMixin extends VehicleEntity {
 
     @Inject(method = "onPassengerTurned", at = @At("HEAD"), cancellable = true)
     private void onPassengerTurned(Entity entityToUpdate, CallbackInfo ci) {
-        if (entityToUpdate instanceof CameraStandEntity) {
+        //TODO: Telescope would likely need to be checked as well
+        if (entityToUpdate instanceof CameraStand) {
             ci.cancel();
         }
     }

@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.animation;
 
 import io.github.mortuusars.mortaar.client.Minecrft;
 import io.github.mortuusars.exposure.world.entity.CameraOperator;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import io.github.mortuusars.mortaar.util.Easing;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.model.HumanoidModel;
@@ -76,7 +76,7 @@ public class CameraPoses {
         model.hat.copyFrom(model.head);
     }
 
-    public void applyStand(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm, CameraStandEntity stand) {
+    public void applyStand(HumanoidModel<?> model, LivingEntity entity, HumanoidArm arm, CameraStand stand) {
         boolean rightHanded = arm == HumanoidArm.RIGHT;
 
         ModelPart mainHand = rightHanded ? model.rightArm : model.leftArm;

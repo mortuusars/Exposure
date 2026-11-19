@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.fabric.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.mortaar.client.Minecrft;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.entity.stand.CameraStand;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.renderer.*;
@@ -27,7 +27,7 @@ public abstract class LevelRendererMixin {
 
     @Inject(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel;entitiesForRendering()Ljava/lang/Iterable;"))
     private void onRenderLevel(DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightTexture lightTexture, Matrix4f frustumMatrix, Matrix4f projectionMatrix, CallbackInfo ci) {
-        if (camera.getEntity() instanceof CameraStandEntity) {
+        if (camera.getEntity() instanceof CameraStand) {
             exposure$renderEntity(deltaTracker, camera, Minecrft.playerOrThrow());
         }
     }

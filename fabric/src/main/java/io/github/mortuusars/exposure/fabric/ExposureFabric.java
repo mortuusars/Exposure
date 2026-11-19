@@ -16,20 +16,15 @@ import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableSource;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.neoforged.fml.config.ModConfig;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
 public class ExposureFabric implements ModInitializer {
-    // Server field to access when no other objects are available to get it from.
-    public static @Nullable MinecraftServer server = null;
-
     @Override
     public void onInitialize() {
         Exposure.init();
@@ -44,14 +39,8 @@ public class ExposureFabric implements ModInitializer {
 
         CommandRegistrationCallback.EVENT.register(CommonEvents::registerCommands);
 
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            ServerEvents.serverStarted(server);
-            ExposureFabric.server = server;
-        });
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            ServerEvents.serverStopped(server);
-            ExposureFabric.server = null;
-        });
+        ServerLifecycleEvents.SERVER_STARTED.register(ServerEvents::serverStarted);
+        ServerLifecycleEvents.SERVER_STOPPED.register(ServerEvents::serverStopped);
 
         ServerLifecycleEvents.SYNC_DATA_PACK_CONTENTS.register((player, joined) -> ServerEvents.syncDatapack(Stream.of(player)));
 
