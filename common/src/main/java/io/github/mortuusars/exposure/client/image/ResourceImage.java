@@ -7,7 +7,7 @@ import io.github.mortuusars.exposure.client.image.renderable.RenderableImageIden
 import io.github.mortuusars.exposure.util.color.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.ResourceManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,11 +19,11 @@ public class ResourceImage extends SimpleTexture implements RenderableImage {
     @Nullable
     protected NativeImage image;
 
-    public ResourceImage(ResourceLocation location) {
+    public ResourceImage(Identifier location) {
         super(location);
     }
 
-    public static @NotNull RenderableImage getOrCreate(ResourceLocation location) {
+    public static @NotNull RenderableImage getOrCreate(Identifier location) {
         TextureManager textureManager = Minecraft.getInstance().getTextureManager();
 
         @Nullable AbstractTexture existingTexture = textureManager.byPath.get(location);
@@ -57,7 +57,8 @@ public class ResourceImage extends SimpleTexture implements RenderableImage {
     @Override
     public int getPixelARGB(int x, int y) {
         @Nullable NativeImage image = getNativeImage();
-        return image != null ? Color.ABGRtoARGB(image.getPixelRGBA(x, y)) : 0x00000000;
+        return image != null ? image.getPixel(x, y) : 0x00000000;
+        //return image != null ? image.getPixel(x, y) : 0x00000000;
     }
 
     public @Nullable NativeImage getNativeImage() {
@@ -65,7 +66,7 @@ public class ResourceImage extends SimpleTexture implements RenderableImage {
             return image;
 
         try {
-            NativeImage image = super.getTextureImage(Minecraft.getInstance().getResourceManager()).getImage();
+            NativeImage image = super.loadContents(Minecraft.getInstance().getResourceManager()).image();
             this.image = image;
             return image;
         } catch (IOException e) {
@@ -74,15 +75,15 @@ public class ResourceImage extends SimpleTexture implements RenderableImage {
         }
     }
 
-    @Override
+    /*@Override
     public void reset(@NotNull TextureManager textureManager, @NotNull ResourceManager resourceManager,
-                      @NotNull ResourceLocation path, @NotNull Executor executor) {
+                      @NotNull Identifier path, @NotNull Executor executor) {
         super.reset(textureManager, resourceManager, path, executor);
         if (image != null) {
             image.close();
             image = null;
         }
-    }
+    }*/
 
     @Override
     public void close() {
@@ -101,6 +102,6 @@ public class ResourceImage extends SimpleTexture implements RenderableImage {
 
     @Override
     public RenderableImageIdentifier getIdentifier() {
-        return new RenderableImageIdentifier(location.toString());
+        return new RenderableImageIdentifier(resourceId().toString());
     }
 }

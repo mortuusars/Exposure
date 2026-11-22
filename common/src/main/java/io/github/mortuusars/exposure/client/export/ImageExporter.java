@@ -106,7 +106,7 @@ public class ImageExporter {
 
         for (int x = 0; x < nativeImage.getWidth(); x++) {
             for (int y = 0; y < nativeImage.getHeight(); y++) {
-                nativeImage.setPixelRGBA(x, y, Color.ABGRtoARGB(image.getPixelARGB(x, y)));
+                nativeImage.setPixel(x, y, image.getPixelARGB(x, y));
             }
         }
 

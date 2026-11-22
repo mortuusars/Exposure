@@ -1,297 +1,58 @@
 plugins {
-    id "dev.architectury.loom" version "1.7-SNAPSHOT" apply false
-    id "architectury-plugin" version "3.4-SNAPSHOT"
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
-    id "me.modmuss50.mod-publish-plugin" version "2.2.1"
-    id 'org.moddedmc.wiki.toolkit' version '0.5.1'
+    id 'java-library'
+    id 'net.neoforged.gradle.userdev' version '7.1.39'
 }
 
-architectury {
-    minecraft = project.minecraft_version
+version = "${minecraft_version}-${mod_version}-port.2"
+group = maven_group
+base.archivesName = 'exposure-neoforge'
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    maven { url = 'https://maven.creeperhost.net/' }
+    mavenCentral()
 }
 
-allprojects {
-    group = rootProject.maven_group
-    version = rootProject.mod_version
+dependencies {
+    implementation "net.neoforged:neoforge:${neoforge_version}"
 }
 
-subprojects {
-    apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
-    apply plugin: 'maven-publish'
+sourceSets.main {
+    java.srcDirs 'common/src/main/java', 'neoforge/src/main/java'
+    resources.srcDirs 'common/src/main/resources', 'neoforge/src/main/resources'
+    java.exclude '**/integration/kubejs/**', '**/integration/jei/**', '**/mixin/KubeJSGameClientEventHandlerMixin.java'
+    resources.exclude 'architectury.common.json', 'exposure.accesswidener', 'kubejs.plugins.txt'
+}
 
-    base {
-        archivesName = "$rootProject.archives_name-$project.name-$rootProject.minecraft_version"
-    }
-
-    repositories {
-        var localPath = System.getenv("MAVEN_LOCAL")
-        if (localPath != null) {
-            maven {
-                name = 'mortuusarsLocal'
-                url = uri(localPath + "/maven")
-            }
-        }
-
-        var resourcesPath = System.getenv("MAVEN_GITHUB_RESOURCES")
-        if (resourcesPath != null) {
-            maven {
-                name = 'mortuusarsGithubResources'
-                url = uri(resourcesPath + "/maven")
-            }
-        }
-
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
-
-        maven {
-            url = "https://maven.architectury.dev"
-            content {
-                includeGroup "dev.architectury"
-            }
-        }
-
-        maven {
-            url = "https://cursemaven.com"
-        }
-
-        // Forge Config Api Port
-        maven {
-            name = "Fuzs Mod Resources"
-            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
-        }
-
-        // JEI
-        maven {
-            name = "Jared's maven"
-            url = "https://maven.blamejared.com/"
-        }
-
-        maven {
-            name = "FabricMC"
-            url = "https://maven.fabricmc.net/"
-        }
-
-        maven {
-            url "https://maven.latvian.dev/releases"
-            content {
-                includeGroup "dev.latvian.mods"
-                includeGroup "dev.latvian.apps"
-            }
-        }
-
-        maven {
-            url 'https://jitpack.io'
-            content {
-                includeGroup "com.github.rtyley"
-            }
-        }
-
-        maven { url = "https://maven.createmod.net" } // Create, Ponder, Flywheel
-        maven { url = "https://mvn.devos.one/snapshots" } // Registrate
-        maven {
-            name = "Modrinth"
-            url = "https://api.modrinth.com/maven"
-            content {
-                includeGroup "maven.modrinth"
-            }
-        }
-    }
-
-    loom {
-        silentMojangMappingsLicense()
-        runs {
-            client {
-                property 'item_asset_export.render.namespaces', 'exposure'
-                vmArgs '-XX:+AllowEnhancedClassRedefinition', '-XX:HotswapAgent=core'
-            }
-        }
-    }
-
-    dependencies {
-        minecraft "net.minecraft:minecraft:${rootProject.minecraft_version}"
-
-        mappings loom.layered() {
-            officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-${parchment_version}@zip")
-        }
-
-        modCompileOnlyApi("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-        modCompileOnlyApi("curse.maven:jade-324717:${jade_neoforge_id}")
-    }
-
-    java {
-        // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-        // if it is present.
-        // If you remove this line, sources will not be generated.
-        withSourcesJar()
-
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        it.options.release = 21
-    }
-
-    processResources {
-        var expandProps = [
-                minecraft_version            : minecraft_version,
-                minecraft_version_range      : minecraft_version_range,
-                neoforge_version             : neoforge_version,
-                neoforge_version_range       : neoforge_version_range,
-                neoforge_loader_version_range: neoforge_loader_version_range,
-                create_version_range         : create_version_range,
-                create_version_range_reason  : create_version_range_reason,
-                mod_id                       : mod_id,
-                mod_name                     : mod_name,
-                mod_version                  : mod_version,
-                mod_authors                  : mod_authors,
-                mod_description              : mod_description,
-                mod_issues                   : mod_issues,
-                mod_page                     : mod_page,
-                mod_github                   : mod_github,
-                mod_license                  : mod_license,
-                maven_group                  : maven_group
-        ]
-        filesMatching(['pack.mcmeta', 'fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', "*.mixins.json"]) {
-            expand expandProps
-        }
-        inputs.properties(expandProps)
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                artifactId = "${mod_id}-${minecraft_version}-${project.name}"
-                version = "${mod_version}"
-                from components.java
-            }
-        }
-
-        repositories {
-            var localPath = System.getenv("MAVEN_LOCAL")
-            if (localPath != null) {
-                maven {
-                    name = 'mortuusarsLocal'
-                    url = uri(localPath + "/maven")
-                }
-            }
-
-            var resourcesPath = System.getenv("MAVEN_GITHUB_RESOURCES")
-            if (resourcesPath != null) {
-                maven {
-                    name = 'mortuusarsGithubResources'
-                    url = uri(resourcesPath + "/maven")
-                }
-            }
-        }
+minecraft {
+    accessTransformers {
+        file('src/main/resources/META-INF/accesstransformer.cfg')
     }
 }
 
-wiki {
-    docs {
-        exposure {
-            root = file('docs/')
-//            exportedAssetNamespaces = ['exposure']
-        }
+runs {
+    configureEach {
+        modSource project.sourceSets.main
+    }
+    client {}
+    server {
+        argument '--nogui'
     }
 }
 
-/**
- * Gets the first part (topmost) of a changelog file.
- * Expects it to be in the following format:
- * [
- *  ## latest version
- *      changes
- *
- *  ## older version
- *      changes
- * ]
- * Will return an empty string if failed.
- */
-def getLatestVersionChangelog() {
-    def changelogFileName = 'CHANGELOG.md'
-    def changelogFile = file(changelogFileName)
-    if (changelogFile.exists()) {
-        def changelogContent = changelogFile.text
-        def changelogParts = changelogContent.split(/(?m)^##\s/)
-
-        if (changelogParts.size() > 1) {
-            return "## " + changelogParts[1].trim() // First part will always be second in the list
-        } else {
-            println("[WARN] Changelog does not contain any versions.")
-            return ""
-        }
-    } else {
-        println("[WARN] Changelog file <${changelogFileName}> does not exist.")
-        return ""
-    }
+tasks.named('processResources', ProcessResources) {
+    def keys = ['mod_id', 'mod_name', 'mod_license', 'mod_authors', 'mod_description', 'mod_issues',
+                'mod_page', 'minecraft_version_range', 'neoforge_version_range', 'neoforge_loader_version_range',
+                'create_version_range', 'create_version_range_reason']
+    def metadata = keys.collectEntries { [(it): project.property(it)] } + [mod_version: project.version]
+    inputs.properties metadata
+    filesMatching('META-INF/neoforge.mods.toml') { expand metadata }
 }
 
-project.ext.changelog = getLatestVersionChangelog()
-
-task printLatestVersionChangelog {
-    doLast {
-        println project.changelog
-    }
+tasks.named('jar', Jar) {
+    from 'LICENSE.md'
 }
 
-publishMods {
-    changelog = project.ext.changelog
-    type = STABLE
-    dryRun = providers.environmentVariable("CURSEFORGE_TOKEN").getOrNull() == null || providers.environmentVariable("MODRINTH_TOKEN").getOrNull() == null
-
-    def cfOptions = curseforgeOptions {
-        accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
-        projectId = mod_curseforge_project_id
-        minecraftVersions.add("${minecraft_version}")
-        javaVersions.add(JavaVersion.VERSION_21)
-        clientRequired = true
-        serverRequired = true
-    }
-
-    def mrOptions = modrinthOptions {
-        accessToken = providers.environmentVariable("MODRINTH_TOKEN")
-        projectId = mod_modrinth_project_id
-        minecraftVersions.add("${minecraft_version}")
-    }
-
-    curseforge("curseforgeNeoForge") {
-        from cfOptions
-        file project(":neoforge")
-        modLoaders.add("neoforge")
-        displayName = "${mod_name} - NeoForge ${minecraft_version} - ${mod_version}"
-        optional("jei")
-    }
-
-    curseforge("curseforgeFabric") {
-        from cfOptions
-        file project(":fabric")
-        modLoaders.add("fabric")
-        displayName = "${mod_name} - Fabric ${minecraft_version} - ${mod_version}"
-        requires("fabric-api")
-        requires("forge-config-api-port")
-        optional("jei")
-    }
-
-    modrinth("modrinthNeoForge") {
-        from mrOptions
-        file project(":neoforge")
-        modLoaders.add("neoforge")
-        displayName = "${mod_name} - ${mod_version}"
-        optional("jei")
-    }
-
-    modrinth("modrinthFabric") {
-        from mrOptions
-        file project(":fabric")
-        modLoaders.add("fabric")
-        displayName = "${mod_name} - ${mod_version}"
-        requires("fabric-api")
-        requires("forge-config-api-port")
-        optional("jei")
-    }
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }

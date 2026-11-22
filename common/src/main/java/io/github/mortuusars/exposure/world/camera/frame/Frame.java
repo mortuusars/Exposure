@@ -10,7 +10,7 @@ import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -43,13 +43,13 @@ public record Frame(ExposureIdentifier identifier,
     public static final ExtraData.Type<Float> YAW = ExtraData.Type.floatVal("yaw");
     public static final ExtraData.Type<Integer> LIGHT_LEVEL = ExtraData.Type.intVal("light_level");
     public static final ExtraData.Type<Integer> DAY_TIME = ExtraData.Type.intVal("day_time");
-    public static final ExtraData.Type<ResourceLocation> DIMENSION = ExtraData.Type.resourceLocation("dimension");
-    public static final ExtraData.Type<ResourceLocation> BIOME = ExtraData.Type.resourceLocation("biome");
+    public static final ExtraData.Type<Identifier> DIMENSION = ExtraData.Type.Identifier("dimension");
+    public static final ExtraData.Type<Identifier> BIOME = ExtraData.Type.Identifier("biome");
     public static final ExtraData.Type<String> WEATHER = ExtraData.Type.string("weather");
     public static final ExtraData.Type<Boolean> IN_CAVE = ExtraData.Type.bool("in_cave");
     public static final ExtraData.Type<Boolean> UNDERWATER = ExtraData.Type.bool("underwater");
-    public static final ExtraData.Type<List<ResourceLocation>> STRUCTURES = ExtraData.Type.stringBasedList("structures",
-            ResourceLocation::parse, ResourceLocation::toString);
+    public static final ExtraData.Type<List<Identifier>> STRUCTURES = ExtraData.Type.stringBasedList("structures",
+            Identifier::parse, Identifier::toString);
     // --
 
     public static final Frame EMPTY = new Frame(

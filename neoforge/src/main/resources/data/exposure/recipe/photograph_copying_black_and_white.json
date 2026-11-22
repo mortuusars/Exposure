@@ -1,19 +1,15 @@
 {
   "type": "exposure:photograph_copying",
   "photograph": {
-    "type": "neoforge:components",
+    "neoforge:ingredient_type": "neoforge:components",
     "items": "exposure:photograph",
     "components": {
       "exposure:photograph_type": "black_and_white"
     }
   },
   "ingredients": [
-    {
-      "tag": "exposure:photo_papers"
-    },
-    {
-      "tag": "exposure:black_printing_dyes"
-    }
+    "#exposure:photo_papers",
+    "#exposure:black_printing_dyes"
   ],
   "result": {
     "id": "exposure:photograph"

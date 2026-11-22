@@ -8,12 +8,12 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public record CameraStandSetRotationsS2CP(int entityId, float yRot, float xRot) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("camera_stand_set_rotations");
+    public static final Identifier ID = Exposure.resource("camera_stand_set_rotations");
     public static final Type<CameraStandSetRotationsS2CP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, CameraStandSetRotationsS2CP> STREAM_CODEC = StreamCodec.composite(

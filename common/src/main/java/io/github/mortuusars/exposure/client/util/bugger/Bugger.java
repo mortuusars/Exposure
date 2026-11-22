@@ -11,9 +11,11 @@ import io.github.mortuusars.exposure.mixin.client.BuggerScreenRenderLinesInvoker
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.util.ProblemReporter;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.storage.TagValueOutput;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
@@ -64,21 +66,21 @@ public class Bugger {
     // --
 
     private static void up() {
-        if (Screen.hasControlDown()) {
-            boolean shift = Screen.hasShiftDown();
+        if (Minecraft.getInstance().hasControlDown()) {
+            boolean shift = Minecraft.getInstance().hasShiftDown();
             zoom = shift ? zoom + 5 : zoom + 1;
         } else {
-            boolean shift = Screen.hasShiftDown();
+            boolean shift = Minecraft.getInstance().hasShiftDown();
             scroll = Math.max(shift ? scroll - 5 : scroll - 1, 0);
         }
     }
 
     private static void down() {
-        if (Screen.hasControlDown()) {
-            boolean shift = Screen.hasShiftDown();
+        if (Minecraft.getInstance().hasControlDown()) {
+            boolean shift = Minecraft.getInstance().hasShiftDown();
             zoom = shift ? zoom - 5 : zoom - 1;
         } else {
-            boolean shift = Screen.hasShiftDown();
+            boolean shift = Minecraft.getInstance().hasShiftDown();
             scroll = Math.max(shift ? scroll + 5 : scroll + 1, 0);
         }
     }
@@ -86,13 +88,13 @@ public class Bugger {
     public static void renderMainPage(GuiGraphics guiGraphics) {
         float scale = (zoom + 100) / 100f;
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().scale(scale, scale);
         List<String> leftLines = collectLeftLines().stream().skip(scroll).toList();
         ((BuggerScreenRenderLinesInvoker) Minecraft.getInstance().getDebugOverlay()).drawLines(guiGraphics, leftLines, true);
         List<String> rightLines = collectRightLines().stream().skip(scroll).toList();
         ((BuggerScreenRenderLinesInvoker) Minecraft.getInstance().getDebugOverlay()).drawLines(guiGraphics, rightLines, false);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     private static List<String> collectLeftLines() {
@@ -134,10 +136,10 @@ public class Bugger {
 
         float scale = (zoom + 100) / 100f;
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().scale(scale, scale);
         ((BuggerScreenRenderLinesInvoker) Minecrft.get().getDebugOverlay()).drawLines(guiGraphics, lines, true);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     private static @NotNull List<String> getTagPageLines() {
@@ -175,8 +177,9 @@ public class Bugger {
         } else if (hitResult instanceof EntityHitResult entityHitResult) {
             Entity entity = entityHitResult.getEntity();
 
-            CompoundTag entityTag = new CompoundTag();
-            entity.save(entityTag);
+            TagValueOutput output = TagValueOutput.createWithoutContext(ProblemReporter.DISCARDING);
+            entity.save(output);
+            CompoundTag entityTag = output.buildResult();
 
             JsonElement json = CompoundTag.CODEC.encodeStart(JsonOps.INSTANCE, entityTag).result().orElse(new JsonObject());
 

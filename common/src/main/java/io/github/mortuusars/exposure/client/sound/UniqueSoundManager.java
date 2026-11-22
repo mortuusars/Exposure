@@ -5,19 +5,19 @@ import com.google.common.collect.Table;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
 import net.minecraft.client.resources.sounds.SoundInstance;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
 public class UniqueSoundManager {
-    private static final Table<String, ResourceLocation, SoundInstance> SOUNDS = HashBasedTable.create();
+    private static final Table<String, Identifier, SoundInstance> SOUNDS = HashBasedTable.create();
 
     public static void play(String id, SoundInstance instance) {
-        stop(id, instance.getLocation());
+        stop(id, instance.getIdentifier());
 
-        SOUNDS.put(id, instance.getLocation(), instance);
+        SOUNDS.put(id, instance.getIdentifier(), instance);
         Minecrft.get().getSoundManager().play(instance);
     }
 
@@ -31,17 +31,17 @@ public class UniqueSoundManager {
         play(id, entity, sound, source, volume, pitch);
     }
 
-    public static void stop(String id, ResourceLocation location) {
+    public static void stop(String id, Identifier location) {
         @Nullable SoundInstance instance = SOUNDS.remove(id, location);
         if (instance != null) Minecrft.get().getSoundManager().stop(instance);
     }
 
     public static void stop(String id, SoundEvent sound) {
-        stop(id, sound.getLocation());
+        stop(id, sound.location());
     }
 
     public static void stopAllOf(SoundEvent sound) {
-        ResourceLocation location = sound.getLocation();
+        Identifier location = sound.location();
         SOUNDS.cellSet().removeIf(cell -> {
             if (cell.getColumnKey().equals(location)) {
                 Minecrft.get().getSoundManager().stop(cell.getValue());

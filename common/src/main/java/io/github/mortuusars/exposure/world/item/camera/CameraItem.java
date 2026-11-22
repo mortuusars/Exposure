@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.world.item.camera;
 
+import io.github.mortuusars.exposure.world.entity.CameraOperator;
+
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.*;
 import io.github.mortuusars.exposure.data.*;
@@ -32,6 +34,7 @@ import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
 import io.github.mortuusars.exposure.util.*;
 import io.github.mortuusars.exposure.world.sound.Sound;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.*;
@@ -39,21 +42,17 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.SlotAccess;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -61,6 +60,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickAction;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -73,8 +73,10 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -181,7 +183,7 @@ public class CameraItem extends Item {
         return Exposure.SoundEvents.CAMERA_RELEASE_BUTTON_CLICK.get();
     }
 
-    public ResourceLocation getCaptureType(ItemStack stack) {
+    public Identifier getCaptureType(ItemStack stack) {
         return CaptureType.CAMERA;
     }
 
@@ -206,8 +208,8 @@ public class CameraItem extends Item {
                 .orElse(FocalRange.getDefault());
     }
 
-    public double getFov(Level level, ItemStack stack) {
-        double zoom = CameraSettings.ZOOM.getOrDefault(stack);
+    public float getFov(Level level, ItemStack stack) {
+        float zoom = CameraSettings.ZOOM.getOrDefault(stack);
         FocalRange focalRange = getFocalRange(level.registryAccess(), stack);
         return focalRange.fovFromZoom(zoom);
     }
@@ -236,7 +238,7 @@ public class CameraItem extends Item {
         return Attachment.FILTER.map(stack, filter -> Filters.of(registryAccess, filter)).flatMap(Function.identity());
     }
 
-    public Optional<ResourceLocation> getFilterShaderLocation(RegistryAccess registryAccess, ItemStack stack) {
+    public Optional<Identifier> getFilterShaderLocation(RegistryAccess registryAccess, ItemStack stack) {
         return getFilter(registryAccess, stack).map(Filter::shader);
     }
 
@@ -302,36 +304,36 @@ public class CameraItem extends Item {
         holder.asHolderEntity().gameEvent(GameEvent.ITEM_INTERACT_FINISH);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> activateInHand(Player player, ItemStack stack, @NotNull InteractionHand hand) {
-        player.setActiveExposureCamera(new CameraInHand(player, getOrCreateId(stack), hand));
-        if (player.level().isClientSide) {
+    public @NotNull InteractionResult activateInHand(Player player, ItemStack stack, @NotNull InteractionHand hand) {
+        ((CameraOperator) player).setActiveExposureCamera(new CameraInHand((CameraHolder) player, getOrCreateId(stack), hand));
+        if (player.level().isClientSide()) {
             Minecrft.releaseUseButton(); // Releasing use key to not take a shot immediately, if right click is still held.
         }
-        return activate(player, player, stack);
+        return activate(player, stack);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> activateOnStand(Player player, ItemStack stack, CameraStandEntity cameraStand) {
-        player.setActiveExposureCamera(new CameraOnStand(player, cameraStand, getOrCreateId(stack)));
-        if (player.level().isClientSide) {
+    public @NotNull InteractionResult activateOnStand(Player player, ItemStack stack, CameraStandEntity cameraStand) {
+        ((CameraOperator) player).setActiveExposureCamera(new CameraOnStand((CameraOperator) player, cameraStand, getOrCreateId(stack)));
+        if (player.level().isClientSide()) {
             Minecrft.releaseUseButton(); // Releasing use key to not take a shot immediately, if right click is still held.
         }
-        return activate(player, cameraStand, stack);
+        return activate(player, stack);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> activate(Entity operator, Entity holder, ItemStack stack) {
+    public @NotNull InteractionResult activate(Entity entity, ItemStack stack) {
         setActive(stack, true);
         setDisassembled(stack, false);
-        Sound.play(holder, getViewfinderOpenSound(), holder.getSoundSource(), 0.35f, 0.9f, 0.2f);
-        operator.gameEvent(GameEvent.EQUIP);
-        return InteractionResultHolder.consume(stack);
+        Sound.play(entity, getViewfinderOpenSound(), entity.getSoundSource(), 0.35f, 0.9f, 0.2f);
+        entity.gameEvent(GameEvent.EQUIP);
+        return InteractionResult.CONSUME.heldItemTransformedTo(stack);
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> deactivate(Entity operator, Entity holder, ItemStack stack) {
+    public @NotNull InteractionResult deactivate(Entity entity, ItemStack stack) {
         setActive(stack, false);
         CameraSettings.SELFIE_MODE.set(stack, false);
-        Sound.play(holder, getViewfinderCloseSound(), holder.getSoundSource(), 0.35f, 0.9f, 0.2f);
-        operator.gameEvent(GameEvent.EQUIP);
-        return InteractionResultHolder.consume(stack);
+        Sound.play(entity, getViewfinderCloseSound(), entity.getSoundSource(), 0.35f, 0.9f, 0.2f);
+        entity.gameEvent(GameEvent.EQUIP);
+        return InteractionResult.CONSUME.heldItemTransformedTo(stack);
     }
 
     public int calculateCooldownAfterShot(ItemStack stack, CaptureParameters captureParameters) {
@@ -356,22 +358,22 @@ public class CameraItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> components, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> components, TooltipFlag flag) {
         if (Config.Client.CAMERA_SHOW_FILM_FRAMES_IN_TOOLTIP.get()) {
             Attachment.FILM.ifPresent(stack, (filmItem, filmStack) -> {
                 int exposed = filmItem.getStoredFramesCount(filmStack);
                 int max = filmItem.getMaxFrameCount(filmStack);
-                components.add(Component.translatable("item.exposure.camera.tooltip.film_roll_frames", exposed, max));
+                components.accept(Component.translatable("item.exposure.camera.tooltip.film_roll_frames", exposed, max));
             });
         }
 
         if (Config.Client.CAMERA_SHOW_TOOLTIP_DETAILS.get()) {
             if (stack.getEntityRepresentation() instanceof CameraStandEntity) {
-                if (Screen.hasShiftDown()) {
-                    components.add(Component.translatable("item.exposure.camera.tooltip.details_attachments_screen_on_stand"));
-                    components.add(Component.translatable("item.exposure.camera.tooltip.details_hotswap_on_stand"));
+                if (Minecraft.getInstance().hasShiftDown()) {
+                    components.accept(Component.translatable("item.exposure.camera.tooltip.details_attachments_screen_on_stand"));
+                    components.accept(Component.translatable("item.exposure.camera.tooltip.details_hotswap_on_stand"));
                 } else
-                    components.add(Component.translatable("tooltip.exposure.hold_for_details"));
+                    components.accept(Component.translatable("tooltip.exposure.hold_for_details"));
                 return;
             }
 
@@ -379,13 +381,13 @@ public class CameraItem extends Item {
             boolean rClickHotswap = Config.Server.CAMERA_GUI_RIGHT_CLICK_HOTSWAP.get();
 
             if (rClickAttachments || rClickHotswap) {
-                if (Screen.hasShiftDown()) {
+                if (Minecraft.getInstance().hasShiftDown()) {
                     if (rClickAttachments)
-                        components.add(Component.translatable("item.exposure.camera.tooltip.details_attachments_screen"));
+                        components.accept(Component.translatable("item.exposure.camera.tooltip.details_attachments_screen"));
                     if (rClickHotswap)
-                        components.add(Component.translatable("item.exposure.camera.tooltip.details_hotswap"));
+                        components.accept(Component.translatable("item.exposure.camera.tooltip.details_hotswap"));
                 } else
-                    components.add(Component.translatable("tooltip.exposure.hold_for_details"));
+                    components.accept(Component.translatable("tooltip.exposure.hold_for_details"));
             }
         }
     }
@@ -416,7 +418,7 @@ public class CameraItem extends Item {
         }
 
         if (Config.Server.CAMERA_GUI_RIGHT_CLICK_HOTSWAP.get()) {
-            if (hotswap(player, stack, otherStack, access) != InteractionResult.PASS) {
+            if (hotswap((CameraHolder) player, stack, otherStack, access) != InteractionResult.PASS) {
                 return true;
             }
         }
@@ -426,8 +428,8 @@ public class CameraItem extends Item {
 
     public InteractionResult handleStandSneakInteraction(CameraStandEntity stand, Player player, InteractionHand hand, ItemStack cameraStack) {
         ItemStack itemInHand = player.getItemInHand(hand);
-        int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().selected;
-        SlotAccess access = SlotAccess.forContainer(player.getInventory(), slot);
+        int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().getSelectedSlot();
+        SlotAccess access = SlotAccess.forListElement(player.getInventory().getNonEquipmentItems(), slot);
         return hotswap(stand, cameraStack, itemInHand, access);
     }
 
@@ -480,19 +482,19 @@ public class CameraItem extends Item {
         return InteractionResult.PASS;
     }
 
-    public InteractionResultHolder<ItemStack> openCameraAttachments(@NotNull Player player, ItemStack stack, boolean openedFromGUI) {
+    public InteractionResult openCameraAttachments(@NotNull Player player, ItemStack stack, boolean openedFromGUI) {
         Preconditions.checkArgument(stack.getItem() instanceof CameraItem, "%s is not a CameraItem.", stack);
 
         int cameraSlot = getMatchingSlotInInventory(player.getInventory(), stack);
         if (cameraSlot < 0) {
             Exposure.LOGGER.error("Cannot open camera attachments: slot index is not found for item '{}'.", stack);
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
 
         return openCameraAttachments(player, cameraSlot, openedFromGUI);
     }
 
-    public InteractionResultHolder<ItemStack> openCameraAttachments(@NotNull Player player, int slotIndex, boolean openedFromGUI) {
+    public InteractionResult openCameraAttachments(@NotNull Player player, int slotIndex, boolean openedFromGUI) {
         Preconditions.checkArgument(slotIndex >= 0,
                 "slotIndex '%s' is invalid. Should be larger than 0", slotIndex);
         ItemStack stack = player.getInventory().getItem(slotIndex);
@@ -502,7 +504,7 @@ public class CameraItem extends Item {
         if (getShutter().isOpen(stack)) {
             player.displayClientMessage(Component.translatable("item.exposure.camera.camera_attachments.fail.shutter_open")
                     .withStyle(ChatFormatting.RED), true);
-            return InteractionResultHolder.fail(stack);
+            return InteractionResult.FAIL;
         }
 
         getOrCreateId(stack);
@@ -532,22 +534,23 @@ public class CameraItem extends Item {
         setDisassembled(stack, true);
         Sound.play(player, Exposure.SoundEvents.CAMERA_GENERIC_CLICK.get(), SoundSource.PLAYERS, 0.9f, 0.9f, 0.2f);
 
-        return InteractionResultHolder.success(stack);
+        return InteractionResult.SUCCESS.heldItemTransformedTo(stack);
     }
 
     // --
 
+
     @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+    public void inventoryTick(ItemStack stack, ServerLevel level, Entity entity, @Nullable EquipmentSlot slot) {
         if (!(entity instanceof CameraHolder holder)) return;
 
         tick(holder, stack);
 
-        if (entity instanceof Player player && isActive(stack)) {
-            boolean matchesActive = player.getActiveExposureCameraOptional()
+        if (level.isClientSide() && entity instanceof Player player) {
+            boolean matchesActive = ((CameraOperator) player).getActiveExposureCameraOptional()
                     .map(camera -> camera.idMatches(getOrCreateId(stack)))
                     .orElse(false);
-            if (!matchesActive) {
+            if (isActive(stack) && !matchesActive) {
                 setActive(stack, false);
             }
         }
@@ -561,7 +564,7 @@ public class CameraItem extends Item {
         boolean timerChanged = getTimer().tick(holder, serverLevel, stack);
 
         if (Config.Server.TIMER_ATTRACTS_MOB_ATTENTION.get()
-                && (getTimer().isTicking(holder, stack) || getTimer().getTicksSinceLastRelease(holder, stack) < 10)) {
+                && getTimer().isTicking(holder, stack) || getTimer().getTicksSinceLastRelease(holder, stack) < 10) {
             grabAttentionOfNearbyMobs(holder, stack);
         }
 
@@ -616,13 +619,13 @@ public class CameraItem extends Item {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level level, @NotNull Player player, @NotNull InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
 
         if (hand == InteractionHand.MAIN_HAND
                 && player.getOffhandItem().getItem() instanceof CameraItem offhandCameraItem
                 && offhandCameraItem.isActive(player.getOffhandItem())) {
-            return InteractionResultHolder.pass(stack);
+            return InteractionResult.PASS;
         }
 
         if (!isActive(stack)) {
@@ -631,7 +634,7 @@ public class CameraItem extends Item {
                     : activateInHand(player, stack, hand);
         }
 
-        return release(player, stack);
+        return release((CameraHolder) player, stack);
     }
 
     public boolean canTakePhoto(CameraHolder holder, ItemStack stack) {
@@ -644,7 +647,7 @@ public class CameraItem extends Item {
 
     public boolean isOnCooldown(CameraHolder holder, ItemStack stack) {
         if (holder.asHolderEntity() instanceof Player player) {
-            return player.getCooldowns().isOnCooldown(this);
+            return player.getCooldowns().isOnCooldown(stack);
         } else if (holder instanceof CameraStandEntity stand) {
             return stand.isOnCooldown();
         }
@@ -653,8 +656,8 @@ public class CameraItem extends Item {
 
     public float getCooldownPercent(CameraHolder holder, ItemStack stack) {
         if (holder.asHolderEntity() instanceof Player player) {
-            return player.getCooldowns().isOnCooldown(stack.getItem())
-                    ? player.getCooldowns().getCooldownPercent(stack.getItem(), 0)
+            return player.getCooldowns().isOnCooldown(stack)
+                    ? player.getCooldowns().getCooldownPercent(stack, 0)
                     : 0;
         } else if (holder instanceof CameraStandEntity stand) {
             return stand.isOnCooldown()
@@ -664,21 +667,21 @@ public class CameraItem extends Item {
         return 0;
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> release(CameraHolder holder, ItemStack stack) {
+    public @NotNull InteractionResult release(CameraHolder holder, ItemStack stack) {
         Entity entity = holder.asHolderEntity();
         Level level = entity.level();
 
         Sound.playSided(entity, getReleaseButtonSound(), entity.getSoundSource(), 0.3f, 1f, 0.1f);
 
-        if (level.isClientSide || !canTakePhoto(holder, stack)) {
-            return InteractionResultHolder.consume(stack);
+        if (level.isClientSide() || !canTakePhoto(holder, stack)) {
+            return InteractionResult.CONSUME.heldItemTransformedTo(stack);
         }
 
         if (getTimer().getEndTick(stack) != level.getGameTime()) {
             SelfTimer selfTimer = CameraSettings.SELF_TIMER.getOrDefault(stack);
             if (selfTimer != SelfTimer.OFF) {
                 getTimer().set(holder, stack, selfTimer.getTicks());
-                return InteractionResultHolder.consume(stack);
+                return InteractionResult.CONSUME.heldItemTransformedTo(stack);
             }
         }
 
@@ -686,11 +689,11 @@ public class CameraItem extends Item {
                 player -> takePhoto(holder, player, stack),
                 () -> Exposure.LOGGER.error("Cannot start capture: photographer '{}' does not have valid executing player.", holder));
 
-        return InteractionResultHolder.consume(stack);
+        return InteractionResult.CONSUME.heldItemTransformedTo(stack);
     }
 
     protected void takePhoto(CameraHolder holder, ServerPlayer executingPlayer, ItemStack stack) {
-        ServerLevel level = executingPlayer.serverLevel();
+        ServerLevel level = executingPlayer.level();
         Entity entity = holder.asHolderEntity();
 
         ShutterSpeed shutterSpeed = CameraSettings.SHUTTER_SPEED.getOrDefault(stack);
@@ -750,7 +753,7 @@ public class CameraItem extends Item {
     protected void onShutterClosed(CameraHolder holder, ServerLevel serverLevel, ItemStack stack) {
         if (holder instanceof Player player) {
             int cooldown = CameraInstances.getOptional(stack).map(CameraInstance::getDeferredCooldown).orElse(BASE_COOLDOWN);
-            player.getCooldowns().addCooldown(this, cooldown);
+            player.getCooldowns().addCooldown(stack, cooldown);
         } else if (holder instanceof CameraStandEntity stand) {
             int cooldown = CameraInstances.getOptional(stack).map(CameraInstance::getDeferredCooldown).orElse(BASE_COOLDOWN);
             stand.startCooldown(cooldown);
@@ -822,7 +825,7 @@ public class CameraItem extends Item {
             data.put(Frame.ON_STAND, true);
         }
 
-        double zoom = CameraSettings.ZOOM.getOrDefault(camera);
+        float zoom = CameraSettings.ZOOM.getOrDefault(camera);
         FocalRange focalRange = getFocalRange(level.registryAccess(), camera);
         int focalLength = (int) focalRange.focalLengthFromZoom(zoom);
         data.put(Frame.FOCAL_LENGTH, focalLength);
@@ -840,7 +843,7 @@ public class CameraItem extends Item {
         data.put(Frame.YAW, cameraHolder.getYRot());
 
         data.put(Frame.DAY_TIME, (int) level.getDayTime());
-        data.put(Frame.DIMENSION, level.dimension().location());
+        data.put(Frame.DIMENSION, level.dimension().identifier());
 
         BlockPos blockPos = cameraHolder.blockPosition();
 
@@ -854,7 +857,7 @@ public class CameraItem extends Item {
         if (cameraHolder.getBlockY() < Math.min(level.getSeaLevel(), surfaceHeight) && skyLight == 0) {
             data.put(Frame.IN_CAVE, true);
         } else if (!cameraHolder.isUnderWater()) {
-            Biome.Precipitation precipitation = level.getBiome(blockPos).value().getPrecipitationAt(blockPos);
+            Biome.Precipitation precipitation = level.getBiome(blockPos).value().getPrecipitationAt(blockPos, level.getSeaLevel());
             if (level.isThundering() && precipitation != Biome.Precipitation.NONE)
                 data.put(Frame.WEATHER, precipitation == Biome.Precipitation.SNOW ? "Snowstorm" : "Thunder");
             else if (level.isRaining() && precipitation != Biome.Precipitation.NONE)
@@ -870,10 +873,10 @@ public class CameraItem extends Item {
                 .stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
-                .flatMap(pos -> level.getBiome(pos).unwrapKey().map(ResourceKey::location))
+                .flatMap(pos -> level.getBiome(pos).unwrapKey().map(ResourceKey::identifier))
                 .ifPresent(biome -> data.put(Frame.BIOME, biome));
 
-        List<ResourceLocation> structures = positionsInFrame.stream()
+        List<Identifier> structures = positionsInFrame.stream()
                 .map(pos -> LevelUtil.getStructuresAt(level, pos))
                 .flatMap(List::stream)
                 .collect(Collectors.toSet()) // Remove duplicates
@@ -936,7 +939,7 @@ public class CameraItem extends Item {
 
     protected void entityCaptured(CameraHolder cameraHolder, ItemStack stack, LivingEntity entity) {
         if (cameraHolder.asHolderEntity() instanceof ServerPlayer player && entity instanceof EnderMan enderMan) {
-            boolean lookingAtAngryEnderMan = player.equals(enderMan.getTarget()) && enderMan.isLookingAtMe(player);
+            boolean lookingAtAngryEnderMan = player.equals(enderMan.getTarget()) && enderMan.isBeingStaredBy(player);
 
             if (lookingAtAngryEnderMan) {
                 // I wanted to implement this in a predicate,
@@ -1004,8 +1007,8 @@ public class CameraItem extends Item {
     }
 
     protected void testPositionsInFrame(ItemStack stack, Level level, Player player) {
-        if (level.isClientSide && level.getGameTime() % 2 == 0) {
-            List<BlockPos> positionsInFrame = getPositionsInFrame(player, getPointOfView(player, stack), getViewfinderFov(level, stack));
+        if (level.isClientSide() && level.getGameTime() % 2 == 0) {
+            List<BlockPos> positionsInFrame = getPositionsInFrame((CameraHolder) player, getPointOfView((CameraHolder) player, stack), getViewfinderFov(level, stack));
             for (BlockPos pos : positionsInFrame) {
                 level.addAlwaysVisibleParticle(ParticleTypes.EXPLOSION, true, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 0, 0, 0);
             }

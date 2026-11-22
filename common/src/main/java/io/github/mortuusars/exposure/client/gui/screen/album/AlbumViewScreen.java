@@ -1,5 +1,6 @@
 package io.github.mortuusars.exposure.client.gui.screen.album;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.mortuusars.exposure.Config;
@@ -23,7 +24,9 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -182,12 +185,11 @@ public class AlbumViewScreen extends Screen {
     @Override
     public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         renderTransparentBackground(guiGraphics);
-
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        guiGraphics.blit(AlbumGUI.TEXTURE, leftPos, topPos, 0, 0, 0,
+//        //RenderSystem.setShader(CoreShaders.POSITION_TEX);
+//        //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+//        //RenderSystem.enableBlend();
+//        //RenderSystem.defaultBlendFunc();
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AlbumGUI.TEXTURE, leftPos, topPos, 0, 0,
                 imageWidth, imageHeight, 512, 512);
 
         int currentSpreadIndex = getCurrentSpreadIndex();
@@ -210,11 +212,11 @@ public class AlbumViewScreen extends Screen {
     // --
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (super.mouseClicked(mouseX, mouseY, button)) return true;
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        if (super.mouseClicked(event, handled)) return true;
 
         for (Page page : pages) {
-            if (page.noteWidget().mouseClicked(mouseX, mouseY, button)) {
+            if (page.noteWidget().mouseClicked(event, handled)) {
                 return true;
             }
         }
@@ -222,7 +224,6 @@ public class AlbumViewScreen extends Screen {
         return false;
     }
 
-    @Override
     public boolean handleComponentClicked(@Nullable Style style) {
         if (style == null)
             return false;
@@ -230,17 +231,16 @@ public class AlbumViewScreen extends Screen {
         ClickEvent clickEvent = style.getClickEvent();
         if (clickEvent == null)
             return false;
-        else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
-            String pageIndexStr = clickEvent.getValue();
-            int pageIndex = Integer.parseInt(pageIndexStr) - 1;
+        else if (clickEvent instanceof ClickEvent.ChangePage changePage) {
+            int pageIndex = changePage.page() - 1;
             forcePage(pageIndex);
             return true;
         }
 
-        boolean handled = super.handleComponentClicked(style);
-        if (handled && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND)
+        Screen.defaultHandleClickEvent(clickEvent, minecraft, this);
+        if (clickEvent.action() == ClickEvent.Action.RUN_COMMAND)
             onClose();
-        return handled;
+        return true;
     }
 
     protected void forcePage(int pageIndex) {
@@ -248,13 +248,13 @@ public class AlbumViewScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
     // --

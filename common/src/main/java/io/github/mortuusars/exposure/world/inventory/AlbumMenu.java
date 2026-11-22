@@ -143,7 +143,7 @@ public class AlbumMenu extends AbstractContainerMenu {
         // Player hotbar slots
         // Hotbar should go after main inventory for Shift+Click to work properly.
         for (int index = 0; index < 9; ++index) {
-            boolean disabled = index == playerInventory.selected && playerInventory.getSelected().getItem() instanceof AlbumItem;
+            boolean disabled = index == playerInventory.getSelectedSlot() && playerInventory.getSelectedItem().getItem() instanceof AlbumItem;
             AlbumPlayerInventorySlot slot = new AlbumPlayerInventorySlot(playerInventory, index,
                     x + index * 18, y + 58) {
                 @Override
@@ -202,7 +202,7 @@ public class AlbumMenu extends AbstractContainerMenu {
     }
 
     public void signAlbum(Player player) {
-        if (!player.level().isClientSide) {
+        if (!player.level().isClientSide()) {
             return;
         }
 
@@ -321,7 +321,7 @@ public class AlbumMenu extends AbstractContainerMenu {
             photographSlot.get().set(stack);
             slot.set(ItemStack.EMPTY);
 
-            if (player.level().isClientSide) {
+            if (player.level().isClientSide()) {
                 player.playSound(Exposure.SoundEvents.PHOTOGRAPH_PLACE.get(), 0.8f, 1.1f);
             }
 

@@ -12,7 +12,7 @@ import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +22,9 @@ import java.util.function.Consumer;
 public record CaptureParameters(String exposureId,
                                 Optional<CameraId> cameraId,
                                 Optional<Integer> cameraHolderId,
-                                Optional<Double> fov,
+                                Optional<Float> fov,
                                 float cropFactor,
-                                Optional<ResourceLocation> filter,
+                                Optional<Identifier> filter,
                                 Optional<Projection> projection,
                                 Optional<ColorChannel> singleChannel,
                                 FilmProperties filmProperties,
@@ -32,10 +32,8 @@ public record CaptureParameters(String exposureId,
 
     public static final ExtraData.Type<ShutterSpeed> SHUTTER_SPEED =
             ExtraData.Type.stringRepresentable("shutter_speed", ShutterSpeed::new);
-    public static final ExtraData.Type<Boolean> FLASH =
-            new ExtraData.Type<>("flash", ExtraData::getBoolean, ExtraData::putBoolean);
-    public static final ExtraData.Type<Integer> LIGHT_LEVEL =
-            new ExtraData.Type<>("light_level", ExtraData::getInt, ExtraData::putInt);
+    public static final ExtraData.Type<Boolean> FLASH = ExtraData.Type.bool("flash");
+    public static final ExtraData.Type<Integer> LIGHT_LEVEL = ExtraData.Type.intVal("light_level");
 
     // --
 
@@ -43,9 +41,9 @@ public record CaptureParameters(String exposureId,
             Codec.STRING.fieldOf("id").forGetter(CaptureParameters::exposureId),
             CameraId.CODEC.optionalFieldOf("camera_id").forGetter(CaptureParameters::cameraId),
             Codec.INT.optionalFieldOf("camera_holder_id").forGetter(CaptureParameters::cameraHolderId),
-            Codecs.POSITIVE_DOUBLE.optionalFieldOf("fov").forGetter(CaptureParameters::fov),
+            Codecs.POSITIVE_FLOAT.optionalFieldOf("fov").forGetter(CaptureParameters::fov),
             Codecs.floatRange(0.001f, 1f).optionalFieldOf("crop_factor", 1f).forGetter(CaptureParameters::cropFactor),
-            ResourceLocation.CODEC.optionalFieldOf("filter").forGetter(CaptureParameters::filter),
+            Identifier.CODEC.optionalFieldOf("filter").forGetter(CaptureParameters::filter),
             Projection.CODEC.optionalFieldOf("projection").forGetter(CaptureParameters::projection),
             ColorChannel.CODEC.optionalFieldOf("single_channel").forGetter(CaptureParameters::singleChannel),
             FilmProperties.CODEC.optionalFieldOf("film", FilmProperties.EMPTY).forGetter(CaptureParameters::filmProperties),
@@ -58,9 +56,9 @@ public record CaptureParameters(String exposureId,
                     ByteBufCodecs.STRING_UTF8.decode(buffer),
                     ByteBufCodecs.optional(CameraId.STREAM_CODEC).decode(buffer),
                     ByteBufCodecs.optional(ByteBufCodecs.VAR_INT).decode(buffer),
-                    ByteBufCodecs.optional(ByteBufCodecs.DOUBLE).decode(buffer),
+                    ByteBufCodecs.optional(ByteBufCodecs.FLOAT).decode(buffer),
                     ByteBufCodecs.FLOAT.decode(buffer),
-                    ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC).decode(buffer),
+                    ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(buffer),
                     ByteBufCodecs.optional(Projection.STREAM_CODEC).decode(buffer),
                     ByteBufCodecs.optional(ColorChannel.STREAM_CODEC).decode(buffer),
                     FilmProperties.STREAM_CODEC.decode(buffer),
@@ -71,9 +69,9 @@ public record CaptureParameters(String exposureId,
             ByteBufCodecs.STRING_UTF8.encode(buffer, data.exposureId());
             ByteBufCodecs.optional(CameraId.STREAM_CODEC).encode(buffer, data.cameraId());
             ByteBufCodecs.optional(ByteBufCodecs.VAR_INT).encode(buffer, data.cameraHolderId());
-            ByteBufCodecs.optional(ByteBufCodecs.DOUBLE).encode(buffer, data.fov());
+            ByteBufCodecs.optional(ByteBufCodecs.FLOAT).encode(buffer, data.fov());
             ByteBufCodecs.FLOAT.encode(buffer, data.cropFactor());
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC).encode(buffer, data.filter());
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(buffer, data.filter());
             ByteBufCodecs.optional(Projection.STREAM_CODEC).encode(buffer, data.projection());
             ByteBufCodecs.optional(ColorChannel.STREAM_CODEC).encode(buffer, data.singleChannel());
             FilmProperties.STREAM_CODEC.encode(buffer, data.filmProperties());
@@ -101,9 +99,9 @@ public record CaptureParameters(String exposureId,
         private final String exposureId;
         private @Nullable CameraId cameraId;
         private @Nullable Integer cameraHolderEntityID;
-        private @Nullable Double fov;
+        private @Nullable Float fov;
         private float cropFactor = 1f;
-        private @Nullable ResourceLocation filter = null;
+        private @Nullable Identifier filter = null;
         private @Nullable Projection projection;
         private @Nullable ColorChannel chromaticChannel;
         private FilmProperties filmProperties = FilmProperties.EMPTY;
@@ -137,12 +135,12 @@ public record CaptureParameters(String exposureId,
             return this;
         }
 
-        public Builder setFilter(@Nullable ResourceLocation filter) {
+        public Builder setFilter(@Nullable Identifier filter) {
             this.filter = filter;
             return this;
         }
 
-        public Builder setFov(@Nullable Double fov) {
+        public Builder setFov(@Nullable Float fov) {
             this.fov = fov;
             return this;
         }

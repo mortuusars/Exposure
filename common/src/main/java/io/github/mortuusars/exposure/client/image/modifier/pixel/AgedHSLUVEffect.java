@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
 import io.github.mortuusars.exposure.util.color.converter.HUSLColorConverter;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,7 +21,9 @@ public class AgedHSLUVEffect implements PixelEffect {
      */
     public AgedHSLUVEffect(int tintColor, float tintOpacity, int blackPoint, int whitePoint) {
         this.tintColor = tintColor;
-        String hexStr = StringUtils.leftPad(Integer.toHexString(tintColor & 0xFFFFFF), 6, "0");
+        // dunno why, but this needs to be done for it to tint properly
+        int newTintColor = ARGB.fromABGR(tintColor);
+        String hexStr = StringUtils.leftPad(Integer.toHexString(newTintColor & 0xFFFFFF), 6, "0");
         this.tintColorHsluv = HUSLColorConverter.hexToHsluv("#" + hexStr);
         this.tintOpacity = tintOpacity;
         this.blackPoint = blackPoint & 0xFF; // 0-255
@@ -34,10 +36,10 @@ public class AgedHSLUVEffect implements PixelEffect {
     }
 
     public int modify(int colorARGB) {
-        int alpha = FastColor.ARGB32.alpha(colorARGB);
-        int red = FastColor.ARGB32.red(colorARGB);
-        int green = FastColor.ARGB32.green(colorARGB);
-        int blue = FastColor.ARGB32.blue(colorARGB);
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         // Modify black and white points to make the image appear faded:
         red = (int) Mth.map(red, 0, 255, blackPoint, whitePoint);
@@ -56,7 +58,7 @@ public class AgedHSLUVEffect implements PixelEffect {
         int newGreen = Mth.clamp((int) Mth.lerp(tintOpacity, green, rgb[1] * 255), 0, 255);
         int newBlue = Mth.clamp((int) Mth.lerp(tintOpacity, blue, rgb[2] * 255), 0, 255);
 
-        return FastColor.ARGB32.color(alpha, newRed, newGreen, newBlue);
+        return ARGB.color(alpha, newRed, newGreen, newBlue);
     }
 
     @Override

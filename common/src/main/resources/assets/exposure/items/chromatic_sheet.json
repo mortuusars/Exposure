@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "exposure:channels",
+    "scale": 1,
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "exposure:item/chromatic_sheet_three"
+    },
+    "entries": [
+      {
+        "threshold": 0.1,
+        "model": {
+          "type": "minecraft:model",
+          "model": "exposure:item/chromatic_sheet_one"
+        }
+      },
+      {
+        "threshold": 0.2,
+        "model": {
+          "type": "minecraft:model",
+          "model": "exposure:item/chromatic_sheet_two"
+        }
+      },
+      {
+        "threshold": 0.3,
+        "model": {
+          "type": "minecraft:model",
+          "model": "exposure:item/chromatic_sheet_three"
+        }
+      }
+    ]
+  }
+}

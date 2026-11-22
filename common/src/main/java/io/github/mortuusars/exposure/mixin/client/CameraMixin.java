@@ -4,7 +4,7 @@ import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import net.minecraft.client.Camera;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -31,7 +31,7 @@ public abstract class CameraMixin {
     }
 
     @Inject(method = "setup", at = @At(value = "RETURN"))
-    private void onSetup(BlockGetter level, Entity entity, boolean detached, boolean thirdPersonReverse, float partialTick, CallbackInfo ci) {
+    private void onSetup(Level level, Entity entity, boolean detached, boolean thirdPersonReverse, float partialTick, CallbackInfo ci) {
         if (CameraClient.viewfinder() != null && CameraClient.viewfinder().isLookingThrough()) {
             if (detached && thirdPersonReverse && CameraClient.viewfinder().camera().inSelfieMode()) {
                 setRotation((float) (yRot + CameraClient.viewfinder().selfie().getCameraYRot()),

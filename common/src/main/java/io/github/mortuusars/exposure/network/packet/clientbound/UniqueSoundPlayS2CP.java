@@ -8,7 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public record UniqueSoundPlayS2CP(String id, int entityId, SoundEvent sound, SoundSource source,
                                   float volume, float pitch) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("unique_sound_play");
+    public static final Identifier ID = Exposure.resource("unique_sound_play");
     public static final CustomPacketPayload.Type<UniqueSoundPlayS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, UniqueSoundPlayS2CP> STREAM_CODEC = StreamCodec.composite(

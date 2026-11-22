@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen.test;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.capture.Capture;
@@ -22,14 +22,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
-import org.joml.Matrix4f;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -376,20 +374,13 @@ public class TestImageScreen extends Screen {
             applyEdits();
         }
 
-        guiGraphics.pose().pushPose();
         float size = height * 0.8f * scale;
-        guiGraphics.pose().translate(width / 2f - size / 2f, height / 2f - size / 2f, -100);
-
-        float borderPercent = 0.02f;
-        guiGraphics.fill(Mth.floor(-size * borderPercent), Mth.floor(-size * borderPercent),
-                Mth.ceil(size + (size * borderPercent)), Mth.ceil(size + (size * borderPercent)), 0xFFFFFFFF);
-        guiGraphics.pose().scale(size, size, size);
-
-
+        PoseStack poseStack = new PoseStack();
+        poseStack.translate(width / 2f - size / 2f, height / 2f - size / 2f, 0f);
+        poseStack.scale(size, size, 1f);
         MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        ExposureClient.imageRenderer().render(renderableImage, guiGraphics.pose(), bufferSource, RenderCoordinates.DEFAULT, Color.WHITE);
+        ExposureClient.imageRenderer().render(renderableImage, poseStack, bufferSource, RenderCoordinates.DEFAULT, Color.WHITE);
         bufferSource.endBatch();
-        guiGraphics.pose().popPose();
     }
 
     @Override
@@ -428,10 +419,10 @@ public class TestImageScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) return true;
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (super.mouseDragged(event, dragX, dragY)) return true;
 
-        if (button != InputConstants.MOUSE_BUTTON_RIGHT) return false;
+        if (event.button() != InputConstants.MOUSE_BUTTON_RIGHT) return false;
 
         // Dragging the view with mouse:
         double fov = Minecrft.options().fov().get();
@@ -445,11 +436,6 @@ public class TestImageScreen extends Screen {
     }
 
     private void fillHorizontalGradient(GuiGraphics guiGraphics, int x1, int y1, int x2, int y2, int colorFrom, int colorTo) {
-        VertexConsumer consumer = guiGraphics.bufferSource().getBuffer(RenderType.gui());
-        Matrix4f matrix4f = guiGraphics.pose().last().pose();
-        consumer.addVertex(matrix4f, (float) x1, (float) y1, 0).setColor(colorFrom);
-        consumer.addVertex(matrix4f, (float) x1, (float) y2, 0).setColor(colorFrom);
-        consumer.addVertex(matrix4f, (float) x2, (float) y2, 0).setColor(colorTo);
-        consumer.addVertex(matrix4f, (float) x2, (float) y1, 0).setColor(colorTo);
+        guiGraphics.fillGradient(x1, y1, x2, y2, colorFrom, colorTo);
     }
 }

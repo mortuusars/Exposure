@@ -1,12 +1,14 @@
 package io.github.mortuusars.exposure.client.gui.screen.album;
 
 import io.github.mortuusars.exposure.Config;
+import io.github.mortuusars.exposure.client.gui.Tooltips;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.inventory.LecternAlbumMenu;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +16,8 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
 
 public class LecternAlbumScreen extends AlbumViewScreen implements MenuAccess<LecternAlbumMenu> {
     private final LecternAlbumMenu menu;
@@ -85,7 +89,9 @@ public class LecternAlbumScreen extends AlbumViewScreen implements MenuAccess<Le
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        double mouseX = event.x();
+        double mouseY = event.y();
         int page = getMenu().getPage();
         if (page % 2 == 1 && isHovering(70, 167, 17, 7, mouseX, mouseY)) {
             sendButtonClick(LecternAlbumMenu.BUTTON_PAGE_JUMP_RANGE_START + page - 1);
@@ -93,7 +99,7 @@ public class LecternAlbumScreen extends AlbumViewScreen implements MenuAccess<Le
             sendButtonClick(LecternAlbumMenu.BUTTON_PAGE_JUMP_RANGE_START + page + 1);
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, handled);
     }
 
     @Override
@@ -120,9 +126,9 @@ public class LecternAlbumScreen extends AlbumViewScreen implements MenuAccess<Le
         int page = getMenu().getPage();
 
         if (page % 2 == 1 && isHovering(70, 167, 17, 7, x, y)) {
-            guiGraphics.renderTooltip(font, Component.translatable("gui.exposure.album.lectern.set_current_page"), x, y);
+            Tooltips.renderTooltip(guiGraphics, font, List.of(Component.translatable("gui.exposure.album.lectern.set_current_page")), x, y);
         } else if (page % 2 == 0 && isHovering(210, 167, 17, 7, x, y)) {
-            guiGraphics.renderTooltip(font, Component.translatable("gui.exposure.album.lectern.set_current_page"), x, y);
+            Tooltips.renderTooltip(guiGraphics, font, List.of(Component.translatable("gui.exposure.album.lectern.set_current_page")), x, y);
         }
     }
 

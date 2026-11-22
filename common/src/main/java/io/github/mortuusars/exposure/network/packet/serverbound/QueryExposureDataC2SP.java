@@ -8,13 +8,13 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public record QueryExposureDataC2SP(ExposureIdentifier identifier) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("query_exposure_data");
+    public static final Identifier ID = Exposure.resource("query_exposure_data");
     public static final CustomPacketPayload.Type<QueryExposureDataC2SP> TYPE = new CustomPacketPayload.Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, QueryExposureDataC2SP> STREAM_CODEC = StreamCodec.composite(

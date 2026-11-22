@@ -16,8 +16,8 @@
     "client.GuiMixin",
     "client.HumanoidModelMixin",
     "client.ItemFrameRendererMixin",
+    "client.ItemFrameRenderStateMixin",
     "client.ItemInHandRendererMixin",
-    "client.ItemRendererMixin",
     "client.KeyBindTooltipMixin",
     "client.KeyboardHandlerMixin",
     "client.KeyMappingMixin",
@@ -25,7 +25,8 @@
     "client.MinecraftMixin",
     "client.MouseHandlerMixin",
     "client.MultiPlayerGameModeMixin",
-    "compat.easy_anvils.ModAnvilScreenMixin"
+    "client.LivingEntityRendererMixin",
+    "client.PlayerRenderStateMixin"
   ],
   "mixins": [
     "AnvilMenuMixin",
@@ -40,8 +41,7 @@
     "PotionContentsMixin",
     "ServerEntityMixin",
     "ServerGamePacketListenerMixin",
-    "ServerPlayerMixin",
-    "compat.easy_anvils.ModAnvilMenuMixin"
+    "ServerPlayerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

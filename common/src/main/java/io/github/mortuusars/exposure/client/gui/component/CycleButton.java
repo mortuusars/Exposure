@@ -4,17 +4,21 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.client.gui.Tooltips;
 import io.github.mortuusars.exposure.client.gui.Widgets;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
@@ -145,22 +149,20 @@ public class CycleButton<T> extends Button {
     }
 
     @Override
-    public void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         @Nullable WidgetSprites sprites = spritesMap.get(getCurrentValue());
-        ResourceLocation spriteLocation = sprites != null
+        Identifier spriteLocation = sprites != null
                 ? sprites.get(isActive(), isHoveredOrFocused())
                 : TextureManager.INTENTIONAL_MISSING_TEXTURE;
-        guiGraphics.blitSprite(spriteLocation, getX(), getY(), getWidth(), getHeight());
+        guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, spriteLocation, getX(), getY(), getWidth(), getHeight());
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if ((button == 0 || button == 1) && clicked(mouseX, mouseY)) {
-            cycle(button == 1);
+    public void onClick(MouseButtonEvent event, boolean handled) {
+        if ((event.button() == 0 || event.button() == 1) && isMouseOver(event.x(), event.y())) {
+            cycle(event.button() == 1);
             playDownSound(Minecraft.getInstance().getSoundManager());
-            return true;
         }
-        return false;
     }
 
     @Override
@@ -171,11 +173,11 @@ public class CycleButton<T> extends Button {
     }
 
     @Override
-    public boolean keyPressed(int pKeyCode, int pScanCode, int pModifiers) {
-        boolean pressed = super.keyPressed(pKeyCode, pScanCode, pModifiers);
+    public boolean keyPressed(KeyEvent event) {
+        boolean pressed = super.keyPressed(event);
 
         if (pressed)
-            cycle(Screen.hasShiftDown());
+            cycle(Minecraft.getInstance().hasShiftDown());
 
         return pressed;
     }

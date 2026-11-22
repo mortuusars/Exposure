@@ -59,7 +59,7 @@ public class Codecs {
         };
     }
 
-    public static final Codec<Double> POSITIVE_DOUBLE = Codec.DOUBLE.validate(f -> f > 0
+    public static final Codec<Float> POSITIVE_FLOAT = Codec.FLOAT.validate(f -> f > 0
             ? DataResult.success(f)
             : DataResult.error(() -> "Value must be positive: " + f));
 

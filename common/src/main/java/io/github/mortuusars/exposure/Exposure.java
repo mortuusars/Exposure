@@ -8,7 +8,6 @@ import io.github.mortuusars.exposure.advancements.predicate.FramePredicate;
 import io.github.mortuusars.exposure.advancements.predicate.TamedPredicate;
 import io.github.mortuusars.exposure.advancements.trigger.FrameExposedTrigger;
 import io.github.mortuusars.exposure.advancements.trigger.FramePrintedTrigger;
-import io.github.mortuusars.exposure.util.supporter.Supporters;
 import io.github.mortuusars.exposure.world.block.FlashBlock;
 import io.github.mortuusars.exposure.world.block.LightroomBlock;
 import io.github.mortuusars.exposure.world.block.entity.LightroomBlockEntity;
@@ -31,7 +30,6 @@ import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.inventory.*;
 import io.github.mortuusars.exposure.world.item.*;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
-import io.github.mortuusars.exposure.world.item.component.StackedPhotographs;
 import io.github.mortuusars.exposure.world.item.component.StoredItemStack;
 import io.github.mortuusars.exposure.world.item.component.album.AlbumContent;
 import io.github.mortuusars.exposure.world.item.component.album.SignedAlbumContent;
@@ -42,8 +40,7 @@ import io.github.mortuusars.exposure.world.item.crafting.recipe.PhotographAgingR
 import io.github.mortuusars.exposure.world.item.crafting.recipe.PhotographCopyingRecipe;
 import io.github.mortuusars.exposure.world.item.crafting.recipe.serializer.ComponentTransferringRecipeSerializer;
 import io.github.mortuusars.exposure.world.item.util.ItemAndStack;
-import net.minecraft.advancements.critereon.ItemSubPredicate;
-import net.minecraft.advancements.critereon.PlayerTrigger;
+import net.minecraft.advancements.criterion.PlayerTrigger;
 import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.commands.synchronization.SingletonArgumentInfo;
 import net.minecraft.core.Registry;
@@ -51,8 +48,9 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.stats.StatFormatter;
@@ -81,8 +79,10 @@ public class Exposure {
     public static final String ID = "exposure";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final List<String> MODS_REQUIRING_DIRECT_CAPTURE = List.of("veil", "pmweather", "renderscale");
+    public static final List<String> MODS_REQUIRING_DIRECT_CAPTURE = List.of("veil");
     public static final int MAX_ENTITIES_IN_FRAME = 10;
+
+    public static final StreamCodec CUSTOM_INGREDIENT_CODEC = null;
 
     public static void init() {
         Blocks.init();
@@ -92,15 +92,12 @@ public class Exposure {
         CreativeTabs.init();
         DataComponents.init();
         CriteriaTriggers.init();
-        ItemSubPredicates.init();
-        EntitySubPredicates.init();
+//        ItemSubPredicates.init();
+//        EntitySubPredicates.init();
         MenuTypes.init();
         RecipeSerializers.init();
         SoundEvents.init();
         ArgumentTypes.init();
-
-        // Query supporters early, so it will be available right away when needed
-        Supporters.query();
     }
 
     public static void initServer(MinecraftServer server) {
@@ -110,25 +107,27 @@ public class Exposure {
     /**
      * Creates resource location in the mod namespace with the given filePath.
      */
-    public static ResourceLocation resource(String path) {
-        return ResourceLocation.fromNamespaceAndPath(ID, path);
+    public static Identifier resource(String path) {
+        return Identifier.fromNamespaceAndPath(ID, path);
     }
 
     public static class Blocks {
         public static final Supplier<LightroomBlock> LIGHTROOM = Register.block("lightroom",
-                () -> new LightroomBlock(BlockBehaviour.Properties.of()
+                LightroomBlock::new,
+                () -> BlockBehaviour.Properties.of()
                         .mapColor(MapColor.COLOR_BROWN)
                         .strength(2.5f)
-                        .sound(SoundType.WOOD)));
+                        .sound(SoundType.WOOD));
 
         public static final Supplier<FlashBlock> FLASH = Register.block("flash",
-                () -> new FlashBlock(BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.AIR)
+                FlashBlock::new,
+                () -> BlockBehaviour.Properties.ofFullCopy(net.minecraft.world.level.block.Blocks.AIR)
                         .strength(-1.0F, 3600000.8F)
                         .noLootTable()
                         .mapColor(MapColor.NONE)
                         .noOcclusion()
-                        .noCollission()
-                        .lightLevel(state -> 15)));
+                        .noCollision()
+                        .lightLevel(state -> 15));
 
         static void init() {
         }
@@ -144,82 +143,94 @@ public class Exposure {
 
     public static class Items {
         public static final Supplier<CameraItem> CAMERA = Register.item("camera",
-                () -> new CameraItem(new Item.Properties()
+                CameraItem::new,
+                () -> new Item.Properties()
                         .stacksTo(1)
-                        .component(DataComponents.CAMERA_ACTIVE, false)));
+                        .component(DataComponents.CAMERA_ACTIVE, false));
 
         public static final Supplier<FilmRollItem> BLACK_AND_WHITE_FILM = Register.item("black_and_white_film",
-                () -> new FilmRollItem(ExposureType.BLACK_AND_WHITE, FilmRollItem.BAR_BLACK_AND_WHITE,
-                        new Item.Properties()
-                                .stacksTo(16)));
+                properties -> new FilmRollItem(ExposureType.BLACK_AND_WHITE, FilmRollItem.BAR_BLACK_AND_WHITE, properties),
+                () -> new Item.Properties()
+                        .stacksTo(16));
 
         public static final Supplier<FilmRollItem> COLOR_FILM = Register.item("color_film",
-                () -> new FilmRollItem(ExposureType.COLOR, FilmRollItem.BAR_COLOR,
-                        new Item.Properties()
-                                .stacksTo(16)));
+                properties -> new FilmRollItem(ExposureType.COLOR, FilmRollItem.BAR_COLOR, properties),
+                () -> new Item.Properties()
+                        .stacksTo(16));
 
         public static final Supplier<FilmRollItem> HIGH_SENSITIVITY_BLACK_AND_WHITE_FILM = Register.item("high_sensitivity_black_and_white_film",
-                () -> new FilmRollItem(ExposureType.BLACK_AND_WHITE, FilmRollItem.BAR_BLACK_AND_WHITE,
-                        new Item.Properties()
-                                .component(DataComponents.FILM_STYLE, FilmStyle.create()
-                                        .withSensitivity(2f)
-                                        .withNoise(0.065f))
-                                .stacksTo(16)));
+                properties -> new FilmRollItem(ExposureType.BLACK_AND_WHITE, FilmRollItem.BAR_BLACK_AND_WHITE, properties),
+                () -> new Item.Properties()
+                        .component(DataComponents.FILM_STYLE, FilmStyle.create()
+                                .withSensitivity(2f)
+                                .withNoise(0.065f))
+                        .stacksTo(16));
 
         public static final Supplier<FilmRollItem> HIGH_SENSITIVITY_COLOR_FILM = Register.item("high_sensitivity_color_film",
-                () -> new FilmRollItem(ExposureType.COLOR, FilmRollItem.BAR_COLOR,
-                        new Item.Properties()
-                                .component(DataComponents.FILM_STYLE, FilmStyle.create()
-                                        .withSensitivity(2f)
-                                        .withNoise(0.065f))
-                                .stacksTo(16)));
+
+                properties -> new FilmRollItem(ExposureType.COLOR, FilmRollItem.BAR_COLOR, properties),
+                () -> new Item.Properties()
+                        .component(DataComponents.FILM_STYLE, FilmStyle.create()
+                                .withSensitivity(2f)
+                                .withNoise(0.065f))
+                        .stacksTo(16));
 
         public static final Supplier<DevelopedFilmItem> DEVELOPED_BLACK_AND_WHITE_FILM = Register.item("developed_black_and_white_film",
-                () -> new DevelopedFilmItem(ExposureType.BLACK_AND_WHITE, new Item.Properties()
-                        .stacksTo(1)));
+                properties -> new DevelopedFilmItem(ExposureType.BLACK_AND_WHITE, properties),
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<DevelopedFilmItem> DEVELOPED_COLOR_FILM = Register.item("developed_color_film",
-                () -> new DevelopedFilmItem(ExposureType.COLOR, new Item.Properties()
-                        .stacksTo(1)));
+                properties -> new DevelopedFilmItem(ExposureType.COLOR, properties),
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<PhotographItem> PHOTOGRAPH = Register.item("photograph",
-                () -> new PhotographItem(new Item.Properties()
-                        .stacksTo(1)));
+                PhotographItem::new,
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<ChromaticSheetItem> CHROMATIC_SHEET = Register.item("chromatic_sheet",
-                () -> new ChromaticSheetItem(new Item.Properties()
-                        .stacksTo(1)));
+                ChromaticSheetItem::new,
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<PhotographItem> AGED_PHOTOGRAPH = Register.item("aged_photograph",
-                () -> new AgedPhotographItem(new Item.Properties()
-                        .stacksTo(1)));
+                AgedPhotographItem::new,
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<InterplanarProjectorItem> INTERPLANAR_PROJECTOR = Register.item("interplanar_projector",
-                () -> new InterplanarProjectorItem(new Item.Properties()));
+                InterplanarProjectorItem::new, Item.Properties::new);
         public static final Supplier<BrokenInterplanarProjectorItem> BROKEN_INTERPLANAR_PROJECTOR = Register.item("broken_interplanar_projector",
-                () -> new BrokenInterplanarProjectorItem(new Item.Properties()));
+                BrokenInterplanarProjectorItem::new, Item.Properties::new);
 
         public static final Supplier<StackedPhotographsItem> STACKED_PHOTOGRAPHS = Register.item("stacked_photographs",
-                () -> new StackedPhotographsItem(new Item.Properties()
-                        .stacksTo(1)));
+                StackedPhotographsItem::new,
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<AlbumItem> ALBUM = Register.item("album",
-                () -> new AlbumItem(new Item.Properties()
-                        .stacksTo(1)));
+                AlbumItem::new,
+                () -> new Item.Properties()
+                        .stacksTo(1));
         public static final Supplier<SignedAlbumItem> SIGNED_ALBUM = Register.item("signed_album",
-                () -> new SignedAlbumItem(new Item.Properties()
-                        .stacksTo(1)));
+                SignedAlbumItem::new,
+                () -> new Item.Properties()
+                        .stacksTo(1));
 
         public static final Supplier<PhotographFrameItem> PHOTOGRAPH_FRAME = Register.item("photograph_frame",
-                () -> new PhotographFrameItem(new Item.Properties()));
+                PhotographFrameItem::new, Item.Properties::new);
         public static final Supplier<GlassPhotographFrameItem> CLEAR_PHOTOGRAPH_FRAME = Register.item("glass_photograph_frame",
-                () -> new GlassPhotographFrameItem(new Item.Properties()));
+                GlassPhotographFrameItem::new, Item.Properties::new);
 
         public static final Supplier<CameraStandItem> CAMERA_STAND = Register.item("camera_stand",
-                () -> new CameraStandItem(new Item.Properties()));
+                CameraStandItem::new, Item.Properties::new);
 
         public static final Supplier<BlockItem> LIGHTROOM = Register.item("lightroom",
-                () -> new BlockItem(Blocks.LIGHTROOM.get(), new Item.Properties()));
+                properties -> new BlockItem(Blocks.LIGHTROOM.get(), properties),
+                () -> new Item.Properties()
+                        .useBlockDescriptionPrefix());
 
         static void init() {
         }
@@ -259,9 +270,6 @@ public class Exposure {
 
         public static final DataComponentType<CameraId> CAMERA_ID = Register.dataComponentType("camera_id",
                 arg -> arg.persistent(CameraId.CODEC).networkSynchronized(CameraId.STREAM_CODEC));
-
-        public static final DataComponentType<Boolean> CAMERA_GOLD = Register.dataComponentType("camera_gold",
-                arg -> arg.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
 
         public static final DataComponentType<Boolean> CAMERA_ACTIVE = Register.dataComponentType("camera_active",
                 arg -> arg.persistent(Codec.BOOL).networkSynchronized(ByteBufCodecs.BOOL));
@@ -335,8 +343,8 @@ public class Exposure {
         public static final DataComponentType<FilmStyle> FILM_STYLE = Register.dataComponentType("film_style",
                 arg -> arg.persistent(FilmStyle.CODEC).networkSynchronized(FilmStyle.STREAM_CODEC));
 
-        public static final DataComponentType<ResourceLocation> FILM_COLOR_PALETTE = Register.dataComponentType("film_color_palette",
-                arg -> arg.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC));
+        public static final DataComponentType<Identifier> FILM_COLOR_PALETTE = Register.dataComponentType("film_color_palette",
+                arg -> arg.persistent(Identifier.CODEC).networkSynchronized(Identifier.STREAM_CODEC));
 
         public static final DataComponentType<DitherMode> FILM_DITHER_MODE = Register.dataComponentType("film_dither_mode",
                 arg -> arg.persistent(DitherMode.CODEC).networkSynchronized(DitherMode.STREAM_CODEC));
@@ -357,9 +365,10 @@ public class Exposure {
         public static final DataComponentType<Integer> PHOTOGRAPH_GENERATION = Register.dataComponentType("photograph_generation",
                 arg -> arg.persistent(ExtraCodecs.intRange(0, 3)).networkSynchronized(ByteBufCodecs.VAR_INT));
 
-        public static final DataComponentType<StackedPhotographs> STACKED_PHOTOGRAPHS =
+        public static final DataComponentType<List<ItemAndStack<PhotographItem>>> STACKED_PHOTOGRAPHS =
                 Register.dataComponentType("stacked_photographs",
-                      arg -> arg.persistent(StackedPhotographs.CODEC).networkSynchronized(StackedPhotographs.STREAM_CODEC).cacheEncoding());
+                        arg -> arg.persistent(StackedPhotographsItem.PHOTOGRAPH_ITEM_AND_STACK_CODEC.listOf(0, 64))
+                                .networkSynchronized(StackedPhotographsItem.PHOTOGRAPH_ITEM_AND_STACK_STREAM_CODEC.apply(ByteBufCodecs.list())));
 
         // Album
 
@@ -499,17 +508,17 @@ public class Exposure {
     }
 
     public static class Stats {
-        public static final Map<ResourceLocation, StatFormatter> STATS = new HashMap<>();
+        public static final Map<Identifier, StatFormatter> STATS = new HashMap<>();
 
-        public static final ResourceLocation INTERACT_WITH_LIGHTROOM =
+        public static final Identifier INTERACT_WITH_LIGHTROOM =
                 register(Exposure.resource("interact_with_lightroom"), StatFormatter.DEFAULT);
-        public static final ResourceLocation FILM_FRAMES_EXPOSED =
+        public static final Identifier FILM_FRAMES_EXPOSED =
                 register(Exposure.resource("film_frames_exposed"), StatFormatter.DEFAULT);
-        public static final ResourceLocation FLASHES_TRIGGERED =
+        public static final Identifier FLASHES_TRIGGERED =
                 register(Exposure.resource("flashes_triggered"), StatFormatter.DEFAULT);
 
         @SuppressWarnings("SameParameterValue")
-        private static ResourceLocation register(ResourceLocation location, StatFormatter formatter) {
+        private static Identifier register(Identifier location, StatFormatter formatter) {
             STATS.put(location, formatter);
             return location;
         }
@@ -532,20 +541,20 @@ public class Exposure {
         }
     }
 
-    public static class ItemSubPredicates {
-        public static Supplier<ItemSubPredicate.Type<FramePredicate>> FRAME = Register.itemSubPredicate("frame",
-                () -> new ItemSubPredicate.Type<>(FramePredicate.CODEC));
-
-        public static void init() {
-        }
-    }
-
-    public static class EntitySubPredicates {
-        public static final Supplier<MapCodec<TamedPredicate>> TAMED = Register.entitySubPredicate("tamed", () -> TamedPredicate.CODEC);
-
-        public static void init() {
-        }
-    }
+//    public static class ItemSubPredicates {
+//        public static Supplier<ItemSubPredicate.Type<FramePredicate>> FRAME = Register.itemSubPredicate("frame",
+//                () -> new ItemSubPredicate.Type<>(FramePredicate.CODEC));
+//
+//        public static void init() {
+//        }
+//    }
+//
+//    public static class EntitySubPredicates {
+//        public static final Supplier<MapCodec<TamedPredicate>> TAMED = Register.entitySubPredicate("tamed", () -> TamedPredicate.CODEC);
+//
+//        public static void init() {
+//        }
+//    }
 
     public static class LootTables {
         public static final ResourceKey<LootTable> SIMPLE_DUNGEON_INJECT =

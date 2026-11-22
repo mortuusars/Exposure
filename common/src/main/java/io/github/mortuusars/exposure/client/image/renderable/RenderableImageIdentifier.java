@@ -1,8 +1,8 @@
 package io.github.mortuusars.exposure.client.image.renderable;
 
 import io.github.mortuusars.exposure.Exposure;
-import net.minecraft.Util;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Util;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 
 public record RenderableImageIdentifier(String base, String variant) {
@@ -16,9 +16,9 @@ public record RenderableImageIdentifier(String base, String variant) {
         else return new RenderableImageIdentifier(base, variant + "_" + appendedVariant);
     }
 
-    public ResourceLocation toResourceLocation() {
+    public Identifier toIdentifier() {
         String path = StringUtil.isBlank(variant) ? base : base + "/" + variant;
-        String validPath = Util.sanitizeName(path, ResourceLocation::validPathChar);
+        String validPath = Util.sanitizeName(path, Identifier::validPathChar);
         return Exposure.resource(validPath);
     }
 }

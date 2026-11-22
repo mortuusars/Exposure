@@ -3,5 +3,5 @@
     "items": "minecraft:brown_stained_glass_pane"
   },
   "attachment_tint": "51301A",
-  "shader": "exposure:shaders/post/brown_tint.json"
+  "shader": "exposure:post/brown_tint"
 }

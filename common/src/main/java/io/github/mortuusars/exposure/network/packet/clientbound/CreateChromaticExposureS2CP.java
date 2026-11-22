@@ -9,14 +9,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public record CreateChromaticExposureS2CP(String id, List<ExposureIdentifier> layers) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("create_chromatic_exposure");
+    public static final Identifier ID = Exposure.resource("create_chromatic_exposure");
     public static final CustomPacketPayload.Type<CreateChromaticExposureS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, CreateChromaticExposureS2CP> STREAM_CODEC = StreamCodec.composite(

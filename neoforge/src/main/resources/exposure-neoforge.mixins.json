@@ -8,8 +8,7 @@
   ],
   "mixins": [
     "AlbumItemNeoForgeMixin",
-    "CameraItemNeoForgeMixin",
-    "create.FillingBySpoutMixin"
+    "CameraItemNeoForgeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

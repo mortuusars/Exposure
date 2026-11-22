@@ -11,8 +11,6 @@ import io.github.mortuusars.exposure.client.image.modifier.ImageEffect;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.client.input.Key;
 import io.github.mortuusars.exposure.client.input.KeyBindings;
-import io.github.mortuusars.exposure.client.render.image.RenderCoordinates;
-import io.github.mortuusars.exposure.client.util.GuiUtil;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.world.camera.ExposureType;
@@ -21,11 +19,14 @@ import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.sound.SoundEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import io.github.mortuusars.exposure.util.color.Color;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -35,7 +36,7 @@ import java.util.Collections;
 import java.util.List;
 
 public class FilmFrameInspectScreen extends Screen {
-    public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/film_frame_inspect.png");
+    public static final Identifier TEXTURE = Exposure.resource("textures/gui/film_frame_inspect.png");
 
     public static final int BG_SIZE = 78;
     public static final int FRAME_SIZE = 54;
@@ -116,44 +117,36 @@ public class FilmFrameInspectScreen extends Screen {
     public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         float scale = (float) (zoom.get() * zoomFactor);
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
+//        //RenderSystem.enableBlend();
+//        //RenderSystem.defaultBlendFunc();
+//        //RenderSystem.disableDepthTest();
 
         renderTransparentBackground(guiGraphics);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(x, y, 0);
-        guiGraphics.pose().translate(width / 2f, height / 2f, 50);
-        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(x, y);
+        guiGraphics.pose().translate(width / 2f, height / 2f);
+        guiGraphics.pose().scale(scale, scale);
 
-        guiGraphics.pose().translate(BG_SIZE / -2f, BG_SIZE / -2f, 0);
+        guiGraphics.pose().translate(BG_SIZE / -2f, BG_SIZE / -2f);
 
-        RenderSystem.setShaderTexture(0, TEXTURE);
-        GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, 0, 256, 256, 0);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0, 0, BG_SIZE, BG_SIZE, 256, 256);
 
         Frame frame = getCurrentFrame();
         ExposureType filmType = frame.type();
         FilmColor filmColor = filmType.getFilmColor();
+        int tint = Color.argbF(filmColor.a(), filmColor.r(), filmColor.g(), filmColor.b()).getARGB();
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, 0, 0, 0, BG_SIZE, BG_SIZE, BG_SIZE, 256, 256, tint);
 
-        RenderSystem.setShaderColor(filmColor.r(), filmColor.g(), filmColor.b(), filmColor.a());
-        GuiUtil.blit(guiGraphics.pose(), 0, 0, BG_SIZE, BG_SIZE, 0, BG_SIZE, 256, 256, 0);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
-        guiGraphics.pose().translate(12, 12, 0);
         RenderableImage image = ExposureClient.renderedExposures().getOrCreate(frame).modifyWith(ImageEffect.NEGATIVE_FILM);
-        MultiBufferSource.BufferSource bufferSource = Minecraft.getInstance().renderBuffers().bufferSource();
-        ExposureClient.imageRenderer().render(image,  guiGraphics.pose(), bufferSource,
-                new RenderCoordinates(0, 0, FRAME_SIZE, FRAME_SIZE), filmType.getImageColor());
-        bufferSource.endBatch();
+        ExposureClient.imageRenderer().renderGui(image, guiGraphics, 12, 12, FRAME_SIZE, FRAME_SIZE, filmType.getImageColor());
+        guiGraphics.pose().popMatrix();
 
-        guiGraphics.pose().popPose();
-
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         // Places widgets above, because they will be covered when photo is zoomed in
 //        guiGraphics.pose().translate(0, 0, 100);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     @Override
@@ -163,13 +156,13 @@ public class FilmFrameInspectScreen extends Screen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
     @Override
@@ -185,10 +178,10 @@ public class FilmFrameInspectScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) return true;
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (super.mouseDragged(event, dragX, dragY)) return true;
 
-        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             float centerX = width / 2f;
             float centerY = height / 2f;
             x = (float) Mth.clamp(x + dragX, -centerX, centerX);

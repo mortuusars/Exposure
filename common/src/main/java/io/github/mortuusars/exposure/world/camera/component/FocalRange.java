@@ -65,12 +65,12 @@ public final class FocalRange implements StringRepresentable {
         return min == max;
     }
 
-    public double focalLengthFromZoom(double zoom) {
+    public float focalLengthFromZoom(float zoom) {
         zoom = Mth.clamp(zoom, 0, 1);
         return Mth.map(zoom, 0, 1, min, max);
     }
 
-    public double fovFromZoom(double zoom) {
+    public float fovFromZoom(float zoom) {
         return Fov.focalLengthToFov(focalLengthFromZoom(zoom));
     }
 
@@ -83,7 +83,7 @@ public final class FocalRange implements StringRepresentable {
         return Mth.clamp(focalLength, min, max);
     }
 
-    public double clampFov(double fov) {
+    public float clampFov(float fov) {
         return Mth.clamp(fov, Fov.focalLengthToFov(max), Fov.focalLengthToFov(min));
     }
 

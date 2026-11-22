@@ -55,7 +55,7 @@ public class EntitiesInFrame {
     public static double calculateVisibleDistance(Vec3 cameraPos, Entity entity) {
         double distanceInBlocks = Math.sqrt(entity.distanceToSqr(cameraPos));
 
-        AABB boundingBox = entity.getBoundingBoxForCulling();
+        AABB boundingBox = entity.getBoundingBox();
         double size = boundingBox.getSize();
         if (Double.isNaN(size) || size == 0.0)
             size = 0.1;

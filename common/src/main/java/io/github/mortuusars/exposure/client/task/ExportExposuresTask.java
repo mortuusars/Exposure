@@ -128,8 +128,7 @@ public class ExportExposuresTask extends Task<Result<Boolean>> {
                             print(Component.translatable("task.exposure.export.exported")
                                     .append("'" + fileName + "'").withStyle(Style.EMPTY
                                             .withUnderlined(true)
-                                            .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal("Open")))
-                                            .withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file.getAbsolutePath()))));
+                                            .withClickEvent(new ClickEvent.OpenFile(file.getAbsolutePath()))));
                         })
                         .export();
             } catch (Exception e) {

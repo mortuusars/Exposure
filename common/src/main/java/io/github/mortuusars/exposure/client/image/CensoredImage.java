@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.image;
 
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
 public class CensoredImage extends Image.Wrapped {
@@ -60,6 +60,6 @@ public class CensoredImage extends Image.Wrapped {
         int avgG = totalG / pixelCount;
         int avgB = totalB / pixelCount;
 
-        return FastColor.ARGB32.color(avgA, avgR, avgG, avgB);
+        return ARGB.color(avgA, avgR, avgG, avgB);
     }
 }

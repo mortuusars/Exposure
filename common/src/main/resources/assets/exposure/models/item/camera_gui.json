@@ -3,13 +3,5 @@
   "textures": {
     "layer0": "exposure:item/camera/camera_gui"
   },
-  "gui_light": "front",
-  "overrides": [
-    {
-      "predicate": {
-        "exposure:camera_gold": 1
-      },
-      "model": "exposure:item/camera_gold_gui"
-    }
-  ]
+  "gui_light": "front"
 }

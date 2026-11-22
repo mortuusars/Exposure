@@ -1,0 +1,27 @@
+{
+  "model": {
+    "type": "minecraft:range_dispatch",
+    "property": "exposure:count",
+    "scale": 1,
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "exposure:item/stacked_photographs_three"
+    },
+    "entries": [
+      {
+        "threshold": 0.02,
+        "model": {
+          "type": "minecraft:model",
+          "model": "exposure:item/stacked_photographs_two"
+        }
+      },
+      {
+        "threshold": 0.03,
+        "model": {
+          "type": "minecraft:model",
+          "model": "exposure:item/stacked_photographs_three"
+        }
+      }
+    ]
+  }
+}

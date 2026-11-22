@@ -11,12 +11,12 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public record ActiveCameraOnStandSetS2CP(int operatorEntityId, int cameraStandId, CameraId cameraId) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("active_camera_on_stand_set");
+    public static final Identifier ID = Exposure.resource("active_camera_on_stand_set");
     public static final Type<ActiveCameraOnStandSetS2CP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<RegistryFriendlyByteBuf, ActiveCameraOnStandSetS2CP> STREAM_CODEC = StreamCodec.composite(

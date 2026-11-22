@@ -5,6 +5,7 @@ import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImageIdentifier;
 import io.github.mortuusars.exposure.util.color.Color;
 import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 
 import java.util.HashMap;
@@ -37,6 +38,10 @@ public class ImageRenderer implements AutoCloseable {
                        float minU, float minV, float maxU, float maxV, int packedLight, int r, int g, int b, int a) {
         getOrCreateInstance(image)
                 .draw(poseStack, bufferSource, minX, minY, maxX, maxY, minU, minV, maxU, maxV, packedLight, r, g, b, a);
+    }
+
+    public void renderGui(RenderableImage image, GuiGraphics gui, int x, int y, int width, int height, Color color) {
+        getOrCreateInstance(image).drawGui(gui, x, y, width, height, color);
     }
 
     private RenderedImageInstance getOrCreateInstance(RenderableImage image) {

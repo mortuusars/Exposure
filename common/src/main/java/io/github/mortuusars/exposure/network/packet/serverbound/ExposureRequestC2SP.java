@@ -8,13 +8,13 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 public record ExposureRequestC2SP(String id) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("exposure_request");
+    public static final Identifier ID = Exposure.resource("exposure_request");
     public static final Type<ExposureRequestC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, ExposureRequestC2SP> STREAM_CODEC = StreamCodec.composite(

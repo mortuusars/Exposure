@@ -1,11 +1,12 @@
 package io.github.mortuusars.exposure.mixin;
 
+import io.github.mortuusars.exposure.world.entity.CameraOperator;
+
 import com.mojang.authlib.GameProfile;
 import io.github.mortuusars.exposure.event.ServerEvents;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.clientbound.ActiveCameraRemoveS2CP;
 import io.github.mortuusars.exposure.world.camera.Camera;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -13,17 +14,16 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin extends Player {
-    public ServerPlayerMixin(Level level, BlockPos pos, float yRot, GameProfile gameProfile) {
-        super(level, pos, yRot, gameProfile);
+public abstract class ServerPlayerMixin extends Player implements CameraOperator {
+    public ServerPlayerMixin(Level level, GameProfile gameProfile) {
+        super(level, gameProfile);
     }
 
-    @Inject(method = "drop(Z)Z", at = @At(value = "HEAD"))
-    void onDrop(boolean dropStack, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "drop(Z)V", at = @At(value = "HEAD"))
+    void onDrop(boolean dropStack, CallbackInfo ci) {
         ServerEvents.itemDrop(((ServerPlayer) (Object) this));
     }
 
@@ -33,14 +33,12 @@ public abstract class ServerPlayerMixin extends Player {
     }
 
     @Override
-    public void setActiveExposureCamera(Camera camera) {
-        super.setActiveExposureCamera(camera);
+    public void onExposureCameraSet(Camera camera) {
         Packets.sendToAllClients(camera.createSyncPacket());
     }
 
     @Override
-    public void removeActiveExposureCamera() {
-        super.removeActiveExposureCamera();
+    public void onExposureCameraRemoved() {
         Packets.sendToAllClients(new ActiveCameraRemoveS2CP(getId()));
     }
 }

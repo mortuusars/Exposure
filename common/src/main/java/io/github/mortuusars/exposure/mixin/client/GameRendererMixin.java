@@ -2,7 +2,9 @@ package io.github.mortuusars.exposure.mixin.client;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import io.github.mortuusars.exposure.ExposureClient;
+import io.github.mortuusars.exposure.client.capture.task.BackgroundScreenshotCaptureTask;
 import io.github.mortuusars.exposure.client.render.FovModifier;
 import io.github.mortuusars.exposure.client.util.Shader;
 import io.github.mortuusars.exposure.event.ClientEvents;
@@ -12,6 +14,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -26,18 +29,23 @@ public abstract class GameRendererMixin {
         ExposureClient.cycles().tick();
     }
 
-    @Inject(method = "resize", at = @At(value = "HEAD"))
-    void onResize(int width, int height, CallbackInfo ci) {
-        Shader.resize(width, height);
-    }
+    /*@Redirect(method = "renderLevel", at = @At(value = "INVOKE",
+            target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V"))
+    void onBindWrite(RenderTarget instance, boolean setViewport) {
+        if (!BackgroundScreenshotCaptureTask.capturing) {
+            instance.bindWrite(setViewport);
+        } else {
+            BackgroundScreenshotCaptureTask.renderTarget.bindWrite(false);
+        }
+    }*/
 
     @ModifyReturnValue(method = "getFov", at = @At(value = "RETURN", ordinal = 1))
-    private double modifyFov(double original, @Local(argsOnly = true) boolean useFOVSetting) {
+    private float modifyFov(float original, @Local(argsOnly = true) boolean useFOVSetting) {
         return useFOVSetting ? FovModifier.modify(original) : original;
     }
 
     @Inject(method = "getFov", at = @At(value = "RETURN"), cancellable = true)
-    void getFov(Camera activeRenderInfo, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Double> cir) {
+    void getFov(Camera activeRenderInfo, float partialTicks, boolean useFOVSetting, CallbackInfoReturnable<Float> cir) {
         if (useFOVSetting && FovModifier.shouldOverride()) {
             cir.setReturnValue(FovModifier.modify(cir.getReturnValue()));
         }

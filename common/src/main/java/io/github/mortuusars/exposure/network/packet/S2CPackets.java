@@ -27,7 +27,8 @@ public class S2CPackets {
                 new CustomPacketPayload.TypeAndCodec<>(CaptureStartS2CP.TYPE, CaptureStartS2CP.STREAM_CODEC),
                 new CustomPacketPayload.TypeAndCodec<>(CaptureStartDebugRGBS2CP.TYPE, CaptureStartDebugRGBS2CP.STREAM_CODEC),
                 new CustomPacketPayload.TypeAndCodec<>(ExportS2CP.TYPE, ExportS2CP.STREAM_CODEC),
-                new CustomPacketPayload.TypeAndCodec<>(ExportStopS2CP.TYPE, ExportStopS2CP.STREAM_CODEC)
+                new CustomPacketPayload.TypeAndCodec<>(ExportStopS2CP.TYPE, ExportStopS2CP.STREAM_CODEC),
+                new CustomPacketPayload.TypeAndCodec<>(ComponentTransferringRecipeDisplayResponseS2CP.TYPE, ComponentTransferringRecipeDisplayResponseS2CP.STREAM_CODEC)
         );
     }
 }

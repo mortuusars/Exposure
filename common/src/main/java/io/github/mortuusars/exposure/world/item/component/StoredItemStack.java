@@ -72,7 +72,7 @@ public class StoredItemStack {
 
     @Override
     public int hashCode() {
-        return ItemStack.hashItemAndComponents(getForReading());
+        return getForReading().hashCode();
     }
 
     @Override

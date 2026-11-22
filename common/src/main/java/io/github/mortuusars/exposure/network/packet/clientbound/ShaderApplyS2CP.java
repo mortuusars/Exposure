@@ -8,21 +8,21 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
-public record ShaderApplyS2CP(Optional<ResourceLocation> shaderLocation) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("shader_apply");
+public record ShaderApplyS2CP(Optional<Identifier> shaderLocation) implements Packet {
+    public static final Identifier ID = Exposure.resource("shader_apply");
     public static final CustomPacketPayload.Type<ShaderApplyS2CP> TYPE = new CustomPacketPayload.Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, ShaderApplyS2CP> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.optional(ResourceLocation.STREAM_CODEC), ShaderApplyS2CP::shaderLocation,
+            ByteBufCodecs.optional(Identifier.STREAM_CODEC), ShaderApplyS2CP::shaderLocation,
             ShaderApplyS2CP::new
     );
 
-    public ShaderApplyS2CP(ResourceLocation location) {
+    public ShaderApplyS2CP(Identifier location) {
         this(Optional.of(location));
     }
 

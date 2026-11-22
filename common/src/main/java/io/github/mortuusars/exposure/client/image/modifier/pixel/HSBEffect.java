@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.util.color.Color;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
 public class HSBEffect implements PixelEffect {
@@ -23,10 +23,10 @@ public class HSBEffect implements PixelEffect {
     }
 
     public int modify(int colorARGB) {
-        int alpha = FastColor.ARGB32.alpha(colorARGB);
-        int red = FastColor.ARGB32.red(colorARGB);
-        int green = FastColor.ARGB32.green(colorARGB);
-        int blue = FastColor.ARGB32.blue(colorARGB);
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         float[] hsb = Color.HSB.RGBtoHSB(red, green, blue);
 

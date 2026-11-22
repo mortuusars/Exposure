@@ -53,7 +53,7 @@ public class LightroomMenu extends AbstractContainerMenu {
                 public void setChanged() {
                     frames = getItem().getItem() instanceof DevelopedFilmItem developedFilm ?
                             developedFilm.getStoredFrames(getItem()) : Collections.emptyList();
-                    if (lightroomBlockEntity.getLevel() != null && !lightroomBlockEntity.getLevel().isClientSide) {
+                    if (lightroomBlockEntity.getLevel() != null && !lightroomBlockEntity.getLevel().isClientSide()) {
                         data.set(LightroomBlockEntity.CONTAINER_DATA_SELECTED_FRAME_ID, 0);
                     }
                     super.setChanged();

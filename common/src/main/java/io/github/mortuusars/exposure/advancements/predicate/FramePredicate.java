@@ -5,10 +5,10 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
 import io.github.mortuusars.exposure.world.level.storage.ExposureIdentifier;
-import net.minecraft.advancements.critereon.MinMaxBounds;
-import net.minecraft.advancements.critereon.SingleComponentItemPredicate;
+import net.minecraft.advancements.criterion.MinMaxBounds;
+import net.minecraft.core.component.DataComponentGetter;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public record FramePredicate(Optional<ExposureIdentifier> identifier,
                              Optional<MinMaxBounds.Ints> dayTime,
                              Optional<MinMaxBounds.Ints> entitiesInFrameCount,
                              Optional<List<EntityInFramePredicate>> entitiesInFrame,
-                             Optional<ExtraDataPredicate> extraData) implements SingleComponentItemPredicate<Frame> {
+                             Optional<ExtraDataPredicate> extraData) implements DataComponentPredicate {
     public static final Codec<FramePredicate> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ExposureIdentifier.CODEC.optionalFieldOf("identifier").forGetter(FramePredicate::identifier),
             Codec.STRING.optionalFieldOf("type").forGetter(FramePredicate::type),
@@ -37,14 +37,14 @@ public record FramePredicate(Optional<ExposureIdentifier> identifier,
             ExtraDataPredicate.CODEC.optionalFieldOf("extra_data").forGetter(FramePredicate::extraData)
     ).apply(instance, FramePredicate::new));
 
-    @Override
     public @NotNull DataComponentType<Frame> componentType() {
         return Exposure.DataComponents.PHOTOGRAPH_FRAME;
     }
 
     @Override
-    public boolean matches(ItemStack stack, Frame frame) {
-        return matches(frame);
+    public boolean matches(DataComponentGetter components) {
+        Frame frame = components.get(componentType());
+        return frame != null && matches(frame);
     }
 
     public boolean matches(Frame frame) {

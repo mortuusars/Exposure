@@ -2,15 +2,16 @@ package io.github.mortuusars.exposure.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.input.KeyEvent;
 
 import java.util.function.Supplier;
 
 @FunctionalInterface
 public interface Key {
-    boolean matches(int keyCode, int scanCode, int action, int modifiers);
+    boolean matches(KeyEvent event);
 
     default Key or(Key anotherKey) {
-        return (key, code, action, mods) -> this.matches(key, code, action, mods) || anotherKey.matches(key, code, action, mods);
+        return (event) -> this.matches(event) || anotherKey.matches(event);
     }
 
     default KeyWithPredicate onlyIf(Supplier<Boolean> predicate) {
@@ -46,29 +47,29 @@ public interface Key {
     }
 
     static Key press(int modifiers, int keyCode) {
-        return (key, code, action, mods) -> Key.actionMatches(InputConstants.PRESS, action)
-                && keyCode == key && mods == modifiers;
+        return (event) -> Key.actionMatches(InputConstants.PRESS, event.input())
+                && keyCode == event.key() && event.modifiers() == modifiers;
     }
 
     static Key release(int modifiers, int keyCode) {
-        return (key, code, action, mods) -> Key.actionMatches(InputConstants.RELEASE, action)
-                && keyCode == key && mods == modifiers;
+        return (event) -> Key.actionMatches(InputConstants.RELEASE, event.input())
+                && keyCode == event.key() && event.modifiers() == modifiers;
     }
 
     static Key press(KeyMapping keyMapping) {
-        return (key, code, action, mods) -> Key.actionMatches(InputConstants.PRESS, action)
-                && keyMapping.matches(key, code);
+        return (event) -> Key.actionMatches(InputConstants.PRESS, event.input())
+                && keyMapping.matches(event);
     }
 
     static Key release(KeyMapping keyMapping) {
-        return (key, code, action, mods) -> Key.actionMatches(InputConstants.RELEASE, action)
-                && keyMapping.matches(key, code);
+        return (event) -> Key.actionMatches(InputConstants.RELEASE, event.input())
+                && keyMapping.matches(event);
     }
 
     record KeyWithPredicate(Key key, Supplier<Boolean> predicate) implements Key {
         @Override
-        public boolean matches(int keyCode, int scanCode, int action, int modifiers) {
-            return key.matches(keyCode, scanCode, action, modifiers) && predicate.get();
+        public boolean matches(KeyEvent event) {
+            return key.matches(event) && predicate.get();
         }
     }
 }

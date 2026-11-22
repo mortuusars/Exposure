@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
 import java.util.Random;
@@ -21,10 +21,10 @@ public class NoiseEffect implements PixelEffect {
     }
 
     public int modify(int colorARGB) {
-        int alpha = FastColor.ARGB32.alpha(colorARGB);
-        int red = FastColor.ARGB32.red(colorARGB);
-        int green = FastColor.ARGB32.green(colorARGB);
-        int blue = FastColor.ARGB32.blue(colorARGB);
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         float brightness = (0.299f * red + 0.587f * green + 0.114f * blue) / 255f;
 
@@ -41,6 +41,6 @@ public class NoiseEffect implements PixelEffect {
         green = Mth.clamp(green + noise + gNoise, 0, 255);
         blue = Mth.clamp(blue + noise + bNoise, 0, 255);
 
-        return FastColor.ARGB32.color(alpha, red, green, blue);
+        return ARGB.color(alpha, red, green, blue);
     }
 }

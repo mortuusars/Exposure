@@ -1,0 +1,6 @@
+{
+  "values": [
+    "exposure:camera",
+    { "id": "exposure_polaroid:instant_camera", "required": false }
+  ]
+}

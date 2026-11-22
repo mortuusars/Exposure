@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure.client.capture.task;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.image.WrappedNativeImage;
 import io.github.mortuusars.exposure.util.cycles.task.Result;
@@ -15,8 +14,8 @@ import java.util.concurrent.CompletableFuture;
 
 public class DirectScreenshotCaptureTask extends Task<Result<Image>> {
     // At least 1 frame of delay is needed because some immediate CaptureComponents may only apply on the next frame
-    // and in this task we take a screenshot of what's already rendered.
-    // BackgroundScreenshotCaptureTask does not have this problem because it renders the level again for himself.
+    // and in this method we take a screenshot of what's already rendered.
+    // BackgroundScreenshotMethod does not have this problem because it renders the level again for himself.
     protected int delay = Math.max(1, Config.Client.DIRECT_CAPTURE_DELAY_FRAMES.get());
 
     @Nullable
@@ -38,8 +37,8 @@ public class DirectScreenshotCaptureTask extends Task<Result<Image>> {
 
         if (delay <= 0) {
             try {
-                NativeImage nativeImage = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
-                future.complete(Result.success(new WrappedNativeImage(nativeImage)));
+                Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget(), nativeImage ->
+                        future.complete(Result.success(new WrappedNativeImage(nativeImage))));
             } catch (Exception e) {
                 future.completeExceptionally(e);
             }

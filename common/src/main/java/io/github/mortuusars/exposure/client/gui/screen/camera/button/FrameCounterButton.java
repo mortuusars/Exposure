@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.client.gui.screen.camera.button;
 
+import io.github.mortuusars.exposure.world.entity.CameraOperator;
+
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.item.camera.Attachment;
@@ -28,7 +30,7 @@ public class FrameCounterButton extends ImageButton {
     }
 
     @Override
-    public void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float pPartialTick) {
+    public void renderContents(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float pPartialTick) {
         MutableComponent tooltipComponent = Component.translatable("gui.exposure.camera_controls.film_frame_counter.tooltip");
         if (!cameraHasFilmRoll()) {
             tooltipComponent.append(CommonComponents.NEW_LINE)
@@ -37,7 +39,7 @@ public class FrameCounterButton extends ImageButton {
         }
         setTooltip(Tooltip.create(tooltipComponent));
 
-        super.renderWidget(guiGraphics, mouseX, mouseY, pPartialTick);
+        super.renderContents(guiGraphics, mouseX, mouseY, pPartialTick);
 
         String text = createText();
 
@@ -50,7 +52,7 @@ public class FrameCounterButton extends ImageButton {
     }
 
     protected String createText() {
-        return Minecrft.player().getActiveExposureCameraOptional().map(camera -> {
+        return ((CameraOperator) Minecrft.player()).getActiveExposureCameraOptional().map(camera -> {
             ItemStack filmStack = Attachment.FILM.get(camera.getItemStack()).getForReading();
             if (filmStack.isEmpty() || !(filmStack.getItem() instanceof FilmRollItem filmItem)) {
                 return "-";
@@ -63,7 +65,7 @@ public class FrameCounterButton extends ImageButton {
     }
 
     protected boolean cameraHasFilmRoll() {
-        return Minecrft.player().getActiveExposureCameraOptional()
+        return ((CameraOperator) Minecrft.player()).getActiveExposureCameraOptional()
                 .map(camera -> Attachment.FILM.isPresent(camera.getItemStack()))
                 .orElse(false);
     }

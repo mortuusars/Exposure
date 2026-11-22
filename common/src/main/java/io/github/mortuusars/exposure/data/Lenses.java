@@ -13,7 +13,7 @@ public class Lenses {
             return Optional.empty();
         }
 
-        return registryAccess.registryOrThrow(Exposure.Registries.LENS)
+        return registryAccess.lookupOrThrow(Exposure.Registries.LENS)
                 .stream()
                 .filter(lens -> lens.predicate().test(stack))
                 .map(Lens::focalRange)

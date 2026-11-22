@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "P": {
-      "item": "minecraft:prismarine_crystals"
-    },
-    "I": {
-      "tag": "c:ingots/gold"
-    },
-    "K": {
-      "item": "minecraft:dried_kelp"
-    },
-    "L": {
-      "item": "minecraft:lapis_lazuli"
-    },
-    "N": {
-      "tag": "c:nuggets/gold"
-    }
+    "P": "minecraft:prismarine_crystals",
+    "I": "#c:ingots/gold",
+    "K": "minecraft:dried_kelp",
+    "L": "minecraft:lapis_lazuli",
+    "N": "#c:nuggets/gold"
   },
   "pattern": [
     "NLL",

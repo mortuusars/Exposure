@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.network;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import io.github.mortuusars.exposure.network.neoforge.PacketsImpl;
 import io.github.mortuusars.exposure.network.packet.Packet;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -11,36 +11,31 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 public class Packets {
-    @ExpectPlatform
     public static void sendToServer(Packet packet) {
-        throw new AssertionError();
+        PacketsImpl.sendToServer(packet);
     }
 
-    @ExpectPlatform
     public static void sendToClient(Packet packet, ServerPlayer player) {
-        throw new AssertionError();
+        PacketsImpl.sendToClient(packet, player);
     }
 
-    @ExpectPlatform
     public static void sendToClients(Packet packet, Predicate<ServerPlayer> filter) {
-        throw new AssertionError();
+        PacketsImpl.sendToClients(packet, filter);
     }
 
-    @ExpectPlatform
     public static void sendToAllClients(Packet packet) {
-        throw new AssertionError();
+        PacketsImpl.sendToAllClients(packet);
     }
 
-    @ExpectPlatform
     public static void sendToPlayersNear(Packet packet, ServerLevel level, @Nullable ServerPlayer excluded,
                                          double x, double y, double z, double radius) {
-        throw new AssertionError();
+        PacketsImpl.sendToPlayersNear(packet, level, excluded, x, y, z, radius);
     }
 
     // --
 
     public static void sendToOtherClients(@NotNull ServerPlayer except, Packet packet) {
-        except.server.getPlayerList().getPlayers().forEach(player -> {
+        except.level().getServer().getPlayerList().getPlayers().forEach(player -> {
             if (!player.equals(except)) {
                 sendToClient(packet, player);
             }

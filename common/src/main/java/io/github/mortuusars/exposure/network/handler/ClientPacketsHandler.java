@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
+import io.github.mortuusars.exposure.mixin.client.GameRendererAccessor;
 import io.github.mortuusars.exposure.client.gui.screen.FilmFrameInspectScreen;
 import io.github.mortuusars.exposure.client.image.Image;
 import io.github.mortuusars.exposure.client.sound.UniqueSoundManager;
@@ -34,7 +35,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import org.slf4j.Logger;
@@ -48,8 +49,8 @@ public class ClientPacketsHandler {
 
     public static void applyShader(ShaderApplyS2CP packet) {
         packet.shaderLocation().ifPresentOrElse(
-                shader -> Minecrft.get().gameRenderer.loadEffect(shader),
-                () -> Minecrft.get().gameRenderer.shutdownEffect());
+                shader -> ((GameRendererAccessor) Minecrft.get().gameRenderer).exposure$setPostEffect(shader),
+                () -> Minecrft.get().gameRenderer.clearPostEffect());
     }
 
     public static void showExposure(ShowExposureCommandS2CP packet) {
@@ -105,7 +106,7 @@ public class ClientPacketsHandler {
 
         Holder<ColorPalette> colorPalette = ColorPalettes.getDefault(Minecrft.registryAccess());
         ColorPalette palette = colorPalette.value();
-        ResourceLocation paletteId = colorPalette.unwrapKey().orElseThrow().location();
+        Identifier paletteId = colorPalette.unwrapKey().orElseThrow().identifier();
 
         ExposureClient.cycles().addParallelTask(new ExposureRetrieveTask(packet.layers(), 20_000)
                 .then(Result::unwrap)

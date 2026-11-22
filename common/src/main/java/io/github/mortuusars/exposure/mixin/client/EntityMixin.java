@@ -15,7 +15,7 @@ public abstract class EntityMixin {
 
     @Inject(method = "turn", at = @At("HEAD"), cancellable = true)
     private void onTurn(double yRot, double xRot, CallbackInfo ci) {
-        if (level().isClientSide && MouseHandler.onTurnPlayer(xRot, yRot)) {
+        if (level().isClientSide() && MouseHandler.onTurnPlayer(xRot, yRot)) {
             ci.cancel();
         }
     }

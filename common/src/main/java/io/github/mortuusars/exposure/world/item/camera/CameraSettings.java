@@ -4,22 +4,22 @@ import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.component.*;
 import io.github.mortuusars.exposure.world.sound.SoundEffect;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class CameraSettings {
-    private static final Map<ResourceLocation, CameraSetting<?>> REGISTRY = new HashMap<>();
+    private static final Map<Identifier, CameraSetting<?>> REGISTRY = new HashMap<>();
 
-    public static <T> CameraSetting<T> register(ResourceLocation id, CameraSetting<T> setting) {
+    public static <T> CameraSetting<T> register(Identifier id, CameraSetting<T> setting) {
         Preconditions.checkArgument(!REGISTRY.containsKey(id), "Setting with id '%s' is already registered.", id);
         REGISTRY.put(id, setting);
         return setting;
     }
 
-    public static CameraSetting<?> byId(ResourceLocation id) {
+    public static CameraSetting<?> byId(Identifier id) {
         @Nullable CameraSetting<?> setting = REGISTRY.get(id);
         if (setting == null) {
             throw new IllegalStateException("Setting with id '" + id + "' is not registered.");
@@ -27,8 +27,8 @@ public class CameraSettings {
         return setting;
     }
 
-    public static ResourceLocation idOf(CameraSetting<?> setting) {
-        for (Map.Entry<ResourceLocation, CameraSetting<?>> entry : REGISTRY.entrySet()) {
+    public static Identifier idOf(CameraSetting<?> setting) {
+        for (Map.Entry<Identifier, CameraSetting<?>> entry : REGISTRY.entrySet()) {
             if (entry.getValue().equals(setting)) {
                 return entry.getKey();
             }

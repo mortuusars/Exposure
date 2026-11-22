@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 
 public class NegativeEffect implements PixelEffect {
     @Override
@@ -8,17 +8,17 @@ public class NegativeEffect implements PixelEffect {
         return "negative";
     }
 
-    public int modify(int ARGB) {
-        int alpha = FastColor.ARGB32.alpha(ARGB);
-        int red = FastColor.ARGB32.red(ARGB);
-        int green = FastColor.ARGB32.green(ARGB);
-        int blue = FastColor.ARGB32.blue(ARGB);
+    public int modify(int colorARGB) {
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         // Invert
         red = 255 - red;
         green = 255 - green;
         blue = 255 - blue;
 
-        return FastColor.ARGB32.color(alpha, red, green, blue);
+        return ARGB.color(alpha, red, green, blue);
     }
 }

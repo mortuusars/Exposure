@@ -3,5 +3,5 @@
     "items": "minecraft:light_blue_stained_glass_pane"
   },
   "attachment_tint": "6689D3",
-  "shader": "exposure:shaders/post/light_blue_tint.json"
+  "shader": "exposure:post/light_blue_tint"
 }

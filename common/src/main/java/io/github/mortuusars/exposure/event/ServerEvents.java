@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.event;
 
+import io.github.mortuusars.exposure.world.entity.CameraOperator;
+
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureServer;
@@ -36,13 +38,13 @@ public class ServerEvents {
 
     public static void itemDrop(ServerPlayer player) {
         Inventory inventory = player.getInventory();
-        ItemStack droppedItem = inventory.getSelected();
+        ItemStack droppedItem = inventory.getSelectedItem();
 
         if (droppedItem.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(droppedItem)) {
-            player.getActiveExposureCameraOptional().ifPresentOrElse(
+            ((CameraOperator) player).getActiveExposureCameraOptional().ifPresentOrElse(
                     camera -> {
-                        player.removeActiveExposureCamera();
-                        cameraItem.deactivate(player, player, droppedItem);
+                        ((CameraOperator) player).removeActiveExposureCamera();
+                        cameraItem.deactivate(player, droppedItem);
                     },
                     () -> cameraItem.setActive(droppedItem, false));
         }

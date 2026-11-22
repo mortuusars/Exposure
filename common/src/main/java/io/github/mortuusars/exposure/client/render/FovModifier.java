@@ -8,16 +8,16 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
 public class FovModifier {
-    private static double lastFov = -1;
+    private static float lastFov = -1;
     private static @Nullable Animation restoringAnimation;
 
-    private static double overrideFov = -1;
+    private static float overrideFov = -1;
 
     public static boolean shouldOverride() {
         return overrideFov != -1 || (CameraClient.viewfinder() != null && CameraClient.viewfinder().isLookingThrough());
     }
 
-    public static double modify(double originalValue) {
+    public static float modify(float originalValue) {
         if (overrideFov != -1) {
             return overrideFov;
         }
@@ -35,7 +35,7 @@ public class FovModifier {
     /**
      * Sets fov value regardless of viewfinder or settings. Don't forget to cancel with {@link FovModifier#cancelOverride()}.
      */
-    public static void setOverride(double fov) {
+    public static void setOverride(float fov) {
         overrideFov = fov;
     }
 
@@ -43,7 +43,7 @@ public class FovModifier {
         overrideFov = -1;
     }
 
-    private static double restoreToOriginal(double originalValue) {
+    private static float restoreToOriginal(float originalValue) {
         if (lastFov == -1) {
             return originalValue;
         }
@@ -52,7 +52,7 @@ public class FovModifier {
             restoringAnimation = new Animation(300, EasingFunction.EASE_OUT_EXPO);
         }
 
-        double fov = Mth.lerp(restoringAnimation.getValue(), lastFov, originalValue);
+        float fov = Mth.lerp(restoringAnimation.getValue(), lastFov, originalValue);
 
         if (restoringAnimation.isFinished()) {
             restoringAnimation = null;

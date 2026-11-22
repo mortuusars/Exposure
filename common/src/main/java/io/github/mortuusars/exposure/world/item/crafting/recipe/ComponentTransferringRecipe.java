@@ -1,10 +1,14 @@
 package io.github.mortuusars.exposure.world.item.crafting.recipe;
 
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.world.item.crafting.recipe.display.ComponentTransferringRecipeDisplay;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.NonNullList;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,10 +17,11 @@ import java.util.List;
 
 public class ComponentTransferringRecipe extends CustomRecipe {
     private final Ingredient sourceIngredient;
-    private final NonNullList<Ingredient> ingredients;
+    private final List<Ingredient> ingredients;
     private final ItemStack result;
+    private PlacementInfo placementInfo;
 
-    public ComponentTransferringRecipe(CraftingBookCategory category, Ingredient sourceIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+    public ComponentTransferringRecipe(CraftingBookCategory category, Ingredient sourceIngredient, List<Ingredient> ingredients, ItemStack result) {
         super(category);
         this.sourceIngredient = sourceIngredient;
         this.ingredients = ingredients;
@@ -24,22 +29,28 @@ public class ComponentTransferringRecipe extends CustomRecipe {
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return Exposure.RecipeSerializers.COMPONENT_TRANSFERRING.get();
+    public @NotNull RecipeSerializer<? extends ComponentTransferringRecipe> getSerializer() {
+        return (RecipeSerializer<? extends ComponentTransferringRecipe>) Exposure.RecipeSerializers.COMPONENT_TRANSFERRING.get();
+    }
+
+    @Override
+    public @NotNull List<RecipeDisplay> display() {
+        return List.of(
+                new ComponentTransferringRecipeDisplay(
+                        sourceIngredient.display(),
+                        ingredients.stream().map(Ingredient::display).toList(),
+                        new SlotDisplay.ItemStackSlotDisplay(result),
+                        new SlotDisplay.ItemSlotDisplay(Exposure.Items.LIGHTROOM.get())
+                )
+        );
     }
 
     public @NotNull Ingredient getSourceIngredient() {
         return sourceIngredient;
     }
 
-    @Override
-    public @NotNull NonNullList<Ingredient> getIngredients() {
+    public @NotNull List<Ingredient> getIngredients() {
         return ingredients;
-    }
-
-    @Override
-    public @NotNull ItemStack getResultItem(HolderLookup.Provider registries) {
-        return getResult();
     }
 
     public @NotNull ItemStack getResult() {
@@ -83,20 +94,32 @@ public class ComponentTransferringRecipe extends CustomRecipe {
             ItemStack itemStack = input.getItem(index);
 
             if (getSourceIngredient().test(itemStack)) {
-                return transferComponents(itemStack, getResultItem(registries).copy());
+                return transferComponents(itemStack, getResult().copy());
             }
         }
 
-        return getResultItem(registries);
+        return getResult();
     }
 
     public @NotNull ItemStack transferComponents(ItemStack transferIngredientStack, ItemStack recipeResultStack) {
-        recipeResultStack.applyComponents(transferIngredientStack.getComponents());
+        // We don't want to keep the item name, item model, or stack size of the source ingredient.
+        DataComponentMap components = transferIngredientStack.getComponents()
+                .filter(dataComponentType -> !(
+                        dataComponentType.equals(DataComponents.ITEM_NAME)
+                        || dataComponentType.equals(DataComponents.ITEM_MODEL)
+                        || dataComponentType.equals(DataComponents.MAX_STACK_SIZE)
+                        ));
+
+        recipeResultStack.applyComponents(components);
         return recipeResultStack;
     }
 
     @Override
-    public boolean canCraftInDimensions(int width, int height) {
-        return ingredients.size() <= width * height;
+    public @NotNull PlacementInfo placementInfo() {
+        if (placementInfo == null) {
+            placementInfo = PlacementInfo.create(ingredients);
+        }
+
+        return placementInfo;
     }
 }

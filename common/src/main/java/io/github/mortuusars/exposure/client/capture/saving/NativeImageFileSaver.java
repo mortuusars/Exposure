@@ -25,7 +25,8 @@ public class NativeImageFileSaver {
             for (int y = 0; y < image.height(); y++) {
                 for (int x = 0; x < image.width(); x++) {
                     int pixelColor = image.getPixelARGB(x, y);
-                    nativeImage.setPixelRGBA(x, y, Color.ARGBtoABGR(pixelColor));
+                    //nativeImage.setPixelRGBA(x, y, Color.ARGBtoABGR(pixelColor));
+                    nativeImage.setPixel(x, y, pixelColor);
                 }
             }
 

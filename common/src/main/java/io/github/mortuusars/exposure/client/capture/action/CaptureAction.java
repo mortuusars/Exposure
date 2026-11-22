@@ -1,13 +1,11 @@
 package io.github.mortuusars.exposure.client.capture.action;
 
-import io.github.mortuusars.exposure.integration.Mods;
-import io.github.mortuusars.exposure.integration.shoulder_surfing.ShoulderSurfingForceRegularOrSelfieCameraTypeAction;
 import io.github.mortuusars.exposure.util.TranslatableError;
 import io.github.mortuusars.exposure.world.camera.CameraId;
 import io.github.mortuusars.exposure.world.camera.component.ShutterSpeed;
 import io.github.mortuusars.exposure.world.entity.CameraHolder;
 import net.minecraft.client.CameraType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,9 +46,6 @@ public interface CaptureAction {
     }
 
     static CaptureAction forceRegularOrSelfieCamera(@Nullable CameraHolder holder) {
-        if (Mods.SHOULDER_SURFING.isLoaded()) {
-            return new ShoulderSurfingForceRegularOrSelfieCameraTypeAction(holder);
-        }
         return new ForceRegularOrSelfieCameraTypeAction(holder);
     }
 
@@ -62,7 +57,7 @@ public interface CaptureAction {
         return new DisablePostEffectAction();
     }
 
-    static CaptureAction setPostEffect(ResourceLocation postEffect) {
+    static CaptureAction setPostEffect(Identifier postEffect) {
         return new SetPostEffectAction(postEffect);
     }
 
@@ -82,11 +77,11 @@ public interface CaptureAction {
         return new SetCameraEntityAction(viewEntity);
     }
 
-    static CaptureAction setFov(double fov) {
+    static CaptureAction setFov(float fov) {
         return new SetFovAction(fov);
     }
 
-    static CaptureAction setFilter(Optional<ResourceLocation> filter) {
+    static CaptureAction setFilter(Optional<Identifier> filter) {
         return new SetFilterAction(filter);
     }
 

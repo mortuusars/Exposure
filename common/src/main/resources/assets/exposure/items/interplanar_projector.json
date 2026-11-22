@@ -1,0 +1,14 @@
+{
+  "model": {
+    "type": "minecraft:condition",
+    "property": "exposure:projector_active",
+    "on_true": {
+      "type": "minecraft:model",
+      "model": "exposure:item/interplanar_projector_active"
+    },
+    "on_false": {
+      "type": "minecraft:model",
+      "model": "exposure:item/interplanar_projector"
+    }
+  }
+}

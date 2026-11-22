@@ -1,16 +1,14 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/mortuusars/resources/main/media/exposure/main.png" width="225">
-    <br>
-  <img src="https://img.shields.io/badge/NeoForge/Forge/Fabric/Quilt-1.19.2/1.20.1/1.21.1-e04e14" alt="NeoForge/Forge/Fabric/Quilt 1.19.2/1.20.1/1.21.1">
-    <br>
-  <a href="https://curseforge.com/minecraft/mc-mods/exposure"><img src="https://cf.way2muchnoise.eu/871755.svg" alt="curseforge"></a>
-  <a href="https://modrinth.com/mod/exposure"><img src="https://img.shields.io/modrinth/dt/hB899VmG?logo=modrinth&label=&suffix=%20&style=flat&color=242629&labelColor=5ca424&logoColor=1c1c1c" alt="modrinth"></a>
-  <br>
-</div>
+# Exposure for Minecraft 1.21.11 and NeoForge
 
-<h1></h1>
+Unofficial NeoForge port of [Exposure](https://github.com/mortuusars/Exposure) 1.9.12.
+The Minecraft API migration builds on [BelzeBool's Fabric port](https://github.com/BelzeBool/Exposure-Port/tree/1.21.11)
+and retains its commit history. The NeoForge integration and data build on mortuusars' original project.
 
-<div align="center">
-  <h3>Camera mod for Minecraft with focus on process and aesthetics</h3>
-  <a href="https://moddedmc.wiki/project/exposure">Wiki</a>
-</div>
+Build with Java 21 using `./gradlew assemble` (`gradlew.bat assemble` on Windows).
+Install the JAR from `build/libs` in a Minecraft 1.21.11 instance running NeoForge
+21.11.42 or newer in the 21.11 series.
+
+This branch builds NeoForge only. Optional JEI and KubeJS integrations are omitted.
+Create recipes are conditional on Create being installed and were not tested here.
+
+See [LICENSE.md](LICENSE.md) for the MIT license.

@@ -46,7 +46,7 @@ public class ExposureRepository {
 
     public List<String> getAllIds() {
         // Save exposures that are in cache and waiting to be saved:
-        dataStorage.save();
+        dataStorage.saveAndJoin();
 
         File folder = exposuresFolderPath.toFile();
 
@@ -66,7 +66,7 @@ public class ExposureRepository {
         Preconditions.checkArgument(!StringUtil.isBlank(id), "Cannot load exposure: id is empty.");
 
         String name = EXPOSURES_DIRECTORY_NAME + "/" + id;
-        @Nullable ExposureData exposureData = dataStorage.get(ExposureData.factory(), name);
+        @Nullable ExposureData exposureData = dataStorage.get(ExposureData.factory(name));
 
         if (exposureData == null) {
             File filepath = exposuresFolderPath.resolve(id + ".dat").toFile();
@@ -87,7 +87,7 @@ public class ExposureRepository {
 
         if (ensureExposuresDirectoryExists()) {
             String saveDataName = EXPOSURES_DIRECTORY_NAME + "/" + id;
-            dataStorage.set(saveDataName, data);
+            dataStorage.set(ExposureData.factory(saveDataName), data);
             data.setDirty();
             Packets.sendToAllClients(new ExposureDataChangedS2CP(id));
         }

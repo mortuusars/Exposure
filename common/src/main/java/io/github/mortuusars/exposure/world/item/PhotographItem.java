@@ -12,7 +12,7 @@ import io.github.mortuusars.exposure.world.item.util.ItemAndStack;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -22,12 +22,14 @@ import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public class PhotographItem extends Item {
     public PhotographItem(Properties properties) {
@@ -49,11 +51,11 @@ public class PhotographItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay tooltipDisplay, Consumer<Component> tooltipComponents, TooltipFlag tooltipFlag) {
         @Nullable Integer generation = stack.get(Exposure.DataComponents.PHOTOGRAPH_GENERATION);
         if (generation != null) {
             if (generation > 0)
-                tooltipComponents.add(Component.translatable("item.exposure.photograph.generation." + generation)
+                tooltipComponents.accept(Component.translatable("item.exposure.photograph.generation." + generation)
                         .withStyle(ChatFormatting.GRAY));
         }
 
@@ -64,7 +66,7 @@ public class PhotographItem extends Item {
 
         String photographerName = frame.photographer().name();
         if (Config.Client.PHOTOGRAPH_SHOW_PHOTOGRAPHER_IN_TOOLTIP.get() && !photographerName.isEmpty()) {
-            tooltipComponents.add(Component.translatable("item.exposure.photograph.photographer_tooltip",
+            tooltipComponents.accept(Component.translatable("item.exposure.photograph.photographer_tooltip",
                             Component.literal(photographerName).withStyle(ChatFormatting.WHITE))
                     .withStyle(ChatFormatting.GRAY));
         }
@@ -80,26 +82,26 @@ public class PhotographItem extends Item {
             String identifier = frame.identifier().map(
                     id -> "Id: " + id,
                     texture -> "Texture: " + texture);
-            tooltipComponents.add(Component.literal(identifier).withStyle(ChatFormatting.DARK_GRAY));
+            tooltipComponents.accept(Component.literal(identifier).withStyle(ChatFormatting.DARK_GRAY));
         }
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
+    public @NotNull InteractionResult use(@NotNull Level level, Player player, @NotNull InteractionHand hand) {
         ItemStack itemInHand = player.getItemInHand(hand);
 
         Frame frame = getFrame(itemInHand);
         if (frame == Frame.EMPTY || frame.identifier().isEmpty()) {
-            return InteractionResultHolder.pass(itemInHand);
+            return InteractionResult.PASS;
         }
 
-        if (level.isClientSide) {
-            int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().selected;
+        if (level.isClientSide()) {
+            int slot = hand == InteractionHand.OFF_HAND ? Inventory.SLOT_OFFHAND : player.getInventory().getSelectedSlot();
             ClientGUI.openPhotographsScreenFromItem(slot);
             player.playSound(Exposure.SoundEvents.PHOTOGRAPH_RUSTLE.get(), 0.6f, 1.1f);
         }
 
-        return InteractionResultHolder.success(itemInHand);
+        return InteractionResult.SUCCESS.heldItemTransformedTo(itemInHand);
     }
 
     @Override

@@ -7,6 +7,7 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.export.ImageExporter;
+import io.github.mortuusars.exposure.client.gui.Tooltips;
 import io.github.mortuusars.exposure.client.gui.Widgets;
 import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.gui.component.SteppedZoom;
@@ -16,7 +17,6 @@ import io.github.mortuusars.exposure.client.input.KeyBindings;
 import io.github.mortuusars.exposure.client.input.Modifier;
 import io.github.mortuusars.exposure.client.render.photograph.PhotographStyle;
 import io.github.mortuusars.exposure.client.util.Minecrft;
-import io.github.mortuusars.exposure.world.camera.ExposureType;
 import io.github.mortuusars.exposure.world.item.StackedPhotographsItem;
 import io.github.mortuusars.exposure.world.photograph.PhotographType;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
@@ -24,14 +24,14 @@ import io.github.mortuusars.exposure.world.item.PhotographItem;
 import io.github.mortuusars.exposure.world.item.util.ItemAndStack;
 import io.github.mortuusars.exposure.util.PagingDirection;
 import io.github.mortuusars.exposure.world.sound.SoundEffect;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.item.ItemStack;
@@ -151,34 +151,23 @@ public class PhotographScreen extends Screen {
         float zoomFactor = height * 0.8f;
         float scale = (float) (zoom.get() * zoomFactor);
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
+//        //RenderSystem.enableBlend();
+//        //RenderSystem.defaultBlendFunc();
+//        //RenderSystem.disableDepthTest();
 
         renderTransparentBackground(guiGraphics);
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(x, y, 0);
-        guiGraphics.pose().translate(width / 2f, height / 2f, 50);
-        guiGraphics.pose().scale(scale, scale, scale);
-        guiGraphics.pose().translate(-0.5, -0.5, 0);
-
-        MultiBufferSource.BufferSource bufferSource = Minecrft.get().renderBuffers().bufferSource();
-
-        ExposureClient.photographRenderer().renderStackedPhotographs(photographs, guiGraphics.pose(), bufferSource,
-                LightTexture.FULL_BRIGHT, 255, 255, 255, 255);
-
-        bufferSource.endBatch();
-        guiGraphics.pose().popPose();
+        ExposureClient.photographRenderer().renderStackedGui(photographs, guiGraphics,
+                x + (width - scale) / 2, y + (height - scale) / 2, scale);
 
         ItemAndStack<PhotographItem> photograph = getCurrentPhotograph();
 
-        guiGraphics.pose().pushPose();
+        guiGraphics.pose().pushMatrix();
         // Places widgets above photograph, because they will be covered when photo is zoomed in
-        guiGraphics.pose().translate(0, 0, 100);
+        guiGraphics.pose().translate(0, 0);
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         renderFrameInfoHint(guiGraphics, mouseX, mouseY, photograph);
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
 
         if (Config.Client.EXPORT_PHOTOGRAPH_WHEN_VIEWED.get()) {
             trySaveToFile(photograph);
@@ -204,7 +193,7 @@ public class PhotographScreen extends Screen {
         guiGraphics.drawString(font, "?", width - font.width("?") - 10, 10, 0xFFFFFFFF);
 
         if (mouseX > width - 20 && mouseX < width && mouseY < 20) {
-            String exposureName = frame.identifier().map(id -> id, ResourceLocation::toString);
+            String exposureName = frame.identifier().map(id -> id, Identifier::toString);
 
             List<Component> lines = new ArrayList<>();
 
@@ -220,18 +209,18 @@ public class PhotographScreen extends Screen {
                 }
             });
 
-            guiGraphics.renderTooltip(font, lines, Optional.empty(), mouseX, mouseY + 20);
+            Tooltips.renderTooltip(guiGraphics, font, lines, mouseX, mouseY + 20);
         }
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+    public boolean keyReleased(KeyEvent event) {
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
     @Override
@@ -247,10 +236,10 @@ public class PhotographScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
-        if (super.mouseDragged(mouseX, mouseY, button, dragX, dragY)) return true;
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
+        if (super.mouseDragged(event, dragX, dragY)) return true;
 
-        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
             float centerX = width / 2f;
             float centerY = height / 2f;
             x = (float) Mth.clamp(x + dragX, -centerX, centerX);
@@ -273,12 +262,6 @@ public class PhotographScreen extends Screen {
             return false;
         }
         ItemStack droppedStack = getCurrentPhotograph().getItemStack().copy();
-
-        // Set type so copying recipe works properly.
-        Frame frame = droppedStack.getOrDefault(Exposure.DataComponents.PHOTOGRAPH_FRAME, Frame.EMPTY);
-        ExposureType type = frame.type();
-        droppedStack.set(Exposure.DataComponents.PHOTOGRAPH_TYPE, type);
-
         Minecrft.gameMode().handleCreativeModeItemDrop(droppedStack);
         Minecrft.player().displayClientMessage(Component.translatable("gui.exposure.photograph_screen.item_dropped_message",
                 droppedStack.getDisplayName()), false);
@@ -290,7 +273,7 @@ public class PhotographScreen extends Screen {
         if (!Minecrft.player().isCreative() || frame.equals(Frame.EMPTY)) {
             return false;
         }
-        String text = frame.identifier().map(id -> id, ResourceLocation::toString);
+        String text = frame.identifier().map(id -> id, Identifier::toString);
         Minecrft.get().keyboardHandler.setClipboard(text);
         Minecrft.player().displayClientMessage(
                 Component.translatable("gui.exposure.photograph_screen.copied_message", text), false);
@@ -420,7 +403,7 @@ public class PhotographScreen extends Screen {
                 }
 
                 if (stack.getItem() instanceof StackedPhotographsItem stackedPhotographsItem) {
-                    return stackedPhotographsItem.getPhotographs(stack).photographsItemAndStacks();
+                    return stackedPhotographsItem.getPhotographs(stack);
                 }
 
                 return Collections.emptyList();

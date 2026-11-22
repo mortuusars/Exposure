@@ -1,12 +1,8 @@
 {
   "type": "minecraft:crafting_shapeless",
   "ingredients": [
-    {
-      "item": "minecraft:writable_book"
-    },
-    {
-      "item": "minecraft:phantom_membrane"
-    }
+    "minecraft:writable_book",
+    "minecraft:phantom_membrane"
   ],
   "result": {
     "id": "exposure:album"

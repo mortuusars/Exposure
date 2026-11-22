@@ -10,14 +10,14 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
 public record ExportS2CP(List<String> ids, ExportSize size, ExportLook look) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("export");
+    public static final Identifier ID = Exposure.resource("export");
     public static final Type<ExportS2CP> TYPE = new Type<>(ID);
     public static final StreamCodec<FriendlyByteBuf, ExportS2CP> STREAM_CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()), ExportS2CP::ids,

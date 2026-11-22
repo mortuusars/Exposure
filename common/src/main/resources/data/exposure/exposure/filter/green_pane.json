@@ -3,5 +3,5 @@
     "items": "minecraft:green_stained_glass_pane"
   },
   "attachment_tint": "3B511A",
-  "shader": "exposure:shaders/post/green_filter.json"
+  "shader": "exposure:post/green_filter"
 }

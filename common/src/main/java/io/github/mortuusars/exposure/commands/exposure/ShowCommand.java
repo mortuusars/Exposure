@@ -14,9 +14,9 @@ import io.github.mortuusars.exposure.network.packet.clientbound.ShowExposureComm
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.ResourceLocationArgument;
+import net.minecraft.commands.arguments.IdentifierArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -44,10 +44,10 @@ public class ShowCommand {
                 .then(Commands.literal("texture")
                         .then(Commands.argument("path", new TextureLocationArgument())
                                 .executes(context -> texture(context.getSource(),
-                                        ResourceLocationArgument.getId(context, "path"), false))
+                                        IdentifierArgument.getId(context, "path"), false))
                                 .then(Commands.literal("negative")
                                         .executes(context -> texture(context.getSource(),
-                                                ResourceLocationArgument.getId(context, "path"), true)))));
+                                                IdentifierArgument.getId(context, "path"), true)))));
     }
 
     private static int latest(CommandSourceStack stack, @NotNull ServerPlayer player, boolean negative) {
@@ -81,7 +81,7 @@ public class ShowCommand {
         return 0;
     }
 
-    private static int texture(CommandSourceStack stack, ResourceLocation path, boolean negative) {
+    private static int texture(CommandSourceStack stack, Identifier path, boolean negative) {
         ServerPlayer player = stack.getPlayer();
         if (player == null) {
             stack.sendFailure(Component.translatable("command.exposure.show.error.not_a_player"));

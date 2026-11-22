@@ -1,3 +1,4 @@
+
 package io.github.mortuusars.exposure.client.capture.task;
 
 import com.google.common.io.Files;
@@ -5,12 +6,8 @@ import com.mojang.logging.LogUtils;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.capture.task.file.ImageFileLoader;
 import io.github.mortuusars.exposure.client.image.Image;
-import io.github.mortuusars.exposure.client.util.Minecrft;
-import io.github.mortuusars.exposure.util.TranslatableError;
 import io.github.mortuusars.exposure.util.cycles.task.Result;
 import io.github.mortuusars.exposure.util.cycles.task.Task;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.Component;
 import io.github.mortuusars.exposure.util.TranslatableError;
 import net.minecraft.SharedConstants;
 import net.minecraft.util.StringUtil;
@@ -18,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -33,8 +29,6 @@ public class FileCaptureTask extends Task<Result<Image>> {
     public static final TranslatableError ERROR_CANNOT_READ = new TranslatableError("error.exposure.capture.file.cannot_read", "ERR_CANNOT_READ");
     public static final TranslatableError ERROR_NOT_SUPPORTED = new TranslatableError("error.exposure.capture.file.not_supported", "ERR_NOT_SUPPORTED");
     public static final TranslatableError ERROR_TIMED_OUT = new TranslatableError("error.exposure.capture.file.timed_out", "ERR_TIMED_OUT");
-
-    static final Path BASE_DIR = Minecrft.get().gameDirectory.toPath().toAbsolutePath().normalize();
 
     protected final File file;
 
@@ -81,29 +75,11 @@ public class FileCaptureTask extends Task<Result<Image>> {
             return Result.error(ERROR_PATH_EMPTY);
         }
 
-        if (!Minecrft.get().isSingleplayer() && Config.Client.FILE_LOADING_ONLY_RELATIVE_TO_EXPOSURES_DIR.get()) {
-            if (file.isAbsolute()) {
-                LOGGER.error("Absolute paths are not supported. Path: {}", filepath);
-                LOGGER.info("Place image into a game directory and use a relative path.");
-                Minecrft.player().displayClientMessage(Component.literal("Absolute path is not allowed for image projecting. Loading is allowed only from a game directory.")
-                      .withStyle(ChatFormatting.RED), false);
-                return Result.error(ERROR_PATH_INVALID);
-            }
-
-            Path path = BASE_DIR.resolve(filepath).normalize();
-
-            if (!path.startsWith(BASE_DIR)) {
-                return Result.error(ERROR_PATH_INVALID);
-            }
-
-            file = path.toFile();
-        }
-
         if (file.isDirectory()) {
             return Result.error(ERROR_PATH_IS_DIRECTORY);
         }
 
-        String extension = Files.getFileExtension(file.getAbsolutePath());
+        String extension = Files.getFileExtension(filepath);
         if (StringUtil.isNullOrEmpty(extension)) {
             return Result.error(ERROR_NO_EXTENSION);
         }

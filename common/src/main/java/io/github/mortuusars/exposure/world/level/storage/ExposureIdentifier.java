@@ -8,7 +8,7 @@ import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Contract;
@@ -47,7 +47,7 @@ public class ExposureIdentifier {
 
     public static final Codec<ExposureIdentifier> FULL_CODEC = RecordCodecBuilder.create(instance -> instance.group(
             Codec.STRING.optionalFieldOf("id").forGetter(ei -> Optional.ofNullable(ei.id)),
-            ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(ei -> Optional.ofNullable(ei.texture))
+            Identifier.CODEC.optionalFieldOf("texture").forGetter(ei -> Optional.ofNullable(ei.texture))
     ).apply(instance, (idOpt, textureOpt) -> new ExposureIdentifier(
             idOpt.orElse(null),
             textureOpt.orElse(null)
@@ -58,7 +58,7 @@ public class ExposureIdentifier {
         public @NotNull ExposureIdentifier decode(FriendlyByteBuf buffer) {
             boolean isTexture = buffer.readBoolean();
             return isTexture
-                    ? ExposureIdentifier.texture(buffer.readResourceLocation())
+                    ? ExposureIdentifier.texture(buffer.readIdentifier())
                     : ExposureIdentifier.id(buffer.readUtf());
         }
 
@@ -66,16 +66,16 @@ public class ExposureIdentifier {
         public void encode(FriendlyByteBuf buffer, ExposureIdentifier instance) {
             buffer.writeBoolean(instance.isTexture());
             instance.ifId(buffer::writeUtf)
-                    .ifTexture(buffer::writeResourceLocation);
+                    .ifTexture(buffer::writeIdentifier);
         }
     };
 
     @Nullable
     private final String id;
     @Nullable
-    private final ResourceLocation texture;
+    private final Identifier texture;
 
-    private ExposureIdentifier(@Nullable String id, @Nullable ResourceLocation texture) {
+    private ExposureIdentifier(@Nullable String id, @Nullable Identifier texture) {
         Preconditions.checkArgument(id == null || texture == null,
                 "Cannot have both id and texture defined at once. Only one of them should be present.");
         this.id = id;
@@ -86,7 +86,7 @@ public class ExposureIdentifier {
         return new ExposureIdentifier(id, null);
     }
 
-    public static ExposureIdentifier texture(@NotNull ResourceLocation texture) {
+    public static ExposureIdentifier texture(@NotNull Identifier texture) {
         return new ExposureIdentifier(null, texture);
     }
 
@@ -102,11 +102,11 @@ public class ExposureIdentifier {
         return Optional.ofNullable(id);
     }
 
-    public @Nullable ResourceLocation texture() {
+    public @Nullable Identifier texture() {
         return texture;
     }
 
-    public Optional<ResourceLocation> getTexture() {
+    public Optional<Identifier> getTexture() {
         return Optional.ofNullable(texture);
     }
 
@@ -119,7 +119,7 @@ public class ExposureIdentifier {
         return texture != null;
     }
 
-    public <T> T map(final Function<String, T> ifId, final Function<ResourceLocation, T> ifTexture) {
+    public <T> T map(final Function<String, T> ifId, final Function<Identifier, T> ifTexture) {
         return isId() ? ifId.apply(id) : ifTexture.apply(texture());
     }
 
@@ -134,19 +134,19 @@ public class ExposureIdentifier {
         return isId() ? Optional.of(mappingFunc.apply(id)) : Optional.empty();
     }
 
-    public ExposureIdentifier ifTexture(Consumer<ResourceLocation> textureConsumer) {
+    public ExposureIdentifier ifTexture(Consumer<Identifier> textureConsumer) {
         if (isTexture()) {
             textureConsumer.accept(texture());
         }
         return this;
     }
 
-    public <T> Optional<T> mapTexture(Function<ResourceLocation, T> mappingFunc) {
+    public <T> Optional<T> mapTexture(Function<Identifier, T> mappingFunc) {
         return isTexture() ? Optional.of(mappingFunc.apply(texture)) : Optional.empty();
     }
 
     public String toValueString() {
-        return map(Function.identity(), ResourceLocation::toString);
+        return map(Function.identity(), Identifier::toString);
     }
 
     @Override

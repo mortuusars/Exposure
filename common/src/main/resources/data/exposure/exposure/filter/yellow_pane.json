@@ -3,5 +3,5 @@
     "items": "minecraft:yellow_stained_glass_pane"
   },
   "attachment_tint": "DECF2A",
-  "shader": "exposure:shaders/post/yellow_tint.json"
+  "shader": "exposure:post/yellow_tint"
 }

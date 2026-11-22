@@ -3,5 +3,5 @@
     "items": "minecraft:light_gray_stained_glass_pane"
   },
   "attachment_tint": "ABABAB",
-  "shader": "exposure:shaders/post/light_gray_tint.json"
+  "shader": "exposure:post/light_gray_tint"
 }

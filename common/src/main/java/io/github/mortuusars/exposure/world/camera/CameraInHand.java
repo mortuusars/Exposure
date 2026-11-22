@@ -29,22 +29,22 @@ public class CameraInHand extends Camera {
     }
 
     @Override
-    public boolean deactivate(Player player) {
-        if (super.deactivate(player)) return true;
+    public boolean deactivate() {
+        if (super.deactivate()) return true;
 
         InteractionHand oppositeHand = getHand() == InteractionHand.MAIN_HAND
                 ? InteractionHand.OFF_HAND
                 : InteractionHand.MAIN_HAND;
         ItemStack itemInHand = ((LivingEntity) getHolder()).getItemInHand(oppositeHand);
         if (getId().matches(itemInHand) && itemInHand.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(itemInHand)) {
-            cameraItem.deactivate(player, getHolder().asHolderEntity(), itemInHand);
+            cameraItem.deactivate(getHolder().asHolderEntity(), itemInHand);
             return true;
         }
 
-        if (getHolder() instanceof Player holderPlayer) {
-            for (ItemStack stack : holderPlayer.getInventory().items) {
+        if (getHolder() instanceof Player player) {
+            for (ItemStack stack : player.getInventory().getNonEquipmentItems()) {
                 if (getId().matches(stack) && stack.getItem() instanceof CameraItem cameraItem && cameraItem.isActive(stack)) {
-                    cameraItem.deactivate(player, holderPlayer, stack);
+                    cameraItem.deactivate(getHolder().asHolderEntity(), stack);
                     return true;
                 }
             }

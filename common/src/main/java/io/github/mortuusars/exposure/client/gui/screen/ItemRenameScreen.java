@@ -10,11 +10,14 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundRenameItemPacket;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
@@ -23,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Objects;
 
 public class ItemRenameScreen extends AbstractContainerScreen<ItemRenameMenu> {
-    public static final ResourceLocation TEXTURE = Exposure.resource("textures/gui/item_rename.png");
+    public static final Identifier TEXTURE = Exposure.resource("textures/gui/item_rename.png");
 
     protected EditBox name;
 
@@ -73,10 +76,9 @@ public class ItemRenameScreen extends AbstractContainerScreen<ItemRenameMenu> {
         onClose();
     }
 
-    @Override
     public void resize(Minecraft minecraft, int width, int height) {
         String string = this.name.getValue();
-        this.init(minecraft, width, height);
+        this.init(width, height);
         this.name.setValue(string);
     }
 
@@ -100,7 +102,7 @@ public class ItemRenameScreen extends AbstractContainerScreen<ItemRenameMenu> {
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        guiGraphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight, 256, 256);
     }
 
     protected void onNameChanged(String name) {
@@ -116,31 +118,31 @@ public class ItemRenameScreen extends AbstractContainerScreen<ItemRenameMenu> {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == 256) {
             onClose();
         }
 
-        if (keyCode == InputConstants.KEY_RETURN) {
+        if (event.key() == InputConstants.KEY_RETURN) {
             confirm();
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK.value(), 1f));
             return true;
         }
 
-        if (keyCode != InputConstants.KEY_TAB && (name.keyPressed(keyCode, scanCode, modifiers) || name.canConsumeInput())) {
+        if (event.key() != InputConstants.KEY_TAB && (name.keyPressed(event) || name.canConsumeInput())) {
             return true;
         }
 
-        return super.keyPressed(keyCode, scanCode, modifiers);
+        return super.keyPressed(event);
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == InputConstants.MOUSE_BUTTON_RIGHT && name.isMouseOver(mouseX, mouseY)) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT && name.isMouseOver(event.x(), event.y())) {
             name.setValue("");
             return true;
         }
 
-        return super.mouseClicked(mouseX, mouseY, button);
+        return super.mouseClicked(event, handled);
     }
 }

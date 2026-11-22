@@ -79,11 +79,13 @@ public abstract class PlayerMixin extends LivingEntity implements CameraHolder, 
     @Override
     public void setActiveExposureCamera(@Nullable Camera camera) {
         activeExposureCamera = camera;
+        onExposureCameraSet(camera);
     }
 
     @Override
     public void removeActiveExposureCamera() {
         activeExposureCamera = null;
+        onExposureCameraRemoved();
     }
 
     @Override
@@ -101,7 +103,7 @@ public abstract class PlayerMixin extends LivingEntity implements CameraHolder, 
     @Inject(method = "tick", at = @At("HEAD"))
     private void onTick(CallbackInfo ci) {
         if (!level().isClientSide() && activeExposureCamera != null && !activeExposureCamera.isActive()) {
-            activeExposureCamera.deactivate(((Player)(Object)this));
+            activeExposureCamera.deactivate();
             removeActiveExposureCamera();
         }
 

@@ -1,10 +1,8 @@
 package io.github.mortuusars.exposure.neoforge;
 
-import io.github.mortuusars.exposure.integration.Mods;
 import io.github.mortuusars.exposure.neoforge.api.event.ModifyEntityInFrameDataEvent;
 import io.github.mortuusars.exposure.neoforge.api.event.FrameAddedEvent;
 import io.github.mortuusars.exposure.neoforge.api.event.ModifyFrameExtraDataEvent;
-import io.github.mortuusars.exposure.neoforge.integration.CreateIntegration;
 import io.github.mortuusars.exposure.util.ExtraData;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
@@ -13,14 +11,11 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.LoadingModList;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.server.ServerLifecycleHooks;
@@ -62,21 +57,8 @@ public class PlatformHelperImpl {
         return ModList.get().isLoaded(modId);
     }
 
-    public static boolean isModLoading(String modId) {
-        return LoadingModList.get().getModFileById(modId) != null;
-    }
-
     public static boolean isInDevEnv() {
-        return !FMLEnvironment.production;
-    }
-
-    // --
-
-    public static boolean isCreateDeployer(Player player, InteractionHand hand) {
-        if (Mods.CREATE.isLoaded()) {
-            return CreateIntegration.isDeployer(player);
-        }
-        return false;
+        return !FMLEnvironment.isProduction();
     }
 
     // --

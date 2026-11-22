@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public record CompositionGuide(String name) {
     public static final Codec<CompositionGuide> CODEC = Codec.STRING.xmap(CompositionGuides::byNameOrNone, CompositionGuide::name);
@@ -21,11 +21,11 @@ public record CompositionGuide(String name) {
         return Component.translatable("gui." + Exposure.ID + ".composition_guide." + name);
     }
 
-    public ResourceLocation overlayTextureLocation() {
+    public Identifier overlayTextureLocation() {
         return Exposure.resource("textures/gui/viewfinder/composition_guide/" + name + ".png");
     }
 
-    public ResourceLocation buttonSpriteLocation() {
+    public Identifier buttonSpriteLocation() {
         return Exposure.resource("camera_controls/composition_guide/" + name);
     }
 }

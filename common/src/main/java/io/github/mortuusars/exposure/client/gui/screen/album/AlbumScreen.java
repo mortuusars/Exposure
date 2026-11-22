@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.client.gui.Tooltips;
 import io.github.mortuusars.exposure.client.gui.screen.element.Pager;
 import io.github.mortuusars.exposure.client.gui.screen.element.TextBlock;
 import io.github.mortuusars.exposure.client.gui.screen.element.textbox.HorizontalAlignment;
@@ -24,9 +25,12 @@ import io.github.mortuusars.exposure.world.sound.SoundEffect;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
@@ -126,8 +130,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         PhotographSlotWidget photographWidget = new PhotographSlotWidget(this, photo.getX(), photo.getY(),
                 photo.getWidth(), photo.getHeight(), () -> getMenu().getPhotograph(side)) {
             @Override
-            public boolean mouseClicked(double mouseX, double mouseY, int button) {
-                return !isInAddingMode() && super.mouseClicked(mouseX, mouseY, button);
+            public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+                return !isInAddingMode() && super.mouseClicked(event, handled);
             }
 
             @Override
@@ -208,15 +212,17 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         }
 
         if (isInAddingMode()) {
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
+            //RenderSystem.enableBlend();
+            //RenderSystem.defaultBlendFunc();
             for (Slot slot : getMenu().slots) {
                 if (!slot.getItem().isEmpty() && !(slot.getItem().getItem() instanceof PhotographItem)) {
-                    guiGraphics.blit(AlbumGUI.TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, 350, 176, 188,
+                    guiGraphics.pose().pushMatrix();
+                    guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AlbumGUI.TEXTURE, leftPos + slot.x - 1, topPos + slot.y - 1, 176, 188,
                             18, 18, 512, 512);
+                    guiGraphics.pose().popMatrix();
                 }
             }
-            RenderSystem.disableBlend();
+            //RenderSystem.disableBlend();
         }
 
         this.renderTooltip(guiGraphics, mouseX, mouseY);
@@ -244,11 +250,10 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     protected void renderLabels(GuiGraphics guiGraphics, int mouseX, int mouseY) {
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(0, 0, 15);
+        guiGraphics.pose().pushMatrix();
         super.renderLabels(guiGraphics, mouseX, mouseY);
 
-        guiGraphics.pose().popPose();
+        guiGraphics.pose().popMatrix();
     }
 
     @Override
@@ -276,7 +281,7 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
                     if (hasText)
                         tooltip.add(Component.translatable("gui.exposure.album.right_click_to_clear"));
 
-                    guiGraphics.renderTooltip(this.font, tooltip, Optional.empty(), x, y);
+                    Tooltips.renderTooltip(guiGraphics, this.font, tooltip, x, y);
 
                     return;
                 }
@@ -299,15 +304,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
 
     @Override
     protected void renderBg(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        guiGraphics.blit(AlbumGUI.TEXTURE, leftPos, topPos, 0, 0, 0,
+        //RenderSystem.setShader(CoreShaders.POSITION_TEX);
+        //RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        //RenderSystem.enableBlend();
+        //RenderSystem.defaultBlendFunc();
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AlbumGUI.TEXTURE, leftPos, topPos, 0, 0,
                 imageWidth, imageHeight, 512, 512);
 
         if (enterSignModeButton != null && enterSignModeButton.visible) {
-            guiGraphics.blit(AlbumGUI.TEXTURE, leftPos - 27, topPos + 14, 447, 0,
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AlbumGUI.TEXTURE, leftPos - 27, topPos + 14, 447, 0,
                     27, 28, 512, 512);
         }
 
@@ -318,12 +323,15 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             AlbumPlayerInventorySlot firstSlot = getMenu().getPlayerInventorySlots().getFirst();
             int x = firstSlot.x - 8;
             int y = firstSlot.y - 18;
-            guiGraphics.blit(AlbumGUI.TEXTURE, leftPos + x, topPos + y, 10, 0, 188, 176, 100, 512, 512);
+            guiGraphics.pose().pushMatrix();
+            guiGraphics.pose().translate(0.0f, 0.0f);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AlbumGUI.TEXTURE, leftPos + x, topPos + y, 0, 188, 176, 100, 512, 512);
+            guiGraphics.pose().popMatrix();
 
             @Nullable Side pageBeingAddedTo = getMenu().getSideBeingAddedTo();
             for (Page page : pages) {
                 if (page.side == pageBeingAddedTo) {
-                    guiGraphics.blitSprite(PhotographSlotWidget.EMPTY_SPRITES.enabledFocused(),
+                    guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, PhotographSlotWidget.EMPTY_SPRITES.enabledFocused(),
                             page.photoArea.getX(), page.photoArea.getY(), page.photoArea.getWidth(), page.photoArea.getHeight());
                 }
             }
@@ -347,15 +355,18 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     // CONTROLS:
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+    public boolean mouseClicked(MouseButtonEvent event, boolean handled) {
+        double mouseX = event.x();
+        double mouseY = event.y();
+        int button = event.button();
         if (isInAddingMode()) {
             if (!isHoveringOverInventory(mouseX, mouseY)
-                    && (!hasClickedOutside(mouseX, mouseY, leftPos, topPos, button) || getMenu().getCarried().isEmpty())) {
+                    && (!hasClickedOutside(mouseX, mouseY, leftPos, topPos) || getMenu().getCarried().isEmpty())) {
                 clickButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
                 return true;
             }
 
-            return super.mouseClicked(mouseX, mouseY, button);
+            return super.mouseClicked(event, handled);
         }
 
         for (Page page : pages) {
@@ -367,12 +378,12 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             }
         }
 
-        boolean handled = super.mouseClicked(mouseX, mouseY, button);
+        boolean result = super.mouseClicked(event, handled);
 
         for (Page page : pages) {
             AbstractWidget noteWidget = page.getNoteWidget();
-            if (noteWidget instanceof TextBlock textBlock && textBlock.mouseClicked(mouseX, mouseY, button)) {
-                handled = true;
+            if (noteWidget instanceof TextBlock textBlock && textBlock.mouseClicked(event, handled)) {
+                result = true;
                 break;
             }
         }
@@ -388,19 +399,18 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
             setFocused(null); // Clear focus on mouse click because it's annoying. But keep on textbox to type.
         }
 
-        return handled;
+        return result;
     }
 
     @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(MouseButtonEvent event) {
         if (isQuickCrafting && !getMenu().getCarried().isEmpty() && getMenu().getCarried().getCount() == 1) {
             isQuickCrafting = false; // Fixes weird issue with carried item not placing when dragging slightly
         }
 
-        return super.mouseReleased(mouseX, mouseY, button);
+        return super.mouseReleased(event);
     }
 
-    @Override
     public boolean handleComponentClicked(@Nullable Style style) {
         if (style == null)
             return false;
@@ -408,26 +418,25 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
         ClickEvent clickEvent = style.getClickEvent();
         if (clickEvent == null)
             return false;
-        else if (clickEvent.getAction() == ClickEvent.Action.CHANGE_PAGE) {
-            String pageIndexStr = clickEvent.getValue();
-            int pageIndex = Integer.parseInt(pageIndexStr) - 1;
+        else if (clickEvent instanceof ClickEvent.ChangePage changePage) {
+            int pageIndex = changePage.page() - 1;
             forcePage(pageIndex);
             return true;
         }
 
-        boolean handled = super.handleComponentClicked(style);
-        if (handled && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND)
+        Screen.defaultHandleClickEvent(clickEvent, minecraft, this);
+        if (clickEvent.action() == ClickEvent.Action.RUN_COMMAND)
             onClose();
-        return handled;
+        return true;
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
         if (isInAddingMode())
-            return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return super.mouseDragged(event, dragX, dragY);
         else
-            return this.getFocused() != null && this.isDragging() && button == 0
-                    && this.getFocused().mouseDragged(mouseX, mouseY, button, dragX, dragY);
+            return this.getFocused() != null && this.isDragging() && event.button() == 0
+                    && this.getFocused().mouseDragged(event, dragX, dragY);
     }
 
     protected void clickButton(int buttonId) {
@@ -466,8 +475,8 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     @Override
-    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop, int mouseButton) {
-        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop, mouseButton)
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int guiLeft, int guiTop) {
+        return super.hasClickedOutside(mouseX, mouseY, guiLeft, guiTop)
                 && !isHoveringOverInventory(mouseX, mouseY)
                 && !isHoveringOverSignElement(mouseX, mouseY);
     }
@@ -502,39 +511,39 @@ public class AlbumScreen extends AbstractContainerScreen<AlbumMenu> {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == InputConstants.KEY_TAB)
-            return super.keyPressed(keyCode, scanCode, modifiers);
+    public boolean keyPressed(KeyEvent event) {
+        if (event.key() == InputConstants.KEY_TAB)
+            return super.keyPressed(event);
 
         for (Page page : pages) {
             AbstractWidget widget = page.noteWidget.map(box -> box, block -> block);
             if (widget.isFocused()) {
-                if (keyCode == InputConstants.KEY_ESCAPE) {
+                if (event.key() == InputConstants.KEY_ESCAPE) {
                     this.setFocused(null);
                     return true;
                 }
 
-                return widget.keyPressed(keyCode, scanCode, modifiers);
+                return widget.keyPressed(event);
             }
         }
 
-        if (isInAddingMode() && (Minecrft.options().keyInventory.matches(keyCode, scanCode)
-                || keyCode == InputConstants.KEY_ESCAPE)) {
+        if (isInAddingMode() && (Minecrft.options().keyInventory.matches(event)
+                || event.key() == InputConstants.KEY_ESCAPE)) {
             clickButton(AlbumMenu.CANCEL_ADDING_PHOTO_BUTTON);
             return true;
         }
 
-        return keyBindings.keyPressed(keyCode, scanCode, modifiers) || super.keyPressed(keyCode, scanCode, modifiers);
+        return keyBindings.keyPressed(event.key(), event.scancode(), event.modifiers()) || super.keyPressed(event);
     }
 
     @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+    public boolean keyReleased(KeyEvent event) {
         for (Page page : pages) {
             if (page.noteWidget.map(box -> box, block -> block).isFocused())
-                return super.keyReleased(keyCode, scanCode, modifiers);
+                return super.keyReleased(event);
         }
 
-        return keyBindings.keyReleased(keyCode, scanCode, modifiers) || super.keyReleased(keyCode, scanCode, modifiers);
+        return keyBindings.keyReleased(event.key(), event.scancode(), event.modifiers()) || super.keyReleased(event);
     }
 
 

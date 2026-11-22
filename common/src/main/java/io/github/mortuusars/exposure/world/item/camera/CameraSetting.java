@@ -13,7 +13,7 @@ import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Optional;
 
 public record CameraSetting<T>(DataComponentType<T> component, T defaultValue, Optional<SoundEffect> sound) {
-    public static final Codec<CameraSetting<?>> CODEC = ResourceLocation.CODEC.xmap(CameraSettings::byId, CameraSettings::idOf);
+    public static final Codec<CameraSetting<?>> CODEC = Identifier.CODEC.xmap(CameraSettings::byId, CameraSettings::idOf);
     public static final StreamCodec<ByteBuf, CameraSetting<?>> STREAM_CODEC = StreamCodec.composite(
-            ResourceLocation.STREAM_CODEC, CameraSettings::idOf,
+            Identifier.STREAM_CODEC, CameraSettings::idOf,
             CameraSettings::byId
     );
 

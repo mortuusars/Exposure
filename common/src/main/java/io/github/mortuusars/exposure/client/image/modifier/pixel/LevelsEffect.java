@@ -2,7 +2,7 @@ package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
 import com.google.common.base.Preconditions;
 import io.github.mortuusars.exposure.world.camera.film.properties.Levels;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 
 public class LevelsEffect implements PixelEffect {
     protected final int shadows;
@@ -38,10 +38,10 @@ public class LevelsEffect implements PixelEffect {
     }
 
     public int modify(int colorARGB) {
-        int alpha = FastColor.ARGB32.alpha(colorARGB);
-        int red = FastColor.ARGB32.red(colorARGB);
-        int green = FastColor.ARGB32.green(colorARGB);
-        int blue = FastColor.ARGB32.blue(colorARGB);
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         double gammaCorrection = calculateGammaCorrection(midtones);
 
@@ -49,7 +49,7 @@ public class LevelsEffect implements PixelEffect {
         green = adjustChannel(green, shadows, highlights, black, white, gammaCorrection);
         blue = adjustChannel(blue, shadows, highlights, black, white, gammaCorrection);
 
-        return FastColor.ARGB32.color(alpha, red, green, blue);
+        return ARGB.color(alpha, red, green, blue);
     }
 
     protected double calculateGammaCorrection(int inputMid) {

@@ -10,7 +10,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,7 @@ import java.util.Optional;
 public record InterplanarProjectionFinishedC2SP(CameraId cameraId,
                                                 boolean successful,
                                                 Optional<TranslatableError> error) implements Packet {
-    public static final ResourceLocation ID = Exposure.resource("interplanar_projection_finished");
+    public static final Identifier ID = Exposure.resource("interplanar_projection_finished");
     public static final Type<InterplanarProjectionFinishedC2SP> TYPE = new Type<>(ID);
 
     public static final StreamCodec<FriendlyByteBuf, InterplanarProjectionFinishedC2SP> STREAM_CODEC = StreamCodec.composite(

@@ -1,15 +1,13 @@
 package io.github.mortuusars.exposure.world.level.storage;
 
 import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
-import net.minecraft.nbt.*;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.saveddata.SavedData;
+import net.minecraft.world.level.saveddata.SavedDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -60,34 +58,11 @@ public class ExposureFrameHistory extends SavedData {
         frames.remove(entity.getUUID());
     }
 
-    @Override
-    public @NotNull CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
-        DataResult<Tag> encodingResult = CODEC.encode(this, NbtOps.INSTANCE, tag);
-        if (encodingResult.isSuccess()) {
-            Tag encodedTag = encodingResult.getOrThrow();
-            if (encodedTag instanceof CompoundTag encodedCompoundTag)
-                return encodedCompoundTag;
-            else {
-                Exposure.LOGGER.error("Cannot save FramesHistory: '{}'. Encoded tag is not CompoundTag but a {}",
-                        this, encodedTag.getType());
-            }
-        }
-        encodingResult.error().ifPresent(error -> {
-            Exposure.LOGGER.error("Cannot save FramesHistory: {}", error.message());
-        });
-
-        return tag;
-    }
-
-    public static SavedData.Factory<ExposureFrameHistory> factory() {
-        return new SavedData.Factory<>(() -> new ExposureFrameHistory(new HashMap<>()), ExposureFrameHistory::load, null);
-    }
-
-    public static ExposureFrameHistory load(CompoundTag tag, HolderLookup.Provider levelRegistry) {
-        return CODEC.decode(NbtOps.INSTANCE, tag).getOrThrow().getFirst();
+    public static SavedDataType<ExposureFrameHistory> factory() {
+        return new SavedDataType<>("exposure_frame_history", () -> new ExposureFrameHistory(new HashMap<>()), CODEC, null);
     }
 
     public static @NotNull ExposureFrameHistory loadOrCreate(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(ExposureFrameHistory.factory(), "exposure_frame_history");
+        return server.overworld().getDataStorage().computeIfAbsent(ExposureFrameHistory.factory());
     }
 }

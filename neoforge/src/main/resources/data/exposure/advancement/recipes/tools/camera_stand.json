@@ -5,10 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "exposure:camera",
-              "exposure_polaroid:instant_camera"
-            ]
+            "items": "#exposure:cameras"
           }
         ]
       },

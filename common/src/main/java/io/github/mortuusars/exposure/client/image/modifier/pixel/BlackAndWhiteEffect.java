@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
 public class BlackAndWhiteEffect implements PixelEffect {
@@ -22,13 +22,13 @@ public class BlackAndWhiteEffect implements PixelEffect {
     }
 
     public int modify(int colorARGB) {
-        int alpha = FastColor.ARGB32.alpha(colorARGB);
-        int red = FastColor.ARGB32.red(colorARGB);
-        int green = FastColor.ARGB32.green(colorARGB);
-        int blue = FastColor.ARGB32.blue(colorARGB);
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         int value = Mth.clamp((int) (rWeight * red + gWeight * green + bWeight * blue), 0, 255);
-        return FastColor.ARGB32.color(alpha, value, value, value);
+        return ARGB.color(alpha, value, value, value);
     }
 
     @Override

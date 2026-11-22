@@ -7,14 +7,16 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class PhotographCopyingRecipe extends ComponentTransferringRecipe {
-    public PhotographCopyingRecipe(CraftingBookCategory category, Ingredient sourceIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+    public PhotographCopyingRecipe(CraftingBookCategory category, Ingredient sourceIngredient, List<Ingredient> ingredients, ItemStack result) {
         super(category, sourceIngredient, ingredients, result);
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return Exposure.RecipeSerializers.PHOTOGRAPH_COPYING.get();
+    public @NotNull RecipeSerializer<? extends ComponentTransferringRecipe> getSerializer() {
+        return (RecipeSerializer<? extends ComponentTransferringRecipe>) Exposure.RecipeSerializers.PHOTOGRAPH_COPYING.get();
     }
 
     @Override

@@ -26,13 +26,13 @@ public class Animation {
         return easing;
     }
 
-    public double getValue() {
+    public float getValue() {
         if (isFinished()) {
-            return 1.0;
+            return 1.0f;
         }
         long currentTime = getCurrentTime();
         double value = (double) (currentTime - startedAt) / duration;
-        return easing.ease(value);
+        return (float) easing.ease(value);
     }
 
     public boolean isFinished() {

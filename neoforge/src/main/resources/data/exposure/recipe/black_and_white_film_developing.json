@@ -1,20 +1,16 @@
 {
   "type": "exposure:film_developing",
-  "film": {
-    "tag": "exposure:black_and_white_film_rolls"
-  },
+  "film": "#exposure:black_and_white_film_rolls",
   "ingredients": [
-    [
-      {
-        "type": "neoforge:components",
-        "items": "minecraft:potion",
-        "components": {
-          "minecraft:potion_contents": {
-            "potion": "minecraft:water"
-          }
+    {
+      "neoforge:ingredient_type": "neoforge:components",
+      "items": "minecraft:potion",
+      "components": {
+        "minecraft:potion_contents": {
+          "potion": "minecraft:water"
         }
       }
-    ]
+    }
   ],
   "result": {
     "id": "exposure:developed_black_and_white_film"

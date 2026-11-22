@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.world.camera;
 import com.mojang.serialization.Codec;
 import io.github.mortuusars.exposure.Exposure;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;

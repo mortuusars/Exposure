@@ -1,7 +1,0 @@
-{
-	"parent": "exposure:item/camera_active",
-	"textures": {
-		"texture": "exposure:item/camera/camera_gold",
-		"particle": "exposure:item/camera/camera_gold"
-	}
-}

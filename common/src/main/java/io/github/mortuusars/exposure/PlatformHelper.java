@@ -1,6 +1,6 @@
 package io.github.mortuusars.exposure;
 
-import dev.architectury.injectables.annotations.ExpectPlatform;
+import io.github.mortuusars.exposure.neoforge.PlatformHelperImpl;
 import io.github.mortuusars.exposure.util.ExtraData;
 import io.github.mortuusars.exposure.world.camera.capture.CaptureParameters;
 import io.github.mortuusars.exposure.world.camera.frame.Frame;
@@ -9,10 +9,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,73 +18,52 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class PlatformHelper {
-    @ExpectPlatform
     public static @Nullable MinecraftServer getServer() {
-        throw new AssertionError();
+        return PlatformHelperImpl.getServer();
     }
 
-    @ExpectPlatform
     public static boolean canShear(ItemStack stack) {
-        throw new AssertionError();
+        return PlatformHelperImpl.canShear(stack);
     }
 
-    @ExpectPlatform
     public static boolean canStrip(ItemStack stack) {
-        throw new AssertionError();
+        return PlatformHelperImpl.canStrip(stack);
     }
 
-    @ExpectPlatform
     public static void openMenu(ServerPlayer serverPlayer, MenuProvider menuProvider, Consumer<RegistryFriendlyByteBuf> extraDataWriter) {
-        throw new AssertionError();
+        PlatformHelperImpl.openMenu(serverPlayer, menuProvider, extraDataWriter);
     }
 
-    @ExpectPlatform
     public static List<String> getDefaultSpoutDevelopmentColorSequence() {
-        throw new AssertionError();
+        return PlatformHelperImpl.getDefaultSpoutDevelopmentColorSequence();
     }
 
-    @ExpectPlatform
     public static List<String> getDefaultSpoutDevelopmentBWSequence() {
-        throw new AssertionError();
+        return PlatformHelperImpl.getDefaultSpoutDevelopmentBWSequence();
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
-    @ExpectPlatform
     public static boolean isModLoaded(String modId) {
-        throw new AssertionError();
+        return PlatformHelperImpl.isModLoaded(modId);
     }
 
-    @ExpectPlatform
-    public static boolean isModLoading(String modId) {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
     public static boolean isInDevEnv() {
-        throw new AssertionError();
+        return PlatformHelperImpl.isInDevEnv();
     }
 
     // --
 
-    @ExpectPlatform
     public static void postModifyEntityInFrameExtraDataEvent(CameraHolder cameraHolder, ItemStack camera, LivingEntity entityInFrame, ExtraData data) {
-        throw new AssertionError();
+        PlatformHelperImpl.postModifyEntityInFrameExtraDataEvent(cameraHolder, camera, entityInFrame, data);
     }
 
-    @ExpectPlatform
     public static void postModifyFrameExtraDataEvent(CameraHolder cameraHolder, ItemStack camera, CaptureParameters captureParameters,
                                                      List<BlockPos> positionsInFrame, List<LivingEntity> entitiesInFrame, ExtraData data) {
-        throw new AssertionError();
+        PlatformHelperImpl.postModifyFrameExtraDataEvent(cameraHolder, camera, captureParameters, positionsInFrame, entitiesInFrame, data);
     }
 
-    @ExpectPlatform
     public static void postFrameAddedEvent(CameraHolder holder, ItemStack camera, Frame frame,
                                            List<BlockPos> positionsInFrame, List<LivingEntity> entitiesInFrame) {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
-    public static boolean isCreateDeployer(Player player, InteractionHand hand) {
-        throw new AssertionError();
+        PlatformHelperImpl.postFrameAddedEvent(holder, camera, frame, positionsInFrame, entitiesInFrame);
     }
 }

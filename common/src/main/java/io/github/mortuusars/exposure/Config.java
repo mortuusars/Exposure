@@ -1,6 +1,5 @@
 package io.github.mortuusars.exposure;
 
-import io.github.mortuusars.exposure.client.capture.task.UrlLoading;
 import io.github.mortuusars.exposure.world.block.FlashBlock;
 import io.github.mortuusars.exposure.world.camera.component.FocalRange;
 import io.github.mortuusars.exposure.util.color.Color;
@@ -30,7 +29,6 @@ public class Config {
         public static final ModConfigSpec.IntValue CAMERA_STAND_WORKING_RANGE;
         public static final ModConfigSpec.BooleanValue CAMERA_STAND_RANGE_MALFUNCTION;
         public static final ModConfigSpec.BooleanValue CAMERA_STAND_FALLBACK_TO_OTHER_PLAYERS;
-        public static final ModConfigSpec.BooleanValue CAMERA_STAND_FALLBACK_TO_OTHER_PLAYERS_PROJECTOR;
 
         // Capture
         public static final ModConfigSpec.IntValue DEFAULT_FRAME_SIZE;
@@ -57,9 +55,6 @@ public class Config {
         // Misc
         public static final ModConfigSpec.BooleanValue FILM_ROLL_EASY_RENAMING;
         public static final ModConfigSpec.BooleanValue INTERPLANAR_PROJECTOR_LARGER_RENAMING_LIMIT;
-
-        // Integration
-        public static final ModConfigSpec.BooleanValue CREATE_DEPLOYER_STAND_HOTSWAP;
 
         // Debug
         public static final ModConfigSpec.BooleanValue CLEANUP_TIMED_OUT_EXPECTED_EXPOSURES;
@@ -114,11 +109,6 @@ public class Config {
                 CAMERA_STAND_FALLBACK_TO_OTHER_PLAYERS = builder
                         .comment("If owner of the Camera Stand is not in range, closest player will be chosen to create and render a photo. Default: true")
                         .define("fallback_to_other_players", true);
-                CAMERA_STAND_FALLBACK_TO_OTHER_PLAYERS_PROJECTOR = builder
-                        .comment("Other players can be chosen for Interplanar Projector exposure, if owner is not in range.",
-                                "WARNING: If enabled, projector will attempt to load an image from other player's computer (or use their PC to load from URL). Potentially, this can be used for malicious intents.",
-                                "Default: false")
-                        .define("fallback_to_other_players_projector", false);
                 builder.pop();
             }
 
@@ -202,14 +192,6 @@ public class Config {
             }
             builder.pop();
 
-            builder.push("integration");
-            {
-                CREATE_DEPLOYER_STAND_HOTSWAP = builder
-                        .comment("Create Deployers will be able to insert/swap attachments on Camera Stand. Default: true")
-                        .define("create_deployer_stand_hotswap", true);
-            }
-            builder.pop();
-
             builder.comment("You wouldn't need to touch these settings most likely. They are there to help debug/fix some weird issues.")
                     .push("debug");
             {
@@ -285,9 +267,6 @@ public class Config {
         public static final ModConfigSpec.ConfigValue<String> VIEWFINDER_BACKGROUND_COLOR;
         public static final ModConfigSpec.ConfigValue<String> VIEWFINDER_FONT_MAIN_COLOR;
         public static final ModConfigSpec.ConfigValue<String> VIEWFINDER_FONT_SECONDARY_COLOR;
-        public static final ModConfigSpec.BooleanValue HIDE_HUD_WHILE_IN_VIEWFINDER;
-        public static final ModConfigSpec.IntValue VIEWFINDER_STATUS_ICON_OFFSET_X;
-        public static final ModConfigSpec.IntValue VIEWFINDER_STATUS_ICON_OFFSET_Y;
 
         // CAPTURE
         public static final ModConfigSpec.BooleanValue KEEP_POST_EFFECT;
@@ -295,11 +274,7 @@ public class Config {
         public static final ModConfigSpec.BooleanValue FORCE_DIRECT_CAPTURE;
         public static final ModConfigSpec.ConfigValue<List<? extends String>> FORCE_DIRECT_CAPTURE_MODS;
         public static final ModConfigSpec.IntValue DIRECT_CAPTURE_DELAY_FRAMES;
-        public static final ModConfigSpec.BooleanValue BACKGROUND_CAPTURE_USE_PANORAMIC_MODE;
-        public static final ModConfigSpec.BooleanValue FILE_LOADING_ONLY_RELATIVE_TO_EXPOSURES_DIR;
-        public static final ModConfigSpec.EnumValue<UrlLoading> URL_LOADING;
-        public static final ModConfigSpec.ConfigValue<List<? extends String>> URL_LOADING_ALLOWED_DOMAINS;
-        public static final ModConfigSpec.ConfigValue<List<? extends String>> URL_LOADING_ALLOWED_SUBDOMAINS;
+
         // RENDER
         public static final ModConfigSpec.BooleanValue PIXEL_PERFECT_PHOTOGRAPH_FRAME;
         public static final ModConfigSpec.BooleanValue PHOTOGRAPH_RENDERS_IN_ITEM_FRAME;
@@ -396,15 +371,6 @@ public class Config {
                         .comment("Color in hex format. AARRGGBB.").define("font_main_color", "FF2B2622");
                 VIEWFINDER_FONT_SECONDARY_COLOR = builder
                         .comment("Color in hex format. AARRGGBB.").define("font_secondary_color", "FF7A736C");
-                HIDE_HUD_WHILE_IN_VIEWFINDER = builder
-                        .comment("HUD will be hidden while looking through viewfinder. Default: true")
-                        .define("hide_hud_while_in_viewfinder", true);
-                VIEWFINDER_STATUS_ICON_OFFSET_X = builder
-                        .comment("X offset of a viewfinder status icon. Default: 0")
-                        .defineInRange("status_icon_offset_x", 0, -999, 999);
-                VIEWFINDER_STATUS_ICON_OFFSET_Y = builder
-                        .comment("Y offset of a viewfinder status icon. Default: 0")
-                        .defineInRange("status_icon_offset_y", 0, -999, 999);
                 builder.pop();
             }
 
@@ -422,63 +388,18 @@ public class Config {
                         .defineInRange("flash_capture_delay_ticks", 4, 1, FlashBlock.LIFETIME_TICKS);
                 FORCE_DIRECT_CAPTURE = builder
                         .comment("Force legacy (pre 1.21) capturing method for taking images. Enable if you experiencing issues with resulting images.",
-                                "Direct method will be used regardless of this setting if mods defined in 'force_direct_capture_default_mods' is installed.",
+                                "Direct method will be used regardless of this setting if mods defined in 'mods_needing_direct_capture' is installed.",
                                 "Default: false")
                         .define("force_direct_capture", false);
                 FORCE_DIRECT_CAPTURE_MODS = builder
                         .comment("Direct capture will be used if any of these mods is installed.",
                                 "Format: '[\"mod_id\", \"mod_id\"]'. Default: [" + String.join(", ", Exposure.MODS_REQUIRING_DIRECT_CAPTURE) + "]")
-                        .defineListAllowEmpty("force_direct_capture_default_mods", () -> Exposure.MODS_REQUIRING_DIRECT_CAPTURE, () -> "mod_id", o -> true);
+                        .defineList("force_direct_capture_mods", () -> Exposure.MODS_REQUIRING_DIRECT_CAPTURE, () -> "mod_id", o -> true);
                 DIRECT_CAPTURE_DELAY_FRAMES = builder
                         .comment("Delay in frames before capturing an image if 'direct_capture' method is in use.",
                                 "Set to higher value when leftovers of GUI elements (such as nameplates) are visible on the images",
                                 "(some shaders have temporal effects that take several frames to disappear fully)")
                         .defineInRange("direct_capture_delay_frames", 0, 0, 100);
-                BACKGROUND_CAPTURE_USE_PANORAMIC_MODE = builder
-                      .comment("Sets the game to 'panoramic mode' when capturing the image with background capture method (default).",
-                            "Enabling this might fix some graphical issues, such as water being invisible.",
-                            "If captured images are still not looking properly - enable 'force_direct_capture'.",
-                            "Default: false")
-                      .define("background_capture_use_panoramic_mode", false);
-
-                {
-                    builder.push("loading");
-
-                    FILE_LOADING_ONLY_RELATIVE_TO_EXPOSURES_DIR = builder
-                          .comment("Loading from file will only accept a path relative to game directory, when on the dedicated server (multiplayer).",
-                                "This option is for protection against malicious actions using Projector or load commands.",
-                                "Default: false")
-                          .define("multiplayer_file_loading_only_from_game_dir", false);
-
-                    URL_LOADING = builder
-                          .comment("How loading from URL should behave when on the dedicated server (multiplayer).",
-                                "This option is for protection against malicious actions using Projector or load commands.",
-                                "Default: ONLY_ALLOWED_DOMAINS")
-                          .defineEnum("multiplayer_url_loading", UrlLoading.ONLY_ALLOWED_DOMAINS);
-
-                    URL_LOADING_ALLOWED_DOMAINS = builder
-                          .comment("List of allowed domains for loading from URl, if 'multiplayer_url_loading' is set to ONLY_ALLOWED_DOMAINS.")
-                          .defineListAllowEmpty(
-                                List.of("multiplayer_url_loading_allowed_domains"),
-                                () -> List.of("i.imgur.com",
-                                      "cdn.discordapp.com",
-                                      "media.discordapp.net",
-                                      "raw.githubusercontent.com"),
-                                () -> "",
-                                o -> true);
-
-                    URL_LOADING_ALLOWED_SUBDOMAINS = builder
-                          .comment("List of allowed domains for loading from URl, if 'multiplayer_url_loading' is set to ONLY_ALLOWED_DOMAINS.")
-                          .defineListAllowEmpty(
-                                List.of("multiplayer_url_loading_allowed_subdomains"),
-                                () -> List.of(".imgur.com",
-                                      ".discordapp.com"),
-                                () -> "",
-                                o -> true);
-
-                    builder.pop();
-                }
-
                 builder.pop();
             }
 

@@ -1,5 +1,7 @@
 package io.github.mortuusars.exposure.network.packet.serverbound;
 
+import io.github.mortuusars.exposure.world.entity.CameraOperator;
+
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.network.packet.Packet;
@@ -24,7 +26,7 @@ public class ActiveCameraReleaseC2SP implements Packet {
 
     @Override
     public boolean handle(PacketFlow flow, Player player) {
-        player.getActiveExposureCameraOptional().ifPresentOrElse(
+        ((CameraOperator) player).getActiveExposureCameraOptional().ifPresentOrElse(
                 Camera::release,
                 () -> Exposure.LOGGER.error("Cannot release shutter: '{}' does not have an active camera.", player));
 

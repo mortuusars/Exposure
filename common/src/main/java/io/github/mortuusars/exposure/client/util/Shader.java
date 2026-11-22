@@ -1,16 +1,14 @@
 package io.github.mortuusars.exposure.client.util;
 
-import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.capture.CaptureShader;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
 
 public class Shader {
     private static boolean suppressViewfinder = false;
@@ -21,22 +19,15 @@ public class Shader {
      * Since this method creates a temp PostChain on every call, this probably should not be used when performance matters.
      * Main use for this is to apply a shader when capturing a photograph.
      */
-    public static void process(@NotNull PostChain shader, @NotNull RenderTarget renderTarget) {
-        try {
-            ResourceLocation shaderLocation = ResourceLocation.parse(shader.getName());
+    @SuppressWarnings("deprecation")
+    public static void process(@NotNull Identifier shaderId, @NotNull RenderTarget renderTarget) {
+        PostChain shader = Minecrft.get().getShaderManager().getPostChain(shaderId, LevelTargetBundle.MAIN_TARGETS);
 
-            PostChain tempShader = new PostChain(Minecrft.get().getTextureManager(), Minecrft.get().getResourceManager(),
-                    renderTarget, shaderLocation);
-            tempShader.resize(renderTarget.width, renderTarget.height);
-
-            RenderSystem.disableBlend();
-            RenderSystem.disableDepthTest();
-            RenderSystem.resetTextureMatrix();
-            tempShader.process(Minecrft.get().getTimer().getGameTimeDeltaTicks());
-        } catch (IOException e) {
-            Exposure.LOGGER.warn("Failed to load shader: {}", shader.getName(), e);
-        } catch (JsonSyntaxException e) {
-            Exposure.LOGGER.warn("Failed to parse shader: {}", shader.getName(), e);
+        if (shader != null) {
+            //RenderSystem.disableBlend();
+            //RenderSystem.disableDepthTest();
+            //RenderSystem.resetTextureMatrix();
+            shader.process(renderTarget, Minecraft.getInstance().gameRenderer.resourcePool);
         }
     }
 
@@ -50,17 +41,7 @@ public class Shader {
         }
 
         if (CaptureShader.hasShader()) {
-            CaptureShader.process();
-        }
-    }
-
-    public static void resize(int width, int height) {
-        if (CameraClient.viewfinder() != null) {
-            CameraClient.viewfinder().shader().resize(width, height);
-        }
-
-        if (CaptureShader.hasShader()) {
-            CaptureShader.resize(width, height);
+            CaptureShader.process(Minecrft.get().getMainRenderTarget());
         }
     }
 }

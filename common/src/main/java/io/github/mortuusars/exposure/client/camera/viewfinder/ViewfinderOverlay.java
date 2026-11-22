@@ -2,7 +2,6 @@ package io.github.mortuusars.exposure.client.camera.viewfinder;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import com.mojang.math.Axis;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
 import io.github.mortuusars.exposure.client.animation.Animation;
@@ -21,23 +20,26 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix3x2fStack;
 
 import java.util.List;
 
 public class ViewfinderOverlay {
-    public static final ResourceLocation VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/viewfinder/viewfinder.png");
-    public static final ResourceLocation NO_FILM_ICON_TEXTURE = Exposure.resource("textures/gui/viewfinder/no_film.png");
-    public static final ResourceLocation REMAINING_FRAMES_ICON_TEXTURE = Exposure.resource("textures/gui/viewfinder/remaining_frames.png");
-    public static final ResourceLocation BSOD_SAD_FACE_TEXTURE = Exposure.resource("textures/gui/viewfinder/bsod_sad_face.png");
-    public static final ResourceLocation BSOD_QR_CODE_TEXTURE = Exposure.resource("textures/gui/viewfinder/bsod_qr_code.png");
+    public static final Identifier VIEWFINDER_TEXTURE = Exposure.resource("textures/gui/viewfinder/viewfinder.png");
+    public static final Identifier NO_FILM_ICON_TEXTURE = Exposure.resource("textures/gui/viewfinder/no_film.png");
+    public static final Identifier REMAINING_FRAMES_ICON_TEXTURE = Exposure.resource("textures/gui/viewfinder/remaining_frames.png");
+    public static final Identifier BSOD_SAD_FACE_TEXTURE = Exposure.resource("textures/gui/viewfinder/bsod_sad_face.png");
+    public static final Identifier BSOD_QR_CODE_TEXTURE = Exposure.resource("textures/gui/viewfinder/bsod_qr_code.png");
 
     protected final LocalPlayer player;
     protected final Camera camera;
@@ -73,8 +75,8 @@ public class ViewfinderOverlay {
         this.initialScale = 0.5f;
         this.scale = 0.5f; // Start small to animate expanding
 
-        this.xRot = Minecrft.get().gameRenderer.getMainCamera().getXRot();
-        this.yRot = Minecrft.get().gameRenderer.getMainCamera().getYRot();
+        this.xRot = Minecrft.get().gameRenderer.getMainCamera().xRot();
+        this.yRot = Minecrft.get().gameRenderer.getMainCamera().yRot();
         this.xRot0 = xRot;
         this.yRot0 = yRot;
     }
@@ -89,7 +91,7 @@ public class ViewfinderOverlay {
 
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
         recalculateOpening();
-        scale = Mth.lerp((float) scaleAnimation.getValue(), initialScale, 1f);
+        scale = Mth.lerp(scaleAnimation.getValue(), initialScale, 1f);
 
         // opening and scale is updated even if overlay is not rendered - other classes may depend on them.
 
@@ -98,9 +100,9 @@ public class ViewfinderOverlay {
         final int width = Minecrft.get().getWindow().getGuiScaledWidth();
         final int height = Minecrft.get().getWindow().getGuiScaledHeight();
 
-        guiGraphics.pose().pushPose();
-        guiGraphics.pose().translate(width / 2f, height / 2f, 0);
-        guiGraphics.pose().scale(scale, scale, scale);
+        guiGraphics.pose().pushMatrix();
+        guiGraphics.pose().translate(width / 2f, height / 2f);
+        guiGraphics.pose().scale(scale, scale);
 
         if (Minecrft.options().bobView().get()) {
             bobView(guiGraphics.pose(), deltaTracker);
@@ -108,12 +110,12 @@ public class ViewfinderOverlay {
         applyAttackAnimation(guiGraphics.pose(), deltaTracker);
         applyMovementDelay(guiGraphics.pose(), deltaTracker);
 
-        guiGraphics.pose().translate(-width / 2f, -height / 2f, 0);
+        guiGraphics.pose().translate(-width / 2f, -height / 2f);
 
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        //RenderSystem.enableBlend();
+        //RenderSystem.defaultBlendFunc();
+        //RenderSystem.enableDepthTest();
+        //RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
 
         // -9999 to cover all screen when overlay is scaled down
         // Left
@@ -131,10 +133,10 @@ public class ViewfinderOverlay {
         if (filter.getForReading().getItem() instanceof BrokenInterplanarProjectorItem brokenInterplanarProjector) {
             drawGuide = false;
             renderBSOD(guiGraphics, brokenInterplanarProjector, filter.getForReading());
-            RenderSystem.enableBlend();
-            RenderSystem.defaultBlendFunc();
-            RenderSystem.enableDepthTest();
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+            //RenderSystem.enableBlend();
+            //RenderSystem.defaultBlendFunc();
+            //RenderSystem.enableDepthTest();
+            //RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         }
 
         drawShutter(guiGraphics);
@@ -142,20 +144,20 @@ public class ViewfinderOverlay {
 
         // Guide
         if (drawGuide) {
-            ResourceLocation guideTexture = CameraSettings.COMPOSITION_GUIDE.getOrDefault(camera.getItemStack()).overlayTextureLocation();
-            GuiUtil.blit(guideTexture, guiGraphics.pose(), opening, 0, 0, (int) opening.width, (int) opening.height, 0);
+            Identifier guideTexture = CameraSettings.COMPOSITION_GUIDE.getOrDefault(camera.getItemStack()).overlayTextureLocation();
+            GuiUtil.blit(guiGraphics, guideTexture, opening);
         }
 
         if (!(Minecrft.get().screen instanceof ViewfinderCameraControlsScreen)) {
-            renderStatusIcons(guiGraphics.pose(), camera.getItemStack());
+            renderStatusIcons(guiGraphics, camera.getItemStack());
         }
 
-        guiGraphics.pose().popPose();
-        RenderSystem.disableDepthTest();
+        guiGraphics.pose().popMatrix();
+        //RenderSystem.disableDepthTest();
     }
 
     protected void drawViewfinderTexture(GuiGraphics guiGraphics) {
-        GuiUtil.blit(VIEWFINDER_TEXTURE, guiGraphics.pose(), opening, 0, 0, (int) opening.width, (int) opening.height, 0);
+        GuiUtil.blit(guiGraphics, VIEWFINDER_TEXTURE, opening);
     }
 
     /**
@@ -186,7 +188,7 @@ public class ViewfinderOverlay {
         int y = yCenter;
 
         int sadFaceSize = font.lineHeight * 5;
-        guiGraphics.blit(BSOD_SAD_FACE_TEXTURE, x, y - sadFaceSize - margin, 0, 0, sadFaceSize, sadFaceSize, sadFaceSize, sadFaceSize);
+        guiGraphics.blit(BSOD_SAD_FACE_TEXTURE, x, y - sadFaceSize - margin, 0, 0, sadFaceSize, sadFaceSize, 42, 42);
 
         MutableComponent message = Component.translatable("item.exposure.broken_interplanar_projector.viewfinder.message");
         List<FormattedCharSequence> messageLines = font.split(message, (int) (opening.width * 0.75f));
@@ -204,7 +206,7 @@ public class ViewfinderOverlay {
             case 2 -> qrCodeTextureSize * 2;
             default -> qrCodeTextureSize;
         };
-        guiGraphics.blit(BSOD_QR_CODE_TEXTURE, x, y, 0, 0, qrCodeSize, qrCodeSize, qrCodeSize, qrCodeSize);
+        guiGraphics.blit(BSOD_QR_CODE_TEXTURE, x, y, 0, 0, qrCodeSize, qrCodeSize, qrCodeTextureSize, qrCodeTextureSize);
 
         MutableComponent errorCode = Component.translatable("item.exposure.broken_interplanar_projector.viewfinder.error_code");
         guiGraphics.drawString(font, errorCode, x + qrCodeSize + margin, y, 0xFFFFFFFF, false);
@@ -213,10 +215,11 @@ public class ViewfinderOverlay {
         guiGraphics.drawString(font, code, x + qrCodeSize + margin, y, 0xFFFFFFFF, false);
     }
 
-    public void bobView(PoseStack poseStack, DeltaTracker deltaTracker) {
-        if (Minecrft.get().getCameraEntity() instanceof Player pl) {
-            float walkDist = Mth.lerp(deltaTracker.getGameTimeDeltaTicks(), pl.walkDistO, pl.walkDist);
-            float strength = Mth.lerp(deltaTracker.getGameTimeDeltaTicks(), pl.oBob, pl.bob);
+    public void bobView(Matrix3x2fStack poseStack, DeltaTracker deltaTracker) {
+        if (Minecrft.get().getCameraEntity() instanceof AbstractClientPlayer pl) {
+            Vec3 movement = pl.getDeltaMovement();
+            float walkDist = (float)(movement.horizontalDistance() * 8.0);
+            float strength = Mth.clamp(walkDist * 0.25f, 0.0f, 1.0f);
             float x = Mth.sin(walkDist * (float) Math.PI) * strength;
             float y = Math.abs(Mth.cos(walkDist * (float) Math.PI) * strength);
 
@@ -224,13 +227,13 @@ public class ViewfinderOverlay {
             bobX = Mth.lerp(delta, bobX, x);
             bobY = Mth.lerp(delta, bobY, y);
             double guiScale = Minecrft.get().getWindow().getGuiScale();
-            poseStack.translate(bobX * 100 / guiScale, bobY * 200 / guiScale, 0.0F);
+            poseStack.translate((float)(bobX * 100 / guiScale), (float)(bobY * 200 / guiScale));
             float scale = this.scale - (bobY * 0.25f);
-            poseStack.scale(scale, scale, scale);
+            poseStack.scale(scale, scale);
         }
     }
 
-    public void applyAttackAnimation(PoseStack poseStack, DeltaTracker deltaTracker) {
+    public void applyAttackAnimation(Matrix3x2fStack poseStack, DeltaTracker deltaTracker) {
         float attack = player.attackAnim;
         if (attack > 0.1f)
             attack = 1f - attack;
@@ -238,22 +241,22 @@ public class ViewfinderOverlay {
         float delta = Math.min(deltaTracker.getGameTimeDeltaTicks(), 1f);
         attackAnim = Mth.lerp(delta, attackAnim, attack);
 
-        poseStack.scale(1f - attackAnim * 0.1f, 1f - attackAnim * 0.2f, 1f - attackAnim * 0.1f);
-        poseStack.mulPose(Axis.ZN.rotationDegrees(Mth.lerp(attackAnim, 0, 5)));
+        poseStack.scale(1f - attackAnim * 0.1f, 1f - attackAnim * 0.2f);
+        poseStack.rotate(-(float)Math.toRadians(Mth.lerp(attackAnim, 0, 5)));
         double guiScale = Minecrft.get().getWindow().getGuiScale();
-        poseStack.translate(0, 60f / guiScale * attackAnim, 0);
+        poseStack.translate(0f, (float)(60f / guiScale * attackAnim));
     }
 
-    public void applyMovementDelay(PoseStack poseStack, DeltaTracker deltaTracker) {
+    public void applyMovementDelay(Matrix3x2fStack poseStack, DeltaTracker deltaTracker) {
         float delta = Math.min(deltaTracker.getGameTimeDeltaTicks() * 0.6f, 1.0f);
         xRot0 = Mth.lerp(delta, xRot0, xRot);
         yRot0 = Mth.lerp(delta, yRot0, yRot);
-        xRot = Minecrft.get().gameRenderer.getMainCamera().getXRot();
-        yRot = Minecrft.get().gameRenderer.getMainCamera().getYRot();
+        xRot = Minecrft.get().gameRenderer.getMainCamera().xRot();
+        yRot = Minecrft.get().gameRenderer.getMainCamera().yRot();
         double guiScale = Minecrft.get().getWindow().getGuiScale();
         double horizontalDelay = (yRot - yRot0) / guiScale * 3;
         double verticalDelay = (xRot - xRot0) / guiScale * 3;
-        poseStack.translate(-horizontalDelay, -verticalDelay, 0);
+        poseStack.translate((float)-horizontalDelay, (float)-verticalDelay);
     }
 
     protected void recalculateOpening() {
@@ -267,36 +270,34 @@ public class ViewfinderOverlay {
         opening.height = openingSize;
     }
 
-    protected void renderStatusIcons(PoseStack poseStack, ItemStack cameraStack) {
+    protected void renderStatusIcons(GuiGraphics guiGraphics, ItemStack cameraStack) {
         ItemStack filmStack = Attachment.FILM.get(cameraStack).getForReading();
 
         if (filmStack.isEmpty()
                 || !(filmStack.getItem() instanceof FilmRollItem filmRollItem)
                 || !filmRollItem.canAddFrame(filmStack)) {
-            renderNoFilmIcon(poseStack);
+            renderNoFilmIcon(guiGraphics);
             return;
         }
 
-        renderRemainingFramesIcon(poseStack, filmRollItem, filmStack);
+        renderRemainingFramesIcon(guiGraphics, filmRollItem, filmStack);
     }
 
-    protected void renderNoFilmIcon(PoseStack poseStack) {
-        RenderSystem.setShaderTexture(0, NO_FILM_ICON_TEXTURE);
-        int x = (int) ((opening.x + (opening.width / 2) - 12)) + Config.Client.VIEWFINDER_STATUS_ICON_OFFSET_X.get();
-        int y = (int) (opening.y + opening.height - 18) + Config.Client.VIEWFINDER_STATUS_ICON_OFFSET_Y.get();
-        GuiUtil.blit(poseStack, x, y, 23, 18, 0, 0, 23, 18, 0);
+    protected void renderNoFilmIcon(GuiGraphics guiGraphics) {
+        int x = (int) ((opening.x + (opening.width / 2) - 12));
+        int y = (int) (opening.y + opening.height - 18);
+        guiGraphics.blit(RenderPipelines.GUI_TEXTURED, NO_FILM_ICON_TEXTURE, x, y, 0, 0, 23, 18, 23, 18);
     }
 
-    protected void renderRemainingFramesIcon(PoseStack poseStack, FilmRollItem filmRollItem, ItemStack filmStack) {
+    protected void renderRemainingFramesIcon(GuiGraphics guiGraphics, FilmRollItem filmRollItem, ItemStack filmStack) {
         int maxFrames = filmRollItem.getMaxFrameCount(filmStack);
         int exposedFrames = filmRollItem.getStoredFramesCount(filmStack);
         int remainingFrames = Math.max(0, maxFrames - exposedFrames);
         if (maxFrames > 5 && remainingFrames <= 3) {
-            RenderSystem.setShaderTexture(0, REMAINING_FRAMES_ICON_TEXTURE);
-            float x = (int) (opening.x + (opening.width / 2) - 17) + Config.Client.VIEWFINDER_STATUS_ICON_OFFSET_X.get();
-            float y = (int) (opening.y + opening.height - 15) + Config.Client.VIEWFINDER_STATUS_ICON_OFFSET_Y.get();
+            int x = (int) (opening.x + (opening.width / 2) - 17);
+            int y = (int) (opening.y + opening.height - 15);
             int vOffset = (remainingFrames - 1) * 15;
-            GuiUtil.blit(poseStack, x, y, 33, 15, 0, vOffset, 33, 45, 0);
+            guiGraphics.blit(RenderPipelines.GUI_TEXTURED, REMAINING_FRAMES_ICON_TEXTURE, x, y, 0, vOffset, 33, 15, 33, 45);
         }
     }
 }

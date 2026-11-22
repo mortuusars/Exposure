@@ -29,7 +29,6 @@ import static net.minecraft.commands.Commands.literal;
 public class ExportCommand {
     public static LiteralArgumentBuilder<CommandSourceStack> get() {
         return literal("export")
-                .requires((stack) -> stack.hasPermission(3))
                 .then(id())
                 .then(all())
                 .then(literal("stop")
@@ -92,12 +91,10 @@ public class ExportCommand {
             EXPORT_CONFIRMATIONS.put(player.getId(), player.level().getGameTime());
             stack.sendSuccess(() -> Component.translatable("command.exposure.export.confirmation", count)
                     .withStyle(Style.EMPTY.withColor(0xffe5e3))
-                    .append(Component.translatable("command.exposure.export.confirm")
-                            .withStyle(Style.EMPTY.withColor(0xff7369)
-                                    .withUnderlined(true)
-                                    .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.translatable("command.exposure.export.confirm.tooltip")))
-                                    .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-                                            "/exposure export all " + size.getSerializedName() + " " + look.getSerializedName())))), true);
+            .append(Component.translatable("command.exposure.export.confirm")
+                     .withStyle(Style.EMPTY.withColor(0xff7369)
+                             .withUnderlined(true)
+                             .withClickEvent(new ClickEvent.RunCommand("/exposure export all " + size.getSerializedName() + " " + look.getSerializedName())))), true);
             return false;
         }
 

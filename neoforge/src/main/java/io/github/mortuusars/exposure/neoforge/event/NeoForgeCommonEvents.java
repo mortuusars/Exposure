@@ -15,23 +15,25 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.stats.Stats;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.items.wrapper.InvWrapper;
-import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
+import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
+import net.neoforged.neoforge.transfer.item.WorldlyContainerWrapper;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.registries.DataPackRegistryEvent;
 
 @SuppressWarnings("unused")
 public class NeoForgeCommonEvents {
-    @EventBusSubscriber(modid = Exposure.ID, bus = EventBusSubscriber.Bus.MOD)
+    @EventBusSubscriber(modid = Exposure.ID)
     public static class ModBus {
         @SubscribeEvent
         public static void commonSetup(FMLCommonSetupEvent event) {
@@ -57,7 +59,7 @@ public class NeoForgeCommonEvents {
             // This monstrosity is to avoid having to define packets for forge and fabric separately.
             for (CustomPacketPayload.TypeAndCodec<? extends FriendlyByteBuf, ? extends CustomPacketPayload> definition : S2CPackets.getDefinitions()) {
                 registrar.playToClient((CustomPacketPayload.Type<Packet>) definition.type(),
-                        (StreamCodec<FriendlyByteBuf, Packet>) definition.codec(), PacketsImpl::handle);
+                        (StreamCodec<FriendlyByteBuf, Packet>) definition.codec());
             }
 
             for (CustomPacketPayload.TypeAndCodec<? extends FriendlyByteBuf, ? extends CustomPacketPayload> definition : C2SPackets.getDefinitions()) {
@@ -71,14 +73,37 @@ public class NeoForgeCommonEvents {
             }
         }
 
+//        @SubscribeEvent
+//        public static void onCreativeTabsBuild(BuildCreativeModeTabContentsEvent event) {
+//            if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
+//                event.accept(Exposure.Items.CAMERA.get());
+//                event.accept(Exposure.Items.BLACK_AND_WHITE_FILM.get());
+//                event.accept(Exposure.Items.COLOR_FILM.get());
+//                event.accept(Exposure.Items.DEVELOPED_BLACK_AND_WHITE_FILM.get());
+//                event.accept(Exposure.Items.DEVELOPED_COLOR_FILM.get());
+//                event.accept(Exposure.Items.PHOTOGRAPH.get());
+//                event.accept(Exposure.Items.AGED_PHOTOGRAPH.get());
+//                event.accept(Exposure.Items.INTERPLANAR_PROJECTOR.get());
+//                event.accept(Exposure.Items.STACKED_PHOTOGRAPHS.get());
+//                event.accept(Exposure.Items.PHOTOGRAPH_FRAME.get());
+//                event.accept(Exposure.Items.CLEAR_PHOTOGRAPH_FRAME.get());
+//                event.accept(Exposure.Items.CAMERA_STAND.get());
+//                event.accept(Exposure.Items.ALBUM.get());
+//            }
+//
+//            if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
+//                event.accept(Exposure.Items.LIGHTROOM.get());
+//            }
+//        }
+
         @SubscribeEvent
         public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
-            event.registerBlockEntity(Capabilities.ItemHandler.BLOCK, Exposure.BlockEntityTypes.LIGHTROOM.get(),
-                    (be, side) -> side == null ? new InvWrapper(be) : new SidedInvWrapper(be, side));
+            event.registerBlockEntity(Capabilities.Item.BLOCK, Exposure.BlockEntityTypes.LIGHTROOM.get(),
+                    (be, side) -> side == null ? VanillaContainerWrapper.of(be) : new WorldlyContainerWrapper(be, side));
         }
     }
 
-    @EventBusSubscriber(modid = Exposure.ID, bus = EventBusSubscriber.Bus.GAME)
+    @EventBusSubscriber(modid = Exposure.ID)
     public static class GameBus {
         @SubscribeEvent
         public static void serverStarted(ServerStartedEvent event) {

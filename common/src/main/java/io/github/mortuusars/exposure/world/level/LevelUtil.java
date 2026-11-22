@@ -3,7 +3,7 @@ package io.github.mortuusars.exposure.world.level;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
@@ -23,8 +23,8 @@ public class LevelUtil {
                 Math.max(blockBrightness, 15 - level.getSkyDarken());
     }
 
-    public static List<ResourceLocation> getStructuresAt(ServerLevel level, BlockPos pos) {
-        Registry<Structure> registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
+    public static List<Identifier> getStructuresAt(ServerLevel level, BlockPos pos) {
+        Registry<Structure> registry = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
 
         return level.structureManager().getAllStructuresAt(pos).keySet().stream()
                 .filter(structure -> {

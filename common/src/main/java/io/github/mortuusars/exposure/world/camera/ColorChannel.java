@@ -5,7 +5,7 @@ import io.github.mortuusars.exposure.Exposure;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
@@ -72,7 +72,7 @@ public enum ColorChannel implements StringRepresentable {
         return toString().toLowerCase();
     }
 
-    public ResourceLocation getShader() {
-        return Exposure.resource("shaders/" + getSerializedName() + "_filter.json");
+    public Identifier getShader() {
+        return Exposure.resource("post/" + getSerializedName() + "_filter");
     }
 }

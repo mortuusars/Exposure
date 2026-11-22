@@ -4,13 +4,13 @@ import io.github.mortuusars.exposure.ExposureClient;
 import io.github.mortuusars.exposure.client.image.modifier.ImageEffect;
 import io.github.mortuusars.exposure.client.image.renderable.RenderableImage;
 import io.github.mortuusars.exposure.world.item.PhotographItem;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
-public record PhotographStyle(ResourceLocation paperTexture,
-                              ResourceLocation overlayTexture,
-                              ResourceLocation albumPaperTexture,
-                              ResourceLocation albumOverlayTexture,
+public record PhotographStyle(Identifier paperTexture,
+                              Identifier overlayTexture,
+                              Identifier albumPaperTexture,
+                              Identifier albumOverlayTexture,
                               ImageEffect modifier) {
 
     public static final PhotographStyle REGULAR = new PhotographStyle(

@@ -4,14 +4,14 @@ import com.google.common.base.Preconditions;
 import com.mojang.serialization.MapCodec;
 import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.Exposure;
+import io.github.mortuusars.exposure.advancements.predicate.FramePredicate;
+import io.github.mortuusars.exposure.advancements.predicate.TamedPredicate;
+import net.minecraft.core.component.predicates.DataComponentPredicate;
 import io.github.mortuusars.exposure.neoforge.loot.ConfigurableAddTableLootModifier;
-import net.minecraft.world.item.CreativeModeTab;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
-import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -43,7 +43,9 @@ public class ExposureNeoForge {
         RegisterImpl.RECIPE_TYPES.register(modEventBus);
         RegisterImpl.RECIPE_SERIALIZERS.register(modEventBus);
         RegisterImpl.CRITERION_TRIGGERS.register(modEventBus);
-        RegisterImpl.ITEM_SUB_PREDICATES.register(modEventBus);
+        RegisterImpl.COMPONENT_PREDICATES.register("frame", () -> new DataComponentPredicate.ConcreteType<>(FramePredicate.CODEC));
+        RegisterImpl.ENTITY_SUB_PREDICATES.register("tamed", () -> TamedPredicate.CODEC);
+        RegisterImpl.COMPONENT_PREDICATES.register(modEventBus);
         RegisterImpl.ENTITY_SUB_PREDICATES.register(modEventBus);
         RegisterImpl.SOUND_EVENTS.register(modEventBus);
         RegisterImpl.COMMAND_ARGUMENT_TYPES.register(modEventBus);
@@ -53,9 +55,6 @@ public class ExposureNeoForge {
         RegisterImpl.CUSTOM_STATS.register(modEventBus);
         LootModifiers.LOOT_MODIFIERS.register(modEventBus);
 
-        if (FMLEnvironment.dist == Dist.CLIENT) {
-            ExposureNeoForgeClient.init(container);
-        }
     }
 
     public static class LootModifiers {

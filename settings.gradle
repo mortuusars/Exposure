@@ -1,14 +1,36 @@
 pluginManagement {
     repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://files.minecraftforge.net/maven/" }
+        // maven.neoforged.net is on a CDN that does not connect from this network.
+        // CreeperHost mirrors the same NeoForge artifacts.
+        maven { url = 'https://maven.creeperhost.net/' }
         gradlePluginPortal()
+        maven { url = 'https://maven.neoforged.net/releases' }
     }
 }
 
-rootProject.name = 'Exposure'
+plugins {
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
 
-include 'common'
-include 'fabric'
-include 'neoforge'
+rootProject.name = 'exposure-neoforge'
+
+def retargetNeoForgeMaven = { repo ->
+    if (!(repo instanceof MavenArtifactRepository)) {
+        return
+    }
+    def url = repo.url?.toString()
+    if (url == null || !url.contains('maven.neoforged.net')) {
+        return
+    }
+    def rewritten = url
+            .replace('https://maven.neoforged.net/releases', 'https://maven.creeperhost.net')
+            .replace('https://maven.neoforged.net/snapshots', 'https://maven.creeperhost.net')
+    if (rewritten != url) {
+        repo.setUrl(rewritten)
+    }
+}
+
+gradle.beforeProject { project ->
+    project.buildscript.repositories.whenObjectAdded retargetNeoForgeMaven
+    project.repositories.whenObjectAdded retargetNeoForgeMaven
+}

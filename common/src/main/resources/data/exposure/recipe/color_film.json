@@ -2,21 +2,11 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "G": {
-      "item": "minecraft:gunpowder"
-    },
-    "I": {
-      "tag": "c:ingots/gold"
-    },
-    "K": {
-      "item": "minecraft:dried_kelp"
-    },
-    "L": {
-      "item": "minecraft:lapis_lazuli"
-    },
-    "N": {
-      "tag": "c:nuggets/gold"
-    }
+    "G": "minecraft:gunpowder",
+    "I": "#c:ingots/gold",
+    "K": "minecraft:dried_kelp",
+    "L": "minecraft:lapis_lazuli",
+    "N": "#c:nuggets/gold"
   },
   "pattern": [
     "NLL",

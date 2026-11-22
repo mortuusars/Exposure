@@ -1,0 +1,77 @@
+{
+  "targets": {
+    "swap": {}
+  },
+  "passes": [
+    {
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "minecraft:main"
+        }
+      ],
+      "output": "swap",
+      "uniforms": {
+        "ExposureColorConfig": [
+          {
+            "name": "Mul",
+            "type": "vec4",
+            "value": [
+              0.15,
+              0.15,
+              0.15,
+              0.0
+            ]
+          },
+          {
+            "name": "Add",
+            "type": "vec4",
+            "value": [
+              0,
+              0.423,
+              0.756,
+              0.0
+            ]
+          },
+          {
+            "name": "Saturation",
+            "type": "float",
+            "value": 0.7
+          },
+          {
+            "name": "Contrast",
+            "type": "float",
+            "value": 1
+          }
+        ]
+      },
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "exposure:post/exposure_color_processor"
+    },
+    {
+      "inputs": [
+        {
+          "sampler_name": "In",
+          "target": "swap"
+        }
+      ],
+      "output": "minecraft:main",
+      "uniforms": {
+        "BitsConfig": [
+          {
+            "name": "Resolution",
+            "type": "float",
+            "value": 16.0
+          },
+          {
+            "name": "MosaicSize",
+            "type": "float",
+            "value": 4.0
+          }
+        ]
+      },
+      "vertex_shader": "minecraft:core/screenquad",
+      "fragment_shader": "minecraft:post/bits"
+    }
+  ]
+}

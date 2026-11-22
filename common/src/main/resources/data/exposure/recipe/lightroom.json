@@ -2,15 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "I": {
-      "item": "minecraft:iron_trapdoor"
-    },
-    "P": {
-      "tag": "minecraft:planks"
-    },
-    "T": {
-      "item": "minecraft:redstone_torch"
-    }
+    "I": "minecraft:iron_trapdoor",
+    "P": "#minecraft:planks",
+    "T": "minecraft:redstone_torch"
   },
   "pattern": [
     "IT ",

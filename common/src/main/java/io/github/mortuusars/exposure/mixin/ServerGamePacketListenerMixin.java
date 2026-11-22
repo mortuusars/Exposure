@@ -18,7 +18,7 @@ public abstract class ServerGamePacketListenerMixin {
 
     @Inject(method = "handleRenameItem", at = @At("HEAD"), cancellable = true)
     private void handleRename(ServerboundRenameItemPacket packet, CallbackInfo ci) {
-        PacketUtils.ensureRunningOnSameThread(packet, (ServerGamePacketListenerImpl)(Object)this, player.serverLevel());
+        PacketUtils.ensureRunningOnSameThread(packet, (ServerGamePacketListenerImpl)(Object)this, player.level());
         if (player.containerMenu instanceof ItemRenameMenu itemRenameMenu) {
             if (!itemRenameMenu.stillValid(player)) {
                 Exposure.LOGGER.debug("Player {} interacted with invalid menu {}", player, itemRenameMenu);

@@ -117,3 +117,14 @@ run/
 
 /extra-mods*/
 /common/logs/
+
+# Eclipse IDE files
+.classpath
+.project
+.settings/
+**/bin/main/
+**/bin/test/
+
+# repomix output
+repomix-output.xml
+repomix-output*.xml

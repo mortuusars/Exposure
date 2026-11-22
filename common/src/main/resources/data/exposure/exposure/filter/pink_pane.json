@@ -3,5 +3,5 @@
     "items": "minecraft:pink_stained_glass_pane"
   },
   "attachment_tint": "D88198",
-  "shader": "exposure:shaders/post/pink_tint.json"
+  "shader": "exposure:post/pink_tint"
 }

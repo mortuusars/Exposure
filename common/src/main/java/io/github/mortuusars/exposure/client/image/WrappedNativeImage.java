@@ -1,7 +1,6 @@
 package io.github.mortuusars.exposure.client.image;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import io.github.mortuusars.exposure.util.color.Color;
 
 public class WrappedNativeImage implements Image {
     private final NativeImage nativeImage;
@@ -22,7 +21,7 @@ public class WrappedNativeImage implements Image {
 
     @Override
     public int getPixelARGB(int x, int y) {
-        return Color.ABGRtoARGB(nativeImage.getPixelRGBA(x, y));
+        return nativeImage.getPixel(x, y);
     }
 
     @Override

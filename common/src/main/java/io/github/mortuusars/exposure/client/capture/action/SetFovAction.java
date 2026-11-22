@@ -3,9 +3,9 @@ package io.github.mortuusars.exposure.client.capture.action;
 import io.github.mortuusars.exposure.client.render.FovModifier;
 
 public class SetFovAction implements CaptureAction {
-    protected final double fov;
+    protected final float fov;
 
-    public SetFovAction(double fov) {
+    public SetFovAction(float fov) {
         this.fov = fov;
     }
 

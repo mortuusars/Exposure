@@ -23,6 +23,10 @@ public interface CameraOperator {
         throw new IllegalStateException("This method must be implemented.");
     }
 
+    default void onExposureCameraSet(Camera camera) {}
+
+    default void onExposureCameraRemoved() {}
+
     // --
 
     default Optional<Camera> getActiveExposureCameraOptional() {

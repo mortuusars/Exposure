@@ -16,6 +16,7 @@ public class GammaModifier {
             offset = offsetValue;
             // Update light texture immediately:
             Minecraft.getInstance().gameRenderer.lightTexture().tick();
+            Minecraft.getInstance().gameRenderer.lightTexture().updateLightTexture(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
         }
     }
 
@@ -24,6 +25,7 @@ public class GammaModifier {
             offset = 0f;
             // Update light texture immediately:
             Minecraft.getInstance().gameRenderer.lightTexture().tick();
+            Minecraft.getInstance().gameRenderer.lightTexture().updateLightTexture(Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(true));
         }
     }
 

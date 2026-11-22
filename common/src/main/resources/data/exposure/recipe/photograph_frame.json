@@ -1,15 +1,9 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "S": {
-      "item": "minecraft:stick"
-    },
-    "P": {
-      "tag": "minecraft:planks"
-    },
-    "F": {
-      "item": "minecraft:item_frame"
-    }
+    "S": "minecraft:stick",
+    "P": "#minecraft:planks",
+    "F": "minecraft:item_frame"
   },
   "pattern": [
     "SPS",

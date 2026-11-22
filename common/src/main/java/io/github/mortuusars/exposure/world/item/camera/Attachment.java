@@ -6,7 +6,7 @@ import io.github.mortuusars.exposure.world.item.component.StoredItemStack;
 import io.github.mortuusars.exposure.world.sound.Sound;
 import io.github.mortuusars.exposure.world.sound.SoundEffect;
 import net.minecraft.core.component.DataComponentType;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.Item;
@@ -19,7 +19,7 @@ import java.util.function.*;
  * ItemStacks gotten from this class should NOT be modified under any circumstances.
  * Copy ItemStack and set with {@link Attachment#set(ItemStack, ItemStack)}.
  */
-public record Attachment<T extends Item>(ResourceLocation id,
+public record Attachment<T extends Item>(Identifier id,
                                          DataComponentType<StoredItemStack> component,
                                          Predicate<ItemStack> itemPredicate,
                                          Class<T> itemType,
@@ -59,7 +59,7 @@ public record Attachment<T extends Item>(ResourceLocation id,
             new SoundEffect(Exposure.SoundEvents.FILTER_INSERT),
             new SoundEffect(Exposure.SoundEvents.FILTER_REMOVE, 0.5F));
 
-    public Attachment(ResourceLocation id,
+    public Attachment(Identifier id,
                       DataComponentType<StoredItemStack> component,
                       Predicate<ItemStack> itemPredicate,
                       Class<T> itemType,
@@ -69,7 +69,7 @@ public record Attachment<T extends Item>(ResourceLocation id,
         this(id, component, itemPredicate, itemType, maxCount, Optional.of(insertedSound), Optional.of(removedSound));
     }
 
-    public Attachment(ResourceLocation id,
+    public Attachment(Identifier id,
                       DataComponentType<StoredItemStack> component,
                       Predicate<ItemStack> itemPredicate,
                       Class<T> itemType,

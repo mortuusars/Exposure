@@ -1,12 +1,15 @@
 package io.github.mortuusars.exposure.client.camera;
 
+import io.github.mortuusars.exposure.world.entity.CameraOperator;
+
 import io.github.mortuusars.exposure.client.camera.viewfinder.Viewfinder;
 import io.github.mortuusars.exposure.client.camera.viewfinder.ViewfinderRegistry;
 import io.github.mortuusars.exposure.client.util.Minecrft;
 import io.github.mortuusars.exposure.world.camera.Camera;
 import io.github.mortuusars.exposure.network.Packets;
 import io.github.mortuusars.exposure.network.packet.common.ActiveCameraDeactivateCommonPacket;
-import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
+import io.github.mortuusars.exposure.world.camera.CameraOnStand;
+import net.minecraft.client.CameraType;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +26,7 @@ public class CameraClient {
     }
 
     public static Optional<Camera> getActive() {
-        return Minecrft.player().getActiveExposureCameraOptional();
+        return ((CameraOperator) Minecrft.player()).getActiveExposureCameraOptional();
     }
 
     public static boolean isActive() {
@@ -31,15 +34,10 @@ public class CameraClient {
     }
 
     public static void deactivate() {
-        Minecrft.player().getActiveExposureCameraOptional().ifPresent(
-              camera -> {
-                  camera.map((item, stack) -> item.deactivate(Minecrft.player(), camera.getHolder().asHolderEntity(), stack));
-                  Minecrft.player().removeActiveExposureCamera();
-                  // Fixes camera getting stuck in some cases, requiring a relog to fix
-                  if (Minecrft.get().getCameraEntity() instanceof CameraStandEntity) {
-                      resetCameraEntity();
-                  }
-              });
+        ((CameraOperator) Minecrft.player()).getActiveExposureCameraOptional().ifPresent(camera -> {
+            camera.map((item, stack) -> item.deactivate(camera.getHolder().asHolderEntity(), stack));
+            ((CameraOperator) Minecrft.player()).removeActiveExposureCamera();
+        });
         Packets.sendToServer(ActiveCameraDeactivateCommonPacket.INSTANCE);
     }
 
@@ -66,7 +64,10 @@ public class CameraClient {
     public static void setupViewfinder(@NotNull Camera camera) {
         removeViewfinder();
         activeViewfinder = ViewfinderRegistry.get(camera);
-        activeViewfinder.setup();
+
+        if (camera instanceof CameraOnStand) {
+            Minecrft.options().setCameraType(CameraType.FIRST_PERSON);
+        }
     }
 
     public static void removeViewfinder() {

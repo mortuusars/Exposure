@@ -1,5 +1,13 @@
 {
   "parent": "exposure:item/camera",
+  "textures": {
+    "texture": "exposure:item/camera/camera",
+    "particle": "exposure:item/camera/camera",
+    "viewfinder": "exposure:item/camera/camera_viewfinder",
+    "selfie_stick": "exposure:item/camera/empty",
+    "lens": "exposure:item/camera/empty",
+    "flash": "exposure:item/camera/empty"
+  },
   "display": {
     "thirdperson_righthand": {
       "rotation": [35, -15, 0],
@@ -27,16 +35,8 @@
     },
     "fixed": {
       "rotation": [0, 90, 0],
-      "translation": [1.5, 8.75, -2.5],
+      "translation": [1.5, 0, -2.5],
       "scale": [1.75, 1.75, 1.75]
     }
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "exposure:camera_gold": 1
-      },
-      "model": "exposure:item/camera_gold_active"
-    }
-  ]
+  }
 }

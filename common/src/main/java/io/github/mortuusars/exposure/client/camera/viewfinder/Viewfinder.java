@@ -6,13 +6,11 @@ import io.github.mortuusars.exposure.Config;
 import io.github.mortuusars.exposure.client.camera.CameraClient;
 import io.github.mortuusars.exposure.client.input.*;
 import io.github.mortuusars.exposure.client.util.Minecrft;
-import io.github.mortuusars.exposure.integration.Mods;
-import io.github.mortuusars.exposure.integration.shoulder_surfing.ShoulderSurfingCompat;
 import io.github.mortuusars.exposure.world.camera.Camera;
-import io.github.mortuusars.exposure.world.camera.CameraOnStand;
 import io.github.mortuusars.exposure.world.item.camera.CameraItem;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,27 +23,26 @@ public class Viewfinder {
     protected final ViewfinderOverlay overlay;
     protected final ViewfinderShader shader;
     protected final ViewfinderSelfie selfie;
-    protected @Nullable CameraType cameraTypeBefore;
 
     protected KeyBindings keyBindings = KeyBindings.of(
-          Key.press(Minecrft.options().keyAttack).executes(() -> !canAttack()),
-          Key.press(Minecrft.options().keyTogglePerspective).executes(() -> selfie().toggle()),
-          Key.press(Minecrft.options().keyInventory).or(Key.press(InputConstants.KEY_ESCAPE)).executes(() -> {
-              if (Minecrft.get().screen instanceof ViewfinderCameraControlsScreen viewfinderControlsScreen) {
-                  viewfinderControlsScreen.onClose();
-                  controlsScreen = null;
-              } else {
-                  CameraClient.deactivate();
-                  close();
-              }
-          }),
-          Key.press(KeyboardHandler.getCameraControlsKey())
-                .onlyIf(this::isLookingThrough)
-                .onlyIf(() -> !controlsActive())
-                .executes(() -> {
-                    openControlsScreen();
-                    return false; // false not handle and keep moving/sneaking
-                })
+            Key.press(Minecrft.options().keyAttack).executes(() -> !canAttack()),
+            Key.press(Minecrft.options().keyTogglePerspective).executes(() -> selfie().toggle()),
+            Key.press(Minecrft.options().keyInventory).or(Key.press(InputConstants.KEY_ESCAPE)).executes(() -> {
+                if (Minecrft.get().screen instanceof ViewfinderCameraControlsScreen viewfinderControlsScreen) {
+                    viewfinderControlsScreen.onClose();
+                    controlsScreen = null;
+                } else {
+                    CameraClient.deactivate();
+                    close();
+                }
+            }),
+            Key.press(KeyboardHandler.getCameraControlsKey())
+                    .onlyIf(this::isLookingThrough)
+                    .onlyIf(() -> !controlsActive())
+                    .executes(() -> {
+                        openControlsScreen();
+                        return false; // false not handle and keep moving/sneaking
+                    })
     );
 
     protected @Nullable ViewfinderCameraControlsScreen controlsScreen;
@@ -119,9 +116,8 @@ public class Viewfinder {
     }
 
     public boolean canAttack() {
-        return Minecrft.get().getCurrentServer() != null
-              && Config.Server.CAMERA_VIEWFINDER_ATTACK.get()
-              && !camera.map(CameraItem::isInSelfieMode).orElse(false); // Attacking in selfie mode has weird anim.
+        return Config.Server.CAMERA_VIEWFINDER_ATTACK.get()
+                && !camera.map(CameraItem::isInSelfieMode).orElse(false); // Attacking in selfie mode has weird anim.
     }
 
     public void openControlsScreen() {
@@ -130,31 +126,7 @@ public class Viewfinder {
         Minecrft.get().setScreen(controlsScreen);
     }
 
-    public void setup() {
-        if (Mods.SHOULDER_SURFING.isLoaded()) {
-            ShoulderSurfingCompat.onViewfinderSetup(camera);
-            return;
-        }
-
-        cameraTypeBefore = Minecrft.options().getCameraType();
-        if (cameraTypeBefore != CameraType.FIRST_PERSON
-              && (cameraTypeBefore == CameraType.THIRD_PERSON_BACK || camera instanceof CameraOnStand)) {
-            Minecrft.options().setCameraType(CameraType.FIRST_PERSON);
-        }
-    }
-
     public void close() {
-        if (Mods.SHOULDER_SURFING.isLoaded()) {
-            ShoulderSurfingCompat.onViewfinderRemove();
-        } else if (cameraTypeBefore != null) {
-            Minecrft.options().setCameraType(cameraTypeBefore);
-            cameraTypeBefore = null;
-        }
-
-        if (shader != null) {
-            shader.close();
-        }
-
         if (controlsActive()) {
             Minecrft.get().setScreen(null);
         }
@@ -162,26 +134,26 @@ public class Viewfinder {
 
     public boolean keyPressed(int key, int scanCode, int action, int modifiers) {
         return (action == InputConstants.PRESS && keyBindings.keyPressed(key, scanCode, modifiers))
-              || (action == InputConstants.RELEASE && keyBindings.keyReleased(key, scanCode, modifiers))
-              || zoom().keyPressed(key, scanCode, action, modifiers);
+                || (action == InputConstants.RELEASE && keyBindings.keyReleased(key, scanCode, modifiers))
+                || zoom().keyPressed(key, scanCode, action, modifiers);
     }
 
-    public boolean mouseClicked(int button, int action) {
+    public boolean mouseClicked(MouseButtonEvent event) {
         if (!isLookingThrough()) {
             return false;
         }
 
         if (controlsActive()) return false;
 
-        if (!canAttack() && Minecrft.options().keyAttack.matchesMouse(button))
+        if (!canAttack() && Minecrft.options().keyAttack.matchesMouse(event))
             return true; // Block attacks
 
-        if (KeyboardHandler.getCameraControlsKey().matchesMouse(button)) {
+        if (KeyboardHandler.getCameraControlsKey().matchesMouse(event)) {
             openControlsScreen();
             return false; // Do not cancel the event to keep sneaking
         }
 
-        if (Config.Client.VIEWFINDER_MIDDLE_CLICK_CONTROLS.get() && button == InputConstants.MOUSE_BUTTON_MIDDLE) {
+        if (Config.Client.VIEWFINDER_MIDDLE_CLICK_CONTROLS.get() && event.button() == InputConstants.MOUSE_BUTTON_MIDDLE) {
             openControlsScreen();
             return true;
         }
@@ -197,12 +169,17 @@ public class Viewfinder {
     }
 
     public double modifyMouseSensitivity(double original) {
-        if (!isLookingThrough()) {
+        if (!isLookingThrough())
             return original;
-        }
 
         double scale = original / Minecraft.getInstance().options.fov().get();
         double scaledSensitivity = zoom.getCurrentFov() * scale;
-        return Mth.lerp(Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_INFLUENCE.get(), original, scaledSensitivity);
+
+        double normalizedDifference = Mth.map(original - scaledSensitivity, 0, original, 0, 1);
+        double influence = Config.Client.VIEWFINDER_ZOOM_SENSITIVITY_INFLUENCE.get();
+        double strength = 1f - normalizedDifference * influence;
+        strength *= strength; // more influence at smaller FOVs
+
+        return Mth.lerp(strength, scaledSensitivity, original);
     }
 }

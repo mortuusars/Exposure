@@ -8,14 +8,16 @@ import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.crafting.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class FilmDevelopingRecipe extends ComponentTransferringRecipe {
-    public FilmDevelopingRecipe(CraftingBookCategory category, Ingredient filmIngredient, NonNullList<Ingredient> ingredients, ItemStack result) {
+    public FilmDevelopingRecipe(CraftingBookCategory category, Ingredient filmIngredient, List<Ingredient> ingredients, ItemStack result) {
         super(category, filmIngredient, ingredients, result);
     }
 
     @Override
-    public @NotNull RecipeSerializer<?> getSerializer() {
-        return Exposure.RecipeSerializers.FILM_DEVELOPING.get();
+    public @NotNull RecipeSerializer<? extends ComponentTransferringRecipe> getSerializer() {
+        return (RecipeSerializer<? extends ComponentTransferringRecipe>) Exposure.RecipeSerializers.FILM_DEVELOPING.get();
     }
 
     @Override

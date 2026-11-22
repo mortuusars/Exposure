@@ -1,7 +1,7 @@
 package io.github.mortuusars.exposure.client.image.modifier.pixel;
 
 import io.github.mortuusars.exposure.world.camera.component.ShutterSpeed;
-import net.minecraft.util.FastColor;
+import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
 
 public class ExposureEffect implements PixelEffect {
@@ -30,10 +30,10 @@ public class ExposureEffect implements PixelEffect {
     public int modify(int colorARGB) {
         if (brightness == 1f) return colorARGB;
 
-        int alpha = FastColor.ARGB32.alpha(colorARGB);
-        int red = FastColor.ARGB32.red(colorARGB);
-        int green = FastColor.ARGB32.green(colorARGB);
-        int blue = FastColor.ARGB32.blue(colorARGB);
+        int alpha = ARGB.alpha(colorARGB);
+        int red = ARGB.red(colorARGB);
+        int green = ARGB.green(colorARGB);
+        int blue = ARGB.blue(colorARGB);
 
         // We simulate bright light by not modifying all pixels equally
         float lightness = (blue + green + red) / 765f; // from 0.0 to 1.0
@@ -55,7 +55,7 @@ public class ExposureEffect implements PixelEffect {
 
         // BUT it does not look perfect (IDK, maybe because of dithering), so we blend them together.
         // This makes transitions smoother, subtler. Which looks good imo.
-        return FastColor.ARGB32.color(alpha,
+        return ARGB.color(alpha,
                 Mth.clamp(Mth.lerpInt(0.5f, (int)r, rdst[0]), 0, 255),
                 Mth.clamp(Mth.lerpInt(0.5f, (int)g, rdst[1]), 0, 255),
                 Mth.clamp(Mth.lerpInt(0.5f, (int)b, rdst[2]), 0, 255));

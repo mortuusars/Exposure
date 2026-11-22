@@ -7,7 +7,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.entity.vehicle.VehicleEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(Boat.class)
+@Mixin(AbstractBoat.class)
 public abstract class BoatMixin extends VehicleEntity {
     public BoatMixin(EntityType<?> entityType, Level level) {
         super(entityType, level);
@@ -27,7 +27,7 @@ public abstract class BoatMixin extends VehicleEntity {
     private void onInteract(Player player, InteractionHand hand, CallbackInfoReturnable<InteractionResult> cir) {
         ItemStack itemInHand = player.getItemInHand(hand);
         if (itemInHand.getItem() instanceof CameraStandItem cameraStandItem) {
-            InteractionResult result = cameraStandItem.interactWithBoat(player, hand, ((Boat)(Object) this));
+            InteractionResult result = cameraStandItem.interactWithBoat(player, hand, ((AbstractBoat)(Object) this));
             if (result != InteractionResult.PASS) {
                 cir.setReturnValue(result);
             }

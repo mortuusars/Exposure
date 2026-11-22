@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public interface ImageEffect {
     /**
      * Unique identifier to differentiate between rendered images.<br>
-     * It is used in {@link net.minecraft.resources.ResourceLocation} so choose valid chars as invalid ones will be removed.<br>
+     * It is used in {@link net.minecraft.resources.Identifier} so choose valid chars as invalid ones will be removed.<br>
      * To make it more readable, separate parts by dash: brightness-1.5
      * and join multiple identifiers with underscore: brightness-1.5_contrast-0.8
      */

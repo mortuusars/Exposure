@@ -2,13 +2,5 @@
   "parent": "minecraft:item/generated",
   "textures": {
     "layer0": "exposure:item/interplanar_projector"
-  },
-  "overrides": [
-    {
-      "predicate": {
-        "exposure:projector_active": 1
-      },
-      "model": "exposure:item/interplanar_projector_active"
-    }
-  ]
+  }
 }

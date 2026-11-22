@@ -2,14 +2,14 @@ package io.github.mortuusars.exposure.client.capture.action;
 
 import io.github.mortuusars.exposure.client.capture.CaptureShader;
 import io.github.mortuusars.exposure.client.util.Shader;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 import java.util.Optional;
 
 public class SetFilterAction implements CaptureAction {
-    protected Optional<ResourceLocation> filter;
+    protected Optional<Identifier> filter;
 
-    public SetFilterAction(Optional<ResourceLocation> filter) {
+    public SetFilterAction(Optional<Identifier> filter) {
         this.filter = filter;
     }
 

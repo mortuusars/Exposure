@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 public class ForceRegularOrSelfieCameraTypeAction implements CaptureAction {
-    protected final CameraHolder holder;
-    protected CameraType cameraTypeBeforeCapture = CameraType.FIRST_PERSON;
+    private final CameraHolder holder;
+    private CameraType cameraTypeBeforeCapture = CameraType.FIRST_PERSON;
 
     public ForceRegularOrSelfieCameraTypeAction(CameraHolder holder) {
         this.holder = holder;

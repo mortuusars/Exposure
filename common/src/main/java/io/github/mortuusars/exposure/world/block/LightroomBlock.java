@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
@@ -22,13 +23,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LightroomBlock extends Block implements EntityBlock {
-    public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
+    public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     public static final BooleanProperty PRINTING = BooleanProperty.create("printing");
     public static final BooleanProperty REFRACTED = BooleanProperty.create("refracted");
 
@@ -51,19 +53,19 @@ public class LightroomBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean isMoving) {
-        if (!state.is(newState.getBlock())) {
-            if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
-                if (level instanceof ServerLevel serverLevel) {
-                    Containers.dropContents(serverLevel, pos, lightroomBlockEntity);
-                    lightroomBlockEntity.dropStoredExperience(null);
-                }
-
-                level.updateNeighbourForOutputSignal(pos, this);
+    public void destroy(@NotNull LevelAccessor level, @NotNull BlockPos pos, @NotNull BlockState state) {
+        if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
+            if (level instanceof ServerLevel serverLevel) {
+                Containers.dropContents(serverLevel, pos, lightroomBlockEntity);
+                lightroomBlockEntity.dropStoredExperience(null);
             }
 
-            super.onRemove(state, level, pos, newState, isMoving);
+            if (level instanceof Level realLevel) {
+                realLevel.updateNeighbourForOutputSignal(pos, this);
+            }
         }
+
+        super.destroy(level, pos, state);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class LightroomBlock extends Block implements EntityBlock {
     }
 
     @Override
-    public int getAnalogOutputSignal(@NotNull BlockState blockState, Level level, @NotNull BlockPos pos) {
+    protected int getAnalogOutputSignal(@NotNull BlockState blockState, Level level, @NotNull BlockPos pos, @NotNull Direction direction) {
         if (level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
             ItemStack resultStack = lightroomBlockEntity.getItem(Lightroom.RESULT_SLOT);
 
@@ -110,20 +112,23 @@ public class LightroomBlock extends Block implements EntityBlock {
             PlatformHelper.openMenu(serverPlayer, lightroomBlockEntity, buffer -> buffer.writeBlockPos(pos));
         }
 
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        if (level.isClientSide()) {
+            return InteractionResult.CONSUME;
+        } else {
+            return InteractionResult.SUCCESS;
+        }
     }
 
     @Override
-    public void neighborChanged(@NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Block block, @NotNull BlockPos fromPos, boolean pIsMoving) {
-        if (!level.isClientSide) {
+    public void neighborChanged(@NotNull BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Block block, @Nullable Orientation orientation, boolean pIsMoving) {
+        if (!level.isClientSide()) {
             if (!state.getValue(PRINTING)) {
-                for (Direction direction : Direction.values()) {
-                    BlockPos relative = pos.relative(direction);
-                    if (relative.equals(fromPos) && level.getSignal(relative, direction) > 0
-                            && level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
-                        lightroomBlockEntity.startPrintingProcess(true);
-                        break;
-                    }
+                boolean neighborPowered = level.hasNeighborSignal(pos);
+                // this changes mod behavior from 1.21.1, but i don't know how to make it work like it originally did.
+                // it starts a print every time anything around it powers it, even if it's already powered (like 1.21.1 behavior).
+                // but it also starts a print when something around it is turned off, but other sources are still powering it (not like 1.21.1 behavior).
+                if (neighborPowered && level.getBlockEntity(pos) instanceof LightroomBlockEntity lightroomBlockEntity) {
+                    lightroomBlockEntity.startPrintingProcess(true);
                 }
             }
 
@@ -150,7 +155,7 @@ public class LightroomBlock extends Block implements EntityBlock {
     }
 
     public static <T extends BlockEntity> BlockEntityTicker<T> getBlockTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        if (!level.isClientSide && blockEntityType.equals(Exposure.BlockEntityTypes.LIGHTROOM.get()))
+        if (!level.isClientSide() && blockEntityType.equals(Exposure.BlockEntityTypes.LIGHTROOM.get()))
             return LightroomBlockEntity::serverTick;
 
         return null;

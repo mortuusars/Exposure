@@ -1,23 +1,16 @@
 package io.github.mortuusars.exposure.world.item;
 
 import io.github.mortuusars.exposure.Exposure;
-import io.github.mortuusars.exposure.client.render.CameraStandEntityRenderer;
 import io.github.mortuusars.exposure.world.entity.CameraStandEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobSpawnType;
-import net.minecraft.world.entity.decoration.ArmorStand;
+import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.entity.vehicle.boat.AbstractBoat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -51,7 +44,7 @@ public class CameraStandItem extends Item {
         if (level instanceof ServerLevel serverLevel) {
             Consumer<CameraStandEntity> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, context.getPlayer());
             CameraStandEntity cameraStand = Exposure.EntityTypes.CAMERA_STAND.get()
-                    .create(serverLevel, consumer, blockPos, MobSpawnType.SPAWN_EGG, true, true);
+                    .create(serverLevel, consumer, blockPos, EntitySpawnReason.SPAWN_ITEM_USE, true, true);
             if (cameraStand == null) {
                 return InteractionResult.FAIL;
             }
@@ -59,17 +52,21 @@ public class CameraStandItem extends Item {
             if (context.getPlayer() != null) {
                 cameraStand.setOwnerPlayer(context.getPlayer());
             }
-            cameraStand.moveTo(cameraStand.getX(), cameraStand.getY(), cameraStand.getZ(), 0.0F, 0.0F);
+            cameraStand.snapTo(cameraStand.getX(), cameraStand.getY(), cameraStand.getZ(), 0.0F, 0.0F);
             serverLevel.addFreshEntityWithPassengers(cameraStand);
             cameraStand.playPlaceSound();
             cameraStand.gameEvent(GameEvent.ENTITY_PLACE, context.getPlayer());
         }
 
         itemStack.shrink(1);
-        return InteractionResult.sidedSuccess(level.isClientSide);
+        if (level.isClientSide()) {
+            return InteractionResult.CONSUME;
+        } else {
+            return InteractionResult.SUCCESS;
+        }
     }
 
-    public InteractionResult interactWithBoat(Player player, InteractionHand hand, Boat boat) {
+    public InteractionResult interactWithBoat(Player player, InteractionHand hand, AbstractBoat boat) {
         if (!player.isSecondaryUseActive()) return InteractionResult.PASS;
         ItemStack itemStack = player.getItemInHand(hand);
         if (!(itemStack.getItem() instanceof CameraStandItem)) return InteractionResult.PASS;
@@ -78,7 +75,7 @@ public class CameraStandItem extends Item {
         if (player.level() instanceof ServerLevel serverLevel) {
             Consumer<CameraStandEntity> consumer = EntityType.createDefaultStackConfig(serverLevel, itemStack, player);
             CameraStandEntity cameraStand = Exposure.EntityTypes.CAMERA_STAND.get()
-                    .create(serverLevel, consumer, boat.blockPosition(), MobSpawnType.SPAWN_EGG, true, true);
+                    .create(serverLevel, consumer, boat.blockPosition(), EntitySpawnReason.SPAWN_ITEM_USE, true, true);
             if (cameraStand == null) {
                 return InteractionResult.FAIL;
             }

@@ -1,21 +1,11 @@
 {
   "type": "minecraft:crafting_shaped",
   "key": {
-    "B": {
-      "item": "minecraft:bone_meal"
-    },
-    "G": {
-      "item": "minecraft:gunpowder"
-    },
-    "I": {
-      "tag": "c:ingots/iron"
-    },
-    "K": {
-      "item": "minecraft:dried_kelp"
-    },
-    "N": {
-      "tag": "c:nuggets/iron"
-    }
+    "B": "minecraft:bone_meal",
+    "G": "minecraft:gunpowder",
+    "I": "#c:ingots/iron",
+    "K": "minecraft:dried_kelp",
+    "N": "#c:nuggets/iron"
   },
   "pattern": [
     "NBB",

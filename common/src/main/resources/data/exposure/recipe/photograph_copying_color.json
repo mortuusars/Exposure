@@ -1,24 +1,12 @@
 {
   "type": "exposure:photograph_copying",
-  "photograph": {
-    "item": "exposure:photograph"
-  },
+  "photograph": "exposure:photograph",
   "ingredients": [
-    {
-      "tag": "exposure:photo_papers"
-    },
-    {
-      "tag": "exposure:black_printing_dyes"
-    },
-    {
-      "tag": "exposure:cyan_printing_dyes"
-    },
-    {
-      "tag": "exposure:magenta_printing_dyes"
-    },
-    {
-      "tag": "exposure:yellow_printing_dyes"
-    }
+    "#exposure:photo_papers",
+    "#exposure:black_printing_dyes",
+    "#exposure:cyan_printing_dyes",
+    "#exposure:magenta_printing_dyes",
+    "#exposure:yellow_printing_dyes"
   ],
   "result": {
     "id": "exposure:photograph"
